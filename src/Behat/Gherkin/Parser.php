@@ -40,7 +40,7 @@ class Parser
 
         $this->lexer->setInput($input);
         $this->lexer->setLanguage($language = 'en');
-        $languageSpecifiedOnLine = null;
+        $languageSpecifierLine = null;
 
         while ('EOS' !== $this->predictTokenType()) {
             if ('Newline' === $this->predictTokenType()
@@ -49,15 +49,15 @@ class Parser
             } elseif ('Language' === $this->predictTokenType()) {
                 $language = $this->expectTokenType('Language')->value;
 
-                if (null === $languageSpecifiedOnLine) {
+                if (null === $languageSpecifierLine) {
                     // Reparse input with new language
-                    $languageSpecifiedOnLine = $this->lexer->getCurrentLine();
+                    $languageSpecifierLine = $this->lexer->getCurrentLine();
                     $this->lexer->setInput($input);
                     $this->lexer->setLanguage($language);
-                } elseif ($languageSpecifiedOnLine !== $this->lexer->getCurrentLine()) {
+                } elseif ($languageSpecifierLine !== $this->lexer->getCurrentLine()) {
                     // Language already specified
                     throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d%s',
-                        $languageSpecifiedOnLine, $this->lexer->getCurrentLine(),
+                        $languageSpecifierLine, $this->lexer->getCurrentLine(),
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
