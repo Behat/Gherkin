@@ -30,7 +30,6 @@ class Parser
     public function parse($input)
     {
         $features = array();
-        $language = 'en';
 
         if (is_file($input)) {
             $this->file = $input;
@@ -40,7 +39,8 @@ class Parser
         }
 
         $this->lexer->setInput($input);
-        $this->lexer->setLanguage($language);
+        $this->lexer->setLanguage($language = 'en');
+        $languageSpecifiedOnLine = null;
 
         while ('EOS' !== $this->predictTokenType()) {
             if ('Newline' === $this->predictTokenType()) {
@@ -48,7 +48,18 @@ class Parser
             } elseif ('Comment' === $this->predictTokenType()) {
                 $matches = array();
                 if (preg_match('/^ *language: *([\w_\-]+)/', $this->parseExpression(), $matches)) {
-                    $this->lexer->setLanguage($language = $matches[1]);
+                    if (null === $languageSpecifiedOnLine) {
+                        $languageSpecifiedOnLine = $this->lexer->getCurrentLine();
+
+                        // Reparse input with new language
+                        $this->lexer->setInput($input);
+                        $this->lexer->setLanguage($language = $matches[1]);
+                    } elseif ($languageSpecifiedOnLine !== $this->lexer->getCurrentLine()) {
+                        throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d',
+                            $languageSpecifiedOnLine,
+                            $this->lexer->getCurrentLine()
+                        ));
+                    }
                 }
             } elseif ('Feature' === $this->predictTokenType()
                    || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(3))) {
@@ -348,19 +359,6 @@ class Parser
     }
 
     /**
-     * Parse next comment token.
-     * 
-     * @return  string
-     */
-    protected function parseComment()
-    {
-        $token = $this->expectTokenType('Comment');
-        $this->skipNewlines();
-
-        return $token->value;
-    }
-
-    /**
      * Parse next text token.
      * 
      * @return  string
@@ -369,6 +367,18 @@ class Parser
     {
         $token = $this->expectTokenType('Text');
         $this->skipNewlines();
+
+        return $token->value;
+    }
+
+    /**
+     * Parse next comment token.
+     * 
+     * @return  string
+     */
+    protected function parseComment()
+    {
+        $token = $this->expectTokenType('Comment');
 
         return $token->value;
     }

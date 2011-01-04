@@ -8,7 +8,7 @@ use Symfony\Component\Finder\Finder;
 
 use Behat\Gherkin\Lexer,
     Behat\Gherkin\Parser,
-    Behat\Gherkin\Keywords\EnglishKeywords;
+    Behat\Gherkin\Keywords\ArrayKeywords;
 
 use Tests\Behat\Gherkin\Fixtures\YamlParser;
 
@@ -19,7 +19,25 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->gherkin  = new Parser(new Lexer(new EnglishKeywords()));
+        $keywords       = new ArrayKeywords(array(
+            'en' => array(
+                'Feature'           => 'Feature',
+                'Background'        => 'Background',
+                'Scenario'          => 'Scenario',
+                'Scenario Outline'  => 'Scenario Outline',
+                'Examples'          => 'Examples',
+                'Step Types'        => array('Given', 'When', 'Then', 'And', 'Or')
+            ),
+            'ru' => array(
+                'Feature'           => 'Функционал',
+                'Background'        => 'Предыстория',
+                'Scenario'          => 'Сценарий',
+                'Scenario Outline'  => 'Структура сценария',
+                'Examples'          => 'Значения',
+                'Step Types'        => array('Допустим', 'То', 'Если', 'И', 'Но')
+            )
+        ));
+        $this->gherkin  = new Parser(new Lexer($keywords));
         $this->yaml     = new YamlParser();
     }
 
