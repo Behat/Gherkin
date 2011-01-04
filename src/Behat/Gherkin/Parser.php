@@ -43,23 +43,22 @@ class Parser
         $languageSpecifiedOnLine = null;
 
         while ('EOS' !== $this->predictTokenType()) {
-            if ('Newline' === $this->predictTokenType()) {
+            if ('Newline' === $this->predictTokenType()
+             || 'Comment' === $this->predictTokenType()) {
                 $this->lexer->getAdvancedToken();
-            } elseif ('Comment' === $this->predictTokenType()) {
-                $matches = array();
-                if (preg_match('/^ *language: *([\w_\-]+)/', $this->parseExpression(), $matches)) {
-                    if (null === $languageSpecifiedOnLine) {
-                        $languageSpecifiedOnLine = $this->lexer->getCurrentLine();
+            } elseif ('Language' === $this->predictTokenType()) {
+                $language = $this->expectTokenType('Language')->value;
 
-                        // Reparse input with new language
-                        $this->lexer->setInput($input);
-                        $this->lexer->setLanguage($language = $matches[1]);
-                    } elseif ($languageSpecifiedOnLine !== $this->lexer->getCurrentLine()) {
-                        throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d',
-                            $languageSpecifiedOnLine,
-                            $this->lexer->getCurrentLine()
-                        ));
-                    }
+                if (null === $languageSpecifiedOnLine) {
+                    // Reparse input with new language
+                    $languageSpecifiedOnLine = $this->lexer->getCurrentLine();
+                    $this->lexer->setInput($input);
+                    $this->lexer->setLanguage($language);
+                } elseif ($languageSpecifiedOnLine !== $this->lexer->getCurrentLine()) {
+                    // Language already specified
+                    throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d',
+                        $languageSpecifiedOnLine, $this->lexer->getCurrentLine()
+                    ));
                 }
             } elseif ('Feature' === $this->predictTokenType()
                    || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(3))) {

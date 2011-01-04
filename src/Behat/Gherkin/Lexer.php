@@ -158,6 +158,7 @@ class Lexer
             ?: $this->scanExamples()
             ?: $this->scanStep()
             ?: $this->scanNewline()
+            ?: $this->scanLanguage()
             ?: $this->scanComment()
             ?: $this->scanTags()
             ?: $this->scanText();
@@ -376,6 +377,16 @@ class Lexer
 
             return $token;
         }
+    }
+
+    /**
+     * Scan Language specifier from input & return it if found.
+     *
+     * @return  Object|null
+     */
+    protected function scanLanguage()
+    {
+        return $this->scanInput('/^\# *language: *([\w_\-]+)/', 'Language');
     }
 
     /**
