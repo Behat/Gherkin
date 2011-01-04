@@ -42,16 +42,16 @@ class Parser
         $this->lexer->setInput($input);
         $this->lexer->setLanguage($language);
 
-        while ('EOS' !== $this->lexer->predictToken()->type) {
-            if ('Newline' === $this->lexer->predictToken()->type) {
+        while ('EOS' !== $this->predictTokenType()) {
+            if ('Newline' === $this->predictTokenType()) {
                 $this->lexer->getAdvancedToken();
-            } elseif ('Comment' === $this->lexer->predictToken()->type) {
+            } elseif ('Comment' === $this->predictTokenType()) {
                 $matches = array();
                 if (preg_match('/^ *language: *([\w_\-]+)/', $this->parseExpression(), $matches)) {
                     $this->lexer->setLanguage($language = $matches[1]);
                 }
-            } elseif ('Feature' === $this->lexer->predictToken()->type
-                   || 'Tag' === $this->lexer->predictToken()->type) {
+            } elseif ('Feature' === $this->predictTokenType()
+                   || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(3))) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
                 $features[] = $feature;
@@ -70,14 +70,26 @@ class Parser
      */
     protected function expectTokenType($type)
     {
-        if ($type === $this->lexer->predictToken()->type) {
+        if ($type === $this->predictTokenType()) {
             return $this->lexer->getAdvancedToken();
         } else {
             throw new Exception(sprintf('Expected %s, but got %s on line: %d%s',
-                $type, $this->lexer->predictToken()->type, $this->lexer->getCurrentLine(),
+                $type, $this->predictTokenType(), $this->lexer->getCurrentLine(),
                 $this->file ? ' in file: ' . $this->file : ''
             ));
         }
+    }
+
+    /**
+     * Predict type for number of tokens.
+     * 
+     * @param   integer     $number number of tokens to predict
+     *
+     * @return  string              predicted token type
+     */
+    protected function predictTokenType($number = 1)
+    {
+        return $this->lexer->predictToken($number)->type;
     }
 
     /**
@@ -87,7 +99,7 @@ class Parser
      */
     protected function parseExpression()
     {
-        switch ($this->lexer->predictToken()->type) {
+        switch ($this->predictTokenType()) {
             case 'Feature':
                 return $this->parseFeature();
             case 'Background':
@@ -130,13 +142,13 @@ class Parser
         $this->skipNewlines();
 
         // Parse tags
-        if ('Tag' === $this->lexer->predictToken()->type) {
+        if ('Tag' === $this->predictTokenType()) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
             $this->skipNewlines();
         }
 
         // Parse feature description
-        while ('Text' === $this->lexer->predictToken()->type) {
+        while ('Text' === $this->predictTokenType()) {
             $text = trim($this->parseExpression());
             if (null === $node->getDescription()) {
                 $node->setDescription($text);
@@ -146,14 +158,15 @@ class Parser
         }
 
         // Parse background
-        if ('Background' === $this->lexer->predictToken()->type) {
+        if ('Background' === $this->predictTokenType()) {
             $node->setBackground($this->parseExpression());
         }
 
         // Parse scenarios & outlines
-        while ('Scenario' === $this->lexer->predictToken()->type
-            || 'Outline' === $this->lexer->predictToken()->type
-            || 'Tag' === $this->lexer->predictToken()->type) {
+        while ('Scenario' === $this->predictTokenType()
+            || ('Tag' === $this->predictTokenType() && 'Scenario' === $this->predictTokenType(3))
+            || 'Outline' === $this->predictTokenType()
+            || ('Tag' === $this->predictTokenType() && 'Outline' === $this->predictTokenType(3))) {
             $node->addScenario($this->parseExpression());
         }
 
@@ -172,7 +185,7 @@ class Parser
         $this->skipNewlines();
 
         // Parse steps
-        while ('Step' === $this->lexer->predictToken()->type) {
+        while ('Step' === $this->predictTokenType()) {
             $node->addStep($this->parseExpression());
         }
 
@@ -191,13 +204,13 @@ class Parser
         $this->skipNewlines();
 
         // Parse tags
-        if ('Tag' === $this->lexer->predictToken()->type) {
+        if ('Tag' === $this->predictTokenType()) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
             $this->skipNewlines();
         }
 
         // Parse scenario title
-        while ('Text' === $this->lexer->predictToken()->type) {
+        while ('Text' === $this->predictTokenType()) {
             $text = trim($this->parseExpression());
             if (null === $node->getTitle()) {
                 $node->setTitle($text);
@@ -207,7 +220,7 @@ class Parser
         }
 
         // Parse steps
-        while ('Step' === $this->lexer->predictToken()->type) {
+        while ('Step' === $this->predictTokenType()) {
             $node->addStep($this->parseExpression());
         }
 
@@ -233,13 +246,13 @@ class Parser
         $this->skipNewlines();
 
         // Parse tags
-        if ('Tag' === $this->lexer->predictToken()->type) {
+        if ('Tag' === $this->predictTokenType()) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
             $this->skipNewlines();
         }
 
         // Parse scenario title
-        while ('Text' === $this->lexer->predictToken()->type) {
+        while ('Text' === $this->predictTokenType()) {
             $text = trim($this->parseExpression());
             if (null === $node->getTitle()) {
                 $node->setTitle($text);
@@ -249,7 +262,7 @@ class Parser
         }
 
         // Parse scenario steps
-        while ('Step' === $this->lexer->predictToken()->type) {
+        while ('Step' === $this->predictTokenType()) {
             $node->addStep($this->parseExpression());
         }
 
@@ -270,7 +283,7 @@ class Parser
         $this->skipNewlines();
 
         // Parse step text
-        while ('Text' === $this->lexer->predictToken()->type) {
+        while ('Text' === $this->predictTokenType()) {
             $text = trim($this->parseExpression());
             if (null === $node->getText()) {
                 $node->setText($text);
@@ -280,12 +293,12 @@ class Parser
         }
 
         // Parse PyString argument
-        if ('PyStringOperator' === $this->lexer->predictToken()->type) {
+        if ('PyStringOperator' === $this->predictTokenType()) {
             $node->addArgument($this->parseExpression());
         }
 
         // Parse Table argument
-        if ('TableRow' === $this->lexer->predictToken()->type) {
+        if ('TableRow' === $this->predictTokenType()) {
             $node->addArgument($this->parseExpression());
         }
 
@@ -304,7 +317,7 @@ class Parser
         $node->addRow($token->columns);
         $this->skipNewlines();
 
-        while ('TableRow' === $this->lexer->predictToken()->type) {
+        while ('TableRow' === $this->predictTokenType()) {
             $token = $this->expectTokenType('TableRow');
             $node->addRow($token->columns);
             $this->skipNewlines();
@@ -324,8 +337,8 @@ class Parser
         $node   = new Node\PyStringNode(null, $token->swallow);
         $this->skipNewlines();
 
-        while ('PyStringOperator' !== $this->lexer->predictToken()->type
-            && 'Text' === $this->lexer->predictToken()->type) {
+        while ('PyStringOperator' !== $this->predictTokenType()
+            && 'Text' === $this->predictTokenType()) {
             $node->addLine($this->parseExpression());
         }
         $this->expectTokenType('PyStringOperator');
@@ -365,8 +378,8 @@ class Parser
      */
     private function skipNewlines()
     {
-        while ('Newline' === $this->lexer->predictToken()->type
-            || 'Comment' === $this->lexer->predictToken()->type) {
+        while ('Newline' === $this->predictTokenType()
+            || 'Comment' === $this->predictTokenType()) {
             $this->lexer->getAdvancedToken();
         }
     }
