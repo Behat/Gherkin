@@ -56,8 +56,9 @@ class Parser
                     $this->lexer->setLanguage($language);
                 } elseif ($languageSpecifiedOnLine !== $this->lexer->getCurrentLine()) {
                     // Language already specified
-                    throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d',
-                        $languageSpecifiedOnLine, $this->lexer->getCurrentLine()
+                    throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d%s',
+                        $languageSpecifiedOnLine, $this->lexer->getCurrentLine(),
+                        $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
             } elseif ('Feature' === $this->predictTokenType()
