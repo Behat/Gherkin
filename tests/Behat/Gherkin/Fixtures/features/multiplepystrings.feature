@@ -3,6 +3,7 @@ Feature: A multiple py string feature
   Scenario: 
     When I enter a string
    """
+-
       a string
      with something
   be
@@ -13,6 +14,7 @@ Feature: A multiple py string feature
    """
     Then String must be
     """
+-
        a string
       with something
   be
