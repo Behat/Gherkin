@@ -50,7 +50,8 @@ class Parser
                 if (preg_match('/^ *language: *([\w_\-]+)/', $this->parseExpression(), $matches)) {
                     $this->lexer->setLanguage($language = $matches[1]);
                 }
-            } elseif ('Feature' === $this->lexer->predictToken()->type) {
+            } elseif ('Feature' === $this->lexer->predictToken()->type
+                   || 'Tag' === $this->lexer->predictToken()->type) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
                 $features[] = $feature;
@@ -131,6 +132,7 @@ class Parser
         // Parse tags
         if ('Tag' === $this->lexer->predictToken()->type) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
+            $this->skipNewlines();
         }
 
         // Parse feature description
@@ -150,7 +152,8 @@ class Parser
 
         // Parse scenarios & outlines
         while ('Scenario' === $this->lexer->predictToken()->type
-            || 'Outline' === $this->lexer->predictToken()->type) {
+            || 'Outline' === $this->lexer->predictToken()->type
+            || 'Tag' === $this->lexer->predictToken()->type) {
             $node->addScenario($this->parseExpression());
         }
 
@@ -190,6 +193,7 @@ class Parser
         // Parse tags
         if ('Tag' === $this->lexer->predictToken()->type) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
+            $this->skipNewlines();
         }
 
         // Parse scenario title
@@ -231,6 +235,7 @@ class Parser
         // Parse tags
         if ('Tag' === $this->lexer->predictToken()->type) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
+            $this->skipNewlines();
         }
 
         // Parse scenario title
