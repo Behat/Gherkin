@@ -1,0 +1,28 @@
+feature:
+  title:        Unsubstituted argument placeholder
+  language:     en
+  line:         1
+  description:  ~
+
+  scenarios:
+    -
+      type:     outline
+      title:    'See Annual Leave Details (as Management & Human Resource)'
+      line:     3
+      steps:
+        -
+          type:   Given
+          text:   the following users exist in the system
+          line:   4
+          arguments:
+            -
+              type:   table
+              rows:
+                - [ name, email, role_assignments, group_memberships ]
+                - [ Jane, jane@fmail.com, <role>, Sales (manager) ]
+                - [ Max, max@fmail.com, '', Sales (member) ]
+                - [ Carol, carol@fmail.com, '', Sales (member) ]
+                - [ Cat, cat@fmail.com, '', '' ]
+      examples:
+        - [ role ]
+        - [ HUMAN RESOURCE ]

@@ -1,0 +1,29 @@
+feature:
+  title:        A scenario outline
+  language:     en
+  line:         1
+  description:  ~
+
+  scenarios:
+    -
+      type:     outline
+      title:    ~
+      line:     3
+      steps:
+        - { type: Given, text: I add <a> and <b>, line: 4 }
+        -
+          type:   When
+          text:   I pass a table argument
+          line:   6
+          arguments:
+            -
+              type:   table
+              rows:
+                - [foo, bar]
+                - [bar, baz]
+        - { type: Then, text: I the result should be <c>, line: 10 }
+
+      examples:
+        - [ a, b, c ]
+        - [ 1, 2, 3 ]
+        - [ 2, 3, 4 ]

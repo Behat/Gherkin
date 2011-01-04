@@ -1,0 +1,37 @@
+feature:
+  title:        undefined multiline args
+  language:     en
+  line:         1
+  description:  ~
+
+  scenarios:
+    -
+      type:     scenario
+      title:    pystring
+      line:     3
+      steps:
+        -
+          type:   Given
+          text:   a pystring
+          line:   4
+          arguments:
+            -
+              type:     pystring
+              swallow:  4
+              text:     '      example'
+
+    -
+      type:     scenario
+      title:    table
+      line:     9
+      steps:
+        -
+          type:   Given
+          text:   a table
+          line:   10
+          arguments:
+            -
+              type:     table
+              rows:
+                - [table]
+                - [example]
