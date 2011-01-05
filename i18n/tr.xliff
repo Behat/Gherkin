@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="tr" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>Özellik</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>Geçmiş</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>Senaryo</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>Senaryo taslağı</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>Örnekler</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>Diyelim ki|Eğer ki|O zaman|Fakat|Ama|Ve</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

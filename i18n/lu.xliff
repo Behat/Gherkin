@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="lu" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>Funktionalitéit</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>Hannergrond</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>Szenario</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>Plang vum Szenario</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>Beispiller</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>ugeholl|awer|dann|wann|mä|an|a</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

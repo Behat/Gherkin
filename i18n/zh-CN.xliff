@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="zh-CN" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>功能</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>背景</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>场景</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>场景大纲</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>例子</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>但是|而且|那么|假如|当</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="eo" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>Trajto</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>Fono</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>Scenaro</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>Konturo de la scenaro</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>Ekzemploj</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>Donitaĵo|Sed|Kaj|Do|Se</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

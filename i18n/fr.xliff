@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="fr" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>Fonctionnalité</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>Contexte</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>Scénario</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>Plan du scénario|Plan du Scénario</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>Exemples</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>Etant donné|Lorsqu'|Lorsque|Quand|Alors|Soit|Mais|Et</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

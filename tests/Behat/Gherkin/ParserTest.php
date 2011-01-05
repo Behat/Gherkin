@@ -26,7 +26,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'Scenario'          => 'Scenario',
                 'Scenario Outline'  => 'Scenario Outline',
                 'Examples'          => 'Examples',
-                'Step Types'        => array('Given', 'When', 'Then', 'And', 'Or')
+                'Step Types'        => 'Given|When|Then|And|But'
             ),
             'ru' => array(
                 'Feature'           => 'Функционал',
@@ -34,7 +34,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'Scenario'          => 'Сценарий',
                 'Scenario Outline'  => 'Структура сценария',
                 'Examples'          => 'Значения',
-                'Step Types'        => array('Допустим', 'То', 'Если', 'И', 'Но')
+                'Step Types'        => 'Допустим|То|Если|И|Но'
             )
         ));
         $this->gherkin  = new Parser(new Lexer($keywords));

@@ -6,10 +6,10 @@ interface KeywordsInterface
 {
     function setLanguage($language);
 
-    function getFeatureKeyword();
-    function getBackgroundKeyword();
-    function getScenarioKeyword();
-    function getOutlineKeyword();
-    function getExamplesKeyword();
+    function getFeatureKeywords();
+    function getBackgroundKeywords();
+    function getScenarioKeywords();
+    function getOutlineKeywords();
+    function getExamplesKeywords();
     function getStepKeywords();
 }

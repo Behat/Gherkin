@@ -17,27 +17,27 @@ class ArrayKeywords implements KeywordsInterface
         $this->language = $language;
     }
 
-    public function getFeatureKeyword()
+    public function getFeatureKeywords()
     {
         return $this->keywords[$this->language]['Feature'];
     }
 
-    public function getBackgroundKeyword()
+    public function getBackgroundKeywords()
     {
         return $this->keywords[$this->language]['Background'];
     }
 
-    public function getScenarioKeyword()
+    public function getScenarioKeywords()
     {
         return $this->keywords[$this->language]['Scenario'];
     }
 
-    public function getOutlineKeyword()
+    public function getOutlineKeywords()
     {
         return $this->keywords[$this->language]['Scenario Outline'];
     }
 
-    public function getExamplesKeyword()
+    public function getExamplesKeywords()
     {
         return $this->keywords[$this->language]['Examples'];
     }

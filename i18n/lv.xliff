@@ -1,0 +1,31 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="global" source-language="en" target-language="lv" datatype="plaintext">
+    <header />
+    <body>
+      <trans-unit id="feature">
+        <source>Feature</source>
+        <target>Funkcionalitāte|Fīča</target>
+      </trans-unit>
+      <trans-unit id="background">
+        <source>Background</source>
+        <target>Konteksts|Situācija</target>
+      </trans-unit>
+      <trans-unit id="scenario">
+        <source>Scenario</source>
+        <target>Scenārijs</target>
+      </trans-unit>
+      <trans-unit id="scenario-outline">
+        <source>Scenario Outline</source>
+        <target>Scenārijs pēc parauga</target>
+      </trans-unit>
+      <trans-unit id="examples">
+        <source>Examples</source>
+        <target>Piemēri|Paraugs</target>
+      </trans-unit>
+      <trans-unit id="step-types">
+        <source>Given|When|Then|And|But</source>
+        <target>Bet|Kad|Tad|Ja|Un</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

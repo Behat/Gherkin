@@ -7,13 +7,13 @@ use Behat\Gherkin\Exception\Exception,
 
 class Lexer
 {
-    protected $input;
-    protected $keywords;
-    protected $line             = 1;
-    protected $deferredObjects  = array();
-    protected $stash            = array();
-    protected $inPyString       = false;
-    protected $lastIndentString = '';
+    private $input;
+    private $keywords;
+    private $line             = 1;
+    private $deferredObjects  = array();
+    private $stash            = array();
+    private $inPyString       = false;
+    private $lastIndentString = '';
 
     /**
      * Initialize Lexer.
@@ -32,7 +32,7 @@ class Lexer
      */
     public function setInput($input)
     {
-        $this->input            = preg_replace(array('/\r\n|\r/', '/\t/'), array("\n", '  '), $input);
+        $this->input            = preg_replace(array('/\r\n|\r/u', '/\t/u'), array("\n", '  '), $input);
         $this->line             = 1;
         $this->deferredObjects  = array();
         $this->stash            = array();
@@ -213,7 +213,9 @@ class Lexer
      */
     protected function scanFeature()
     {
-        return $this->scanInput('/^' . $this->keywords->getFeatureKeyword() . '\: *([^\n]*)/', 'Feature');
+        return $this->scanInput(
+            '/^(?:' . $this->keywords->getFeatureKeywords() . ')\: *([^\n]*)/u', 'Feature'
+        );
     }
 
     /**
@@ -223,7 +225,9 @@ class Lexer
      */
     protected function scanBackground()
     {
-        return $this->scanInput('/^' . $this->keywords->getBackgroundKeyword() . '\: *([^\n]*)/', 'Background');
+        return $this->scanInput(
+            '/^(?:' . $this->keywords->getBackgroundKeywords() . ')\: *([^\n]*)/u', 'Background'
+        );
     }
 
     /**
@@ -233,7 +237,9 @@ class Lexer
      */
     protected function scanScenario()
     {
-        return $this->scanInput('/^' . $this->keywords->getScenarioKeyword() . '\: *([^\n]*)/', 'Scenario');
+        return $this->scanInput(
+            '/^(?:' . $this->keywords->getScenarioKeywords() . ')\: *([^\n]*)/u', 'Scenario'
+        );
     }
 
     /**
@@ -243,7 +249,9 @@ class Lexer
      */
     protected function scanOutline()
     {
-        return $this->scanInput('/^' . $this->keywords->getOutlineKeyword() . '\: *([^\n]*)/', 'Outline');
+        return $this->scanInput(
+            '/^(?:' . $this->keywords->getOutlineKeywords() . ')\: *([^\n]*)/u', 'Outline'
+        );
     }
 
     /**
@@ -253,7 +261,9 @@ class Lexer
      */
     protected function scanExamples()
     {
-        return $this->scanInput('/^' . $this->keywords->getExamplesKeyword() . '\: *([^\n]*)/', 'Examples');
+        return $this->scanInput(
+            '/^(?:' . $this->keywords->getExamplesKeywords() . ')\: *([^\n]*)/u', 'Examples'
+        );
     }
 
     /**
@@ -263,10 +273,9 @@ class Lexer
      */
     protected function scanStep()
     {
-        $matches  = array();
-        $keywords = $this->keywords->getStepKeywords();
+        $matches = array();
 
-        if (preg_match('/^(' . implode('|', $keywords) . ') +([^\n]+)/', $this->input, $matches)) {
+        if (preg_match('/^('.$this->keywords->getStepKeywords().') *([^\n]+)/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
@@ -284,7 +293,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^"""[^\n]*/', $this->input, $matches)) {
+        if (preg_match('/^"""[^\n]*/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $this->inPyString =! $this->inPyString;
 
@@ -304,7 +313,7 @@ class Lexer
     {
         if ($this->inPyString) {
             $matches = array();
-            if (preg_match('/^([^\n]+)/', $this->input, $matches)) {
+            if (preg_match('/^([^\n]+)/u', $this->input, $matches)) {
                 $this->consumeInput(mb_strlen($matches[0]));
 
                 return $this->takeToken('Text', $this->lastIndentString . $matches[1]);
@@ -321,7 +330,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\|([^\n]+)\|/', $this->input, $matches)) {
+        if (preg_match('/^\|([^\n]+)\|/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('TableRow');
 
@@ -345,7 +354,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\n( *)/', $this->input, $matches)) {
+        if (preg_match('/^\n( *)/u', $this->input, $matches)) {
             $this->line++;
             $this->lastIndentString = $matches[1];
 
@@ -365,7 +374,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^@([^\n]+)/', $this->input, $matches)) {
+        if (preg_match('/^@([^\n]+)/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('Tag');
 
@@ -386,7 +395,7 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        return $this->scanInput('/^\# *language: *([\w_\-]+)/', 'Language');
+        return $this->scanInput('/^\# *language: *([\w_\-]+)/u', 'Language');
     }
 
     /**
@@ -396,7 +405,7 @@ class Lexer
      */
     protected function scanComment()
     {
-        return $this->scanInput('/^\#([^\n]*)/', 'Comment');
+        return $this->scanInput('/^\#([^\n]*)/u', 'Comment');
     }
 
     /**
@@ -406,6 +415,6 @@ class Lexer
      */
     protected function scanText()
     {
-        return $this->scanInput('/^([^\n\#]+)/', 'Text');
+        return $this->scanInput('/^([^\n\#]+)/u', 'Text');
     }
 }
