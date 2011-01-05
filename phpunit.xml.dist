@@ -12,7 +12,7 @@
          bootstrap="tests/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Gherkin Test Suite">
+        <testsuite name="Behat Gherkin test suite">
             <directory>./tests/Behat/Gherkin/</directory>
         </testsuite>
     </testsuites>
