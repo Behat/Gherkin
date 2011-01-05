@@ -5,6 +5,19 @@ namespace Behat\Gherkin;
 use Behat\Gherkin\Exception\Exception,
     Behat\Gherkin\Keywords\KeywordsInterface;
 
+/*
+ * This file is part of the Behat Gherkin.
+ * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * Gherkin files Lexer.
+ * 
+ * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ */
 class Lexer
 {
     private $input;

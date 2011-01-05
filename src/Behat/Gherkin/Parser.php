@@ -5,6 +5,23 @@ namespace Behat\Gherkin;
 use Behat\Gherkin\Exception\Exception,
     Behat\Gherkin\Node;
 
+/*
+ * This file is part of the Behat Gherkin.
+ * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+/**
+ * Gherkin Parser.
+ * 
+ * $lexer  = new Behat\Gherkin\Lexer($keywords);
+ * $parser = new Parser($lexer);
+ * $featuresArray = $parser->parse('/path/to/feature.feature');
+ * 
+ * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ */
 class Parser
 {
     private $file;
