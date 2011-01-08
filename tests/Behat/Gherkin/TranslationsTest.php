@@ -6,8 +6,7 @@ require_once 'Fixtures/YamlParser.php';
 
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Translation\Translator,
-    Symfony\Component\Translation\MessageSelector,
-    Symfony\Component\Translation\Loader\XliffFileLoader;
+    Symfony\Component\Translation\MessageSelector;
 
 use Behat\Gherkin\Lexer,
     Behat\Gherkin\Parser,
@@ -24,26 +23,24 @@ class TranslationsTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->translator = new Translator('en', new MessageSelector());
-        $this->translator->addLoader('xliff', new XliffFileLoader());
 
         $keywords = new SymfonyTranslationKeywords($this->translator);
+        $keywords->setXliffTranslationsPath(__DIR__ . '/../../../i18n');
+
         $this->parser = new Parser(new Lexer($keywords));
     }
 
     public function testTranslations()
     {
-        $finder = new Finder();
-        $files  = $finder->files()->name('*.xliff')->in(__DIR__ . '/../../../i18n');
+        $finder     = new Finder();
+        $iterator   = $finder->files()->name('*.xliff')->in(__DIR__ . '/../../../i18n');
 
-        foreach ($files as $file) {
-            $file = (string) $file;
-            $name = basename($file, '.xliff');
-            $this->translator->addResource('xliff', $file, $name, 'gherkin');
+        foreach ($iterator as $file) {
+            $transId    = basename($file, '.xliff');
+            $created    = $this->createFeature($transId);
+            $parsed     = $this->parseFeature($transId);
 
-            $created    = $this->createFeature($name);
-            $parsed     = $this->parseFeature($name);
-
-            $this->assertEquals($created, $parsed, $name);
+            $this->assertEquals($created, $parsed, $transId);
         }
     }
 

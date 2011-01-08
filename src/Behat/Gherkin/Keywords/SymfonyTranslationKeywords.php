@@ -2,7 +2,9 @@
 
 namespace Behat\Gherkin\Keywords;
 
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Finder\Finder,
+    Symfony\Component\Translation\Translator,
+    Symfony\Component\Translation\Loader\XliffFileLoader;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -16,10 +18,9 @@ use Symfony\Component\Translation\Translator;
  * Symfony Translation Component's keywords holder.
  * 
  * $translator = new Symfony\Component\Translation\Translator('en', new Symfony\Component\Translation\MessageSelector());
- * $translator->addLoader('xliff', new Symfony\Component\Translation\Loader\XliffFileLoader());
- * $translator->addResource('xliff', $path, $id, 'gherkin');
  * 
  * $keywords = new Behat\Gherkin\Keywords\SymfonyTranslationKeywords($translator);
+ * $keywords->setXliffTranslationsPath('/path/to/xliff/translations');
  * 
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
@@ -27,6 +28,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
 {
     private $translator;
     private $locale = 'en';
+    private $xliffLoaderFormatName;
 
     /**
      * Initialize keywords holder.
@@ -36,6 +38,37 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     public function __construct(Translator $translator)
     {
         $this->translator = $translator;
+    }
+
+    /**
+     * Set loader format name to use for XLIFF files.
+     *
+     * @param   string  $format
+     */
+    public function setXliffLoaderFormatName($format)
+    {
+        $this->xliffLoaderFormatName = $format;
+    }
+
+    /**
+     * Tell Translator to read XLIFF translations from specified path.
+     *
+     * @param   string  $path
+     */
+    public function setXliffTranslationsPath($path)
+    {
+        if (null === $this->xliffLoaderFormatName) {
+            $this->xliffLoaderFormatName = 'xliff';
+            $this->translator->addLoader($this->xliffLoaderFormatName, new XliffFileLoader());
+        }
+
+        $finder     = new Finder();
+        $iterator   = $finder->files()->name('*.xliff')->in($path);
+
+        foreach ($iterator as $file) {
+            $transId = basename($file, '.xliff');
+            $this->translator->addResource($this->xliffLoaderFormatName, $file, $transId, 'gherkin');
+        }
     }
 
     /**
