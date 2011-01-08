@@ -30,6 +30,18 @@ abstract class AbstractNode
     }
 
     /**
+     * Accept specific visitor & visit current node.
+     *
+     * @param   NodeVisitorInterface    $visitor
+     * 
+     * @return  mixed
+     */
+    public function accept(NodeVisitorInterface $visitor)
+    {
+        return $visitor->visit($this);
+    }
+
+    /**
      * Return definition line number.
      *
      * @return  integer
