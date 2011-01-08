@@ -44,7 +44,7 @@ class Parser
      *
      * @return  array           array of feature nodes
      */
-    public function parse($input)
+    public function parse($input, $file = null)
     {
         $features = array();
 
@@ -52,7 +52,7 @@ class Parser
             $this->file = $input;
             $input      = file_get_contents($this->file);
         } else {
-            $this->file = null;
+            $this->file = $file;
         }
 
         $this->lexer->setInput($input);
