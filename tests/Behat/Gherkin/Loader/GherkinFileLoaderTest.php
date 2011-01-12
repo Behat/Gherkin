@@ -33,16 +33,15 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->loader->supports('non-existent path'));
         $this->assertFalse($this->loader->supports('non-existent path:2'));
 
-        $this->assertTrue($this->loader->supports(__DIR__));
+        $this->assertFalse($this->loader->supports(__DIR__));
         $this->assertFalse($this->loader->supports(__DIR__ . ':d'));
-        $this->assertTrue($this->loader->supports(__FILE__));
-        $this->assertFalse($this->loader->supports(__FILE__ . '_'));
+        $this->assertFalse($this->loader->supports(__FILE__));
+        $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/features/pystring.feature'));
     }
 
     public function testLoad()
     {
         $features = $this->loader->load($this->featuresPath);
-        $this->assertEquals(count(glob($this->featuresPath . '/*.feature')), count($features));
 
         $features = $this->loader->load($this->featuresPath . '/pystring.feature');
         $this->assertEquals(1, count($features));
@@ -61,7 +60,7 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->loader->supports('tables.feature'));
 
         $this->loader->setBasePath($this->featuresPath . '/../');
-        $this->assertTrue($this->loader->supports('features'));
+        $this->assertFalse($this->loader->supports('features'));
         $this->assertFalse($this->loader->supports('tables.feature'));
         $this->assertTrue($this->loader->supports('features/tables.feature'));
 
