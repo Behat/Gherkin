@@ -11,27 +11,16 @@ namespace Behat\Gherkin\Loader;
  */
 
 /**
- * Loader interface.
+ * File Loader interface.
  *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
-interface LoaderInterface
+interface FileLoaderInterface extends LoaderInterface
 {
     /**
-     * Check if current loader supports provided resource.
+     * Set base features path.
      *
-     * @param   string  $resource
-     * 
-     * @return  boolean
+     * @param   string  $path
      */
-    function supports($resource);
-
-    /**
-     * Load features from provided resource.
-     *
-     * @param   string  $resource
-     * 
-     * @return  array
-     */
-    function load($resource);
+    function setBasePath($path);
 }
