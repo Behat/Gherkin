@@ -229,6 +229,16 @@ class FeatureNode extends AbstractNode
     }
 
     /**
+     * Set feature filename. 
+     * 
+     * @param   string  $path 
+     */
+    public function setFile($path)
+    {
+        $this->file = $path;
+    }
+
+    /**
      * Return feature filename.
      *
      * @return  string
