@@ -24,7 +24,7 @@ class ArrayLoader implements LoaderInterface
      */
     public function supports($resource)
     {
-        return is_array($resource) && isset($resource['features']);
+        return is_array($resource) && (isset($resource['features']) || isset($resource['feature']));
     }
 
     /**
@@ -34,8 +34,12 @@ class ArrayLoader implements LoaderInterface
     {
         $features = array();
 
-        foreach ($resource['features'] as $iterator => $hash) {
-            $features[] = $this->loadFeatureHash($hash, $iterator);
+        if (isset($resource['features'])) {
+            foreach ($resource['features'] as $iterator => $hash) {
+                $features[] = $this->loadFeatureHash($hash, $iterator);
+            }
+        } elseif (isset($resource['feature'])) {
+            $features[] = $this->loadFeatureHash($resource['feature'], 0);
         }
 
         return $features;

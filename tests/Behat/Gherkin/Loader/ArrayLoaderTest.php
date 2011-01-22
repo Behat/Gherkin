@@ -21,6 +21,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->loader->supports(array('wrong_root')));
         $this->assertFalse($this->loader->supports(array('features')));
         $this->assertTrue($this->loader->supports(array('features' => array())));
+        $this->assertTrue($this->loader->supports(array('feature' => array())));
     }
 
     public function testLoadEmpty()
@@ -345,5 +346,17 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2nd step with pystring argument', $steps[2]->getText());
         $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
         $this->assertEquals('some text', (string) $arguments[0]);
+    }
+
+    public function testSingleFeatureArray()
+    {
+        $features = $this->loader->load(array(
+            'feature' => array(
+                'title' => 'Some feature'
+            )
+        ));
+
+        $this->assertEquals(1, count($features));
+        $this->assertEquals('Some feature', $features[0]->getTitle());
     }
 }
