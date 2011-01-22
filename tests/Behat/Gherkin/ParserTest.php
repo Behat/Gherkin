@@ -8,9 +8,8 @@ use Symfony\Component\Finder\Finder;
 
 use Behat\Gherkin\Lexer,
     Behat\Gherkin\Parser,
-    Behat\Gherkin\Keywords\ArrayKeywords;
-
-use Tests\Behat\Gherkin\Fixtures\YamlParser;
+    Behat\Gherkin\Keywords\ArrayKeywords,
+    Behat\Gherkin\Loader\YamlFileLoader;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,7 +37,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             )
         ));
         $this->gherkin  = new Parser(new Lexer($keywords));
-        $this->yaml     = new YamlParser();
+        $this->yaml     = new YamlFileLoader();
     }
 
     protected function parseFixture($fixture)
@@ -48,10 +47,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     protected function parseEtalon($etalon)
     {
-        return $this->yaml->parse(
-            __DIR__ . '/Fixtures/etalons/' . $etalon,
-            __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature'
-        );
+        $features = $this->yaml->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
+        $feature  = $features[0];
+        $feature->setFile(__DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature');
+
+        return $feature;
     }
 
     public function testFixtures()
