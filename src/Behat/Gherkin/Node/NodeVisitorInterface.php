@@ -24,5 +24,5 @@ interface NodeVisitorInterface
      * 
      * @return  mixed
      */
-    public function visit(AbstractNode $visitee);
+    function visit(AbstractNode $visitee);
 }

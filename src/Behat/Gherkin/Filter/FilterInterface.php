@@ -26,12 +26,12 @@ interface FilterInterface
      * 
      * @param   FeatureNode     $feature    feature
      */
-    public function isFeatureMatch(FeatureNode $feature);
+    function isFeatureMatch(FeatureNode $feature);
 
     /**
      * Check If Scenario Or Outline Matches Specified Filter. 
      * 
      * @param   ScenarioNode|OutlineNode    $scenario   scenario or outline
      */
-    public function isScenarioMatch(ScenarioNode $scenario);
+    function isScenarioMatch(ScenarioNode $scenario);
 }
