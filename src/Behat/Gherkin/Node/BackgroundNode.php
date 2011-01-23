@@ -38,6 +38,8 @@ class BackgroundNode extends AbstractNode
      */
     public function setSteps(array $steps)
     {
+        $this->steps = array();
+
         foreach ($steps as $step) {
             $this->addStep($step);
         }

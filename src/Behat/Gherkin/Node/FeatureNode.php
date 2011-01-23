@@ -151,6 +151,8 @@ class FeatureNode extends AbstractNode
      */
     public function setScenarios(array $scenarios)
     {
+        $this->scenarios = array();
+
         foreach ($scenarios as $scenario) {
             $this->addScenario($scenario);
         }
