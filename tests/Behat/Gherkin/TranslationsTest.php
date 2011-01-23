@@ -2,8 +2,6 @@
 
 namespace Tests\Behat\Gherkin;
 
-require_once 'Fixtures/YamlParser.php';
-
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Translation\Translator,
     Symfony\Component\Translation\MessageSelector;
