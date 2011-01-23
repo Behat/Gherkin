@@ -3,8 +3,7 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode,
-    Behat\Gherkin\Node\StepNode;
+    Behat\Gherkin\Node\ScenarioNode;
 
 /*
  * This file is part of the Behat Gherkin.
