@@ -174,4 +174,18 @@ class StepNode extends AbstractNode
     {
         return $this->parent;
     }
+
+    /**
+     * Return definition file.
+     *
+     * @return  string
+     */
+    public function getFile()
+    {
+        if (null !== $this->parent) {
+            return $this->parent->getFile();
+        }
+
+        return null;
+    }
 }

@@ -84,4 +84,18 @@ class BackgroundNode extends AbstractNode
     {
         return $this->feature;
     }
+
+    /**
+     * Return definition file.
+     *
+     * @return  string
+     */
+    public function getFile()
+    {
+        if (null !== $this->feature) {
+            return $this->feature->getFile();
+        }
+
+        return null;
+    }
 }
