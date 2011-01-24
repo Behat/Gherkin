@@ -373,6 +373,7 @@ class Lexer
 
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('Newline');
+            $token->indent = $this->lastIndentString;
 
             return $token;
         }

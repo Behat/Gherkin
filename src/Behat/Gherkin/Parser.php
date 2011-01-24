@@ -363,11 +363,18 @@ class Parser
     {
         $token  = $this->expectTokenType('PyStringOperator');
         $node   = new Node\PyStringNode(null, $token->swallow);
-        $this->skipNewlines();
 
         while ('PyStringOperator' !== $this->predictTokenType()
-            && 'Text' === $this->predictTokenType()) {
-            $node->addLine($this->parseExpression());
+            && ('Text' === $this->predictTokenType() || 'Newline' === $this->predictTokenType())) {
+            if ('Newline' === $this->predictTokenType()) {
+                $this->lexer->getAdvancedToken();
+                if ('Newline' === $this->predictTokenType()) {
+                    $token = $this->lexer->getAdvancedToken();
+                    $node->addLine($token->indent);
+                }
+            } else {
+                $node->addLine($this->parseText(false));
+            }
         }
         $this->expectTokenType('PyStringOperator');
         $this->skipNewlines();
@@ -380,10 +387,13 @@ class Parser
      * 
      * @return  string
      */
-    protected function parseText()
+    protected function parseText($skipNewlines = true)
     {
         $token = $this->expectTokenType('Text');
-        $this->skipNewlines();
+
+        if ($skipNewlines) {
+            $this->skipNewlines();
+        }
 
         return $token->value;
     }
