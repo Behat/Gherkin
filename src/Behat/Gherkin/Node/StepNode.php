@@ -160,7 +160,7 @@ class StepNode extends AbstractNode
      *
      * @param   BackgroundNode  $node
      */
-    public function setParent(BackgroundNode $node)
+    public function setParent(AbstractScenarioNode $node)
     {
         $this->parent = $node;
     }
@@ -168,7 +168,7 @@ class StepNode extends AbstractNode
     /**
      * Return parent node of the step.
      *
-     * @return  BackgroundNode
+     * @return  AbstractScenarioNode
      */
     public function getParent()
     {

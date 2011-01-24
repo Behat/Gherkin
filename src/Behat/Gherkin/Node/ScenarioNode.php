@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  * 
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ScenarioNode extends BackgroundNode
+class ScenarioNode extends AbstractScenarioNode
 {
     private $title;
     private $tags = array();
