@@ -188,4 +188,18 @@ class StepNode extends AbstractNode
 
         return null;
     }
+
+    /**
+     * Return language of the feature.
+     *
+     * @return  string
+     */
+    public function getLanguage()
+    {
+        if (null !== $this->parent) {
+            return $this->parent->getLanguage();
+        }
+
+        return null;
+    }
 }

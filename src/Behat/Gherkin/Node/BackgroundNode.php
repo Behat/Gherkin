@@ -98,4 +98,18 @@ class BackgroundNode extends AbstractNode
 
         return null;
     }
+
+    /**
+     * Return language of the feature.
+     *
+     * @return  string
+     */
+    public function getLanguage()
+    {
+        if (null !== $this->feature) {
+            return $this->feature->getLanguage();
+        }
+
+        return null;
+    }
 }
