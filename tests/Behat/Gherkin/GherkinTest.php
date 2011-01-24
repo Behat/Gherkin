@@ -49,6 +49,27 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($scenario, $scenarios[0]);
     }
 
+    public function testSetBasePath()
+    {
+        $gherkin = new Gherkin();
+        $gherkin->addLoader($loader1 = $this->getLoaderMock());
+        $gherkin->addLoader($loader2 = $this->getLoaderMock());
+
+        $loader1
+            ->expects($this->once())
+            ->method('setBasePath')
+            ->with($basePath = '/base/path')
+            ->will($this->returnValue(null));
+
+        $loader2
+            ->expects($this->once())
+            ->method('setBasePath')
+            ->with($basePath = '/base/path')
+            ->will($this->returnValue(null));
+
+        $gherkin->setBasePath($basePath);
+    }
+
     protected function getLoaderMock()
     {
         return $this->getMockBuilder('Behat\Gherkin\Loader\GherkinFileLoader')

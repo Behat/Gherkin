@@ -44,6 +44,18 @@ class Gherkin
     }
 
     /**
+     * Set base features path.
+     *
+     * @param   string  $path
+     */
+    public function setBasePath($path)
+    {
+        foreach ($this->loaders as $loader) {
+            $loader->setBasePath($path);
+        }
+    }
+
+    /**
      * Load & filter resource by added loaders. 
      * 
      * @param   mixed   $resource   resource to load
