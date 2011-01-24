@@ -94,6 +94,7 @@ class Lexer
      */
     public function deferToken(\stdClass $token)
     {
+        $token->defered = true;
         $this->deferredObjects[] = $token;
     }
 
@@ -126,9 +127,10 @@ class Lexer
     public function takeToken($type, $value = null)
     {
         return (Object) array(
-            'type'  => $type,
-            'line'  => $this->line,
-            'value' => $value ?: null
+            'type'      => $type,
+            'line'      => $this->line,
+            'value'     => $value ?: null,
+            'defered'   => false
         );
     }
 

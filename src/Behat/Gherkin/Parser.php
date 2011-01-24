@@ -169,8 +169,8 @@ class Parser
         );
         $this->skipNewlines();
 
-        // Parse tags
-        if ('Tag' === $this->predictTokenType()) {
+        // Parse defered tags
+        if ('Tag' === $this->predictTokenType() && $this->lexer->predictToken()->defered) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
             $this->skipNewlines();
         }
