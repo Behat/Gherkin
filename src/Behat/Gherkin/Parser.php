@@ -367,10 +367,10 @@ class Parser
         while ('PyStringOperator' !== $this->predictTokenType()
             && ('Text' === $this->predictTokenType() || 'Newline' === $this->predictTokenType())) {
             if ('Newline' === $this->predictTokenType()) {
-                $this->lexer->getAdvancedToken();
+                $token = $this->lexer->getAdvancedToken();
                 if ('Newline' === $this->predictTokenType()) {
-                    $token = $this->lexer->getAdvancedToken();
-                    $node->addLine($token->indent);
+                    $this->lexer->getAdvancedToken();
+                    $node->addLine($token->value);
                 }
             } else {
                 $node->addLine($this->parseText(false));
