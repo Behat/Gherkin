@@ -208,6 +208,27 @@ class Lexer
     }
 
     /**
+     * Scan for token with specified keywords.
+     *
+     * @param   string  $keywords   keywords (splitted with |)
+     * @param   string  $type       expected token type
+     * 
+     * @return  Object|null
+     */
+    protected function scanInputForKeywords($keywords, $type)
+    {
+        $matches    = array();
+
+        if (preg_match('/^('.$keywords.')\: *([^\n]*)/u', $this->input, $matches)) {
+            $this->consumeInput(mb_strlen($matches[0]));
+            $token = $this->takeToken($type, $matches[2]);
+            $token->keyword = $matches[1];
+
+            return $token;
+        }
+    }
+
+    /**
      * Scan EOS from input & return it if found.
      * 
      * @return  Object|null
@@ -228,9 +249,7 @@ class Lexer
      */
     protected function scanFeature()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getFeatureKeywords() . ')\: *([^\n]*)/u', 'Feature'
-        );
+        return $this->scanInputForKeywords($this->keywords->getFeatureKeywords(), 'Feature');
     }
 
     /**
@@ -240,9 +259,7 @@ class Lexer
      */
     protected function scanBackground()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getBackgroundKeywords() . ')\: *([^\n]*)/u', 'Background'
-        );
+        return $this->scanInputForKeywords($this->keywords->getBackgroundKeywords(), 'Background');
     }
 
     /**
@@ -252,9 +269,7 @@ class Lexer
      */
     protected function scanScenario()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getScenarioKeywords() . ')\: *([^\n]*)/u', 'Scenario'
-        );
+        return $this->scanInputForKeywords($this->keywords->getScenarioKeywords(), 'Scenario');
     }
 
     /**
@@ -264,9 +279,7 @@ class Lexer
      */
     protected function scanOutline()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getOutlineKeywords() . ')\: *([^\n]*)/u', 'Outline'
-        );
+        return $this->scanInputForKeywords($this->keywords->getOutlineKeywords(), 'Outline');
     }
 
     /**
@@ -276,9 +289,7 @@ class Lexer
      */
     protected function scanExamples()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getExamplesKeywords() . ')\: *([^\n]*)/u', 'Examples'
-        );
+        return $this->scanInputForKeywords($this->keywords->getExamplesKeywords(), 'Examples');
     }
 
     /**
@@ -288,9 +299,10 @@ class Lexer
      */
     protected function scanStep()
     {
-        $matches = array();
+        $matches    = array();
+        $keywords   = $this->keywords->getStepKeywords();
 
-        if (preg_match('/^('.$this->keywords->getStepKeywords().') *([^\n]+)/u', $this->input, $matches)) {
+        if (preg_match('/^('.$keywords.') *([^\n]+)/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
