@@ -167,6 +167,8 @@ class Parser
         $node   = new Node\FeatureNode(
             trim($token->value) ?: null, null, $this->file, $this->lexer->getCurrentLine()
         );
+
+        $node->setKeyword($token->keyword);
         $this->skipNewlines();
 
         // Parse defered tags
@@ -210,6 +212,8 @@ class Parser
     {
         $token  = $this->expectTokenType('Background');
         $node   = new Node\BackgroundNode($this->lexer->getCurrentLine());
+
+        $node->setKeyword($token->keyword);
         $this->skipNewlines();
 
         // Parse steps
@@ -229,6 +233,8 @@ class Parser
     {
         $token  = $this->expectTokenType('Outline');
         $node   = new Node\OutlineNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
+
+        $node->setKeyword($token->keyword);
         $this->skipNewlines();
 
         // Parse tags
@@ -253,11 +259,13 @@ class Parser
         }
 
         // Examples block
-        $this->expectTokenType('Examples');
+        $examplesToken = $this->expectTokenType('Examples');
         $this->skipNewlines();
 
         // Parse examples table
-        $node->setExamples($this->parseTable());
+        $table = $this->parseTable();
+        $table->setKeyword($examplesToken->keyword);
+        $node->setExamples($table);
 
         return $node;
     }
@@ -271,6 +279,8 @@ class Parser
     {
         $token  = $this->expectTokenType('Scenario');
         $node   = new Node\ScenarioNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
+
+        $node->setKeyword($token->keyword);
         $this->skipNewlines();
 
         // Parse tags
@@ -308,6 +318,7 @@ class Parser
         $node   = new Node\StepNode(
             $token->value, trim($token->text) ?: null, $this->lexer->getCurrentLine()
         );
+
         $this->skipNewlines();
 
         // Parse step text

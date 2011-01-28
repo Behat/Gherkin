@@ -18,6 +18,7 @@ namespace Behat\Gherkin\Node;
 class TableNode
 {
     private $rows = array();
+    private $keyword;
 
     /**
      * Initialize table.
@@ -197,5 +198,25 @@ class TableNode
         }
 
         return $text;
+    }
+
+    /**
+     * Set current node definition keyword.
+     *
+     * @param   string  $keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Return current node definition keyword.
+     *
+     * @return  string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
     }
 }

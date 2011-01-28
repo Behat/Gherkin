@@ -57,6 +57,8 @@ class ArrayLoader implements LoaderInterface
     {
         $feature = new Node\FeatureNode(null, null, null, isset($hash['line']) ? $hash['line'] : $line);
 
+        $feature->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Feature');
+
         if (isset($hash['title'])) {
             $feature->setTitle($hash['title']);
         }
@@ -96,6 +98,8 @@ class ArrayLoader implements LoaderInterface
     {
         $background = new Node\BackgroundNode(isset($hash['line']) ? $hash['line'] : 0);
 
+        $background->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Background');
+
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {
                 $background->addStep($this->loadStepHash($stepHash, $stepIterator));
@@ -116,6 +120,8 @@ class ArrayLoader implements LoaderInterface
     protected function loadScenarioHash(array $hash, $line = 0)
     {
         $scenario = new Node\ScenarioNode(null, isset($hash['line']) ? $hash['line'] : $line);
+
+        $scenario->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Scenario');
 
         if (isset($hash['title'])) {
             $scenario->setTitle($hash['title']);
@@ -144,6 +150,8 @@ class ArrayLoader implements LoaderInterface
     {
         $outline = new Node\OutlineNode(null, isset($hash['line']) ? $hash['line'] : $line);
 
+        $outline->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Scenario Outline');
+
         if (isset($hash['title'])) {
             $outline->setTitle($hash['title']);
         }
@@ -151,7 +159,15 @@ class ArrayLoader implements LoaderInterface
             $outline->setTags($hash['tags']);
         }
         if (isset($hash['examples'])) {
-            $outline->setExamples($this->loadTableHash($hash['examples']));
+            if (isset($hash['examples']['keyword'])) {
+                $keyword = $hash['examples']['keyword'];
+                unset($hash['examples']['keyword']);
+            } else {
+                $keyword = 'Examples';
+            }
+            $table = $this->loadTableHash($hash['examples']);
+            $table->setKeyword($keyword);
+            $outline->setExamples($table);
         }
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {

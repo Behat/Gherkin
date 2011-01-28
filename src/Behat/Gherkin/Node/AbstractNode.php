@@ -18,6 +18,7 @@ namespace Behat\Gherkin\Node;
 abstract class AbstractNode
 {
     private $line;
+    private $keyword;
 
     /**
      * Initialize node.
@@ -49,5 +50,25 @@ abstract class AbstractNode
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Set current node definition keyword.
+     *
+     * @param   string  $keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Return current node definition keyword.
+     *
+     * @return  string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
     }
 }
