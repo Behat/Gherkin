@@ -45,7 +45,7 @@ class Lexer
      */
     public function setInput($input)
     {
-        $this->input            = preg_replace(array('/\r\n|\r/u', '/\t/u'), array("\n", '  '), $input);
+        $this->input            = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
         $this->line             = 1;
         $this->deferredObjects  = array();
         $this->stash            = array();
@@ -320,7 +320,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^"""[^\n]*/u', $this->input, $matches)) {
+        if ('"' === $this->input[0] && preg_match('/^"""[^\n]*/', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $this->inPyString =! $this->inPyString;
 
@@ -340,7 +340,7 @@ class Lexer
     {
         if ($this->inPyString) {
             $matches = array();
-            if (preg_match('/^([^\n]+)/u', $this->input, $matches)) {
+            if (preg_match('/^([^\n]+)/', $this->input, $matches)) {
                 $this->consumeInput(mb_strlen($matches[0]));
 
                 return $this->takeToken('Text', $this->lastIndentString . $matches[1]);
@@ -357,7 +357,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\|([^\n]+)\|/u', $this->input, $matches)) {
+        if ('|' === $this->input[0] && preg_match('/^\|([^\n]+)\|/', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('TableRow');
 
@@ -381,7 +381,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\n( *)/u', $this->input, $matches)) {
+        if ("\n" === $this->input[0] && preg_match('/^\n( *)/', $this->input, $matches)) {
             $this->line++;
             $this->lastIndentString = $matches[1];
 
@@ -401,7 +401,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^@([^\n]+)/u', $this->input, $matches)) {
+        if ('@' === $this->input[0] && preg_match('/^@([^\n]+)/', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
             $token = $this->takeToken('Tag');
 
@@ -422,7 +422,9 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        return $this->scanInput('/^\# *language: *([\w_\-]+)/u', 'Language');
+        if ('#' === $this->input[0]) {
+            return $this->scanInput('/^\# *language: *([\w_\-]+)/', 'Language');
+        }
     }
 
     /**
@@ -432,7 +434,9 @@ class Lexer
      */
     protected function scanComment()
     {
-        return $this->scanInput('/^\#([^\n]*)/u', 'Comment');
+        if ('#' === $this->input[0]) {
+            return $this->scanInput('/^\#([^\n]*)/', 'Comment');
+        }
     }
 
     /**
@@ -442,6 +446,6 @@ class Lexer
      */
     protected function scanText()
     {
-        return $this->scanInput('/^([^\n\#]+)/u', 'Text');
+        return $this->scanInput('/^([^\n\#]+)/', 'Text');
     }
 }
