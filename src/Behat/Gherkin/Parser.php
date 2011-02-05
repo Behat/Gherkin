@@ -95,6 +95,8 @@ class Parser
      * Expect given type or throw Exception.
      * 
      * @param   string  $type   type
+     *
+     * @return  Object
      */
     protected function expectTokenType($type)
     {
@@ -105,6 +107,20 @@ class Parser
                 $type, $this->predictTokenType(), $this->lexer->getCurrentLine(),
                 $this->file ? ' in file: ' . $this->file : ''
             ));
+        }
+    }
+
+    /**
+     * Accept given type.
+     * 
+     * @param   string  $type   type
+     *
+     * @return  Object
+     */
+    protected function acceptTokenType($type)
+    {
+        if ($type === $this->predictTokenType()) {
+            return $this->lexer->getAdvancedToken();
         }
     }
 
@@ -148,7 +164,7 @@ class Parser
                 return $this->parseText();
             case 'Tag':
                 $token = $this->lexer->getAdvancedToken();
-                $this->skipNewlines();
+                $this->skipExtraChars();
                 $this->lexer->deferToken($this->lexer->getAdvancedToken());
                 $this->lexer->deferToken($token);
 
@@ -169,12 +185,12 @@ class Parser
         );
 
         $node->setKeyword($token->keyword);
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse defered tags
         if ('Tag' === $this->predictTokenType() && $this->lexer->predictToken()->defered) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipNewlines();
+            $this->skipExtraChars();
         }
 
         // Parse feature description
@@ -214,7 +230,7 @@ class Parser
         $node   = new Node\BackgroundNode($this->lexer->getCurrentLine());
 
         $node->setKeyword($token->keyword);
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse steps
         while ('Step' === $this->predictTokenType()) {
@@ -235,12 +251,12 @@ class Parser
         $node   = new Node\OutlineNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
 
         $node->setKeyword($token->keyword);
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse tags
         if ('Tag' === $this->predictTokenType()) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipNewlines();
+            $this->skipExtraChars();
         }
 
         // Parse scenario title
@@ -260,7 +276,7 @@ class Parser
 
         // Examples block
         $examplesToken = $this->expectTokenType('Examples');
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse examples table
         $table = $this->parseTable();
@@ -281,12 +297,12 @@ class Parser
         $node   = new Node\ScenarioNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
 
         $node->setKeyword($token->keyword);
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse tags
         if ('Tag' === $this->predictTokenType()) {
             $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipNewlines();
+            $this->skipExtraChars();
         }
 
         // Parse scenario title
@@ -319,7 +335,7 @@ class Parser
             $token->value, trim($token->text) ?: null, $this->lexer->getCurrentLine()
         );
 
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         // Parse step text
         while ('Text' === $this->predictTokenType()) {
@@ -354,12 +370,12 @@ class Parser
         $token  = $this->expectTokenType('TableRow');
         $node   = new Node\TableNode();
         $node->addRow($token->columns);
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         while ('TableRow' === $this->predictTokenType()) {
             $token = $this->expectTokenType('TableRow');
             $node->addRow($token->columns);
-            $this->skipNewlines();
+            $this->skipExtraChars();
         }
 
         return $node;
@@ -388,7 +404,7 @@ class Parser
             }
         }
         $this->expectTokenType('PyStringOperator');
-        $this->skipNewlines();
+        $this->skipExtraChars();
 
         return $node;
     }
@@ -398,12 +414,12 @@ class Parser
      * 
      * @return  string
      */
-    protected function parseText($skipNewlines = true)
+    protected function parseText($skipExtraChars = true)
     {
         $token = $this->expectTokenType('Text');
 
-        if ($skipNewlines) {
-            $this->skipNewlines();
+        if ($skipExtraChars) {
+            $this->skipExtraChars();
         }
 
         return $token->value;
@@ -422,13 +438,10 @@ class Parser
     }
 
     /**
-     * Skip newlines in input.
+     * Skip newlines & comments in input.
      */
-    private function skipNewlines()
+    private function skipExtraChars()
     {
-        while ('Newline' === $this->predictTokenType()
-            || 'Comment' === $this->predictTokenType()) {
-            $this->lexer->getAdvancedToken();
-        }
+        while ($this->acceptTokenType('Newline') || $this->acceptTokenType('Comment'));
     }
 }
