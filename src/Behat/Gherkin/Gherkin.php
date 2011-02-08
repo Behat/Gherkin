@@ -24,9 +24,9 @@ class Gherkin
     protected $filters = array();
 
     /**
-     * Add loader to manager. 
-     * 
-     * @param   LoaderInterface $loader loader
+     * Adds loader to manager.
+     *
+     * @param   Behat\Gherkin\Loader\LoaderInterface    $loader loader
      */
     public function addLoader(LoaderInterface $loader)
     {
@@ -34,9 +34,9 @@ class Gherkin
     }
 
     /**
-     * Add filter to manager. 
-     * 
-     * @param   FilterInterface $filter filter
+     * Adds filter to manager.
+     *
+     * @param   Behat\Gherkin\Filter\FilterInterface    $filter filter
      */
     public function addFilter(FilterInterface $filter)
     {
@@ -44,7 +44,7 @@ class Gherkin
     }
 
     /**
-     * Set base features path.
+     * Sets base features path.
      *
      * @param   string  $path
      */
@@ -56,8 +56,8 @@ class Gherkin
     }
 
     /**
-     * Load & filter resource by added loaders. 
-     * 
+     * Loads & filters resource with added loaders.
+     *
      * @param   mixed   $resource   resource to load
      *
      * @return  array               features
@@ -90,11 +90,11 @@ class Gherkin
     }
 
     /**
-     * Resolve loader by resource. 
-     * 
+     * Resolves loader by resource.
+     *
      * @param   mixed   $resoruce   resource to load
      *
-     * @return  LoaderInterface     loader for resource
+     * @return  Behat\Gherkin\Loader\LoaderInterface    loader for resource
      */
     public function resolveLoader($resource)
     {

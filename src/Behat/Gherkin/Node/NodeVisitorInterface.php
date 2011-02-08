@@ -18,10 +18,10 @@ namespace Behat\Gherkin\Node;
 interface NodeVisitorInterface
 {
     /**
-     * Visit specific node.
+     * Visits specific node.
      *
-     * @param   AbstractNode    $visitee
-     * 
+     * @param   Behat\Gherkin\Node\AbstractNode    $visitee visitee object
+     *
      * @return  mixed
      */
     function visit(AbstractNode $visitee);

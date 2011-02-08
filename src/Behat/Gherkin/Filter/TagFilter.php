@@ -23,8 +23,8 @@ class TagFilter implements FilterInterface
     protected $filterString;
 
     /**
-     * Initialize filter. 
-     * 
+     * Initializes filter.
+     *
      * @param   string  $this->filterStringString   name filter string
      */
     public function __construct($filterString)
@@ -65,8 +65,8 @@ class TagFilter implements FilterInterface
     }
 
     /**
-     * Check If Passed Has/Hasnt Closures Passes With Filter. 
-     * 
+     * Checks if provided has/hasn't closures pass with filter.
+     *
      * @param   Closure $hasTagCheck    closure to check that something has got tag
      * @param   Closure $hasntTagCheck  closure to check that something hasn't got tag
      */

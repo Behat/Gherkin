@@ -24,9 +24,9 @@ class GherkinFileLoader extends AbstractFileLoader
     protected $parser;
 
     /**
-     * Initialize loader.
+     * Initializes loader.
      *
-     * @param   Parser  $parser
+     * @param   Behat\Gherkin\Parser    $parser
      */
     public function __construct(Parser $parser)
     {

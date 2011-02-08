@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Keywords;
 
 /**
  * Array initializable keywords holder.
- * 
+ *
  * $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
  *     'en' => array(
  *         'Feature'           => 'Feature',
@@ -31,7 +31,7 @@ namespace Behat\Gherkin\Keywords;
  *         'Step Types'        => 'Допустим|То|Если|И|Но'
  *     )
  * ));
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ArrayKeywords implements KeywordsInterface
@@ -40,7 +40,7 @@ class ArrayKeywords implements KeywordsInterface
     private $language;
 
     /**
-     * Initialize holder with keywords.
+     * Initializes holder with keywords.
      *
      * @param   array   $keywords
      */

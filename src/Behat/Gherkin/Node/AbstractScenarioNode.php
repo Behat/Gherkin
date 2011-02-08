@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Abstract Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractScenarioNode extends AbstractNode
@@ -21,9 +21,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     protected $feature;
 
     /**
-     * Add Step to the background.
+     * Adds step to the node.
      *
-     * @param   StepNode    $step
+     * @param   Behat\Gherkin\Node\StepNode $step
      */
     public function addStep(StepNode $step)
     {
@@ -32,7 +32,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Set steps array of the background.
+     * Sets steps array.
      *
      * @param   array   $steps  array of StepNode
      */
@@ -46,7 +46,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Check if background has steps.
+     * Checks if node has steps.
      *
      * @return  boolean
      */
@@ -56,7 +56,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Return steps array.
+     * Returns steps array.
      *
      * @return  array           array of StepNode
      */
@@ -66,9 +66,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Set parent feature of the node.
+     * Sets parent feature of the node.
      *
-     * @param   FeatureNode $feature
+     * @param   Behat\Gherkin\Node\FeatureNode $feature
      */
     public function setFeature(FeatureNode $feature)
     {
@@ -76,9 +76,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Return parent feature of the node.
+     * Returns parent feature of the node.
      *
-     * @return  FeatureNode
+     * @return  Behat\Gherkin\Node\FeatureNode
      */
     public function getFeature()
     {
@@ -86,7 +86,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Return definition file.
+     * Returns definition file.
      *
      * @return  string
      */
@@ -100,7 +100,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Return language of the feature.
+     * Returns language of the feature.
      *
      * @return  string
      */

@@ -14,12 +14,12 @@ use Behat\Gherkin\Exception\Exception,
  */
 
 /**
- * Gherkin Parser.
- * 
+ * Gherkin parser.
+ *
  * $lexer  = new Behat\Gherkin\Lexer($keywords);
  * $parser = new Parser($lexer);
  * $featuresArray = $parser->parse('/path/to/feature.feature');
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Parser
@@ -28,9 +28,9 @@ class Parser
     private $lexer;
 
     /**
-     * Initialize Parser.
-     * 
-     * @param   Lexer   $lexer  lexer instance
+     * Initializes parser.
+     *
+     * @param   Behat\Gherkin\Lexer     $lexer  lexer instance
      */
     public function __construct(Lexer $lexer)
     {
@@ -38,11 +38,11 @@ class Parser
     }
 
     /**
-     * Parse input & return features array.
-     * 
-     * @param   string          $input  Gherkin filename or string document
+     * Parses input & returns features array.
      *
-     * @return  array           array of feature nodes
+     * @param   string          $input  gherkin filename or string document
+     *
+     * @return  array                   array of feature nodes
      */
     public function parse($input, $file = null)
     {
@@ -92,11 +92,13 @@ class Parser
     }
 
     /**
-     * Expect given type or throw Exception.
-     * 
+     * Returns next token if it's type equals to expected.
+     *
      * @param   string  $type   type
      *
-     * @return  Object
+     * @return  stdClass
+     *
+     * @throws  Behat\Gherkin\Exception\Exception   if token type is differ from expected one
      */
     protected function expectTokenType($type)
     {
@@ -111,11 +113,11 @@ class Parser
     }
 
     /**
-     * Accept given type.
-     * 
+     * Returns next token if it's type equals to expected.
+     *
      * @param   string  $type   type
      *
-     * @return  Object
+     * @return  stdClass
      */
     protected function acceptTokenType($type)
     {
@@ -125,8 +127,8 @@ class Parser
     }
 
     /**
-     * Predict type for number of tokens.
-     * 
+     * Returns next token type without real input reading (prediction).
+     *
      * @param   integer     $number number of tokens to predict
      *
      * @return  string              predicted token type
@@ -137,9 +139,9 @@ class Parser
     }
 
     /**
-     * Parse current expression & return Node.
-     * 
-     * @return  string|Node\*
+     * Parses current expression & returns Node.
+     *
+     * @return  string|Behat\Gherkin\Node\AbstractNode
      */
     protected function parseExpression()
     {
@@ -173,9 +175,9 @@ class Parser
     }
 
     /**
-     * Parse Feature & return it's node.
+     * Parses feature token & returns it's node.
      *
-     * @return  Node\FeatureNode
+     * @return  Behat\Gherkin\Node\FeatureNode
      */
     protected function parseFeature()
     {
@@ -220,9 +222,9 @@ class Parser
     }
 
     /**
-     * Parse Background & return it's node.
+     * Parses background token & returns it's node.
      *
-     * @return  Node\BackgroundNode
+     * @return  Behat\Gherkin\Node\BackgroundNode
      */
     protected function parseBackground()
     {
@@ -241,9 +243,9 @@ class Parser
     }
 
     /**
-     * Parse Scenario Outline & return it's node.
+     * Parses scenario outline token & returns it's node.
      *
-     * @return  Node\OutlineNode
+     * @return  Behat\Gherkin\Node\OutlineNode
      */
     protected function parseOutline()
     {
@@ -287,9 +289,9 @@ class Parser
     }
 
     /**
-     * Parse Scenario & return it's node.
+     * Parses scenario token & returns it's node.
      *
-     * @return  Node\ScenarioNode
+     * @return  Behat\Gherkin\Node\ScenarioNode
      */
     protected function parseScenario()
     {
@@ -324,9 +326,9 @@ class Parser
     }
 
     /**
-     * Parse Step & return it's node.
+     * Parses step token & returns it's node.
      *
-     * @return  Node\StepNode
+     * @return  Behat\Gherkin\Node\StepNode
      */
     protected function parseStep()
     {
@@ -361,9 +363,9 @@ class Parser
     }
 
     /**
-     * Parse Table & return it's node.
+     * Parses table token & returns it's node.
      *
-     * @return  Node\TableNode
+     * @return  Behat\Gherkin\Node\TableNode
      */
     protected function parseTable()
     {
@@ -382,9 +384,9 @@ class Parser
     }
 
     /**
-     * Parse PyString & return it's node.
+     * Parses PyString token & returns it's node.
      *
-     * @return  Node\PyStringNode
+     * @return  Behat\Gherkin\Node\PyStringNode
      */
     protected function parsePyString()
     {
@@ -410,8 +412,8 @@ class Parser
     }
 
     /**
-     * Parse next text token.
-     * 
+     * Parses next text token & returns it's string content.
+     *
      * @return  string
      */
     protected function parseText($skipExtraChars = true)
@@ -426,8 +428,8 @@ class Parser
     }
 
     /**
-     * Parse next comment token.
-     * 
+     * Parses next comment token & returns it's string content.
+     *
      * @return  string
      */
     protected function parseComment()
@@ -438,7 +440,7 @@ class Parser
     }
 
     /**
-     * Skip newlines & comments in input.
+     * Skips newlines & comments in input.
      */
     private function skipExtraChars()
     {

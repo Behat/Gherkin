@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Scenario Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ScenarioNode extends AbstractScenarioNode
@@ -21,7 +21,7 @@ class ScenarioNode extends AbstractScenarioNode
     private $tags = array();
 
     /**
-     * Initialize scenario.
+     * Initializes scenario.
      *
      * @param   string  $title  scenario title
      * @param   integer $line   definition line
@@ -34,8 +34,8 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Set scenario title.
-     * 
+     * Sets scenario title.
+     *
      * @param   string  $title
      */
     public function setTitle($title)
@@ -44,7 +44,7 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Return scenario title.
+     * Returns scenario title.
      *
      * @return  string
      */
@@ -54,7 +54,7 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Set scenario tags.
+     * Sets scenario tags.
      *
      * @param   array   $tags
      */
@@ -64,7 +64,7 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Add tag to scenario.
+     * Adds tag to scenario.
      *
      * @param   string  $tag
      */
@@ -74,7 +74,7 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Check if scenario has tags.
+     * Checks if scenario has tags.
      *
      * @return  boolean
      */
@@ -84,10 +84,10 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Check if scenario has tag.
+     * Checks if scenario has tag.
      *
      * @param   string  $tag
-     * 
+     *
      * @return  boolean
      */
     public function hasTag($tag)
@@ -96,7 +96,7 @@ class ScenarioNode extends AbstractScenarioNode
     }
 
     /**
-     * Return scenario tags.
+     * Returns scenario tags.
      *
      * @return  array
      */

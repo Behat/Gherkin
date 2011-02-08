@@ -24,9 +24,9 @@ class DirectoryLoader extends AbstractFileLoader
     protected $gherkin;
 
     /**
-     * Initialize loader.
+     * Initializes loader.
      *
-     * @param   Gherkin  $gherkin
+     * @param   Behat\Gherkin\Gherkin  $gherkin
      */
     public function __construct(Gherkin $gherkin)
     {

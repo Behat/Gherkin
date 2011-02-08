@@ -58,10 +58,10 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     }
 
     /**
-     * Find relative path for provided absolute (relative to base features path).
+     * Finds relative path for provided absolute (relative to base features path).
      *
      * @param   string  $path   absolute path
-     * 
+     *
      * @return  string
      */
     protected function findRelativePath($path)
@@ -74,10 +74,10 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     }
 
     /**
-     * Find absolute path for provided relative (relative to base features path).
+     * Finds absolute path for provided relative (relative to base features path).
      *
      * @param   string  $path   relative path
-     * 
+     *
      * @return  string
      */
     protected function findAbsolutePath($path)

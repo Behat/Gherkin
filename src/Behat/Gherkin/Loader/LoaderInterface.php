@@ -18,19 +18,19 @@ namespace Behat\Gherkin\Loader;
 interface LoaderInterface
 {
     /**
-     * Check if current loader supports provided resource.
+     * Checks if current loader supports provided resource.
      *
      * @param   string  $resource
-     * 
+     *
      * @return  boolean
      */
     function supports($resource);
 
     /**
-     * Load features from provided resource.
+     * Loads features from provided resource.
      *
      * @param   string  $resource
-     * 
+     *
      * @return  array
      */
     function load($resource);

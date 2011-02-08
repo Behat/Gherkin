@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Background Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class BackgroundNode extends AbstractScenarioNode

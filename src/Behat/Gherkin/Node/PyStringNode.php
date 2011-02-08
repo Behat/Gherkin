@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * PyString Argument Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class PyStringNode
@@ -21,7 +21,7 @@ class PyStringNode
     private $lines = array();
 
     /**
-     * Initialize PyString.
+     * Initializes PyString.
      *
      * @param   string  $string         initial string
      * @param   integer $ltrimCount     left-trim count
@@ -40,7 +40,7 @@ class PyStringNode
     }
 
     /**
-     * Replace PyString holders with tokens.
+     * Replaces PyString holders with tokens.
      *
      * @param   array   $tokens     hash (search => replace)
      */
@@ -54,7 +54,7 @@ class PyStringNode
     }
 
     /**
-     * Add line to the PyString.
+     * Adds a line to the PyString.
      *
      * @param   string  $line
      */
@@ -68,7 +68,7 @@ class PyStringNode
     }
 
     /**
-     * Return PyString lines.
+     * Returns PyString lines.
      *
      * @return  array
      */
@@ -78,7 +78,7 @@ class PyStringNode
     }
 
     /**
-     * Convert PyString lines array into string.
+     * Converts PyString into string.
      *
      * @return  string
      */

@@ -14,23 +14,23 @@ use Behat\Gherkin\Node\FeatureNode,
  */
 
 /**
- * Filter Interface.
+ * Filter interface.
  *
  * @author     Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface FilterInterface
 {
     /**
-     * Check If Feature Matches Specified Filter. 
-     * 
-     * @param   FeatureNode     $feature    feature
+     * Checks if Feature matches specified filter.
+     *
+     * @param   Behat\Gherkin\Node\FeatureNode  $feature
      */
     function isFeatureMatch(FeatureNode $feature);
 
     /**
-     * Check If Scenario Or Outline Matches Specified Filter. 
-     * 
-     * @param   ScenarioNode|OutlineNode    $scenario   scenario or outline
+     * Checks if scenario or outline matches specified filter.
+     *
+     * @param   Behat\Gherkin\Node\ScenarioNode|Behat\Gherkin\Node\OutlineNode  $scenario
      */
     function isScenarioMatch(ScenarioNode $scenario);
 }

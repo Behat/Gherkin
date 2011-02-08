@@ -14,8 +14,8 @@ use Behat\Gherkin\Exception\Exception,
  */
 
 /**
- * Gherkin files Lexer.
- * 
+ * Gherkin lexer.
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Lexer
@@ -29,9 +29,9 @@ class Lexer
     private $lastIndentString = '';
 
     /**
-     * Initialize Lexer.
+     * Initializes lexer.
      *
-     * @param   KeywordsInterface   $keywords   keywords holder
+     * @param   Behat\Gherkin\Keywords\KeywordsInterface    $keywords   keywords holder
      */
     public function __construct(KeywordsInterface $keywords)
     {
@@ -39,8 +39,8 @@ class Lexer
     }
 
     /**
-     * Set lexer input.
-     * 
+     * Sets lexer input.
+     *
      * @param   string  $input  input string
      */
     public function setInput($input)
@@ -54,7 +54,7 @@ class Lexer
     }
 
     /**
-     * Set keywords language.
+     * Sets keywords language.
      *
      * @param   string  $language
      */
@@ -64,9 +64,9 @@ class Lexer
     }
 
     /**
-     * Return next token or previously stashed one.
-     * 
-     * @return  Object
+     * Returns next token or previously stashed one.
+     *
+     * @return  stdClass
      */
     public function getAdvancedToken()
     {
@@ -78,8 +78,8 @@ class Lexer
     }
 
     /**
-     * Return current line number.
-     * 
+     * Returns current line number.
+     *
      * @return  integer
      */
     public function getCurrentLine()
@@ -88,9 +88,9 @@ class Lexer
     }
 
     /**
-     * Defer token.
-     * 
-     * @param   Object   $token  token to defer
+     * Defers token.
+     *
+     * @param   stdClass    $token  token to defer
      */
     public function deferToken(\stdClass $token)
     {
@@ -99,11 +99,11 @@ class Lexer
     }
 
     /**
-     * Predict for number of tokens.
-     * 
+     * Predicts for number of tokens.
+     *
      * @param   integer     $number number of tokens to predict
      *
-     * @return  Object              predicted token
+     * @return  stdClass            predicted token
      */
     public function predictToken($number = 1)
     {
@@ -117,12 +117,12 @@ class Lexer
     }
 
     /**
-     * Construct token with specified parameters.
-     * 
+     * Constructs token with specified parameters.
+     *
      * @param   string  $type   token type
      * @param   string  $value  token value
      *
-     * @return  Object          new token object
+     * @return  stdClass        new token object
      */
     public function takeToken($type, $value = null)
     {
@@ -135,9 +135,9 @@ class Lexer
     }
 
     /**
-     * Return stashed token.
-     * 
-     * @return  Object|boolean   token if has stashed, false otherways
+     * Returns stashed token or false if hasn't.
+     *
+     * @return  stdClass|boolean    token if has stashed, false otherways
      */
     protected function getStashedToken()
     {
@@ -145,9 +145,9 @@ class Lexer
     }
 
     /**
-     * Return deferred token.
-     * 
-     * @return  Object|boolean   token if has deferred, false otherways
+     * Returns deferred token or false if hasn't.
+     *
+     * @return  stdClass|boolean    token if has deferred, false otherways
      */
     protected function getDeferredToken()
     {
@@ -155,9 +155,9 @@ class Lexer
     }
 
     /**
-     * Return next token.
-     * 
-     * @return  Object
+     * Returns next token from input.
+     *
+     * @return  stdClass
      */
     protected function getNextToken()
     {
@@ -180,8 +180,8 @@ class Lexer
     }
 
     /**
-     * Consume input.
-     * 
+     * Consumes input.
+     *
      * @param   integer $length length of input to consume
      */
     protected function consumeInput($length)
@@ -190,12 +190,12 @@ class Lexer
     }
 
     /**
-     * Scan for token with specified regex.
-     * 
+     * Scans for token with specified regex.
+     *
      * @param   string  $regex  regular expression
      * @param   string  $type   expected token type
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanInput($regex, $type)
     {
@@ -208,12 +208,12 @@ class Lexer
     }
 
     /**
-     * Scan for token with specified keywords.
+     * Scans for token with specified keywords.
      *
      * @param   string  $keywords   keywords (splitted with |)
      * @param   string  $type       expected token type
-     * 
-     * @return  Object|null
+     *
+     * @return  stdClass|null
      */
     protected function scanInputForKeywords($keywords, $type)
     {
@@ -229,9 +229,9 @@ class Lexer
     }
 
     /**
-     * Scan EOS from input & return it if found.
-     * 
-     * @return  Object|null
+     * Scans EOS from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanEOS()
     {
@@ -243,9 +243,9 @@ class Lexer
     }
 
     /**
-     * Scan Feature from input & return it if found.
-     * 
-     * @return  Object|null
+     * Scans Feature from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanFeature()
     {
@@ -253,9 +253,9 @@ class Lexer
     }
 
     /**
-     * Scan Background from input & return it if found.
+     * Scans Background from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanBackground()
     {
@@ -263,9 +263,9 @@ class Lexer
     }
 
     /**
-     * Scan Scenario from input & return it if found.
+     * Scans Scenario from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanScenario()
     {
@@ -273,9 +273,9 @@ class Lexer
     }
 
     /**
-     * Scan Scenario Outline from input & return it if found.
+     * Scans Scenario Outline from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanOutline()
     {
@@ -283,9 +283,9 @@ class Lexer
     }
 
     /**
-     * Scan Scenario Outline Examples from input & return it if found.
+     * Scans Scenario Outline Examples from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanExamples()
     {
@@ -293,9 +293,9 @@ class Lexer
     }
 
     /**
-     * Scan Step from input & return it if found.
+     * Scans Step from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanStep()
     {
@@ -312,9 +312,9 @@ class Lexer
     }
 
     /**
-     * Scan PyString from input & return it if found.
+     * Scans PyString from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanPyStringOperator()
     {
@@ -332,9 +332,9 @@ class Lexer
     }
 
     /**
-     * Scan PyString content.
+     * Scans PyString content.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanPyStringContent()
     {
@@ -349,9 +349,9 @@ class Lexer
     }
 
     /**
-     * Scan Table Row from input & return it if found.
+     * Scans Table Row from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanTableRow()
     {
@@ -373,9 +373,9 @@ class Lexer
     }
 
     /**
-     * Scan Newline from input & return it if found.
+     * Scans Newline from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanNewline()
     {
@@ -393,9 +393,9 @@ class Lexer
     }
 
     /**
-     * Scan Tags from input & return it if found.
+     * Scans Tags from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanTags()
     {
@@ -416,9 +416,9 @@ class Lexer
     }
 
     /**
-     * Scan Language specifier from input & return it if found.
+     * Scans Language specifier from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanLanguage()
     {
@@ -428,9 +428,9 @@ class Lexer
     }
 
     /**
-     * Scan Comment from input & return it if found.
+     * Scans Comment from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanComment()
     {
@@ -440,9 +440,9 @@ class Lexer
     }
 
     /**
-     * Scan text from input & return it if found. 
-     * 
-     * @return  Object|null
+     * Scans text from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanText()
     {

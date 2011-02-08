@@ -23,8 +23,8 @@ class NameFilter implements FilterInterface
     protected $filterString;
 
     /**
-     * Initialize filter. 
-     * 
+     * Initializes filter.
+     *
      * @param   string  $this->filterStringString   name filter string
      */
     public function __construct($filterString)

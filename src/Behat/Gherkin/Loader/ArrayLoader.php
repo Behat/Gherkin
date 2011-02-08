@@ -46,12 +46,12 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load feature from provided feature hash. 
-     * 
+     * Loads feature from provided feature hash.
+     *
      * @param   array   $hash   feature hash
      * @param   integer $line   feature definition line
      *
-     * @return  Node\FeatureNode
+     * @return  Behat\Gherkin\Node\FeatureNode
      */
     protected function loadFeatureHash(array $hash, $line = 0)
     {
@@ -88,11 +88,11 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load background from provided hash. 
-     * 
+     * Loads background from provided hash.
+     *
      * @param   array   $hash   background hash
      *
-     * @return  Node\BackgroundHash
+     * @return  Behat\Gherkin\Node\BackgroundHash
      */
     protected function loadBackgroundHash(array $hash)
     {
@@ -110,12 +110,12 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load scenario from provided scenario hash. 
-     * 
+     * Loads scenario from provided scenario hash.
+     *
      * @param   array   $hash   scenario hash
      * @param   integer $line   scenario definition line
      *
-     * @return  Node\ScenarioNode
+     * @return  Behat\Gherkin\Node\ScenarioNode
      */
     protected function loadScenarioHash(array $hash, $line = 0)
     {
@@ -139,12 +139,12 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load outline from provided outline hash. 
-     * 
+     * Loads outline from provided outline hash.
+     *
      * @param   array   $hash   outline hash
      * @param   integer $line   outline definition line
      *
-     * @return  Node\OutlineNode
+     * @return  Behat\Gherkin\Node\OutlineNode
      */
     protected function loadOutlineHash(array $hash, $line = 0)
     {
@@ -179,12 +179,12 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load step from provided hash. 
-     * 
+     * Loads step from provided hash.
+     *
      * @param   array   $hash   step hash
      * @param   integer $line   step definition line
      *
-     * @return  Node\StepNode
+     * @return  Behat\Gherkin\Node\StepNode
      */
     protected function loadStepHash(array $hash, $line = 0)
     {
@@ -206,11 +206,11 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load table from provided hash. 
-     * 
+     * Loads table from provided hash.
+     *
      * @param   array   $hash   table hash
      *
-     * @return  Node\TableNode
+     * @return  Behat\Gherkin\Node\TableNode
      */
     protected function loadTableHash(array $hash)
     {
@@ -224,11 +224,11 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Load PyString from provided hash. 
-     * 
+     * Loads PyString from provided hash.
+     *
      * @param   array   $hash   pystring hash
      *
-     * @return  Node\PyStringNode
+     * @return  Behat\Gherkin\Node\PyStringNode
      */
     protected function loadPyStringHash(array $hash)
     {

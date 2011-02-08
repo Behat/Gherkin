@@ -18,7 +18,7 @@ namespace Behat\Gherkin\Loader;
 interface FileLoaderInterface extends LoaderInterface
 {
     /**
-     * Set base features path.
+     * Sets base features path.
      *
      * @param   string  $path
      */

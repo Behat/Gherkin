@@ -12,55 +12,55 @@ namespace Behat\Gherkin\Keywords;
 
 /**
  * Keywords holder interface.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface KeywordsInterface
 {
     /**
-     * Set keywords holder language.
-     * 
+     * Sets keywords holder language.
+     *
      * @param   string  $language
      */
     function setLanguage($language);
 
     /**
-     * Return Feature keywords (splitted by "|").
+     * Returns Feature keywords (splitted by "|").
      *
      * @return  string
      */
     function getFeatureKeywords();
 
     /**
-     * Return Background keywords (splitted by "|").
+     * Returns Background keywords (splitted by "|").
      *
      * @return  string
      */
     function getBackgroundKeywords();
 
     /**
-     * Return Scenario keywords (splitted by "|").
+     * Returns Scenario keywords (splitted by "|").
      *
      * @return  string
      */
     function getScenarioKeywords();
 
     /**
-     * Return Scenario Outline keywords (splitted by "|").
+     * Returns Scenario Outline keywords (splitted by "|").
      *
      * @return  string
      */
     function getOutlineKeywords();
 
     /**
-     * Return Examples keywords (splitted by "|").
+     * Returns Examples keywords (splitted by "|").
      *
      * @return  string
      */
     function getExamplesKeywords();
 
     /**
-     * Return Step keywords (splitted by "|").
+     * Returns Step keywords (splitted by "|").
      *
      * @return  string
      */

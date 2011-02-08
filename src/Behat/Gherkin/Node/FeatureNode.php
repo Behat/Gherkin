@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Feature Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class FeatureNode extends AbstractNode
@@ -26,7 +26,7 @@ class FeatureNode extends AbstractNode
     private $tags       = array();
 
     /**
-     * Initialize feature.
+     * Initializes feature.
      *
      * @param   string  $title          feature title
      * @param   string  $description    feature description (3-liner)
@@ -43,8 +43,8 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set feature title.
-     * 
+     * Sets feature title.
+     *
      * @param   string  $title
      */
     public function setTitle($title)
@@ -53,7 +53,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return feature title.
+     * Returns feature title.
      *
      * @return  string
      */
@@ -63,7 +63,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set feature description (3-liner).
+     * Sets feature description (3-liner).
      *
      * @param   string  $description
      */
@@ -73,7 +73,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return feature description.
+     * Returns feature description (3-liner).
      *
      * @return  string
      */
@@ -83,7 +83,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set language of the feature.
+     * Sets language of the feature.
      *
      * @param   string  $language   en|ru|pt-BR etc.
      */
@@ -93,7 +93,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return language of the feature.
+     * Returns language of the feature.
      *
      * @return  string
      */
@@ -103,9 +103,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set feature background.
+     * Sets feature background.
      *
-     * @param   BackgroundNode  $background
+     * @param   Behat\Gherkin\Node\BackgroundNode  $background
      */
     public function setBackground(BackgroundNode $background)
     {
@@ -114,7 +114,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Check if feature has background.
+     * Checks if feature has background.
      *
      * @return  boolean
      */
@@ -124,7 +124,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return feature background.
+     * Returns feature background.
      *
      * @return  BackgroundNode
      */
@@ -134,9 +134,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Add Scenario or Outline to feature.
+     * Adds scenario or outline to the feature.
      *
-     * @param   ScenarioNode    $scenario
+     * @param   Behat\Gherkin\Node\ScenarioNode $scenario
      */
     public function addScenario(ScenarioNode $scenario)
     {
@@ -145,7 +145,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set Scenarios or Outlines list of the feature.
+     * Sets scenarios & outlines to the feature.
      *
      * @param   array   $scenarios  array of ScenariosNode & OutlineNode
      */
@@ -159,7 +159,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Check that feature has scenarios.
+     * Checks that feature has scenarios.
      *
      * @return  boolean
      */
@@ -169,7 +169,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return added Scenarios or Outlines.
+     * Returns feature scenarios & outlines.
      *
      * @return  array               array of ScenariosNode & OutlineNode
      */
@@ -179,7 +179,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set feature tags.
+     * Sets feature tags.
      *
      * @param   array   $tags
      */
@@ -189,7 +189,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Add tag to feature.
+     * Adds tag to the feature.
      *
      * @param   string  $tag
      */
@@ -199,7 +199,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Check if feature has tags.
+     * Checks if the feature has tags.
      *
      * @return  boolean
      */
@@ -209,10 +209,10 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Check if feature has tag.
+     * Checks if the feature has tag.
      *
      * @param   string  $tag
-     * 
+     *
      * @return  boolean
      */
     public function hasTag($tag)
@@ -221,7 +221,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return feature tags.
+     * Returns feature tags.
      *
      * @return  array
      */
@@ -231,9 +231,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Set feature filename. 
-     * 
-     * @param   string  $path 
+     * Sets feature filename.
+     *
+     * @param   string  $path
      */
     public function setFile($path)
     {
@@ -241,7 +241,7 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Return feature filename.
+     * Returns feature filename.
      *
      * @return  string
      */
