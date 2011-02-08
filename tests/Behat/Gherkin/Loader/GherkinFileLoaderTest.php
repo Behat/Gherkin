@@ -4,6 +4,7 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Translation\Translator,
+    Symfony\Component\Translation\Loader\XliffFileLoader,
     Symfony\Component\Translation\MessageSelector;
 
 use Behat\Gherkin\Lexer,
@@ -24,7 +25,10 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
         $parser         = new Parser(new Lexer($keywords));
         $this->loader   = new GherkinFileLoader($parser);
 
-        $keywords->setXliffTranslationsPath(__DIR__ . '/../../../../i18n');
+        $translator->addLoader('xliff', new XliffFileLoader());
+        $translator->addResource('xliff', __DIR__ . '/../../../../i18n/en.xliff', 'gherkin');
+        $translator->addResource('xliff', __DIR__ . '/../../../../i18n/ru.xliff', 'gherkin');
+
         $this->featuresPath = realpath(__DIR__ . '/../Fixtures/features');
     }
 
