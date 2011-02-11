@@ -64,22 +64,23 @@ class Parser
              || 'Comment' === $this->predictTokenType()) {
                 $this->lexer->getAdvancedToken();
             } elseif ('Language' === $this->predictTokenType()) {
-                $language = $this->expectTokenType('Language')->value;
+                $token      = $this->expectTokenType('Language');
+                $language   = $token->value;
 
                 if (null === $languageSpecifierLine) {
                     // Reparse input with new language
-                    $languageSpecifierLine = $this->lexer->getCurrentLine();
+                    $languageSpecifierLine = $token->line;
                     $this->lexer->setInput($input);
                     $this->lexer->setLanguage($language);
-                } elseif ($languageSpecifierLine !== $this->lexer->getCurrentLine()) {
+                } elseif ($languageSpecifierLine !== $token->line) {
                     // Language already specified
                     throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d%s',
-                        $languageSpecifierLine, $this->lexer->getCurrentLine(),
+                        $languageSpecifierLine, $token->line,
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
             } elseif ('Feature' === $this->predictTokenType()
-                   || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(3))) {
+                   || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(2))) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
                 $features[] = $feature;
@@ -106,7 +107,7 @@ class Parser
             return $this->lexer->getAdvancedToken();
         } else {
             throw new Exception(sprintf('Expected %s, but got %s on line: %d%s',
-                $type, $this->predictTokenType(), $this->lexer->getCurrentLine(),
+                $type, $this->predictTokenType(), $this->lexer->predictToken()->line,
                 $this->file ? ' in file: ' . $this->file : ''
             ));
         }
@@ -182,9 +183,7 @@ class Parser
     protected function parseFeature()
     {
         $token  = $this->expectTokenType('Feature');
-        $node   = new Node\FeatureNode(
-            trim($token->value) ?: null, null, $this->file, $this->lexer->getCurrentLine()
-        );
+        $node   = new Node\FeatureNode(trim($token->value) ?: null, null, $this->file, $token->line);
 
         $node->setKeyword($token->keyword);
         $this->skipExtraChars();
@@ -212,9 +211,9 @@ class Parser
 
         // Parse scenarios & outlines
         while ('Scenario' === $this->predictTokenType()
-            || ('Tag' === $this->predictTokenType() && 'Scenario' === $this->predictTokenType(3))
+            || ('Tag' === $this->predictTokenType() && 'Scenario' === $this->predictTokenType(2))
             || 'Outline' === $this->predictTokenType()
-            || ('Tag' === $this->predictTokenType() && 'Outline' === $this->predictTokenType(3))) {
+            || ('Tag' === $this->predictTokenType() && 'Outline' === $this->predictTokenType(2))) {
             $node->addScenario($this->parseExpression());
         }
 
@@ -229,7 +228,7 @@ class Parser
     protected function parseBackground()
     {
         $token  = $this->expectTokenType('Background');
-        $node   = new Node\BackgroundNode($this->lexer->getCurrentLine());
+        $node   = new Node\BackgroundNode($token->line);
 
         $node->setKeyword($token->keyword);
         $this->skipExtraChars();
@@ -250,7 +249,7 @@ class Parser
     protected function parseOutline()
     {
         $token  = $this->expectTokenType('Outline');
-        $node   = new Node\OutlineNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
+        $node   = new Node\OutlineNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
         $this->skipExtraChars();
@@ -296,7 +295,7 @@ class Parser
     protected function parseScenario()
     {
         $token  = $this->expectTokenType('Scenario');
-        $node   = new Node\ScenarioNode(trim($token->value) ?: null, $this->lexer->getCurrentLine());
+        $node   = new Node\ScenarioNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
         $this->skipExtraChars();
@@ -333,9 +332,7 @@ class Parser
     protected function parseStep()
     {
         $token  = $this->expectTokenType('Step');
-        $node   = new Node\StepNode(
-            $token->value, trim($token->text) ?: null, $this->lexer->getCurrentLine()
-        );
+        $node   = new Node\StepNode($token->value, trim($token->text) ?: null, $token->line);
 
         $this->skipExtraChars();
 
