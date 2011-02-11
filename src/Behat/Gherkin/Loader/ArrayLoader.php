@@ -232,7 +232,7 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadPyStringHash(array $hash)
     {
-        $string = new Node\PyStringNode($hash['text'], isset($hash['swallow']) ? $hash['swallow'] : 0);
+        $string = new Node\PyStringNode($hash['text']);
 
         return $string;
     }

@@ -29,6 +29,7 @@ class Lexer
     private $deferredObjects  = array();
     private $stash            = array();
     private $inPyString       = false;
+    private $pyStringSwallow  = 0;
 
     /**
      * Initializes lexer.
@@ -57,6 +58,7 @@ class Lexer
         $this->deferredObjects  = array();
         $this->stash            = array();
         $this->inPyString       = false;
+        $this->pyStringSwallow  = 0;
     }
 
     /**
@@ -345,7 +347,7 @@ class Lexer
         if (false !== ($pos = mb_strpos($this->line, '"""'))) {
             $this->inPyString =! $this->inPyString;
             $token = $this->takeToken('PyStringOperator');
-            $token->swallow = $pos;
+            $this->pyStringSwallow = $pos;
 
             $this->consumeLine();
 
@@ -361,7 +363,12 @@ class Lexer
     protected function scanPyStringContent()
     {
         if ($this->inPyString) {
-            return $this->scanText();
+            $token = $this->scanText();
+
+            // swallow trailing spaces
+            $token->value = preg_replace('/^\s{1,'.$this->pyStringSwallow.'}/', '', $token->value);
+
+            return $token;
         }
     }
 

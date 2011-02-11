@@ -387,7 +387,7 @@ class Parser
     protected function parsePyString()
     {
         $token  = $this->expectTokenType('PyStringOperator');
-        $node   = new Node\PyStringNode(null, $token->swallow);
+        $node   = new Node\PyStringNode();
 
         while ('PyStringOperator' !== ($predicted = $this->predictTokenType()) && 'Text' === $predicted) {
             $node->addLine($this->parseText(false));
