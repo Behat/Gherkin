@@ -393,10 +393,12 @@ class Parser
         $token  = $this->expectTokenType('PyStringOperator');
         $node   = new Node\PyStringNode(null, $token->swallow);
 
-        while ('PyStringOperator' !== $this->predictTokenType()
-            && ('Text' === $this->predictTokenType() || 'Newline' === $this->predictTokenType())) {
-            if ('Newline' === $this->predictTokenType()) {
+        while ('PyStringOperator' !== ($predicted = $this->predictTokenType())
+            && ('Text' === $predicted || 'Newline' === $predicted)) {
+
+            if ('Newline' === $predicted) {
                 $token = $this->lexer->getAdvancedToken();
+
                 if ('Newline' === $this->predictTokenType()) {
                     $this->lexer->getAdvancedToken();
                     $node->addLine($token->value);

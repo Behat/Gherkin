@@ -27,6 +27,7 @@ class Lexer
     private $stash            = array();
     private $inPyString       = false;
     private $lastIndentString = '';
+    private $keywordsCache    = array();
 
     /**
      * Initializes lexer.
@@ -61,6 +62,7 @@ class Lexer
     public function setLanguage($language)
     {
         $this->keywords->setLanguage($language);
+        $this->keywordsCache = array();
     }
 
     /**
@@ -70,11 +72,7 @@ class Lexer
      */
     public function getAdvancedToken()
     {
-        if ($token = $this->getStashedToken()) {
-            return $token;
-        }
-
-        return $this->getNextToken();
+        return $this->getStashedToken() ?: $this->getNextToken();
     }
 
     /**
@@ -165,17 +163,17 @@ class Lexer
             ?: $this->scanEOS()
             ?: $this->scanPyStringOperator()
             ?: $this->scanPyStringContent()
-            ?: $this->scanTableRow()
-            ?: $this->scanFeature()
-            ?: $this->scanBackground()
+            ?: $this->scanNewline()
+            ?: $this->scanStep()
             ?: $this->scanScenario()
+            ?: $this->scanBackground()
             ?: $this->scanOutline()
             ?: $this->scanExamples()
-            ?: $this->scanStep()
-            ?: $this->scanNewline()
+            ?: $this->scanFeature()
+            ?: $this->scanTags()
+            ?: $this->scanTableRow()
             ?: $this->scanLanguage()
             ?: $this->scanComment()
-            ?: $this->scanTags()
             ?: $this->scanText();
     }
 
@@ -243,13 +241,32 @@ class Lexer
     }
 
     /**
+     * Returns keywords for provided type.
+     *
+     * @param   string  $type
+     *
+     * @return  string
+     *
+     * @uses    Behat\Gherkin\Keywords\KeywordsInterface
+     */
+    protected function getKeywords($type)
+    {
+        if (!isset($this->keywordsCache[$type])) {
+            $getter = 'get' . $type . 'Keywords';
+            $this->keywordsCache[$type] = $this->keywords->$getter();
+        }
+
+        return $this->keywordsCache[$type];
+    }
+
+    /**
      * Scans Feature from input & returns it if found.
      *
      * @return  stdClass|null
      */
     protected function scanFeature()
     {
-        return $this->scanInputForKeywords($this->keywords->getFeatureKeywords(), 'Feature');
+        return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
     }
 
     /**
@@ -259,7 +276,7 @@ class Lexer
      */
     protected function scanBackground()
     {
-        return $this->scanInputForKeywords($this->keywords->getBackgroundKeywords(), 'Background');
+        return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
     }
 
     /**
@@ -269,7 +286,7 @@ class Lexer
      */
     protected function scanScenario()
     {
-        return $this->scanInputForKeywords($this->keywords->getScenarioKeywords(), 'Scenario');
+        return $this->scanInputForKeywords($this->getKeywords('Scenario'), 'Scenario');
     }
 
     /**
@@ -279,7 +296,7 @@ class Lexer
      */
     protected function scanOutline()
     {
-        return $this->scanInputForKeywords($this->keywords->getOutlineKeywords(), 'Outline');
+        return $this->scanInputForKeywords($this->getKeywords('Outline'), 'Outline');
     }
 
     /**
@@ -289,7 +306,7 @@ class Lexer
      */
     protected function scanExamples()
     {
-        return $this->scanInputForKeywords($this->keywords->getExamplesKeywords(), 'Examples');
+        return $this->scanInputForKeywords($this->getKeywords('Examples'), 'Examples');
     }
 
     /**
@@ -300,7 +317,7 @@ class Lexer
     protected function scanStep()
     {
         $matches    = array();
-        $keywords   = $this->keywords->getStepKeywords();
+        $keywords   = $this->getKeywords('Step');
 
         if (preg_match('/^('.$keywords.') *([^\n]+)/u', $this->input, $matches)) {
             $this->consumeInput(mb_strlen($matches[0]));
@@ -423,7 +440,7 @@ class Lexer
     protected function scanLanguage()
     {
         if ('#' === $this->input[0]) {
-            return $this->scanInput('/^\# *language: *([\w_\-]+)/', 'Language');
+            return $this->scanInput('/^\# *language: *([\w_\-]+)[^\n]*/', 'Language');
         }
     }
 
