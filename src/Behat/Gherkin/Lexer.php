@@ -128,6 +128,22 @@ class Lexer
     }
 
     /**
+     * Consumes line from input & increments line counter.
+     */
+    protected function consumeLine()
+    {
+        ++$this->lineNumber;
+
+        if (!count($this->lines)) {
+            $this->eos = true;
+
+            return false;
+        }
+
+        $this->line = array_shift($this->lines);
+    }
+
+    /**
      * Returns stashed token or false if hasn't.
      *
      * @return  stdClass|boolean    token if has stashed, false otherways
@@ -173,22 +189,6 @@ class Lexer
     }
 
     /**
-     * Consumes line from input.
-     */
-    protected function moveToNextLine()
-    {
-        ++$this->lineNumber;
-
-        if (!count($this->lines)) {
-            $this->eos = true;
-
-            return false;
-        }
-
-        $this->line = array_shift($this->lines);
-    }
-
-    /**
      * Scans for token with specified regex.
      *
      * @param   string  $regex  regular expression
@@ -199,10 +199,11 @@ class Lexer
     protected function scanInput($regex, $type)
     {
         $matches = array();
+
         if (preg_match($regex, $this->line, $matches)) {
             $token = $this->takeToken($type, $matches[1]);
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -220,11 +221,11 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\s*('.$keywords.')\: *([^\n\#]*)/u', $this->line, $matches)) {
+        if (preg_match('/^\s*('.$keywords.'):\s*([^\n\#]*)/u', $this->line, $matches)) {
             $token = $this->takeToken($type, $matches[2]);
             $token->keyword = $matches[1];
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -322,11 +323,11 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\s*('.$this->getKeywords('Step').') *([^\n\#]+)/u', $this->line, $matches)) {
+        if (preg_match('/^\s*('.$this->getKeywords('Step').')\s*([^\n\#]+)/u', $this->line, $matches)) {
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -346,7 +347,7 @@ class Lexer
             $token = $this->takeToken('PyStringOperator');
             $token->swallow = $pos;
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -360,11 +361,7 @@ class Lexer
     protected function scanPyStringContent()
     {
         if ($this->inPyString) {
-            $token = $this->takeToken('Text', $this->line);
-
-            $this->moveToNextLine();
-
-            return $token;
+            return $this->scanText();
         }
     }
 
@@ -375,19 +372,18 @@ class Lexer
      */
     protected function scanTableRow()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if (preg_match('/\s*\|([^\n]+)\|/', $this->line, $matches)) {
+        if (isset($line[0]) && '|' === $line[0]) {
             $token = $this->takeToken('TableRow');
 
-            // Split & trim row columns
-            $columns = explode('|', $matches[1]);
+            $line = mb_substr($line, 1, mb_strlen($line) - 2);
             $columns = array_map(function($column) {
                 return trim($column);
-            }, $columns);
+            }, explode('|', $line));
             $token->columns = $columns;
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -400,17 +396,17 @@ class Lexer
      */
     protected function scanTags()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if (preg_match('/^\s*@([^\n]+)/', $this->line, $matches)) {
+        if (isset($line[0]) && '@' === $line[0]) {
             $token = $this->takeToken('Tag');
-            $tags = explode('@', $matches[1]);
+            $tags = explode('@', mb_substr($line, 1));
             $tags = array_map(function($tag){
                 return trim($tag);
             }, $tags);
             $token->tags = $tags;
 
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -423,7 +419,9 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        return $this->scanInput('/^\s*\#\s*(?:language|lang):\s*([\w_\-]+)\s*$/', 'Language');
+        if (false !== mb_strpos($this->line, '#') && false !== mb_strpos($this->line, 'language')) {
+            return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        }
     }
 
     /**
@@ -433,7 +431,13 @@ class Lexer
      */
     protected function scanComment()
     {
-        return $this->scanInput('/^\s*\#([^\n]*)/', 'Comment');
+        if (false !== mb_strpos($this->line, '#')) {
+            $token = $this->takeToken('Comment', $this->line);
+
+            $this->consumeLine();
+
+            return $token;
+        }
     }
 
     /**
@@ -443,12 +447,10 @@ class Lexer
      */
     protected function scanNewline()
     {
-        $matches = array();
+        if ('' === trim($this->line)) {
+            $token = $this->takeToken('Newline', mb_strlen($this->line));
 
-        if (preg_match('/^(\s*)$/', $this->line, $matches)) {
-            $token = $this->takeToken('Newline', $matches[1]);
-
-            $this->moveToNextLine();
+            $this->consumeLine();
 
             return $token;
         }
@@ -463,7 +465,7 @@ class Lexer
     {
         $token = $this->takeToken('Text', $this->line);
 
-        $this->moveToNextLine();
+        $this->consumeLine();
 
         return $token;
     }

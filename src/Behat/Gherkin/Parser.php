@@ -17,7 +17,7 @@ use Behat\Gherkin\Exception\Exception,
  * Gherkin parser.
  *
  * $lexer  = new Behat\Gherkin\Lexer($keywords);
- * $parser = new Parser($lexer);
+ * $parser = new Behat\Gherkin\Parser($lexer);
  * $featuresArray = $parser->parse('/path/to/feature.feature');
  *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
@@ -59,11 +59,10 @@ class Parser
         $this->lexer->setLanguage($language = 'en');
         $languageSpecifierLine = null;
 
-        while ('EOS' !== $this->predictTokenType()) {
-            if ('Newline' === $this->predictTokenType()
-             || 'Comment' === $this->predictTokenType()) {
+        while ('EOS' !== ($predicted = $this->predictTokenType())) {
+            if ('Newline' === $predicted || 'Comment' === $predicted) {
                 $this->lexer->getAdvancedToken();
-            } elseif ('Language' === $this->predictTokenType()) {
+            } elseif ('Language' === $predicted) {
                 $token      = $this->expectTokenType('Language');
                 $language   = $token->value;
 
@@ -79,8 +78,8 @@ class Parser
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
-            } elseif ('Feature' === $this->predictTokenType()
-                   || ('Tag' === $this->predictTokenType() && 'Feature' === $this->predictTokenType(2))) {
+            } elseif ('Feature' === $predicted
+                   || ('Tag' === $predicted && 'Feature' === $this->predictTokenType(2))) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
                 $features[] = $feature;
@@ -210,10 +209,10 @@ class Parser
         }
 
         // Parse scenarios & outlines
-        while ('Scenario' === $this->predictTokenType()
-            || ('Tag' === $this->predictTokenType() && 'Scenario' === $this->predictTokenType(2))
-            || 'Outline' === $this->predictTokenType()
-            || ('Tag' === $this->predictTokenType() && 'Outline' === $this->predictTokenType(2))) {
+        while ('Scenario' === ($predicted = $this->predictTokenType())
+            || ('Tag' === $predicted && 'Scenario' === ($predicted2 = $this->predictTokenType(2)))
+            || 'Outline' === $predicted
+            || ('Tag' === $predicted && 'Outline' === $predicted2)) {
             $node->addScenario($this->parseExpression());
         }
 
@@ -390,20 +389,10 @@ class Parser
         $token  = $this->expectTokenType('PyStringOperator');
         $node   = new Node\PyStringNode(null, $token->swallow);
 
-        while ('PyStringOperator' !== ($predicted = $this->predictTokenType())
-            && ('Text' === $predicted || 'Newline' === $predicted)) {
-
-            if ('Newline' === $predicted) {
-                $token = $this->lexer->getAdvancedToken();
-
-                if ('Newline' === $this->predictTokenType()) {
-                    $this->lexer->getAdvancedToken();
-                    $node->addLine($token->value);
-                }
-            } else {
-                $node->addLine($this->parseText(false));
-            }
+        while ('PyStringOperator' !== ($predicted = $this->predictTokenType()) && 'Text' === $predicted) {
+            $node->addLine($this->parseText(false));
         }
+
         $this->expectTokenType('PyStringOperator');
         $this->skipExtraChars();
 
@@ -412,6 +401,8 @@ class Parser
 
     /**
      * Parses next text token & returns it's string content.
+     *
+     * @param   boolean $skipExtraChars do we need to skip newlines & spaces
      *
      * @return  string
      */
