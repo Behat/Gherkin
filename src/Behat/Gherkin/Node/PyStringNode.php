@@ -17,25 +17,18 @@ namespace Behat\Gherkin\Node;
  */
 class PyStringNode
 {
-    private $ltrimCount;
     private $lines = array();
 
     /**
      * Initializes PyString.
      *
      * @param   string  $string         initial string
-     * @param   integer $ltrimCount     left-trim count
      */
-    public function __construct($string = null, $ltrimCount = 0)
+    public function __construct($string = null)
     {
-        $this->ltrimCount = $ltrimCount;
-
         if (null !== $string) {
             $string = preg_replace("/\r\n|\r/", "\n", $string);
-
-            foreach (explode("\n", $string) as $line) {
-                $this->addLine($line);
-            }
+            $this->lines = explode("\n", $string);
         }
     }
 
@@ -60,10 +53,6 @@ class PyStringNode
      */
     public function addLine($line)
     {
-        if ($this->ltrimCount >= 1) {
-            $line = preg_replace('/^\s{1,' . $this->ltrimCount . '}/', '', $line);
-        }
-
         $this->lines[] = $line;
     }
 

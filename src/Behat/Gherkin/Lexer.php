@@ -20,14 +20,16 @@ use Behat\Gherkin\Exception\Exception,
  */
 class Lexer
 {
-    private $input;
+    private $lines;
+    private $line;
+    private $lineNumber;
+    private $eos;
     private $keywords;
-    private $line             = 1;
+    private $keywordsCache    = array();
     private $deferredObjects  = array();
     private $stash            = array();
     private $inPyString       = false;
-    private $lastIndentString = '';
-    private $keywordsCache    = array();
+    private $pyStringSwallow  = 0;
 
     /**
      * Initializes lexer.
@@ -46,12 +48,17 @@ class Lexer
      */
     public function setInput($input)
     {
-        $this->input            = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
-        $this->line             = 1;
+        $input                  = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
+
+        $this->lines            = explode("\n", $input);
+        $this->line             = array_shift($this->lines);
+        $this->lineNumber       = 1;
+        $this->eos              = false;
+
         $this->deferredObjects  = array();
         $this->stash            = array();
         $this->inPyString       = false;
-        $this->lastIndentString = '';
+        $this->pyStringSwallow  = 0;
     }
 
     /**
@@ -73,16 +80,6 @@ class Lexer
     public function getAdvancedToken()
     {
         return $this->getStashedToken() ?: $this->getNextToken();
-    }
-
-    /**
-     * Returns current line number.
-     *
-     * @return  integer
-     */
-    public function getCurrentLine()
-    {
-        return $this->line;
     }
 
     /**
@@ -126,10 +123,26 @@ class Lexer
     {
         return (Object) array(
             'type'      => $type,
-            'line'      => $this->line,
+            'line'      => $this->lineNumber,
             'value'     => $value ?: null,
             'defered'   => false
         );
+    }
+
+    /**
+     * Consumes line from input & increments line counter.
+     */
+    protected function consumeLine()
+    {
+        ++$this->lineNumber;
+
+        if (!count($this->lines)) {
+            $this->eos = true;
+
+            return false;
+        }
+
+        $this->line = array_shift($this->lines);
     }
 
     /**
@@ -163,7 +176,6 @@ class Lexer
             ?: $this->scanEOS()
             ?: $this->scanPyStringOperator()
             ?: $this->scanPyStringContent()
-            ?: $this->scanNewline()
             ?: $this->scanStep()
             ?: $this->scanScenario()
             ?: $this->scanBackground()
@@ -174,17 +186,8 @@ class Lexer
             ?: $this->scanTableRow()
             ?: $this->scanLanguage()
             ?: $this->scanComment()
+            ?: $this->scanNewline()
             ?: $this->scanText();
-    }
-
-    /**
-     * Consumes input.
-     *
-     * @param   integer $length length of input to consume
-     */
-    protected function consumeInput($length)
-    {
-        $this->input = mb_substr($this->input, $length);
     }
 
     /**
@@ -198,10 +201,13 @@ class Lexer
     protected function scanInput($regex, $type)
     {
         $matches = array();
-        if (preg_match($regex, $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
 
-            return $this->takeToken($type, $matches[1]);
+        if (preg_match($regex, $this->line, $matches)) {
+            $token = $this->takeToken($type, $matches[1]);
+
+            $this->consumeLine();
+
+            return $token;
         }
     }
 
@@ -215,12 +221,13 @@ class Lexer
      */
     protected function scanInputForKeywords($keywords, $type)
     {
-        $matches    = array();
+        $matches = array();
 
-        if (preg_match('/^('.$keywords.')\: *([^\n]*)/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (preg_match('/^\s*('.$keywords.'):\s*([^\n\#]*)/u', $this->line, $matches)) {
             $token = $this->takeToken($type, $matches[2]);
             $token->keyword = $matches[1];
+
+            $this->consumeLine();
 
             return $token;
         }
@@ -233,7 +240,7 @@ class Lexer
      */
     protected function scanEOS()
     {
-        if (mb_strlen($this->input)) {
+        if (!$this->eos) {
             return;
         }
 
@@ -316,13 +323,13 @@ class Lexer
      */
     protected function scanStep()
     {
-        $matches    = array();
-        $keywords   = $this->getKeywords('Step');
+        $matches = array();
 
-        if (preg_match('/^('.$keywords.') *([^\n]+)/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (preg_match('/^\s*('.$this->getKeywords('Step').')\s*([^\n\#]+)/u', $this->line, $matches)) {
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
+
+            $this->consumeLine();
 
             return $token;
         }
@@ -337,12 +344,12 @@ class Lexer
     {
         $matches = array();
 
-        if ('"' === $this->input[0] && preg_match('/^"""[^\n]*/', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (false !== ($pos = mb_strpos($this->line, '"""'))) {
             $this->inPyString =! $this->inPyString;
-
             $token = $this->takeToken('PyStringOperator');
-            $token->swallow = mb_strlen($this->lastIndentString);
+            $this->pyStringSwallow = $pos;
+
+            $this->consumeLine();
 
             return $token;
         }
@@ -356,12 +363,12 @@ class Lexer
     protected function scanPyStringContent()
     {
         if ($this->inPyString) {
-            $matches = array();
-            if (preg_match('/^([^\n]+)/', $this->input, $matches)) {
-                $this->consumeInput(mb_strlen($matches[0]));
+            $token = $this->scanText();
 
-                return $this->takeToken('Text', $this->lastIndentString . $matches[1]);
-            }
+            // swallow trailing spaces
+            $token->value = preg_replace('/^\s{1,'.$this->pyStringSwallow.'}/', '', $token->value);
+
+            return $token;
         }
     }
 
@@ -372,38 +379,18 @@ class Lexer
      */
     protected function scanTableRow()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if ('|' === $this->input[0] && preg_match('/^\|([^\n]+)\|/', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (isset($line[0]) && '|' === $line[0]) {
             $token = $this->takeToken('TableRow');
 
-            // Split & trim row columns
-            $columns = explode('|', $matches[1]);
+            $line = mb_substr($line, 1, mb_strlen($line) - 2);
             $columns = array_map(function($column) {
                 return trim($column);
-            }, $columns);
+            }, explode('|', $line));
             $token->columns = $columns;
 
-            return $token;
-        }
-    }
-
-    /**
-     * Scans Newline from input & returns it if found.
-     *
-     * @return  stdClass|null
-     */
-    protected function scanNewline()
-    {
-        $matches = array();
-
-        if ("\n" === $this->input[0] && preg_match('/^\n( *)/', $this->input, $matches)) {
-            $this->line++;
-            $this->lastIndentString = $matches[1];
-
-            $this->consumeInput(mb_strlen($matches[0]));
-            $token = $this->takeToken('Newline', $this->lastIndentString);
+            $this->consumeLine();
 
             return $token;
         }
@@ -416,17 +403,17 @@ class Lexer
      */
     protected function scanTags()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if ('@' === $this->input[0] && preg_match('/^@([^\n]+)/', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (isset($line[0]) && '@' === $line[0]) {
             $token = $this->takeToken('Tag');
-
-            $tags = explode('@', $matches[1]);
+            $tags = explode('@', mb_substr($line, 1));
             $tags = array_map(function($tag){
                 return trim($tag);
             }, $tags);
             $token->tags = $tags;
+
+            $this->consumeLine();
 
             return $token;
         }
@@ -439,8 +426,8 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if ('#' === $this->input[0]) {
-            return $this->scanInput('/^\# *language: *([\w_\-]+)[^\n]*/', 'Language');
+        if (false !== mb_strpos($this->line, '#') && false !== mb_strpos($this->line, 'language')) {
+            return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
         }
     }
 
@@ -451,8 +438,28 @@ class Lexer
      */
     protected function scanComment()
     {
-        if ('#' === $this->input[0]) {
-            return $this->scanInput('/^\#([^\n]*)/', 'Comment');
+        if (false !== mb_strpos($this->line, '#')) {
+            $token = $this->takeToken('Comment', $this->line);
+
+            $this->consumeLine();
+
+            return $token;
+        }
+    }
+
+    /**
+     * Scans Newline from input & returns it if found.
+     *
+     * @return  stdClass|null
+     */
+    protected function scanNewline()
+    {
+        if ('' === trim($this->line)) {
+            $token = $this->takeToken('Newline', mb_strlen($this->line));
+
+            $this->consumeLine();
+
+            return $token;
         }
     }
 
@@ -463,6 +470,10 @@ class Lexer
      */
     protected function scanText()
     {
-        return $this->scanInput('/^([^\n\#]+)/', 'Text');
+        $token = $this->takeToken('Text', $this->line);
+
+        $this->consumeLine();
+
+        return $token;
     }
 }

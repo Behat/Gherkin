@@ -27,17 +27,17 @@ STRING
 
         $string = new PyStringNode(<<<STRING
 Hello,
-  Gherkin
+ Gherkin
     users
       =)
 STRING
-        , 4);
+        );
 
         $this->assertEquals(<<<STRING
 Hello,
-Gherkin
-users
-  =)
+ Gherkin
+    users
+      =)
 STRING
           , (string) $string
         );
@@ -56,21 +56,6 @@ Hello,
   Gherkin
     users
       =)
-STRING
-          , (string) $string
-        );
-
-        $string = new PyStringNode(null, 4);
-        $string->addLine('Hello,');
-        $string->addLine('  Gherkin');
-        $string->addLine('    users');
-        $string->addLine('      =)');
-
-        $this->assertEquals(<<<STRING
-Hello,
-Gherkin
-users
-  =)
 STRING
           , (string) $string
         );

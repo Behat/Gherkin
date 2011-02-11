@@ -310,8 +310,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                                 'arguments' => array(
                                     array(
                                         'type'      => 'pystring',
-                                        'text'      => '    some text',
-                                        'swallow'   => 4
+                                        'text'      => 'some text',
                                     )
                                 )
                             )
