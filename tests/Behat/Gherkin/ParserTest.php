@@ -14,6 +14,41 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     private $gherkin;
     private $yaml;
 
+    public function parserTestDataProvider()
+    {
+        $data = array();
+
+        $finder = new Finder();
+        $files  = $finder->files()->name('*.yml')->in(__DIR__ . '/Fixtures/etalons');
+
+        foreach ($files as $file) {
+            $testname = basename($file, '.yml');
+
+            $etalonFeature      = $this->parseEtalon($testname . '.yml');
+            $fixtureFeatures    = $this->parseFixture($testname . '.feature');
+
+            $data[] = array($testname, $etalonFeature, $fixtureFeatures);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @dataProvider parserTestDataProvider
+     *
+     * @param   string                          $fixtureName    name of the fixture
+     * @param   Behat\Gherkin\Node\FeatureNode  $etalon         etalon feature (to test against)
+     * @param   array                           $features       array of parsed feature(s)
+     */
+    public function testParser($fixtureName, $etalon, $features)
+    {
+        $this->assertType('array', $features);
+        $this->assertEquals(1, count($features));
+        $fixture = $features[0];
+
+        $this->assertEquals($etalon, $fixture);
+    }
+
     protected function getGherkinParser()
     {
         if (null === $this->gherkin) {
@@ -62,36 +97,5 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $feature->setFile(__DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature');
 
         return $feature;
-    }
-
-    public function parserTestDataProvider()
-    {
-        $data = array();
-
-        $finder = new Finder();
-        $files  = $finder->files()->name('*.yml')->in(__DIR__ . '/Fixtures/etalons');
-
-        foreach ($files as $file) {
-            $testname = basename($file, '.yml');
-
-            $etalonFeature      = $this->parseEtalon($testname . '.yml');
-            $fixtureFeatures    = $this->parseFixture($testname . '.feature');
-
-            $data[] = array($testname, $etalonFeature, $fixtureFeatures);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @dataProvider parserTestDataProvider
-     */
-    public function testParser($fixtureName, $etalon, $features)
-    {
-        $this->assertType('array', $features);
-        $this->assertEquals(1, count($features));
-        $fixture = $features[0];
-
-        $this->assertEquals($etalon, $fixture);
     }
 }
