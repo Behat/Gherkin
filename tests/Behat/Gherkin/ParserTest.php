@@ -40,7 +40,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      * @param   Behat\Gherkin\Node\FeatureNode  $etalon         etalon feature (to test against)
      * @param   array                           $features       array of parsed feature(s)
      */
-    public function testParser($fixtureName, $etalon, $features)
+    public function testParser($fixtureName, $etalon, array $features)
     {
         $this->assertType('array', $features);
         $this->assertEquals(1, count($features));
