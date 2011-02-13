@@ -86,7 +86,7 @@ class Parser
                 $feature->setLanguage($language);
                 $features[] = $feature;
             } else {
-                $this->expectTokenType(array('Feature', 'Scenario', 'Outline'));
+                $this->expectTokenType('Feature');
             }
         }
 
@@ -96,25 +96,21 @@ class Parser
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param   string|array    $types  expected type or types of the next token
+     * @param   string  $types  expected type
      *
      * @return  stdClass
      *
      * @throws  Behat\Gherkin\Exception\ParserException if token type is differ from expected one
      */
-    protected function expectTokenType($types)
+    protected function expectTokenType($type)
     {
-        $types = (array) $types;
-
-        foreach ($types as $type) {
-            if ($type === $this->predictTokenType()) {
-                return $this->lexer->getAdvancedToken();
-            }
+        if ($type === $this->predictTokenType()) {
+            return $this->lexer->getAdvancedToken();
         }
 
-        throw new ParserException(sprintf('Expected %s %s, but got %s on line: %d%s',
-            implode(', ', $types), (count($types) > 1 ? 'tokens' : 'token'), $this->predictTokenType(),
-            $this->lexer->predictToken()->line, $this->file ? ' in file: ' . $this->file : ''
+        throw new ParserException(sprintf('Expected %s token, but got %s on line: %d%s',
+            $type, $this->predictTokenType(), $this->lexer->predictToken()->line,
+            $this->file ? ' in file: ' . $this->file : ''
         ));
     }
 
