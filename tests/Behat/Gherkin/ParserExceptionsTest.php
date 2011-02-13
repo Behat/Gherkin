@@ -36,7 +36,7 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testStepRightAfterFeature()
     {
@@ -50,7 +50,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testAmbigiousLanguage()
     {
@@ -68,7 +68,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testEmptyOutline()
     {
@@ -82,7 +82,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testWrongTagPlacement()
     {
@@ -99,7 +99,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testBackgroundWithTag()
     {
@@ -115,7 +115,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testTableArgumentNotInPlace()
     {
@@ -132,7 +132,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testPyStringArgumentNotInPlace()
     {
@@ -149,7 +149,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testEndlessPyString()
     {
@@ -166,7 +166,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\Exception
+     * @expectedException Behat\Gherkin\Exception\ParserException
      */
     public function testWrongStepType()
     {

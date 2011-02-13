@@ -2,7 +2,7 @@
 
 namespace Behat\Gherkin;
 
-use Behat\Gherkin\Exception\Exception,
+use Behat\Gherkin\Exception\ParserException,
     Behat\Gherkin\Node;
 
 /*
@@ -43,6 +43,8 @@ class Parser
      * @param   string          $input  gherkin filename or string document
      *
      * @return  array                   array of feature nodes
+     *
+     * @throws  Behat\Gherkin\Exception\ParserException if feature file has more than one language specifier
      */
     public function parse($input, $file = null)
     {
@@ -73,7 +75,7 @@ class Parser
                     $this->lexer->setLanguage($language);
                 } elseif ($languageSpecifierLine !== $token->line) {
                     // Language already specified
-                    throw new Exception(sprintf('Ambigious language specifiers on lines: %d and %d%s',
+                    throw new ParserException(sprintf('Ambigious language specifiers on lines: %d and %d%s',
                         $languageSpecifierLine, $token->line,
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
@@ -98,7 +100,7 @@ class Parser
      *
      * @return  stdClass
      *
-     * @throws  Behat\Gherkin\Exception\Exception   if token type is differ from expected one
+     * @throws  Behat\Gherkin\Exception\ParserException if token type is differ from expected one
      */
     protected function expectTokenType($types)
     {
@@ -110,7 +112,7 @@ class Parser
             }
         }
 
-        throw new Exception(sprintf('Expected %s %s, but got %s on line: %d%s',
+        throw new ParserException(sprintf('Expected %s %s, but got %s on line: %d%s',
             implode(', ', $types), (count($types) > 1 ? 'tokens' : 'token'), $this->predictTokenType(),
             $this->lexer->predictToken()->line, $this->file ? ' in file: ' . $this->file : ''
         ));
