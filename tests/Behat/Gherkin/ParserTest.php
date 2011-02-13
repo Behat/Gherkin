@@ -86,7 +86,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider parserTestDataProvider
      */
-    public function testFixtures($fixtureName, $etalon, $features)
+    public function testParser($fixtureName, $etalon, $features)
     {
         $this->assertType('array', $features);
         $this->assertEquals(1, count($features));
