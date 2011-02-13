@@ -3,7 +3,8 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Loader\LoaderInterface,
-    Behat\Gherkin\Filter\FilterInterface;
+    Behat\Gherkin\Filter\FilterInterface,
+    Behat\Gherkin\Filter\LineFilter;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -64,6 +65,14 @@ class Gherkin
      */
     public function load($resource)
     {
+        $filters = $this->filters;
+
+        $matches = array();
+        if (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+            $resource = $matches[1];
+            $filters[] = new LineFilter($matches[2]);
+        }
+
         $loader = $this->resolveLoader($resource);
 
         if (null === $loader) {
@@ -75,7 +84,7 @@ class Gherkin
         foreach ($features as $feature) {
             $scenarios = $feature->getScenarios();
             foreach ($scenarios as $i => $scenario) {
-                foreach ($this->filters as $filter) {
+                foreach ($filters as $filter) {
                     if (!$filter->isScenarioMatch($scenario)) {
                         unset($scenarios[$i]);
                         break;
