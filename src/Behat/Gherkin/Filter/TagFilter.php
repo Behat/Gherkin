@@ -25,7 +25,7 @@ class TagFilter implements FilterInterface
     /**
      * Initializes filter.
      *
-     * @param   string  $this->filterStringString   name filter string
+     * @param   string  $filterStringString name filter string
      */
     public function __construct($filterString)
     {
