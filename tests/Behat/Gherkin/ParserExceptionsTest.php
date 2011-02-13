@@ -181,4 +181,22 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
     }
+
+    /**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+     */
+    public function testMultipleBackgrounds()
+    {
+        $feature = <<<GHERKIN
+Feature:
+
+    Background:
+        Given some step
+
+    Background:
+        Aaand some step
+GHERKIN;
+
+        $parsed = $this->gherkin->parse($feature);
+    }
 }
