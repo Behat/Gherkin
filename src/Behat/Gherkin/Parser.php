@@ -84,7 +84,7 @@ class Parser
                 $feature->setLanguage($language);
                 $features[] = $feature;
             } else {
-                $this->expectTokenType('Feature');
+                $this->expectTokenType(array('Feature', 'Scenario', 'Outline'));
             }
         }
 
@@ -94,22 +94,26 @@ class Parser
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param   string  $type   type
+     * @param   string|array    $types  expected type or types of the next token
      *
      * @return  stdClass
      *
      * @throws  Behat\Gherkin\Exception\Exception   if token type is differ from expected one
      */
-    protected function expectTokenType($type)
+    protected function expectTokenType($types)
     {
-        if ($type === $this->predictTokenType()) {
-            return $this->lexer->getAdvancedToken();
-        } else {
-            throw new Exception(sprintf('Expected %s, but got %s on line: %d%s',
-                $type, $this->predictTokenType(), $this->lexer->predictToken()->line,
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
+        $types = (array) $types;
+
+        foreach ($types as $type) {
+            if ($type === $this->predictTokenType()) {
+                return $this->lexer->getAdvancedToken();
+            }
         }
+
+        throw new Exception(sprintf('Expected %s %s, but got %s on line: %d%s',
+            implode(', ', $types), (count($types) > 1 ? 'tokens' : 'token'), $this->predictTokenType(),
+            $this->lexer->predictToken()->line, $this->file ? ' in file: ' . $this->file : ''
+        ));
     }
 
     /**
@@ -334,16 +338,6 @@ class Parser
         $node   = new Node\StepNode($token->value, trim($token->text) ?: null, $token->line);
 
         $this->skipExtraChars();
-
-        // Parse step text
-        while ('Text' === $this->predictTokenType()) {
-            $text = trim($this->parseExpression());
-            if (null === $node->getText()) {
-                $node->setText($text);
-            } else {
-                $node->setText($node->getText() . "\n" . $text);
-            }
-        }
 
         // Parse PyString argument
         if ('PyStringOperator' === $this->predictTokenType()) {
