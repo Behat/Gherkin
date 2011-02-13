@@ -325,7 +325,7 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\s*('.$this->getKeywords('Step').')\s*([^\#$]+)/u', $this->line, $matches)) {
+        if (preg_match('/^\s*('.$this->getKeywords('Step').')\s+([^\#$]+)/u', $this->line, $matches)) {
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
 
