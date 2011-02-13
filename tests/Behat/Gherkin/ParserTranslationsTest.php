@@ -12,8 +12,6 @@ use Behat\Gherkin\Lexer,
     Behat\Gherkin\Node,
     Behat\Gherkin\Keywords\SymfonyTranslationKeywords;
 
-use Tests\Behat\Gherkin\Fixtures\YamlParser;
-
 class ParserTranslationsTest extends \PHPUnit_Framework_TestCase
 {
     private $translator;
