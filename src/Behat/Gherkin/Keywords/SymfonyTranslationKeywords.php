@@ -2,7 +2,9 @@
 
 namespace Behat\Gherkin\Keywords;
 
-use Symfony\Component\Translation\Translator;
+use Symfony\Component\Finder\Finder,
+    Symfony\Component\Translation\Translator,
+    Symfony\Component\Translation\Loader\XliffFileLoader;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -14,13 +16,15 @@ use Symfony\Component\Translation\Translator;
 
 /**
  * Symfony Translation Component's keywords holder.
- * 
+ *
  * $translator = new Symfony\Component\Translation\Translator('en', new Symfony\Component\Translation\MessageSelector());
- * $translator->addLoader('xliff', new Symfony\Component\Translation\Loader\XliffFileLoader());
- * $translator->addResource('xliff', $path, $id, 'gherkin');
- * 
+ * $translator->addLoader(...);
+ * $translator->addResource(...);
+ * ...
+ * $translator->addResource(...);
+ *
  * $keywords = new Behat\Gherkin\Keywords\SymfonyTranslationKeywords($translator);
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class SymfonyTranslationKeywords implements KeywordsInterface
@@ -29,9 +33,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     private $locale = 'en';
 
     /**
-     * Initialize keywords holder.
+     * Initializes keywords holder.
      *
-     * @param   Translator  $translator
+     * @param   Symfony\Component\Translation\Translator    $translator
      */
     public function __construct(Translator $translator)
     {

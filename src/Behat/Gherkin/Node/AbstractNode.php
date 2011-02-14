@@ -12,15 +12,16 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Abstract Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractNode
 {
     private $line;
+    private $keyword;
 
     /**
-     * Initialize node.
+     * Initializes node.
      *
      * @param   integer $line   line number
      */
@@ -30,12 +31,44 @@ abstract class AbstractNode
     }
 
     /**
-     * Return definition line number.
+     * Accepts specific visitor & visits current node.
+     *
+     * @param   Behat\Gherkin\Node\NodeVisitorInterface $visitor
+     *
+     * @return  mixed
+     */
+    public function accept(NodeVisitorInterface $visitor)
+    {
+        return $visitor->visit($this);
+    }
+
+    /**
+     * Returns definition line number.
      *
      * @return  integer
      */
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Sets current node definition keyword.
+     *
+     * @param   string  $keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Returns current node definition keyword.
+     *
+     * @return  string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
     }
 }

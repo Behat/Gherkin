@@ -17,16 +17,15 @@ feature:
           arguments:
             -
               type:     pystring
-              swallow:  3
               text:     |-
                 -
-                      a string
-                     with something
-                  be
-                 a
-                   u
-                     ti
-                       ful
+                   a string
+                  with something
+                be
+                a
+                u
+                  ti
+                    ful
 
         -
           type:       Then
@@ -35,13 +34,12 @@ feature:
           arguments:
             -
               type:     pystring
-              swallow:  4
               text:     |-
                 -
-                       a string
-                      with something
-                  be
-                 a
-                    u
-                      ti
-                        ful
+                   a string
+                  with something
+                be
+                a
+                u
+                  ti
+                    ful

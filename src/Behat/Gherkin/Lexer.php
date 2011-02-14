@@ -14,24 +14,27 @@ use Behat\Gherkin\Exception\Exception,
  */
 
 /**
- * Gherkin files Lexer.
- * 
+ * Gherkin lexer.
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Lexer
 {
-    private $input;
+    private $lines;
+    private $line;
+    private $lineNumber;
+    private $eos;
     private $keywords;
-    private $line             = 1;
+    private $keywordsCache    = array();
     private $deferredObjects  = array();
     private $stash            = array();
     private $inPyString       = false;
-    private $lastIndentString = '';
+    private $pyStringSwallow  = 0;
 
     /**
-     * Initialize Lexer.
+     * Initializes lexer.
      *
-     * @param   KeywordsInterface   $keywords   keywords holder
+     * @param   Behat\Gherkin\Keywords\KeywordsInterface    $keywords   keywords holder
      */
     public function __construct(KeywordsInterface $keywords)
     {
@@ -39,70 +42,63 @@ class Lexer
     }
 
     /**
-     * Set lexer input.
-     * 
+     * Sets lexer input.
+     *
      * @param   string  $input  input string
      */
     public function setInput($input)
     {
-        $this->input            = preg_replace(array('/\r\n|\r/u', '/\t/u'), array("\n", '  '), $input);
-        $this->line             = 1;
+        $input                  = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
+
+        $this->lines            = explode("\n", $input);
+        $this->line             = array_shift($this->lines);
+        $this->lineNumber       = 1;
+        $this->eos              = false;
+
         $this->deferredObjects  = array();
         $this->stash            = array();
         $this->inPyString       = false;
-        $this->lastIndentString = '';
+        $this->pyStringSwallow  = 0;
     }
 
     /**
-     * Set keywords language.
+     * Sets keywords language.
      *
      * @param   string  $language
      */
     public function setLanguage($language)
     {
         $this->keywords->setLanguage($language);
+        $this->keywordsCache = array();
     }
 
     /**
-     * Return next token or previously stashed one.
-     * 
-     * @return  Object
+     * Returns next token or previously stashed one.
+     *
+     * @return  stdClass
      */
     public function getAdvancedToken()
     {
-        if ($token = $this->getStashedToken()) {
-            return $token;
-        }
-
-        return $this->getNextToken();
+        return $this->getStashedToken() ?: $this->getNextToken();
     }
 
     /**
-     * Return current line number.
-     * 
-     * @return  integer
-     */
-    public function getCurrentLine()
-    {
-        return $this->line;
-    }
-
-    /**
-     * Defer token.
-     * 
-     * @param   Object   $token  token to defer
+     * Defers token.
+     *
+     * @param   stdClass    $token  token to defer
      */
     public function deferToken(\stdClass $token)
     {
+        $token->defered = true;
         $this->deferredObjects[] = $token;
     }
 
     /**
-     * Predict for number of tokens.
-     * 
+     * Predicts for number of tokens.
+     *
      * @param   integer     $number number of tokens to predict
      *
-     * @return  Object              predicted token
+     * @return  stdClass            predicted token
      */
     public function predictToken($number = 1)
     {
@@ -116,26 +112,43 @@ class Lexer
     }
 
     /**
-     * Construct token with specified parameters.
-     * 
+     * Constructs token with specified parameters.
+     *
      * @param   string  $type   token type
      * @param   string  $value  token value
      *
-     * @return  Object          new token object
+     * @return  stdClass        new token object
      */
     public function takeToken($type, $value = null)
     {
         return (Object) array(
-            'type'  => $type,
-            'line'  => $this->line,
-            'value' => $value ?: null
+            'type'      => $type,
+            'line'      => $this->lineNumber,
+            'value'     => $value ?: null,
+            'defered'   => false
         );
     }
 
     /**
-     * Return stashed token.
-     * 
-     * @return  Object|boolean   token if has stashed, false otherways
+     * Consumes line from input & increments line counter.
+     */
+    protected function consumeLine()
+    {
+        ++$this->lineNumber;
+
+        if (!count($this->lines)) {
+            $this->eos = true;
+
+            return false;
+        }
+
+        $this->line = array_shift($this->lines);
+    }
+
+    /**
+     * Returns stashed token or false if hasn't.
+     *
+     * @return  stdClass|boolean    token if has stashed, false otherways
      */
     protected function getStashedToken()
     {
@@ -143,9 +156,9 @@ class Lexer
     }
 
     /**
-     * Return deferred token.
-     * 
-     * @return  Object|boolean   token if has deferred, false otherways
+     * Returns deferred token or false if hasn't.
+     *
+     * @return  stdClass|boolean    token if has deferred, false otherways
      */
     protected function getDeferredToken()
     {
@@ -153,9 +166,9 @@ class Lexer
     }
 
     /**
-     * Return next token.
-     * 
-     * @return  Object
+     * Returns next token from input.
+     *
+     * @return  stdClass
      */
     protected function getNextToken()
     {
@@ -163,56 +176,71 @@ class Lexer
             ?: $this->scanEOS()
             ?: $this->scanPyStringOperator()
             ?: $this->scanPyStringContent()
-            ?: $this->scanTableRow()
-            ?: $this->scanFeature()
-            ?: $this->scanBackground()
+            ?: $this->scanStep()
             ?: $this->scanScenario()
+            ?: $this->scanBackground()
             ?: $this->scanOutline()
             ?: $this->scanExamples()
-            ?: $this->scanStep()
-            ?: $this->scanNewline()
+            ?: $this->scanFeature()
+            ?: $this->scanTags()
+            ?: $this->scanTableRow()
             ?: $this->scanLanguage()
             ?: $this->scanComment()
-            ?: $this->scanTags()
+            ?: $this->scanNewline()
             ?: $this->scanText();
     }
 
     /**
-     * Consume input.
-     * 
-     * @param   integer $length length of input to consume
-     */
-    protected function consumeInput($length)
-    {
-        $this->input = mb_substr($this->input, $length);
-    }
-
-    /**
-     * Scan for token with specified regex.
-     * 
+     * Scans for token with specified regex.
+     *
      * @param   string  $regex  regular expression
      * @param   string  $type   expected token type
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanInput($regex, $type)
     {
         $matches = array();
-        if (preg_match($regex, $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
 
-            return $this->takeToken($type, $matches[1]);
+        if (preg_match($regex, $this->line, $matches)) {
+            $token = $this->takeToken($type, $matches[1]);
+
+            $this->consumeLine();
+
+            return $token;
         }
     }
 
     /**
-     * Scan EOS from input & return it if found.
-     * 
-     * @return  Object|null
+     * Scans for token with specified keywords.
+     *
+     * @param   string  $keywords   keywords (splitted with |)
+     * @param   string  $type       expected token type
+     *
+     * @return  stdClass|null
+     */
+    protected function scanInputForKeywords($keywords, $type)
+    {
+        $matches = array();
+
+        if (preg_match('/^\s*('.$keywords.'):\s*([^\#]*)/u', $this->line, $matches)) {
+            $token = $this->takeToken($type, $matches[2]);
+            $token->keyword = $matches[1];
+
+            $this->consumeLine();
+
+            return $token;
+        }
+    }
+
+    /**
+     * Scans EOS from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanEOS()
     {
-        if (mb_strlen($this->input)) {
+        if (!$this->eos) {
             return;
         }
 
@@ -220,214 +248,232 @@ class Lexer
     }
 
     /**
-     * Scan Feature from input & return it if found.
-     * 
-     * @return  Object|null
+     * Returns keywords for provided type.
+     *
+     * @param   string  $type
+     *
+     * @return  string
+     *
+     * @uses    Behat\Gherkin\Keywords\KeywordsInterface
+     */
+    protected function getKeywords($type)
+    {
+        if (!isset($this->keywordsCache[$type])) {
+            $getter = 'get' . $type . 'Keywords';
+            $this->keywordsCache[$type] = $this->keywords->$getter();
+        }
+
+        return $this->keywordsCache[$type];
+    }
+
+    /**
+     * Scans Feature from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanFeature()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getFeatureKeywords() . ')\: *([^\n]*)/u', 'Feature'
-        );
+        return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
     }
 
     /**
-     * Scan Background from input & return it if found.
+     * Scans Background from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanBackground()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getBackgroundKeywords() . ')\: *([^\n]*)/u', 'Background'
-        );
+        return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
     }
 
     /**
-     * Scan Scenario from input & return it if found.
+     * Scans Scenario from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanScenario()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getScenarioKeywords() . ')\: *([^\n]*)/u', 'Scenario'
-        );
+        return $this->scanInputForKeywords($this->getKeywords('Scenario'), 'Scenario');
     }
 
     /**
-     * Scan Scenario Outline from input & return it if found.
+     * Scans Scenario Outline from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanOutline()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getOutlineKeywords() . ')\: *([^\n]*)/u', 'Outline'
-        );
+        return $this->scanInputForKeywords($this->getKeywords('Outline'), 'Outline');
     }
 
     /**
-     * Scan Scenario Outline Examples from input & return it if found.
+     * Scans Scenario Outline Examples from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanExamples()
     {
-        return $this->scanInput(
-            '/^(?:' . $this->keywords->getExamplesKeywords() . ')\: *([^\n]*)/u', 'Examples'
-        );
+        return $this->scanInputForKeywords($this->getKeywords('Examples'), 'Examples');
     }
 
     /**
-     * Scan Step from input & return it if found.
+     * Scans Step from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanStep()
     {
         $matches = array();
 
-        if (preg_match('/^('.$this->keywords->getStepKeywords().') *([^\n]+)/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (preg_match('/^\s*('.$this->getKeywords('Step').')\s+([^\#]+)/u', $this->line, $matches)) {
             $token = $this->takeToken('Step', $matches[1]);
             $token->text = $matches[2];
+
+            $this->consumeLine();
 
             return $token;
         }
     }
 
     /**
-     * Scan PyString from input & return it if found.
+     * Scans PyString from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanPyStringOperator()
     {
         $matches = array();
 
-        if (preg_match('/^"""[^\n]*/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (false !== ($pos = mb_strpos($this->line, '"""'))) {
             $this->inPyString =! $this->inPyString;
-
             $token = $this->takeToken('PyStringOperator');
-            $token->swallow = mb_strlen($this->lastIndentString);
+            $this->pyStringSwallow = $pos;
+
+            $this->consumeLine();
 
             return $token;
         }
     }
 
     /**
-     * Scan PyString content.
+     * Scans PyString content.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanPyStringContent()
     {
         if ($this->inPyString) {
-            $matches = array();
-            if (preg_match('/^([^\n]+)/u', $this->input, $matches)) {
-                $this->consumeInput(mb_strlen($matches[0]));
+            $token = $this->scanText();
 
-                return $this->takeToken('Text', $this->lastIndentString . $matches[1]);
-            }
+            // swallow trailing spaces
+            $token->value = preg_replace('/^\s{1,'.$this->pyStringSwallow.'}/', '', $token->value);
+
+            return $token;
         }
     }
 
     /**
-     * Scan Table Row from input & return it if found.
+     * Scans Table Row from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanTableRow()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if (preg_match('/^\|([^\n]+)\|/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (isset($line[0]) && '|' === $line[0]) {
             $token = $this->takeToken('TableRow');
 
-            // Split & trim row columns
-            $columns = explode('|', $matches[1]);
+            $line = mb_substr($line, 1, mb_strlen($line) - 2);
             $columns = array_map(function($column) {
                 return trim($column);
-            }, $columns);
+            }, explode('|', $line));
             $token->columns = $columns;
 
-            return $token;
-        }
-    }
-
-    /**
-     * Scan Newline from input & return it if found.
-     *
-     * @return  Object|null
-     */
-    protected function scanNewline()
-    {
-        $matches = array();
-
-        if (preg_match('/^\n( *)/u', $this->input, $matches)) {
-            $this->line++;
-            $this->lastIndentString = $matches[1];
-
-            $this->consumeInput(mb_strlen($matches[0]));
-            $token = $this->takeToken('Newline');
+            $this->consumeLine();
 
             return $token;
         }
     }
 
     /**
-     * Scan Tags from input & return it if found.
+     * Scans Tags from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanTags()
     {
-        $matches = array();
+        $line = trim($this->line);
 
-        if (preg_match('/^@([^\n]+)/u', $this->input, $matches)) {
-            $this->consumeInput(mb_strlen($matches[0]));
+        if (isset($line[0]) && '@' === $line[0]) {
             $token = $this->takeToken('Tag');
-
-            $tags = explode('@', $matches[1]);
+            $tags = explode('@', mb_substr($line, 1));
             $tags = array_map(function($tag){
                 return trim($tag);
             }, $tags);
             $token->tags = $tags;
 
+            $this->consumeLine();
+
             return $token;
         }
     }
 
     /**
-     * Scan Language specifier from input & return it if found.
+     * Scans Language specifier from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanLanguage()
     {
-        return $this->scanInput('/^\# *language: *([\w_\-]+)/u', 'Language');
+        if (false !== mb_strpos($this->line, '#') && false !== mb_strpos($this->line, 'language')) {
+            return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        }
     }
 
     /**
-     * Scan Comment from input & return it if found.
+     * Scans Comment from input & returns it if found.
      *
-     * @return  Object|null
+     * @return  stdClass|null
      */
     protected function scanComment()
     {
-        return $this->scanInput('/^\#([^\n]*)/u', 'Comment');
+        if (false !== mb_strpos($this->line, '#')) {
+            $token = $this->takeToken('Comment', $this->line);
+
+            $this->consumeLine();
+
+            return $token;
+        }
     }
 
     /**
-     * Scan text from input & return it if found. 
-     * 
-     * @return  Object|null
+     * Scans Newline from input & returns it if found.
+     *
+     * @return  stdClass|null
+     */
+    protected function scanNewline()
+    {
+        if ('' === trim($this->line)) {
+            $token = $this->takeToken('Newline', mb_strlen($this->line));
+
+            $this->consumeLine();
+
+            return $token;
+        }
+    }
+
+    /**
+     * Scans text from input & returns it if found.
+     *
+     * @return  stdClass|null
      */
     protected function scanText()
     {
-        return $this->scanInput('/^([^\n\#]+)/u', 'Text');
+        $token = $this->takeToken('Text', $this->line);
+
+        $this->consumeLine();
+
+        return $token;
     }
 }

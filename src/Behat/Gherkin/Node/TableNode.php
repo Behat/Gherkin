@@ -12,15 +12,16 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Table Argument Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class TableNode
 {
     private $rows = array();
+    private $keyword;
 
     /**
-     * Initialize table.
+     * Initializes table.
      *
      * @param   string  $table  initial table string
      */
@@ -36,7 +37,7 @@ class TableNode
     }
 
     /**
-     * Add row to the string.
+     * Adds a row to the string.
      *
      * @param   string  $row    columns hash (column1 => value, column2 => value)
      */
@@ -54,7 +55,7 @@ class TableNode
     }
 
     /**
-     * Return table rows.
+     * Returns table rows.
      *
      * @return  array
      */
@@ -64,10 +65,10 @@ class TableNode
     }
 
     /**
-     * Return specific row in a table.
+     * Returns specific row in a table.
      *
      * @param   integer $rowNum row number
-     * 
+     *
      * @return  array           columns hash (column1 => value, column2 => value)
      */
     public function getRow($rowNum)
@@ -76,10 +77,10 @@ class TableNode
     }
 
     /**
-     * Convert row into delimited string.
+     * Converts row into delimited string.
      *
      * @param   integer $rowNum row number
-     * 
+     *
      * @return  string
      */
     public function getRowAsString($rowNum)
@@ -93,7 +94,7 @@ class TableNode
     }
 
     /**
-     * Replace column value holders with tokens.
+     * Replaces column value holders with tokens.
      *
      * @param   array   $tokens     hash (search => replace)
      */
@@ -109,7 +110,7 @@ class TableNode
     }
 
     /**
-     * Return table hash, formed by columns (ColumnHash).
+     * Returns table hash, formed by columns (ColumnHash).
      *
      * @return  array
      */
@@ -127,7 +128,7 @@ class TableNode
     }
 
     /**
-     * Return table hash, formed by rows (RowsHash).
+     * Returns table hash, formed by rows (RowsHash).
      *
      * @return  array
      */
@@ -144,7 +145,7 @@ class TableNode
     }
 
     /**
-     * Convert table into string
+     * Converts table into string
      *
      * @return  string
      */
@@ -163,10 +164,10 @@ class TableNode
     }
 
     /**
-     * Return max length of specific column.
+     * Returns max length of specific column.
      *
      * @param   integer $columnNum  column number
-     * 
+     *
      * @return  integer
      */
     protected function getMaxLengthForColumn($columnNum)
@@ -183,11 +184,11 @@ class TableNode
     }
 
     /**
-     * Pad string right.
+     * Pads string right.
      *
      * @param   string  $text
      * @param   integer $length
-     * 
+     *
      * @return  string
      */
     protected function padRight($text, $length)
@@ -197,5 +198,25 @@ class TableNode
         }
 
         return $text;
+    }
+
+    /**
+     * Sets current node definition keyword.
+     *
+     * @param   string  $keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Returns current node definition keyword.
+     *
+     * @return  string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
     }
 }

@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Node;
 
 /**
  * Scenario Outline Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class OutlineNode extends ScenarioNode
@@ -20,9 +20,9 @@ class OutlineNode extends ScenarioNode
     private $examples;
 
     /**
-     * Set outline examples table.
+     * Sets outline examples table.
      *
-     * @param   TableNode   $examples
+     * @param   Behat\Gherkin\Node\TableNode   $examples
      */
     public function setExamples(TableNode $examples)
     {
@@ -30,7 +30,7 @@ class OutlineNode extends ScenarioNode
     }
 
     /**
-     * Check if outline has examples.
+     * Checks if outline has examples.
      *
      * @return  boolean
      */
@@ -40,9 +40,9 @@ class OutlineNode extends ScenarioNode
     }
 
     /**
-     * Return examples table.
+     * Returns examples table.
      *
-     * @return  TableNode
+     * @return  Behat\Gherkin\Node\TableNode
      */
     public function getExamples()
     {

@@ -1,5 +1,6 @@
 feature:
   title:        Тест комментов
+  keyword:      Функционал
   language:     ru
   line:         7
   description:  |-

@@ -1,5 +1,6 @@
 feature:
   title:        Сложение чисел
+  keyword:      Функционал
   language:     ru
   line:         2
   description:  |-
@@ -10,6 +11,7 @@ feature:
   scenarios:
     -
       type:     scenario
+      keyword:  Сценарий
       title:    Сложение двух целых чисел
       line:     7
       steps:

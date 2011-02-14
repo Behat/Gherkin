@@ -1,0 +1,46 @@
+feature:
+  title:        multiline
+  language:     en
+  line:         1
+  description:  |-
+    Feature description
+    With etc.
+
+  background:
+    line:       8
+    steps:
+      - { type: Given, text: passing without a table, line: 11 }
+
+  scenarios:
+    -
+      type:     scenario
+      title:    |-
+        I'm a multiline name
+        which goes on and on and on for three lines
+        yawn
+      line:     13
+      steps:
+        - { type: Given, text: passing without a table, line: 18 }
+
+    -
+      type:     outline
+      title:    |-
+        I'm a multiline name
+        which goes on and on and on for three lines
+        yawn
+      line:     20
+      steps:
+        - { type: 'Given',  text: '<state> without a table',  line: 27 }
+      examples:
+        - [state]
+        - [passing]
+
+    -
+      type:     outline
+      title:    name
+      line:     36
+      steps:
+        - { type: 'Given',  text: '<state> without a table',  line: 39 }
+      examples:
+        - [state]
+        - [passing]

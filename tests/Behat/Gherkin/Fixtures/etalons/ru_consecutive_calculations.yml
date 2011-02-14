@@ -1,5 +1,6 @@
 feature:
   title:        Последовательные вычисления
+  keyword:      Функционал
   language:     ru
   line:         2
   description:  |-
@@ -7,6 +8,7 @@ feature:
     Пользователи хотят проводить вычисления над результатом предыдущей операций
 
   background:
+    keyword:    Предыстория
     line:       6
     steps:
       - { type: Допустим, text: я сложил 3 и 5, line: 7 }
@@ -14,6 +16,7 @@ feature:
   scenarios:
     -
       type:     scenario
+      keyword:  Сценарий
       title:    сложение с результатом последней операций
       line:     9
       steps:
@@ -22,6 +25,7 @@ feature:
         - { type: То,   text: 'результатом должно быть число 12', line: 12 }
     -
       type:     scenario
+      keyword:  Сценарий
       title:    деление результата последней операции
       line:     14
       steps:

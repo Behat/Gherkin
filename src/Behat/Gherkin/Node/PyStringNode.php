@@ -12,35 +12,28 @@ namespace Behat\Gherkin\Node;
 
 /**
  * PyString Argument Gherkin AST node.
- * 
+ *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class PyStringNode
 {
-    private $ltrimCount;
     private $lines = array();
 
     /**
-     * Initialize PyString.
+     * Initializes PyString.
      *
      * @param   string  $string         initial string
-     * @param   integer $ltrimCount     left-trim count
      */
-    public function __construct($string = null, $ltrimCount = 0)
+    public function __construct($string = null)
     {
-        $this->ltrimCount = $ltrimCount;
-
         if (null !== $string) {
             $string = preg_replace("/\r\n|\r/", "\n", $string);
-
-            foreach (explode("\n", $string) as $line) {
-                $this->addLine($line);
-            }
+            $this->lines = explode("\n", $string);
         }
     }
 
     /**
-     * Replace PyString holders with tokens.
+     * Replaces PyString holders with tokens.
      *
      * @param   array   $tokens     hash (search => replace)
      */
@@ -54,21 +47,17 @@ class PyStringNode
     }
 
     /**
-     * Add line to the PyString.
+     * Adds a line to the PyString.
      *
      * @param   string  $line
      */
     public function addLine($line)
     {
-        if ($this->ltrimCount >= 1) {
-            $line = preg_replace('/^\s{1,' . $this->ltrimCount . '}/', '', $line);
-        }
-
         $this->lines[] = $line;
     }
 
     /**
-     * Return PyString lines.
+     * Returns PyString lines.
      *
      * @return  array
      */
@@ -78,7 +67,7 @@ class PyStringNode
     }
 
     /**
-     * Convert PyString lines array into string.
+     * Converts PyString into string.
      *
      * @return  string
      */

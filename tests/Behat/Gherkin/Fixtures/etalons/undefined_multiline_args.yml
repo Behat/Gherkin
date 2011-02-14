@@ -17,8 +17,7 @@ feature:
           arguments:
             -
               type:     pystring
-              swallow:  4
-              text:     '      example'
+              text:     '  example'
 
     -
       type:     scenario
