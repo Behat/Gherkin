@@ -1,3 +1,14 @@
+1.0.0RC1 / 2011-02-15
+=====================
+
+  * Huge optimizations to Lexer & Parser
+  * Additional loaders (Yaml, Array, Directory)
+  * Filters (Tag, Name, Line)
+  * Code refactoring
+  * Nodes optimizations
+  * Additional tests for exceptions and translations
+  * Keywords dumper
+
 0.2.0 / 2011-01-05
 ==================
 
