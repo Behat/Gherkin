@@ -67,7 +67,7 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     protected function findRelativePath($path)
     {
         if (null !== $this->basePath) {
-            return strtr($path, array($this->basePath . '/' => ''));
+            return strtr($path, array($this->basePath . DIRECTORY_SEPARATOR => ''));
         }
 
         return $path;
@@ -84,8 +84,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     {
         if (is_file($path) || is_dir($path)) {
             return realpath($path);
-        } elseif (is_file($this->basePath . '/' . $path) || is_dir($this->basePath . '/' . $path)) {
-            return realpath($this->basePath . '/' . $path);
+        } elseif (is_file($this->basePath . DIRECTORY_SEPARATOR . $path)
+               || is_dir($this->basePath . DIRECTORY_SEPARATOR . $path)) {
+            return realpath($this->basePath . DIRECTORY_SEPARATOR . $path);
         }
 
         return false;
