@@ -44,7 +44,7 @@ class ScenarioNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($scenario->hasSteps());
 
         $steps = $scenario->getSteps();
-        $this->assertType('Behat\Gherkin\Node\StepNode', $steps[0]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\StepNode', $steps[0]);
 
         $this->assertEquals('Given', $steps[0]->getType());
         $this->assertEquals('Something', $steps[0]->getText());
@@ -68,7 +68,7 @@ class ScenarioNodeTest extends \PHPUnit_Framework_TestCase
     {
         $scenario = new ScenarioNode();
         $this->assertFalse($scenario->hasTags());
-        $this->assertType('array', $scenario->getTags());
+        $this->assertInternalType('array', $scenario->getTags());
         $this->assertEquals(0, count($scenario->getTags()));
 
         $scenario->setTags($tags = array('tag1', 'tag2'));

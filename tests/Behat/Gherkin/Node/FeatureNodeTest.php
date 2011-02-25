@@ -87,9 +87,9 @@ class FeatureNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($feature->hasScenarios());
 
         $scenarios = $feature->getScenarios();
-        $this->assertType('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
         $this->assertSame($feature, $scenarios[0]->getFeature());
-        $this->assertType('Behat\Gherkin\Node\OutlineNode', $scenarios[1]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\OutlineNode', $scenarios[1]);
         $this->assertSame($feature, $scenarios[1]->getFeature());
     }
 
@@ -97,7 +97,7 @@ class FeatureNodeTest extends \PHPUnit_Framework_TestCase
     {
         $feature = new FeatureNode();
         $this->assertFalse($feature->hasTags());
-        $this->assertType('array', $feature->getTags());
+        $this->assertInternalType('array', $feature->getTags());
         $this->assertEquals(0, count($feature->getTags()));
 
         $feature->setTags($tags = array('tag1', 'tag2'));

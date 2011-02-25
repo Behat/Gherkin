@@ -32,7 +32,7 @@ class BackgroundNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($background->hasSteps());
 
         $steps = $background->getSteps();
-        $this->assertType('Behat\Gherkin\Node\StepNode', $steps[0]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\StepNode', $steps[0]);
 
         $this->assertEquals('Given', $steps[0]->getType());
         $this->assertEquals('Something', $steps[0]->getText());

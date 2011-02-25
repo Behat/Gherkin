@@ -62,8 +62,8 @@ class StepNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($step->hasArguments());
 
         $arguments = $step->getArguments();
-        $this->assertType('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
-        $this->assertType('Behat\Gherkin\Node\TableNode', $arguments[1]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\TableNode', $arguments[1]);
     }
 
     public function testParent()
