@@ -32,8 +32,10 @@
             ##SOURCE_FILES##
 
             <file role="php" baseinstalldir="gherkin" name="autoload.php.dist" />
-
             <file role="php" baseinstalldir="gherkin" name="libpath.php" />
+
+            <file role="php" baseinstalldir="gherkin" name="phpdoc.ini.dist" />
+            <file role="php" baseinstalldir="gherkin" name="phpunit.xml.dist" />
             <file role="php" baseinstalldir="gherkin" name="CHANGES.md" />
             <file role="php" baseinstalldir="gherkin" name="LICENSE" />
             <file role="php" baseinstalldir="gherkin" name="README.md" />
