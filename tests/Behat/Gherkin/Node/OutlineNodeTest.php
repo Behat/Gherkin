@@ -56,7 +56,7 @@ class OutlineNodeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($outline->hasSteps());
 
         $steps = $outline->getSteps();
-        $this->assertType('Behat\Gherkin\Node\StepNode', $steps[0]);
+        $this->assertInstanceOf('Behat\Gherkin\Node\StepNode', $steps[0]);
 
         $this->assertEquals('Given', $steps[0]->getType());
         $this->assertEquals('Something', $steps[0]->getText());
@@ -80,7 +80,7 @@ class OutlineNodeTest extends \PHPUnit_Framework_TestCase
     {
         $outline = new OutlineNode();
         $this->assertFalse($outline->hasTags());
-        $this->assertType('array', $outline->getTags());
+        $this->assertInternalType('array', $outline->getTags());
         $this->assertEquals(0, count($outline->getTags()));
 
         $outline->setTags($tags = array('tag1', 'tag2'));

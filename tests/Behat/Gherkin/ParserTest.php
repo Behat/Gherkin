@@ -42,7 +42,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParser($fixtureName, $etalon, array $features)
     {
-        $this->assertType('array', $features);
+        $this->assertInternalType('array', $features);
         $this->assertEquals(1, count($features));
         $fixture = $features[0];
 

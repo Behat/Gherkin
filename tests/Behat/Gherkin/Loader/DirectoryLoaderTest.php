@@ -52,7 +52,7 @@ class DirectoryLoaderTest extends \PHPUnit_Framework_TestCase
         $this->gherkin
             ->expects($this->once())
             ->method('resolveLoader')
-            ->with($this->featuresPath . '/phps/some_file.php')
+            ->with($this->featuresPath.DIRECTORY_SEPARATOR.'phps'.DIRECTORY_SEPARATOR.'some_file.php')
             ->will($this->returnValue(null));
 
         $this->assertEquals(array(), $this->loader->load($this->featuresPath . '/phps'));
@@ -63,7 +63,7 @@ class DirectoryLoaderTest extends \PHPUnit_Framework_TestCase
         $this->gherkin
             ->expects($this->once())
             ->method('resolveLoader')
-            ->with($this->featuresPath . '/phps/some_file.php')
+            ->with($this->featuresPath.DIRECTORY_SEPARATOR.'phps'.DIRECTORY_SEPARATOR.'some_file.php')
             ->will($this->returnValue(null));
 
         $this->loader->setBasePath($this->featuresPath);
@@ -78,13 +78,13 @@ class DirectoryLoaderTest extends \PHPUnit_Framework_TestCase
         $this->gherkin
             ->expects($this->once())
             ->method('resolveLoader')
-            ->with($this->featuresPath . '/phps/some_file.php')
+            ->with($this->featuresPath.DIRECTORY_SEPARATOR.'phps'.DIRECTORY_SEPARATOR.'some_file.php')
             ->will($this->returnValue($loaderMock));
 
         $loaderMock
             ->expects($this->once())
             ->method('load')
-            ->with($this->featuresPath . '/phps/some_file.php')
+            ->with($this->featuresPath.DIRECTORY_SEPARATOR.'phps'.DIRECTORY_SEPARATOR.'some_file.php')
             ->will($this->returnValue(array('feature1', 'feature2')));
 
         $this->assertEquals(array('feature1', 'feature2'), $this->loader->load($this->featuresPath . '/phps'));

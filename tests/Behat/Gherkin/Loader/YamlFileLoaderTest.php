@@ -28,7 +28,7 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $features = $this->loader->load('etalons/addition.yml');
 
         $this->assertEquals(1, count($features));
-        $this->assertEquals('etalons/addition.yml', $features[0]->getFile());
+        $this->assertEquals('etalons'.DIRECTORY_SEPARATOR.'addition.yml', $features[0]->getFile());
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
         $this->assertEquals('en', $features[0]->getLanguage());
