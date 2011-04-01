@@ -1,6 +1,3 @@
-[submodule "vendor/Symfony/Component/Translation"]
-	path = vendor/Symfony/Component/Translation
-	url = https://github.com/symfony/Translation.git
 [submodule "vendor/Symfony/Component/Finder"]
 	path = vendor/Symfony/Component/Finder
 	url = https://github.com/symfony/Finder.git
@@ -13,3 +10,6 @@
 [submodule "vendor/Symfony/Component/Config"]
 	path = vendor/Symfony/Component/Config
 	url = https://github.com/symfony/Config.git
+[submodule "vendor/Symfony/Component/Translation"]
+	path = vendor/Symfony/Component/Translation
+	url = git://github.com/symfony/Translation.git
