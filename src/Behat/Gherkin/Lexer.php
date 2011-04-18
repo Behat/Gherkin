@@ -438,7 +438,7 @@ class Lexer
      */
     protected function scanComment()
     {
-        if (false !== mb_strpos($this->line, '#')) {
+        if (0 === mb_strpos(ltrim($this->line), '#')) {
             $token = $this->takeToken('Comment', $this->line);
 
             $this->consumeLine();
@@ -470,7 +470,11 @@ class Lexer
      */
     protected function scanText()
     {
-        $token = $this->takeToken('Text', $this->line);
+        $string = $this->line;
+        if (false !== ($pos = mb_strpos($this->line, '#'))) {
+            $string = substr($string, 0, $pos);
+        }
+        $token = $this->takeToken('Text', $string);
 
         $this->consumeLine();
 
