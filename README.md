@@ -20,13 +20,13 @@ $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
         'Examples'          => 'Examples',
         'Step Types'        => 'Given|When|Then|And|But'
     ),
-    'ru' => array(
-        'Feature'           => 'Функционал',
-        'Background'        => 'Предыстория',
-        'Scenario'          => 'Сценарий',
-        'Scenario Outline'  => 'Структура сценария',
-        'Examples'          => 'Значения',
-        'Step Types'        => 'Допустим|То|Если|И|Но'
+    'en-pirate' => array(
+        'Feature'           => 'Ahoy matey!',
+        'Background'        => 'Yo-ho-ho',
+        'Scenario'          => 'Heave to',
+        'Scenario Outline'  => 'Shiver me timbers',
+        'Examples'          => 'Dead men tell no tales',
+        'Step Types'        => 'Let go and haul|Gangway!|Blimey!|Avast!|Aye'
     )
 ));
 $lexer  = new Behat\Gherkin\Lexer($keywords);
