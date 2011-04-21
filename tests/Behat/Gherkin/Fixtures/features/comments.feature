@@ -16,7 +16,7 @@ Feature: Using the Console Formatter
   So that it can be fixed
 
   #comment
-  Scenario: A normal feature
+  Scenario: A normal feature #comment in scenario title
     #comment
     Given I have a pending step #comment
     #comment
