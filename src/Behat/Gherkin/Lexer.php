@@ -470,12 +470,7 @@ class Lexer
      */
     protected function scanText()
     {
-        $string = $this->line;
-        if (false !== ($pos = mb_strpos($this->line, '#'))) {
-            $string = substr($string, 0, $pos);
-        }
-        $token = $this->takeToken('Text', $string);
-
+        $token = $this->takeToken('Text', $this->line);
         $this->consumeLine();
 
         return $token;

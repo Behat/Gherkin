@@ -18,4 +18,4 @@ feature:
             -
               type:     pystring
               swallow:  6
-              text:     a string
+              text:     "a string with #something"

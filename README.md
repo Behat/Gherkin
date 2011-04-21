@@ -8,28 +8,32 @@ Gherkin parser from now on will be separate project from Behat core itself and h
 Usage
 -----
 
-    $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
-        'en' => array(
-            'Feature'           => 'Feature',
-            'Background'        => 'Background',
-            'Scenario'          => 'Scenario',
-            'Scenario Outline'  => 'Scenario Outline',
-            'Examples'          => 'Examples',
-            'Step Types'        => 'Given|When|Then|And|But'
-        ),
-        'ru' => array(
-            'Feature'           => 'Функционал',
-            'Background'        => 'Предыстория',
-            'Scenario'          => 'Сценарий',
-            'Scenario Outline'  => 'Структура сценария',
-            'Examples'          => 'Значения',
-            'Step Types'        => 'Допустим|То|Если|И|Но'
-        )
-    ));
-    $lexer  = new Behat\Gherkin\Lexer($keywords);
-    $parser = new Behat\Gherkin\Parser($lexer);
-    
-    $arrayOfFeatures = $parser->parse('/path/to/file.feature OR feature itself');
+``` php
+<?php
+
+$keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
+    'en' => array(
+        'Feature'           => 'Feature',
+        'Background'        => 'Background',
+        'Scenario'          => 'Scenario',
+        'Scenario Outline'  => 'Scenario Outline',
+        'Examples'          => 'Examples',
+        'Step Types'        => 'Given|When|Then|And|But'
+    ),
+    'en-pirate' => array(
+        'Feature'           => 'Ahoy matey!',
+        'Background'        => 'Yo-ho-ho',
+        'Scenario'          => 'Heave to',
+        'Scenario Outline'  => 'Shiver me timbers',
+        'Examples'          => 'Dead men tell no tales',
+        'Step Types'        => 'Let go and haul|Gangway!|Blimey!|Avast!|Aye'
+    )
+));
+$lexer  = new Behat\Gherkin\Lexer($keywords);
+$parser = new Behat\Gherkin\Parser($lexer);
+
+$arrayOfFeatures = $parser->parse('/path/to/file.feature OR feature itself');
+```
 
 
 Note on Patches/Pull Requests
@@ -45,11 +49,15 @@ Note on Patches/Pull Requests
 Running tests
 -------------
 
-	phpunit
+``` bash
+phpunit
+```
 
 If you get errors about missing dependencies - just run
 
-	git submodule update --init
+``` bash
+git submodule update --init
+```
 
 Gherkin Parser itself has no required dependencies, but test suite has.
 
