@@ -426,8 +426,10 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if (0 === mb_strpos(ltrim($this->line), '#') && false !== mb_strpos($this->line, 'language')) {
-            return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        if (!$this->inPyString) {
+            if (0 === mb_strpos(ltrim($this->line), '#') && false !== mb_strpos($this->line, 'language')) {
+                return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+            }
         }
     }
 
@@ -438,12 +440,14 @@ class Lexer
      */
     protected function scanComment()
     {
-        if (0 === mb_strpos(ltrim($this->line), '#')) {
-            $token = $this->takeToken('Comment', $this->line);
+        if (!$this->inPyString) {
+            if (0 === mb_strpos(ltrim($this->line), '#')) {
+                $token = $this->takeToken('Comment', $this->line);
 
-            $this->consumeLine();
+                $this->consumeLine();
 
-            return $token;
+                return $token;
+            }
         }
     }
 
