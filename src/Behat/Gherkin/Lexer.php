@@ -174,6 +174,8 @@ class Lexer
     {
         return $this->getDeferredToken()
             ?: $this->scanEOS()
+            ?: $this->scanLanguage()
+            ?: $this->scanComment()
             ?: $this->scanPyStringOperator()
             ?: $this->scanPyStringContent()
             ?: $this->scanStep()
@@ -184,8 +186,6 @@ class Lexer
             ?: $this->scanFeature()
             ?: $this->scanTags()
             ?: $this->scanTableRow()
-            ?: $this->scanLanguage()
-            ?: $this->scanComment()
             ?: $this->scanNewline()
             ?: $this->scanText();
     }
@@ -426,7 +426,7 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if (false !== mb_strpos($this->line, '#') && false !== mb_strpos($this->line, 'language')) {
+        if (0 === mb_strpos(ltrim($this->line), '#') && false !== mb_strpos($this->line, 'language')) {
             return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
         }
     }
