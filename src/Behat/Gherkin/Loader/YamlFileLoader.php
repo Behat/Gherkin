@@ -37,7 +37,7 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     public function load($path)
     {
         $path = $this->findAbsolutePath($path);
-        $hash = Yaml::load($path);
+        $hash = Yaml::parse($path);
 
         $features = parent::load($hash);
         $filename = $this->findRelativePath($path);
