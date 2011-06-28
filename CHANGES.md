@@ -1,3 +1,9 @@
+1.0.7 / 2011-06-28
+==================
+
+  * Added `getRaw()` method to PyStringNode
+  * Updated vendors
+
 1.0.6 / 2011-06-17
 ==================
 

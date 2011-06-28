@@ -67,12 +67,22 @@ class PyStringNode
     }
 
     /**
+     * Returns raw string.
+     *
+     * @return  string
+     */
+    public function getRaw()
+    {
+        return implode("\n", $this->lines);
+    }
+
+    /**
      * Converts PyString into string.
      *
      * @return  string
      */
     public function __toString()
     {
-        return implode("\n", $this->lines);
+        return $this->getRaw();
     }
 }
