@@ -197,8 +197,7 @@ class Parser
 
         // Parse feature description
         while ('Text' === $this->predictTokenType()) {
-            $text = $this->parseExpression();
-            $text = trim(preg_replace('/\#.*/', '', $text));
+            $text = trim($this->parseExpression());
             if (null === $node->getDescription()) {
                 $node->setDescription($text);
             } else {

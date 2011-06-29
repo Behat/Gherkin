@@ -3,16 +3,16 @@ feature:
   language:     en
   line:         3
   description:  |-
-    In order to verify this error
-    I want to run this feature using the progress format
+    In order to verify this error   # comment
+    I want to run this feature using the progress format#comment
     So that it can be fixed
 
   scenarios:
     -
       type:     scenario
-      title:    A normal feature
+      title:    "A normal feature #comment in scenario title"
       line:     19
       steps:
-        - { type: 'Given',  text: 'I have a pending step',                                line: 21 }
-        - { type: 'When',   text: 'I run this feature with the progress format',          line: 24 }
+        - { type: 'Given',  text: 'I have a pending step #comment',                       line: 21 }
+        - { type: 'When',   text: 'I run this feature with the progress format #comment', line: 24 }
         - { type: 'Then',   text: "I should get a no method error for 'backtrace_line'",  line: 31 }
