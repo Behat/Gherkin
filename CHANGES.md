@@ -1,3 +1,10 @@
+1.0.8 / 2011-06-29
+==================
+
+  * Fixed comments parsing.
+    You can’t have comments at the end of a line # like this
+    # But you can still have comments at the beginning of a line
+
 1.0.7 / 2011-06-28
 ==================
 
