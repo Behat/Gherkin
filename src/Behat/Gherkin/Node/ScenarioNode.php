@@ -80,7 +80,7 @@ class ScenarioNode extends AbstractScenarioNode
      */
     public function hasTags()
     {
-        return count($this->tags) > 0;
+        return count($this->getTags()) > 0;
     }
 
     /**
@@ -92,7 +92,7 @@ class ScenarioNode extends AbstractScenarioNode
      */
     public function hasTag($tag)
     {
-        return in_array($tag, $this->tags);
+        return in_array($tag, $this->getTags());
     }
 
     /**
@@ -101,6 +101,22 @@ class ScenarioNode extends AbstractScenarioNode
      * @return  array
      */
     public function getTags()
+    {
+        $tags = $this->tags;
+
+        if ($feature = $this->getFeature()) {
+            $tags = array_merge($tags, $feature->getTags());
+        }
+
+        return $tags;
+    }
+
+    /**
+     * Returns only own tags (without inherited ones).
+     *
+     * @return  array
+     */
+    public function getOwnTags()
     {
         return $this->tags;
     }

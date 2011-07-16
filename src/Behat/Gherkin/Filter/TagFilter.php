@@ -2,7 +2,8 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\FeatureNode,
+use Behat\Gherkin\Node\AbstractNode,
+    Behat\Gherkin\Node\FeatureNode,
     Behat\Gherkin\Node\ScenarioNode;
 
 /*
@@ -37,14 +38,7 @@ class TagFilter implements FilterInterface
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return $this->isClosuresMatch(
-            function($tag) use ($feature) {
-                return $feature->hasTag($tag);
-            },
-            function($tag) use ($feature) {
-                return !$feature->hasTag($tag);
-            }
-        );
+        return $this->matchesCondition($feature);
     }
 
     /**
@@ -52,25 +46,15 @@ class TagFilter implements FilterInterface
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {
-        $feature = $scenario->getFeature();
-
-        return $this->isClosuresMatch(
-            function($tag) use ($feature, $scenario) {
-                return $scenario->hasTag($tag) || $feature->hasTag($tag);
-            },
-            function($tag) use ($feature, $scenario) {
-                return !$scenario->hasTag($tag) && !$feature->hasTag($tag);
-            }
-        );
+        return $this->matchesCondition($scenario);
     }
 
     /**
-     * Checks if provided has/hasn't closures pass with filter.
+     * Checks that node matches condition.
      *
-     * @param   Closure $hasTagCheck    closure to check that something has got tag
-     * @param   Closure $hasntTagCheck  closure to check that something hasn't got tag
+     * @param   Behat\Gherkin\Node\Node\AbstractNode $node  node to check
      */
-    protected function isClosuresMatch(\Closure $hasTagCheck, \Closure $hasntTagCheck)
+    protected function matchesCondition(AbstractNode $node)
     {
         $satisfies = true;
 
@@ -82,9 +66,9 @@ class TagFilter implements FilterInterface
 
                 if ('~' === $tag[0]) {
                     $tag = mb_substr($tag, 1);
-                    $satisfiesComma = $hasntTagCheck($tag) || $satisfiesComma;
+                    $satisfiesComma = !$node->hasTag($tag) || $satisfiesComma;
                 } else {
-                    $satisfiesComma = $hasTagCheck($tag) || $satisfiesComma;
+                    $satisfiesComma = $node->hasTag($tag) || $satisfiesComma;
                 }
             }
 
