@@ -205,7 +205,7 @@ class FeatureNode extends AbstractNode
      */
     public function hasTags()
     {
-        return count($this->tags) > 0;
+        return count($this->getTags()) > 0;
     }
 
     /**
@@ -217,7 +217,7 @@ class FeatureNode extends AbstractNode
      */
     public function hasTag($tag)
     {
-        return in_array($tag, $this->tags);
+        return in_array($tag, $this->getTags());
     }
 
     /**
@@ -226,6 +226,16 @@ class FeatureNode extends AbstractNode
      * @return  array
      */
     public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Returns only own tags (without inherited).
+     *
+     * @return  array
+     */
+    public function getOwnTags()
     {
         return $this->tags;
     }

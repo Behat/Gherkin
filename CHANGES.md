@@ -1,3 +1,10 @@
+1.1.0 / 2011-07-16
+==================
+
+  * Return all tags, including inherited in `Scenario::getTags()`
+  * New `Feature::getOwnTags()` and `Scenario::getOwnTags()` method added,
+    which returns only own tags
+
 1.0.8 / 2011-06-29
 ==================
 
