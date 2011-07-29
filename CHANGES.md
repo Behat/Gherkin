@@ -1,3 +1,9 @@
+1.1.1 / 2011-07-29
+==================
+
+  * Updated pt language step types (@danielcsgomes)
+  * Updated vendors
+
 1.1.0 / 2011-07-16
 ==================
 
