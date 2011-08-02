@@ -1,5 +1,5 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="global" source-language="en" target-language="pt_PT" datatype="plaintext">
+  <file original="global" source-language="en" target-language="pt-PT" datatype="plaintext">
     <header />
     <body>
       <trans-unit id="feature">
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="scenario-outline">
         <source>Scenario Outline</source>
-        <target>Esquema do Cenário|Esquema do Cenario</target>
+        <target>Estrutura do Cenário|Estrutura do Cenario</target>
       </trans-unit>
       <trans-unit id="examples">
         <source>Examples</source>
