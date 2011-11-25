@@ -1,6 +1,8 @@
 Behat Gherkin Parser
 ====================
 
+[![Build Status](https://secure.travis-ci.org/Behat/Gherkin.png)](http://travis-ci.org/Behat/Gherkin)
+
 This is the new Gherkin parser for Behat. It comes bundled with more than 40 native languages (see i18n) support & much cleaner architecture than previous one.
 
 Gherkin parser from now on will be separate project from Behat core itself and has no foreign dependencies, which means, that you can use it in your DSL-specific projects.
