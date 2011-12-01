@@ -55,10 +55,11 @@ Running tests
 phpunit
 ```
 
-If you get errors about missing dependencies - just run
+If you get errors about missing dependencies - just install them
 
 ``` bash
-git submodule update --init
+wget -nc http://getcomposer.org/composer.phar
+php composer.phar update
 ```
 
 Gherkin Parser itself has no required dependencies, but test suite has.

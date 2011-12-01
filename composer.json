@@ -1,0 +1,27 @@
+{
+    "name":         "behat/gherkin",
+    "description":  "Gherkin DSL parser for PHP 5.3",
+    "keywords":     ["BDD", "parser", "DSL", "Behat", "Symfony2"],
+    "homepage":     "http://behat.org/",
+    "type":         "library",
+    "license":      "MIT",
+    "authors":      [
+        {
+            "name":      "Konstantin Kudryashov",
+            "email":     "ever.zet@gmail.com",
+            "homepage":  "http://everzet.com"
+        }
+    ],
+    "require": {
+        "php":                  ">=5.3.1",
+        "symfony/finder":       ">=2.0,<2.2-dev",
+        "symfony/yaml":         ">=2.0,<2.2-dev",
+        "symfony/config":       ">=2.0,<2.2-dev",
+        "symfony/translation":  ">=2.0,<2.2-dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Behat\\Gherkin":   "src/"
+        }
+    }
+}
