@@ -5,6 +5,7 @@ php:
   - 5.4
 
 before_script:
-  - git submodule update --init
+  - wget -nc http://getcomposer.org/composer.phar
+  - php composer.phar update
 
 script: phpunit
