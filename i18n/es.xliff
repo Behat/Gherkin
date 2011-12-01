@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="step-types">
         <source>Given|When|Then|And|But</source>
-        <target>Entonces|Cuando|Pero|Dado|Y</target>
+        <target>Dado que|Cuando|Entonces|Y|Pero</target>
       </trans-unit>
     </body>
   </file>
