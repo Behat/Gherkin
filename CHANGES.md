@@ -1,3 +1,9 @@
+1.1.2 / 2011-12-01
+==================
+
+  * Updated spanish trasnaltion (@anbotero)
+  * Integration with Composer and Travis CI
+
 1.1.1 / 2011-07-29
 ==================
 
