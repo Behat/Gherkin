@@ -50,12 +50,7 @@ class Parser
     {
         $features = array();
 
-        if (is_file($input)) {
-            $this->file = $input;
-            $input      = file_get_contents($this->file);
-        } else {
-            $this->file = $file;
-        }
+        $this->file = $file;
 
         $this->lexer->setInput($input);
         $this->lexer->setLanguage($language = 'en');
