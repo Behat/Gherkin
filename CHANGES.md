@@ -1,3 +1,9 @@
+1.1.3 / 2011-12-14
+==================
+
+  * Removed file loading routines from Parser (fixes `is_file()` issue on some systems - thanks
+    @flodocteurklein)
+
 1.1.2 / 2011-12-01
 ==================
 

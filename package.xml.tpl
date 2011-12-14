@@ -35,6 +35,7 @@
             <file role="php" baseinstalldir="gherkin" name="libpath.php" />
 
             <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload.php" />
+            <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload_namespaces.php" />
             <file role="php" baseinstalldir="gherkin" name="phpdoc.ini.dist" />
             <file role="php" baseinstalldir="gherkin" name="phpunit.xml.dist" />
             <file role="php" baseinstalldir="gherkin" name="CHANGES.md" />
