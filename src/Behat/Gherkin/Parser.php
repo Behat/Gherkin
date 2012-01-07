@@ -190,9 +190,19 @@ class Parser
             $this->skipExtraChars();
         }
 
-        // Parse feature description
-        while ('Text' === $this->predictTokenType()) {
-            $text = trim($this->parseExpression());
+        // Parse feature description (even if it look like a step)
+        while ('Text' === ($predicted = $this->predictTokenType())
+            || 'Step' === $predicted) {
+            $expression = $this->parseExpression();
+            switch ($predicted) {
+                case 'Text':
+                    $text = trim($expression);
+                    break;
+                case 'Step':
+                    $text = trim($expression->getType().' '.$expression->getText());
+                    break;
+            }
+
             if (null === $node->getDescription()) {
                 $node->setDescription($text);
             } else {
