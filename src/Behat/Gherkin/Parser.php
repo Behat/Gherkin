@@ -40,7 +40,7 @@ class Parser
     /**
      * Parses input & returns features array.
      *
-     * @param   string          $input  gherkin filename or string document
+     * @param   string          $input  gherkin string document
      *
      * @return  array                   array of feature nodes
      *
