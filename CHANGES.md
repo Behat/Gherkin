@@ -1,3 +1,8 @@
+1.1.4 / 2012-01-08
+==================
+
+  * Read feature description even if it looks like a step
+
 1.1.3 / 2011-12-14
 ==================
 

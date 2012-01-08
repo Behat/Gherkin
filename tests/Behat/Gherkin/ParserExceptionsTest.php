@@ -35,18 +35,17 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
         $this->gherkin = new Parser(new Lexer($keywords));
     }
 
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
     public function testStepRightAfterFeature()
     {
         $feature = <<<GHERKIN
 Feature: Some feature
 
-    Given something wrong
+    Given some step-like line
 GHERKIN;
 
-        $this->gherkin->parse($feature);
+        $parsed = $this->gherkin->parse($feature);
+
+        $this->assertEquals('Given some step-like line', $parsed[0]->getDescription());
     }
 
     /**
