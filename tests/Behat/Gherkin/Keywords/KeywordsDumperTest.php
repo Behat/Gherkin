@@ -31,7 +31,7 @@ class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
                'scenario_outline' => 'Структура сценария|Аутлайн',
                'examples'         => 'Значения',
                'given'            => 'Допустим',
-               'when'             => 'Если',
+               'when'             => 'Если|@',
                'then'             => 'То',
                'and'              => 'И',
                'but'              => 'Но'
@@ -95,14 +95,14 @@ GHERKIN;
   (Сценарий|История): Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    Если I erase agent K memory
+    (Если|@) I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
   (Структура сценария|Аутлайн): Erasing other agents memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    Если I erase agent <agent2> memory
+    (Если|@) I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -134,6 +134,7 @@ GHERKIN;
     Допустим there is agent J
     И there is agent K
     Если I erase agent K memory
+    @ I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
@@ -141,6 +142,7 @@ GHERKIN;
     Допустим there is agent J
     И there is agent K
     Если I erase agent K memory
+    @ I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
@@ -148,6 +150,7 @@ GHERKIN;
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
+    @ I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -159,6 +162,7 @@ GHERKIN;
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
+    @ I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -179,6 +183,7 @@ GHERKIN;
     Допустим there is agent J
     И there is agent K
     Если I erase agent K memory
+    @ I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
@@ -186,6 +191,7 @@ GHERKIN;
     Допустим there is agent J
     И there is agent K
     Если I erase agent K memory
+    @ I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
@@ -193,6 +199,7 @@ GHERKIN;
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
+    @ I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -204,6 +211,7 @@ GHERKIN;
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
+    @ I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
