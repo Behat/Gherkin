@@ -276,7 +276,7 @@ GHERKIN;
         if (!$short && false !== mb_strpos($keyword, '<')) {
             $keyword = mb_substr($keyword, 0, -1);
         } else {
-            $keyword .= ' ';
+            $keyword = str_replace('<', '', $keyword).' ';
         }
 
         $dump = <<<GHERKIN
