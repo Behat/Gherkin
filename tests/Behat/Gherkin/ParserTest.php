@@ -54,20 +54,28 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         if (null === $this->gherkin) {
             $keywords       = new ArrayKeywords(array(
                 'en' => array(
-                    'feature'           => 'Feature',
-                    'background'        => 'Background',
-                    'scenario'          => 'Scenario',
-                    'scenario_outline'  => 'Scenario Outline',
-                    'examples'          => 'Examples',
-                    'step_types'        => 'Given|When|Then|And|But'
+                    'feature'          => 'Feature',
+                    'background'       => 'Background',
+                    'scenario'         => 'Scenario',
+                    'scenario_outline' => 'Scenario Outline',
+                    'examples'         => 'Examples',
+                    'given'            => 'Given',
+                    'when'             => 'When',
+                    'then'             => 'Then',
+                    'and'              => 'And',
+                    'but'              => 'But'
                 ),
                 'ru' => array(
-                    'feature'           => 'Функционал',
-                    'background'        => 'Предыстория',
-                    'scenario'          => 'Сценарий',
-                    'scenario_outline'  => 'Структура сценария',
-                    'examples'          => 'Значения',
-                    'step_types'        => 'Допустим|То|Если|И|Но'
+                    'feature'          => 'Функционал',
+                    'background'       => 'Предыстория',
+                    'scenario'         => 'Сценарий',
+                    'scenario_outline' => 'Структура сценария',
+                    'examples'         => 'Значения',
+                    'given'            => 'Допустим',
+                    'when'             => 'То',
+                    'then'             => 'Если',
+                    'and'              => 'И',
+                    'but'              => 'Но'
                 )
             ));
             $this->gherkin  = new Parser(new Lexer($keywords));

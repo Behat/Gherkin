@@ -110,9 +110,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getGivenKeywords()
     {
-        if (isset($this->keywords[$this->language]['given'])) {
-            return $this->keywords[$this->language]['given'];
-        }
+        return $this->keywords[$this->language]['given'];
     }
 
     /**
@@ -120,9 +118,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getWhenKeywords()
     {
-        if (isset($this->keywords[$this->language]['when'])) {
-            return $this->keywords[$this->language]['when'];
-        }
+        return $this->keywords[$this->language]['when'];
     }
 
     /**
@@ -130,9 +126,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getThenKeywords()
     {
-        if (isset($this->keywords[$this->language]['then'])) {
-            return $this->keywords[$this->language]['then'];
-        }
+        return $this->keywords[$this->language]['then'];
     }
 
     /**
@@ -140,9 +134,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getAndKeywords()
     {
-        if (isset($this->keywords[$this->language]['and'])) {
-            return $this->keywords[$this->language]['and'];
-        }
+        return $this->keywords[$this->language]['and'];
     }
 
     /**
@@ -150,9 +142,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getButKeywords()
     {
-        if (isset($this->keywords[$this->language]['but'])) {
-            return $this->keywords[$this->language]['but'];
-        }
+        return $this->keywords[$this->language]['but'];
     }
 
     /**
@@ -160,10 +150,6 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getStepKeywords()
     {
-        if (isset($this->keywords[$this->language]['step_types'])) {
-            return $this->keywords[$this->language]['step_types'];
-        }
-
         return implode('|', array(
             $this->getGivenKeywords(),
             $this->getWhenKeywords(),

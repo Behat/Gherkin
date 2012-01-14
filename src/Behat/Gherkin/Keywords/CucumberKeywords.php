@@ -82,20 +82,6 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getStepKeywords()
-    {
-        return implode('|', array(
-            $this->getGivenKeywords(),
-            $this->getWhenKeywords(),
-            $this->getThenKeywords(),
-            $this->getAndKeywords(),
-            $this->getButKeywords()
-        ));
-    }
-
-    /**
      * Trim *| from the begining of the list.
      *
      * @param   string $keywordsString
