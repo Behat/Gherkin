@@ -35,60 +35,249 @@ class KeywordsDumper
      * Dump keyworded feature into string.
      *
      * @param   string  $language   keywords language
+     * @param   Boolean $short      dump short version
      *
      * @return  string
      */
-    public function dump($language)
+    public function dump($language, $short = true)
     {
         $this->keywords->setLanguage($language);
-        $keywords = '';
+        $dump = '';
         if ('en' !== $language) {
-            $keywords = "# language: $language\n";
+            $dump = "# language: $language\n";
         }
 
-        $keyword = $this->prepareKeyword($this->keywords->getFeatureKeywords());
-        $keywords .= "$keyword: Internal operations";
-        $keywords .= "\n  In order to stay secret\n  As a secret organization\n  We need to be able to erase past agents memory\n";
+        $keywords = $this->keywords->getFeatureKeywords();
+        if ($short) {
+            $dump .= $this->dumpFeature($this->prepareKeyword($keywords), $short);
+        } else {
+            foreach (explode('|', $keywords) as $keyword) {
+                $dump .= $this->dumpFeature($keyword, $short);
+            }
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getBackgroundKeywords());
-        $keywords .= "\n  $keyword:";
+        return trim($dump);
+    }
 
-        $stepKeyword = $this->prepareKeyword($this->keywords->getGivenKeywords());
-        $scenarioStepKeywords  = "\n    $stepKeyword there is some agent <agent1>";
-        $stepKeyword = $this->prepareKeyword($this->keywords->getAndKeywords());
-        $scenarioStepKeywords .= "\n    $stepKeyword there is some agent <agent2>";
+    /**
+     * Dumps feature example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpFeature($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+{$keyword}: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents memory
 
-        $backgroundStepKeywords = strtr($scenarioStepKeywords, array(
-            '<agent1>' => 'A',
-            '<agent2>' => 'B'
-        ))."\n";
 
-        $stepKeyword = $this->prepareKeyword($this->keywords->getWhenKeywords());
-        $scenarioStepKeywords .= "\n    $stepKeyword I erase agent <agent2> memory";
-        $stepKeyword = $this->prepareKeyword($this->keywords->getThenKeywords());
-        $scenarioStepKeywords .= "\n    $stepKeyword there should be agent <agent1>";
-        $stepKeyword = $this->prepareKeyword($this->keywords->getButKeywords());
-        $scenarioStepKeywords .= "\n    $stepKeyword there should not be agent <agent2>\n";
+GHERKIN;
 
-        $keywords .= $backgroundStepKeywords;
+        // Background
+        $keywords = $this->keywords->getBackgroundKeywords();
+        if ($short) {
+            $dump .= $this->dumpBackground($this->prepareKeyword($keywords), $short);
+        } else {
+            $keywords = explode('|', $keywords);
+            $dump .= $this->dumpBackground($keywords[0], $short);
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getScenarioKeywords());
-        $keywords .= "\n  $keyword: Erasing agent memory";
-        $keywords .= strtr($scenarioStepKeywords, array(
-            '<agent1>' => 'J',
-            '<agent2>' => 'K'
-        ));
+        // Scenario
+        $keywords = $this->keywords->getScenarioKeywords();
+        if ($short) {
+            $dump .= $this->dumpScenario($this->prepareKeyword($keywords), $short);
+        } else {
+            foreach (explode('|', $keywords) as $keyword) {
+                $dump .= $this->dumpScenario($keyword, $short);
+            }
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getOutlineKeywords());
-        $keywords .= "\n  $keyword: Erasing other agents memory";
-        $keywords .= $scenarioStepKeywords;
+        // Outline
+        $keywords = $this->keywords->getOutlineKeywords();
+        if ($short) {
+            $dump .= $this->dumpOutline($this->prepareKeyword($keywords), $short);
+        } else {
+            foreach (explode('|', $keywords) as $keyword) {
+                $dump .= $this->dumpOutline($keyword, $short);
+            }
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getExamplesKeywords());
-        $keywords .= "\n    $keyword:";
-        $keywords .= "\n      | agent1 | agent2 |";
-        $keywords .= "\n      | D      | M      |";
+        return $dump;
+    }
 
-        return $keywords;
+    /**
+     * Dumps background example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpBackground($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}:
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getGivenKeywords(), 'there is agent A'
+        );
+
+        // And
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getAndKeywords(), 'there is agent B'
+        );
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps scenario example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpScenario($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}: Erasing agent memory
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getGivenKeywords(), 'there is agent J'
+        );
+
+        // And
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getAndKeywords(), 'there is agent K'
+        );
+
+        // When
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getWhenKeywords(), 'I erase agent K memory'
+        );
+
+        // Then
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getThenKeywords(), 'there should be agent J'
+        );
+
+        // But
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getButKeywords(), 'there should not be agent K'
+        );
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps outline example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpOutline($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}: Erasing other agents memory
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getGivenKeywords(), 'there is agent <agent1>'
+        );
+
+        // And
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getAndKeywords(), 'there is agent <agent2>'
+        );
+
+        // When
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getWhenKeywords(), 'I erase agent <agent2> memory'
+        );
+
+        // Then
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getThenKeywords(), 'there should be agent <agent1>'
+        );
+
+        // But
+        $dump .= $this->dumpStepKeywords(
+            $this->keywords->getButKeywords(), 'there should not be agent <agent2>'
+        );
+
+        $keywords = $this->keywords->getExamplesKeywords();
+        if ($short) {
+            $keyword = $this->prepareKeyword($keywords);
+        } else {
+            $keywords = explode('|', $keywords);
+            $keyword  = $keywords[0];
+        }
+        $dump .= <<<GHERKIN
+
+    {$keyword}:
+      | agent1 | agent2 |
+      | D      | M      |
+
+GHERKIN;
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps step keywords example.
+     *
+     * @param   string  $keyword    keywords list (splitted with "|")
+     * @param   string  $text       step text
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpStepKeywords($keywords, $text, $short = true)
+    {
+        $dump = '';
+        if ($short) {
+            $dump .= $this->dumpStep($this->prepareKeyword($keywords), $text, $short);
+        } else {
+            foreach (explode('|', $keywords) as $keyword) {
+                $dump .= $this->dumpStep($keyword, $text, $short);
+            }
+        }
+
+        return $dump;
+    }
+
+    /**
+     * Dumps step example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   string  $text       step text
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpStep($keyword, $text, $short = true)
+    {
+        $dump = <<<GHERKIN
+    {$keyword} {$text}
+GHERKIN;
+
+        return $dump."\n";
     }
 
     /**

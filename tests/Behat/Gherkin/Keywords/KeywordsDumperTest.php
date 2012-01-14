@@ -51,19 +51,19 @@ Feature: Internal operations
   We need to be able to erase past agents memory
 
   Background:
-    Given there is some agent A
-    And there is some agent B
+    Given there is agent A
+    And there is agent B
 
   Scenario: Erasing agent memory
-    Given there is some agent J
-    And there is some agent K
+    Given there is agent J
+    And there is agent K
     When I erase agent K memory
     Then there should be agent J
     But there should not be agent K
 
   (Scenario Outline|Scenario Template): Erasing other agents memory
-    Given there is some agent <agent1>
-    And there is some agent <agent2>
+    Given there is agent <agent1>
+    And there is agent <agent2>
     When I erase agent <agent2> memory
     Then there should be agent <agent1>
     But there should not be agent <agent2>
@@ -89,19 +89,120 @@ GHERKIN;
   We need to be able to erase past agents memory
 
   (Предыстория|Бэкграунд):
-    Допустим there is some agent A
-    И there is some agent B
+    Допустим there is agent A
+    И there is agent B
 
   (Сценарий|История): Erasing agent memory
-    Допустим there is some agent J
-    И there is some agent K
+    Допустим there is agent J
+    И there is agent K
     Если I erase agent K memory
     То there should be agent J
     Но there should not be agent K
 
   (Структура сценария|Аутлайн): Erasing other agents memory
-    Допустим there is some agent <agent1>
-    И there is some agent <agent2>
+    Допустим there is agent <agent1>
+    И there is agent <agent2>
+    Если I erase agent <agent2> memory
+    То there should be agent <agent1>
+    Но there should not be agent <agent2>
+
+    Значения:
+      | agent1 | agent2 |
+      | D      | M      |
+GHERKIN;
+
+        $this->assertEquals($etalon, $dumped);
+    }
+
+    public function testExtendedVersionDumper()
+    {
+        $dumper = new KeywordsDumper($this->keywords);
+
+        $dumped = $dumper->dump('ru', false);
+        $etalon = <<<GHERKIN
+# language: ru
+Функционал: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents memory
+
+  Предыстория:
+    Допустим there is agent A
+    И there is agent B
+
+  Сценарий: Erasing agent memory
+    Допустим there is agent J
+    И there is agent K
+    Если I erase agent K memory
+    То there should be agent J
+    Но there should not be agent K
+
+  История: Erasing agent memory
+    Допустим there is agent J
+    И there is agent K
+    Если I erase agent K memory
+    То there should be agent J
+    Но there should not be agent K
+
+  Структура сценария: Erasing other agents memory
+    Допустим there is agent <agent1>
+    И there is agent <agent2>
+    Если I erase agent <agent2> memory
+    То there should be agent <agent1>
+    Но there should not be agent <agent2>
+
+    Значения:
+      | agent1 | agent2 |
+      | D      | M      |
+
+  Аутлайн: Erasing other agents memory
+    Допустим there is agent <agent1>
+    И there is agent <agent2>
+    Если I erase agent <agent2> memory
+    То there should be agent <agent1>
+    Но there should not be agent <agent2>
+
+    Значения:
+      | agent1 | agent2 |
+      | D      | M      |
+
+Фича: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents memory
+
+  Предыстория:
+    Допустим there is agent A
+    И there is agent B
+
+  Сценарий: Erasing agent memory
+    Допустим there is agent J
+    И there is agent K
+    Если I erase agent K memory
+    То there should be agent J
+    Но there should not be agent K
+
+  История: Erasing agent memory
+    Допустим there is agent J
+    И there is agent K
+    Если I erase agent K memory
+    То there should be agent J
+    Но there should not be agent K
+
+  Структура сценария: Erasing other agents memory
+    Допустим there is agent <agent1>
+    И there is agent <agent2>
+    Если I erase agent <agent2> memory
+    То there should be agent <agent1>
+    Но there should not be agent <agent2>
+
+    Значения:
+      | agent1 | agent2 |
+      | D      | M      |
+
+  Аутлайн: Erasing other agents memory
+    Допустим there is agent <agent1>
+    И there is agent <agent2>
     Если I erase agent <agent2> memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
