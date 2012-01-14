@@ -93,6 +93,41 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * {@inheritdoc}
      */
+    public function getGivenKeywords()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getWhenKeywords()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getThenKeywords()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAndKeywords()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getButKeywords()
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getStepKeywords()
     {
         return $this->translator->trans('Given|When|Then|And|But', array(), 'gherkin', $this->locale);
