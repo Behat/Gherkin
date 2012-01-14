@@ -12,22 +12,30 @@ class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->keywords = new ArrayKeywords(array(
-            'en' => array(
-                'Feature'           => 'Feature',
-                'Background'        => 'Background',
-                'Scenario'          => 'Scenario',
-                'Scenario Outline'  => 'Scenario Outline',
-                'Examples'          => 'Examples',
-                'Step Types'        => 'Given|When|Then|And|But'
-            ),
-            'ru' => array(
-                'Feature'           => 'Функционал|Фича',
-                'Background'        => 'Предыстория|Бэкграунд',
-                'Scenario'          => 'Сценарий|История',
-                'Scenario Outline'  => 'Структура сценария|Аутлайн',
-                'Examples'          => 'Значения',
-                'Step Types'        => 'Допустим|То|Если|И|Но'
-            )
+           'en' => array(
+               'feature'          => 'Feature',
+               'background'       => 'Background',
+               'scenario'         => 'Scenario',
+               'scenario_outline' => 'Scenario Outline|Scenario Template',
+               'examples'         => 'Examples|Scenarios',
+               'given'            => 'Given',
+               'when'             => 'When',
+               'then'             => 'Then',
+               'and'              => 'And',
+               'but'              => 'But'
+           ),
+           'ru' => array(
+               'feature'          => 'Функционал|Фича',
+               'background'       => 'Предыстория|Бэкграунд',
+               'scenario'         => 'Сценарий|История',
+               'scenario_outline' => 'Структура сценария|Аутлайн',
+               'examples'         => 'Значения',
+               'given'            => 'Допустим',
+               'when'             => 'Если',
+               'then'             => 'То',
+               'and'              => 'И',
+               'but'              => 'Но'
+           )
         ));
     }
 
@@ -37,27 +45,32 @@ class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
 
         $dumped = $dumper->dump('en');
         $etalon = <<<GHERKIN
-# language: en
-Feature: feature title
-  In order to ...
-  As a ...
-  I need to ...
+Feature: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents memory
 
   Background:
-    (Given|When|Then|And|But) step 1
-    (Given|When|Then|And|But) step 2
+    Given there is some agent A
+    And there is some agent B
 
-  Scenario: scenario title
-    (Given|When|Then|And|But) step 1
-    (Given|When|Then|And|But) step 2
+  Scenario: Erasing agent memory
+    Given there is some agent J
+    And there is some agent K
+    When I erase agent K memory
+    Then there should be agent J
+    But there should not be agent K
 
-  Scenario Outline: outline title
-    (Given|When|Then|And|But) step <val1>
-    (Given|When|Then|And|But) step <val2>
+  (Scenario Outline|Scenario Template): Erasing other agents memory
+    Given there is some agent <agent1>
+    And there is some agent <agent2>
+    When I erase agent <agent2> memory
+    Then there should be agent <agent1>
+    But there should not be agent <agent2>
 
-    Examples:
-      | val1 | val2 |
-      | 23   | 122  |
+    (Examples|Scenarios):
+      | agent1 | agent2 |
+      | D      | M      |
 GHERKIN;
 
         $this->assertEquals($etalon, $dumped);
@@ -70,26 +83,32 @@ GHERKIN;
         $dumped = $dumper->dump('ru');
         $etalon = <<<GHERKIN
 # language: ru
-(Функционал|Фича): feature title
-  In order to ...
-  As a ...
-  I need to ...
+(Функционал|Фича): Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents memory
 
   (Предыстория|Бэкграунд):
-    (Допустим|То|Если|И|Но) step 1
-    (Допустим|То|Если|И|Но) step 2
+    Допустим there is some agent A
+    И there is some agent B
 
-  (Сценарий|История): scenario title
-    (Допустим|То|Если|И|Но) step 1
-    (Допустим|То|Если|И|Но) step 2
+  (Сценарий|История): Erasing agent memory
+    Допустим there is some agent J
+    И there is some agent K
+    Если I erase agent K memory
+    То there should be agent J
+    Но there should not be agent K
 
-  (Структура сценария|Аутлайн): outline title
-    (Допустим|То|Если|И|Но) step <val1>
-    (Допустим|То|Если|И|Но) step <val2>
+  (Структура сценария|Аутлайн): Erasing other agents memory
+    Допустим there is some agent <agent1>
+    И there is some agent <agent2>
+    Если I erase agent <agent2> memory
+    То there should be agent <agent1>
+    Но there should not be agent <agent2>
 
     Значения:
-      | val1 | val2 |
-      | 23   | 122  |
+      | agent1 | agent2 |
+      | D      | M      |
 GHERKIN;
 
         $this->assertEquals($etalon, $dumped);

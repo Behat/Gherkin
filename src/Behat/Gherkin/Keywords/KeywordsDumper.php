@@ -41,33 +41,52 @@ class KeywordsDumper
     public function dump($language)
     {
         $this->keywords->setLanguage($language);
-        $keywords  = "# language: $language";
+        $keywords = '';
+        if ('en' !== $language) {
+            $keywords = "# language: $language\n";
+        }
 
         $keyword = $this->prepareKeyword($this->keywords->getFeatureKeywords());
-        $keywords .= "\n$keyword: feature title";
-        $keywords .= "\n  In order to ...\n  As a ...\n  I need to ...\n";
+        $keywords .= "$keyword: Internal operations";
+        $keywords .= "\n  In order to stay secret\n  As a secret organization\n  We need to be able to erase past agents memory\n";
 
         $keyword = $this->prepareKeyword($this->keywords->getBackgroundKeywords());
         $keywords .= "\n  $keyword:";
 
-        $stepKeyword = '(' . $this->keywords->getStepKeywords() . ')';
-        $stepKeywords  = "\n    $stepKeyword step 1";
-        $stepKeywords .= "\n    $stepKeyword step 2\n";
-        $keywords .= $stepKeywords;
+        $stepKeyword = $this->prepareKeyword($this->keywords->getGivenKeywords());
+        $scenarioStepKeywords  = "\n    $stepKeyword there is some agent <agent1>";
+        $stepKeyword = $this->prepareKeyword($this->keywords->getAndKeywords());
+        $scenarioStepKeywords .= "\n    $stepKeyword there is some agent <agent2>";
+
+        $backgroundStepKeywords = strtr($scenarioStepKeywords, array(
+            '<agent1>' => 'A',
+            '<agent2>' => 'B'
+        ))."\n";
+
+        $stepKeyword = $this->prepareKeyword($this->keywords->getWhenKeywords());
+        $scenarioStepKeywords .= "\n    $stepKeyword I erase agent <agent2> memory";
+        $stepKeyword = $this->prepareKeyword($this->keywords->getThenKeywords());
+        $scenarioStepKeywords .= "\n    $stepKeyword there should be agent <agent1>";
+        $stepKeyword = $this->prepareKeyword($this->keywords->getButKeywords());
+        $scenarioStepKeywords .= "\n    $stepKeyword there should not be agent <agent2>\n";
+
+        $keywords .= $backgroundStepKeywords;
 
         $keyword = $this->prepareKeyword($this->keywords->getScenarioKeywords());
-        $keywords .= "\n  $keyword: scenario title";
-        $keywords .= $stepKeywords;
+        $keywords .= "\n  $keyword: Erasing agent memory";
+        $keywords .= strtr($scenarioStepKeywords, array(
+            '<agent1>' => 'J',
+            '<agent2>' => 'K'
+        ));
 
         $keyword = $this->prepareKeyword($this->keywords->getOutlineKeywords());
-        $keywords .= "\n  $keyword: outline title";
-        $keywords .= "\n    $stepKeyword step <val1>";
-        $keywords .= "\n    $stepKeyword step <val2>\n";
+        $keywords .= "\n  $keyword: Erasing other agents memory";
+        $keywords .= $scenarioStepKeywords;
 
         $keyword = $this->prepareKeyword($this->keywords->getExamplesKeywords());
         $keywords .= "\n    $keyword:";
-        $keywords .= "\n      | val1 | val2 |";
-        $keywords .= "\n      | 23   | 122  |";
+        $keywords .= "\n      | agent1 | agent2 |";
+        $keywords .= "\n      | D      | M      |";
 
         return $keywords;
     }
@@ -76,7 +95,7 @@ class KeywordsDumper
      * Wrap keyword with "(", ")" if there's multiple variants.
      *
      * @param   string  $keyword
-     * 
+     *
      * @return  string
      */
     protected function prepareKeyword($keyword)
