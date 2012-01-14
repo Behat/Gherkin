@@ -92,7 +92,7 @@ DESC
                         $outline, $i18nKeywords['and'], 'there is agent <agent2>', $line
                     );
                     $line = $this->addSteps(
-                        $outline, $i18nKeywords['when'], 'I erase agent <agent2> memory', $line
+                        $outline, $i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line
                     );
                     $line = $this->addSteps(
                         $outline, $i18nKeywords['then'], 'there should be agent <agent1>', $line

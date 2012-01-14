@@ -208,7 +208,7 @@ GHERKIN;
 
         // When
         $dump .= $this->dumpStepKeywords(
-            $this->keywords->getWhenKeywords(), 'I erase agent <agent2> memory', $short
+            $this->keywords->getWhenKeywords(), 'I erase agent <agent2>\'s memory', $short
         );
 
         // Then

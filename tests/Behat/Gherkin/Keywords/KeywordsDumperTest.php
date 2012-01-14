@@ -64,7 +64,7 @@ Feature: Internal operations
   (Scenario Outline|Scenario Template): Erasing other agents' memory
     Given there is agent <agent1>
     And there is agent <agent2>
-    When I erase agent <agent2> memory
+    When I erase agent <agent2>'s memory
     Then there should be agent <agent1>
     But there should not be agent <agent2>
 
@@ -102,7 +102,7 @@ GHERKIN;
   (Структура сценария|Аутлайн): Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    (Если|@) I erase agent <agent2> memory
+    (Если|@) I erase agent <agent2>'s memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -149,8 +149,8 @@ GHERKIN;
   Структура сценария: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    Если I erase agent <agent2> memory
-    @ I erase agent <agent2> memory
+    Если I erase agent <agent2>'s memory
+    @ I erase agent <agent2>'s memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -161,8 +161,8 @@ GHERKIN;
   Аутлайн: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    Если I erase agent <agent2> memory
-    @ I erase agent <agent2> memory
+    Если I erase agent <agent2>'s memory
+    @ I erase agent <agent2>'s memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -198,8 +198,8 @@ GHERKIN;
   Структура сценария: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    Если I erase agent <agent2> memory
-    @ I erase agent <agent2> memory
+    Если I erase agent <agent2>'s memory
+    @ I erase agent <agent2>'s memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
@@ -210,8 +210,8 @@ GHERKIN;
   Аутлайн: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
-    Если I erase agent <agent2> memory
-    @ I erase agent <agent2> memory
+    Если I erase agent <agent2>'s memory
+    @ I erase agent <agent2>'s memory
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
