@@ -15,20 +15,28 @@ namespace Behat\Gherkin\Keywords;
  *
  * $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
  *     'en' => array(
- *         'Feature'           => 'Feature',
- *         'Background'        => 'Background',
- *         'Scenario'          => 'Scenario',
- *         'Scenario Outline'  => 'Scenario Outline',
- *         'Examples'          => 'Examples',
- *         'Step Types'        => 'Given|When|Then|And|But'
+ *         'feature'          => 'Feature',
+ *         'background'       => 'Background',
+ *         'scenario'         => 'Scenario',
+ *         'scenario_outline' => 'Scenario Outline|Scenario Template',
+ *         'examples'         => 'Examples|Scenarios',
+ *         'given'            => 'Given',
+ *         'when'             => 'When',
+ *         'then'             => 'Then',
+ *         'and'              => 'And',
+ *         'but'              => 'But'
  *     ),
  *     'ru' => array(
- *         'Feature'           => 'Функционал',
- *         'Background'        => 'Предыстория',
- *         'Scenario'          => 'Сценарий',
- *         'Scenario Outline'  => 'Структура сценария',
- *         'Examples'          => 'Значения',
- *         'Step Types'        => 'Допустим|То|Если|И|Но'
+ *         'feature'          => 'Функционал',
+ *         'background'       => 'Предыстория',
+ *         'scenario'         => 'Сценарий',
+ *         'scenario_outline' => 'Структура сценария',
+ *         'examples'         => 'Значения',
+ *         'given'            => 'Допустим',
+ *         'when'             => 'Если',
+ *         'then'             => 'То',
+ *         'and'              => 'И',
+ *         'but'              => 'Но'
  *     )
  * ));
  *
@@ -62,7 +70,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getFeatureKeywords()
     {
-        return $this->keywords[$this->language]['Feature'];
+        return $this->keywords[$this->language]['feature'];
     }
 
     /**
@@ -70,7 +78,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getBackgroundKeywords()
     {
-        return $this->keywords[$this->language]['Background'];
+        return $this->keywords[$this->language]['background'];
     }
 
     /**
@@ -78,7 +86,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getScenarioKeywords()
     {
-        return $this->keywords[$this->language]['Scenario'];
+        return $this->keywords[$this->language]['scenario'];
     }
 
     /**
@@ -86,7 +94,7 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getOutlineKeywords()
     {
-        return $this->keywords[$this->language]['Scenario Outline'];
+        return $this->keywords[$this->language]['scenario_outline'];
     }
 
     /**
@@ -94,7 +102,57 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getExamplesKeywords()
     {
-        return $this->keywords[$this->language]['Examples'];
+        return $this->keywords[$this->language]['examples'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getGivenKeywords()
+    {
+        if (isset($this->keywords[$this->language]['given'])) {
+            return $this->keywords[$this->language]['given'];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getWhenKeywords()
+    {
+        if (isset($this->keywords[$this->language]['when'])) {
+            return $this->keywords[$this->language]['when'];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getThenKeywords()
+    {
+        if (isset($this->keywords[$this->language]['then'])) {
+            return $this->keywords[$this->language]['then'];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAndKeywords()
+    {
+        if (isset($this->keywords[$this->language]['and'])) {
+            return $this->keywords[$this->language]['and'];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getButKeywords()
+    {
+        if (isset($this->keywords[$this->language]['but'])) {
+            return $this->keywords[$this->language]['but'];
+        }
     }
 
     /**
@@ -102,6 +160,16 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getStepKeywords()
     {
-        return $this->keywords[$this->language]['Step Types'];
+        if (isset($this->keywords[$this->language]['step_types'])) {
+            return $this->keywords[$this->language]['step_types'];
+        }
+
+        return implode('|', array(
+            $this->getGivenKeywords(),
+            $this->getWhenKeywords(),
+            $this->getThenKeywords(),
+            $this->getAndKeywords(),
+            $this->getButKeywords()
+        ));
     }
 }
