@@ -15,26 +15,34 @@ Usage
 
 $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
     'en' => array(
-        'Feature'           => 'Feature',
-        'Background'        => 'Background',
-        'Scenario'          => 'Scenario',
-        'Scenario Outline'  => 'Scenario Outline',
-        'Examples'          => 'Examples',
-        'Step Types'        => 'Given|When|Then|And|But'
+        'feature'          => 'Feature',
+        'background'       => 'Background',
+        'scenario'         => 'Scenario',
+        'scenario_outline' => 'Scenario Outline|Scenario Template',
+        'examples'         => 'Examples|Scenarios',
+        'given'            => 'Given',
+        'when'             => 'When',
+        'then'             => 'Then',
+        'and'              => 'And',
+        'but'              => 'But'
     ),
     'en-pirate' => array(
-        'Feature'           => 'Ahoy matey!',
-        'Background'        => 'Yo-ho-ho',
-        'Scenario'          => 'Heave to',
-        'Scenario Outline'  => 'Shiver me timbers',
-        'Examples'          => 'Dead men tell no tales',
-        'Step Types'        => 'Let go and haul|Gangway!|Blimey!|Avast!|Aye'
+        'feature'          => 'Ahoy matey!',
+        'background'       => 'Yo-ho-ho',
+        'scenario'         => 'Heave to',
+        'scenario_outline' => 'Shiver me timbers',
+        'examples'         => 'Dead men tell no tales',
+        'given'            => 'Gangway!',
+        'when'             => 'Blimey!',
+        'then'             => 'Let go and haul',
+        'and'              => 'Aye',
+        'but'              => 'Avast!'
     )
 ));
 $lexer  = new Behat\Gherkin\Lexer($keywords);
 $parser = new Behat\Gherkin\Parser($lexer);
 
-$arrayOfFeatures = $parser->parse('/path/to/file.feature OR feature itself');
+$arrayOfFeatures = $parser->parse(file_get_contents('some.feature'));
 ```
 
 
