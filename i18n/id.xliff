@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="scenario-outline">
         <source>Scenario Outline</source>
-        <target>Skenario konsep</target>
+        <target>Garis Besar Skenario</target>
       </trans-unit>
       <trans-unit id="examples">
         <source>Examples</source>
@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="step-types">
         <source>Given|When|Then|And|But</source>
-        <target>Dengan|Ketika|Tapi|Maka|Dan</target>
+        <target>Jika|Saat|Lalu|Dan|Tetapi</target>
       </trans-unit>
     </body>
   </file>
