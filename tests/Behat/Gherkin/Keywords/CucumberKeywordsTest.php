@@ -158,6 +158,9 @@ TABLE
     private function addSteps(Node\AbstractScenarioNode $scenario, $keywords, $text, $line)
     {
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
+            if (false !== mb_strpos($keyword, '<')) {
+                $keyword = mb_substr($keyword, 0, -1);
+            }
             $scenario->addStep(new Node\StepNode($keyword, $text, $line));
             $line += 1;
         }

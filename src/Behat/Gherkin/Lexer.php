@@ -259,8 +259,21 @@ class Lexer
     protected function getKeywords($type)
     {
         if (!isset($this->keywordsCache[$type])) {
-            $getter = 'get' . $type . 'Keywords';
-            $this->keywordsCache[$type] = $this->keywords->$getter();
+            $getter   = 'get' . $type . 'Keywords';
+            $keywords = $this->keywords->$getter();
+
+            if ('Step' === $type) {
+                $paded = array();
+                foreach (explode('|', $keywords) as $keyword) {
+                    $paded[] = false !== mb_strpos($keyword, '<')
+                        ? mb_substr($keyword, 0, -1)
+                        : $keyword.'\s+';
+                }
+
+                $keywords = implode('|', $paded);
+            }
+
+            $this->keywordsCache[$type] = $keywords;
         }
 
         return $this->keywordsCache[$type];
@@ -326,8 +339,8 @@ class Lexer
         $matches = array();
 
         $keywords = $this->getKeywords('Step');
-        if (preg_match('/^\s*('.$keywords.')\s+([^\s].+)/u', $this->line, $matches)) {
-            $token = $this->takeToken('Step', $matches[1]);
+        if (preg_match('/^\s*('.$keywords.')([^\s].+)/u', $this->line, $matches)) {
+            $token = $this->takeToken('Step', trim($matches[1]));
             $token->text = $matches[2];
 
             $this->consumeLine();

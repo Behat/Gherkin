@@ -273,8 +273,14 @@ GHERKIN;
      */
     protected function dumpStep($keyword, $text, $short = true)
     {
+        if (!$short && false !== mb_strpos($keyword, '<')) {
+            $keyword = mb_substr($keyword, 0, -1);
+        } else {
+            $keyword .= ' ';
+        }
+
         $dump = <<<GHERKIN
-    {$keyword} {$text}
+    {$keyword}{$text}
 GHERKIN;
 
         return $dump."\n";
