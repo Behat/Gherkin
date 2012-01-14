@@ -73,7 +73,7 @@ class KeywordsDumper
 {$keyword}: Internal operations
   In order to stay secret
   As a secret organization
-  We need to be able to erase past agents memory
+  We need to be able to erase past agents' memory
 
 
 GHERKIN;
@@ -165,7 +165,7 @@ GHERKIN;
 
         // When
         $dump .= $this->dumpStepKeywords(
-            $this->keywords->getWhenKeywords(), 'I erase agent K memory', $short
+            $this->keywords->getWhenKeywords(), 'I erase agent K\'s memory', $short
         );
 
         // Then
@@ -192,7 +192,7 @@ GHERKIN;
     protected function dumpOutline($keyword, $short = true)
     {
         $dump = <<<GHERKIN
-  {$keyword}: Erasing other agents memory
+  {$keyword}: Erasing other agents' memory
 
 GHERKIN;
 

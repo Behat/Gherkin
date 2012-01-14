@@ -48,7 +48,7 @@ class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
 Feature: Internal operations
   In order to stay secret
   As a secret organization
-  We need to be able to erase past agents memory
+  We need to be able to erase past agents' memory
 
   Background:
     Given there is agent A
@@ -57,11 +57,11 @@ Feature: Internal operations
   Scenario: Erasing agent memory
     Given there is agent J
     And there is agent K
-    When I erase agent K memory
+    When I erase agent K's memory
     Then there should be agent J
     But there should not be agent K
 
-  (Scenario Outline|Scenario Template): Erasing other agents memory
+  (Scenario Outline|Scenario Template): Erasing other agents' memory
     Given there is agent <agent1>
     And there is agent <agent2>
     When I erase agent <agent2> memory
@@ -86,7 +86,7 @@ GHERKIN;
 (Функционал|Фича): Internal operations
   In order to stay secret
   As a secret organization
-  We need to be able to erase past agents memory
+  We need to be able to erase past agents' memory
 
   (Предыстория|Бэкграунд):
     Допустим there is agent A
@@ -95,11 +95,11 @@ GHERKIN;
   (Сценарий|История): Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    (Если|@) I erase agent K memory
+    (Если|@) I erase agent K's memory
     То there should be agent J
     Но there should not be agent K
 
-  (Структура сценария|Аутлайн): Erasing other agents memory
+  (Структура сценария|Аутлайн): Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
     (Если|@) I erase agent <agent2> memory
@@ -124,7 +124,7 @@ GHERKIN;
 Функционал: Internal operations
   In order to stay secret
   As a secret organization
-  We need to be able to erase past agents memory
+  We need to be able to erase past agents' memory
 
   Предыстория:
     Допустим there is agent A
@@ -133,20 +133,20 @@ GHERKIN;
   Сценарий: Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    Если I erase agent K memory
-    @ I erase agent K memory
+    Если I erase agent K's memory
+    @ I erase agent K's memory
     То there should be agent J
     Но there should not be agent K
 
   История: Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    Если I erase agent K memory
-    @ I erase agent K memory
+    Если I erase agent K's memory
+    @ I erase agent K's memory
     То there should be agent J
     Но there should not be agent K
 
-  Структура сценария: Erasing other agents memory
+  Структура сценария: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
@@ -158,7 +158,7 @@ GHERKIN;
       | agent1 | agent2 |
       | D      | M      |
 
-  Аутлайн: Erasing other agents memory
+  Аутлайн: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
@@ -173,7 +173,7 @@ GHERKIN;
 Фича: Internal operations
   In order to stay secret
   As a secret organization
-  We need to be able to erase past agents memory
+  We need to be able to erase past agents' memory
 
   Предыстория:
     Допустим there is agent A
@@ -182,20 +182,20 @@ GHERKIN;
   Сценарий: Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    Если I erase agent K memory
-    @ I erase agent K memory
+    Если I erase agent K's memory
+    @ I erase agent K's memory
     То there should be agent J
     Но there should not be agent K
 
   История: Erasing agent memory
     Допустим there is agent J
     И there is agent K
-    Если I erase agent K memory
-    @ I erase agent K memory
+    Если I erase agent K's memory
+    @ I erase agent K's memory
     То there should be agent J
     Но there should not be agent K
 
-  Структура сценария: Erasing other agents memory
+  Структура сценария: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory
@@ -207,7 +207,7 @@ GHERKIN;
       | agent1 | agent2 |
       | D      | M      |
 
-  Аутлайн: Erasing other agents memory
+  Аутлайн: Erasing other agents' memory
     Допустим there is agent <agent1>
     И there is agent <agent2>
     Если I erase agent <agent2> memory

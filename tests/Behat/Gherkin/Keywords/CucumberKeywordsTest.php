@@ -33,7 +33,7 @@ class CucumberKeywordsTest extends \PHPUnit_Framework_TestCase
                     <<<DESC
 In order to stay secret
 As a secret organization
-We need to be able to erase past agents memory
+We need to be able to erase past agents' memory
 DESC
                     , $lang.'.feature',
                     $line
@@ -68,7 +68,7 @@ DESC
                         $scenario, $i18nKeywords['and'], 'there is agent K', $line
                     );
                     $line = $this->addSteps(
-                        $scenario, $i18nKeywords['when'], 'I erase agent K memory', $line
+                        $scenario, $i18nKeywords['when'], 'I erase agent K\'s memory', $line
                     );
                     $line = $this->addSteps(
                         $scenario, $i18nKeywords['then'], 'there should be agent J', $line
@@ -81,7 +81,7 @@ DESC
                 }
 
                 foreach (explode('|', $i18nKeywords['scenario_outline']) as $outlineKeyword) {
-                    $outline = new Node\OutlineNode('Erasing other agents memory', $line);
+                    $outline = new Node\OutlineNode('Erasing other agents\' memory', $line);
                     $outline->setKeyword($outlineKeyword);
                     $line += 1;
 
