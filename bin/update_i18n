@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm i18n.yml
+wget https://raw.github.com/cucumber/gherkin/master/lib/gherkin/i18n.yml
+echo "\n#\n# !!! DON'T TOUCH THIS FILE, IT WAS AUTODOWNLOADED FROM:\n#     https://github.com/cucumber/gherkin/blob/master/lib/gherkin/i18n.yml\n#\n"|cat - i18n.yml > /tmp/out && mv /tmp/out i18n.yml
