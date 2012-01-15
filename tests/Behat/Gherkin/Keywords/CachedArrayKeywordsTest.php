@@ -11,12 +11,12 @@ class CachedArrayKeywordsTest extends KeywordsTest
 {
     protected function getKeywords()
     {
-        return new CachedArrayKeywords(__DIR__.'/../../../../i18n/i18n.php');
+        return new CachedArrayKeywords(__DIR__.'/../../../../i18n.php');
     }
 
     protected function getKeywordsArray()
     {
-        return include(__DIR__.'/../../../../i18n/i18n.php');
+        return include(__DIR__.'/../../../../i18n.php');
     }
     protected function addSteps(Node\AbstractScenarioNode $scenario, $keywords, $text, $line)
     {
