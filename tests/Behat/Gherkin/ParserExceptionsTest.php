@@ -295,25 +295,27 @@ GHERKIN;
 				"""
 				table test
 				| test | for | table |
-				# comment test
+
 			Scenario: Multiple Givens
 			  Given one thing
-			  Given an other thing
 EOT;
 		$parsed = $this->gherkin->parse($feature);
 	}
 	
 	/**
      * @expectedException Behat\Gherkin\Exception\ParserException
+	 * 
+	 * there must be only 1 feature in file
      */
 	public function testFeatureInFeatureDescription()
 	{
 		$feature = <<<'EOT'
 			Feature:
-			Feature:
-			asdasdas
-			Feature:
-
+				
+			Feature: Bulgaria
+			
+			Feature: Plovdiv
+				po_taka
 			Scenario: Multiple Givens
 EOT;
 		$parsed = $this->gherkin->parse($feature);
