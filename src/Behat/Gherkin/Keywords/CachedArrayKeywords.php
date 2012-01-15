@@ -26,6 +26,6 @@ class CachedArrayKeywords extends ArrayKeywords
      */
     public function __construct($file)
     {
-        parent::__construct(file_get_contents($file));
+        parent::__construct(include($file));
     }
 }
