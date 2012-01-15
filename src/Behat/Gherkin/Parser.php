@@ -190,7 +190,7 @@ class Parser
             $this->skipExtraChars();
         }
 
-        // Parse feature description (even if it look like a step, table row, @todo PyString)
+        // Parse feature description (even if it look like a step, table row)
 		/**
 		 * @todo PyString case
 		 * @todo only 1 feature in feature file
