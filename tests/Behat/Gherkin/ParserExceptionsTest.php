@@ -286,4 +286,38 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
     }
-}
+	
+	public function testKeywordsInFeatureDescription()
+	{
+		$feature = <<<'EOT'
+			Feature: Feature Description Text test
+				py script test
+				"""
+				table test
+				| test | for | table |
+				# comment test
+			Scenario: Multiple Givens
+			  Given one thing
+			  Given an other thing
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	/**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+     */
+	public function testFeatureInFeatureDescription()
+	{
+		$feature = <<<'EOT'
+			Feature:
+			Feature:
+			asdasdas
+			Feature:
+
+			Scenario: Multiple Givens
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	
+	}
