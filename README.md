@@ -78,7 +78,7 @@ Gherkin supports &rarr;40 different languages and you could add more! You might 
 from original [cucumber/gherkin translations](https://github.com/cucumber/gherkin/blob/master/lib/gherkin/i18n.yml).
 So, in order to fix/update/add some translation, you should send Pull Request to the
 `cucumber/gherkin` repository. `Behat\Gherkin` will redownload/regenerate translations
-from theere before each release.
+from there before each release.
 
 It might sounds difficult, but this way of dictionary sharing gives you ability to
 migrate your `*.feature` files from language to language and library to library without
