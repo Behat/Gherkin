@@ -287,17 +287,33 @@ GHERKIN;
         $parsed = $this->gherkin->parse($feature);
     }
 	
-	public function testKeywordsInFeatureDescription()
+	public function testPyScriptInFeatureDescription()
 	{
+		
 		$feature = <<<'EOT'
-			Feature: Feature Description Text test
-				py script test
+			Feature:
+				py test
 				"""
-				table test
-				| test | for | table |
+				test
 
 			Scenario: Multiple Givens
 			  Given one thing
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	
+	
+	public function testTableRowInFeatureDescription()
+	{
+		$feature = <<<'EOT'
+			Feature: Feature Description Text test
+						table test
+						| Bulgaria | Plovdiv | po_taka |
+
+					Scenario: Multiple Givens
+					  Given one thing
+	
 EOT;
 		$parsed = $this->gherkin->parse($feature);
 	}
