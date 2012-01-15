@@ -190,9 +190,17 @@ class Parser
             $this->skipExtraChars();
         }
 
-        // Parse feature description (even if it look like a step)
+        // Parse feature description (even if it look like a step, table row)
+		/**
+		 * @todo PyString case
+		 * @todo only 1 feature in feature file
+		 * i don't know how to fix this :(
+		 */
         while ('Text' === ($predicted = $this->predictTokenType())
-            || 'Step' === $predicted) {
+            || 'Step' === $predicted
+			|| 'TableRow' == $predicted
+			)
+			{
             $expression = $this->parseExpression();
             switch ($predicted) {
                 case 'Text':
@@ -201,7 +209,10 @@ class Parser
                 case 'Step':
                     $text = trim($expression->getType().' '.$expression->getText());
                     break;
-            }
+				case 'TableRow':
+					$text = (string)$expression;
+					break;
+				}
 
             if (null === $node->getDescription()) {
                 $node->setDescription($text);

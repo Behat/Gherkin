@@ -51,6 +51,94 @@ GHERKIN;
     /**
      * @expectedException Behat\Gherkin\Exception\ParserException
      */
+    public function testTextInBackground()
+    {
+        $feature = <<<GHERKIN
+Feature: Behat bug test
+	Background: remove X to couse bug
+	Step is red form is not valid
+    asd
+    asd
+    as
+    da
+    sd
+    as
+    das
+    d
+
+
+Scenario: bug user edit date
+GHERKIN;
+
+        $this->gherkin->parse($feature);
+    }
+
+    public function testTextInScenario()
+    {
+        $feature = <<<GHERKIN
+Feature: Behat bug test
+	Scenario: remove X to couse bug
+	Step is red form is not valid
+    asd
+    asd
+    as
+    da
+    sd
+    as
+    das
+    d
+
+
+Scenario Outline: bug user edit date
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+Examples:
+ ||
+
+GHERKIN;
+
+        $features  = $this->gherkin->parse($feature);
+        $scenarios = $features[0]->getScenarios();
+
+        $this->assertCount(2, $scenarios);
+        $this->assertEquals(<<<TEXT
+remove X to couse bug
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+TEXT
+        , $scenarios[0]->getTitle());
+        $this->assertEquals(<<<TEXT
+bug user edit date
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+TEXT
+        , $scenarios[1]->getTitle());
+    }
+
+    /**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+     */
     public function testAmbigiousLanguage()
     {
         $feature = <<<GHERKIN
@@ -198,4 +286,56 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
     }
-}
+	
+	public function testPyScriptInFeatureDescription()
+	{
+		
+		$feature = <<<'EOT'
+			Feature:
+				py test
+				"""
+				test
+
+			Scenario: Multiple Givens
+			  Given one thing
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	
+	
+	public function testTableRowInFeatureDescription()
+	{
+		$feature = <<<'EOT'
+			Feature: Feature Description Text test
+						table test
+						| Bulgaria | Plovdiv | po_taka |
+
+					Scenario: Multiple Givens
+					  Given one thing
+	
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	/**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+	 * 
+	 * there must be only 1 feature in file
+     */
+	public function testFeatureInFeatureDescription()
+	{
+		$feature = <<<'EOT'
+			Feature:
+				
+			Feature: Bulgaria
+			
+			Feature: Plovdiv
+				po_taka
+			Scenario: Multiple Givens
+EOT;
+		$parsed = $this->gherkin->parse($feature);
+	}
+	
+	
+	}
