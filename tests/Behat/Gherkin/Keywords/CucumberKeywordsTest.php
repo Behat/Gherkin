@@ -14,13 +14,13 @@ class CucumberKeywordsTest extends \PHPUnit_Framework_TestCase
 {
     public function translationTestDataProvider()
     {
-        $keywords = new CucumberKeywords(__DIR__.'/../../../../i18n.yml');
+        $keywords = new CucumberKeywords(__DIR__.'/../Fixtures/i18n.yml');
         $lexer    = new Lexer($keywords);
         $parser   = new Parser($lexer);
         $dumper   = new KeywordsDumper($keywords);
 
         $data = array();
-        foreach (Yaml::parse(__DIR__.'/../../../../i18n.yml') as $lang => $i18nKeywords) {
+        foreach (Yaml::parse(__DIR__.'/../Fixtures/i18n.yml') as $lang => $i18nKeywords) {
             $line = 1;
             if ('en' !== $lang) {
                 $line = 2;
