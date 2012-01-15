@@ -16,14 +16,6 @@ foreach ($array as $lang => $keywords) {
             array_shift($stepTypes);
         }
 
-        $stepTypes = array_map(function($item) {
-            if ('<' === mb_substr($item, -1)) {
-                return mb_substr($item, 0, -1);
-            } else {
-                return $item.'\s+';
-            }
-        }, $stepTypes);
-
         $array[$lang][$type] = implode('|', $stepTypes);
     }
 }

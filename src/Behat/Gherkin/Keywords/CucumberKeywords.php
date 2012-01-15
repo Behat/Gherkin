@@ -36,9 +36,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function getGivenKeywords()
     {
-        return $this->trimStepKeywordsString(
-            parent::getGivenKeywords()
-        );
+        return $this->prepareStepString(parent::getGivenKeywords());
     }
 
     /**
@@ -46,9 +44,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function getWhenKeywords()
     {
-        return $this->trimStepKeywordsString(
-            parent::getWhenKeywords()
-        );
+        return $this->prepareStepString(parent::getWhenKeywords());
     }
 
     /**
@@ -56,9 +52,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function getThenKeywords()
     {
-        return $this->trimStepKeywordsString(
-            parent::getThenKeywords()
-        );
+        return $this->prepareStepString(parent::getThenKeywords());
     }
 
     /**
@@ -66,9 +60,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function getAndKeywords()
     {
-        return $this->trimStepKeywordsString(
-            parent::getAndKeywords()
-        );
+        return $this->prepareStepString(parent::getAndKeywords());
     }
 
     /**
@@ -76,9 +68,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function getButKeywords()
     {
-        return $this->trimStepKeywordsString(
-            parent::getButKeywords()
-        );
+        return $this->prepareStepString(parent::getButKeywords());
     }
 
     /**
@@ -88,12 +78,12 @@ class CucumberKeywords extends ArrayKeywords
      *
      * @return  string
      */
-    private function trimStepKeywordsString($keywordsString)
+    private function prepareStepString($keywordsString)
     {
-        if (false === strpos($keywordsString, '*|')) {
-            return $keywordsString;
+        if (0 === mb_strpos($keywordsString, '*|')) {
+            $keywordsString = mb_substr($keywordsString, 2);
         }
 
-        return mb_substr($keywordsString, 2);
+        return $keywordsString;
     }
 }
