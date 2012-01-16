@@ -214,7 +214,7 @@ class Parser
 
         // Trim description end
         if (null !== $node->getDescription()) {
-            $node->setDescription(rtrim($node->getDescription()));
+            $node->setDescription(rtrim($node->getDescription()) ?: null);
         }
 
         // Parse background
@@ -267,7 +267,7 @@ class Parser
 
         // Trim title end
         if (null !== $node->getTitle()) {
-            $node->setTitle(rtrim($node->getTitle()));
+            $node->setTitle(rtrim($node->getTitle()) ?: null);
         }
 
         // Parse steps
@@ -318,7 +318,7 @@ class Parser
 
         // Trim title end
         if (null !== $node->getTitle()) {
-            $node->setTitle(rtrim($node->getTitle()));
+            $node->setTitle(rtrim($node->getTitle()) ?: null);
         }
 
         // Parse steps
@@ -378,7 +378,7 @@ class Parser
 
         // Trim title end
         if (null !== $node->getTitle()) {
-            $node->setTitle(rtrim($node->getTitle()));
+            $node->setTitle(rtrim($node->getTitle()) ?: null);
         }
 
         // Parse scenario steps
