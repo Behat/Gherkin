@@ -7,12 +7,15 @@
 Feature: Complex descriptions
   Some description with
   | table |   row|
-  and
+
+    and
+
   """
   """
 
-  Scenario: Some
-    | complex |  description     |
+    Scenario: Some
+       | complex |  description     |
+
 """
 hell yeah
 """

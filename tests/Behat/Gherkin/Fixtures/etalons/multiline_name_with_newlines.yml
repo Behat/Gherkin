@@ -3,7 +3,9 @@ feature:
   language:     en
   line:         1
   description:  |-
+
     Feature description
+
     With etc.
 
   background:
@@ -26,7 +28,9 @@ feature:
       type:     outline
       title:    |-
         I'm a multiline name
-        which goes on and on and on for three lines
+
+                        which goes on and on and on for three lines
+
         yawn
       line:     20
       steps:

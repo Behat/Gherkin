@@ -53,7 +53,7 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
 
-        $this->assertEquals('Given some step-like line', $parsed[0]->getDescription());
+        $this->assertEquals("\n  Given some step-like line", $parsed[0]->getDescription());
     }
 
     /**
@@ -63,8 +63,8 @@ GHERKIN;
     {
         $feature = <<<GHERKIN
 Feature: Behat bug test
-	Background: remove X to couse bug
-	Step is red form is not valid
+    Background: remove X to couse bug
+    Step is red form is not valid
     asd
     asd
     as
@@ -85,8 +85,8 @@ GHERKIN;
     {
         $feature = <<<GHERKIN
 Feature: Behat bug test
-	Scenario: remove X to couse bug
-	Step is red form is not valid
+    Scenario: remove X to cause bug
+    Step is red form is not valid
     asd
     asd
     as
@@ -117,7 +117,7 @@ GHERKIN;
 
         $this->assertCount(2, $scenarios);
         $this->assertEquals(<<<TEXT
-remove X to couse bug
+remove X to cause bug
 Step is red form is not valid
 asd
 asd

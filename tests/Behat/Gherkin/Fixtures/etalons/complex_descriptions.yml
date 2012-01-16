@@ -5,7 +5,9 @@ feature:
   description:  |-
     Some description with
     | table |   row|
-    and
+
+      and
+
     """
     """
 
@@ -14,10 +16,11 @@ feature:
       type:     scenario
       title:    |-
         Some
-        | complex |  description     |
+         | complex |  description     |
+
         """
         hell yeah
         """
-      line:     14
+      line:     16
       steps:
-        - { type: 'Given',  text: 'one two three',  line: 19 }
+        - { type: 'Given',  text: 'one two three',  line: 22 }

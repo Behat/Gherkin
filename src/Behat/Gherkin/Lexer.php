@@ -231,9 +231,10 @@ class Lexer
     {
         $matches = array();
 
-        if (preg_match('/^\s*('.$keywords.'):\s*(.*)/u', $this->line, $matches)) {
-            $token = $this->takeToken($type, $matches[2]);
-            $token->keyword = $matches[1];
+        if (preg_match('/^(\s*)('.$keywords.'):\s*(.*)/u', $this->line, $matches)) {
+            $token = $this->takeToken($type, $matches[3]);
+            $token->keyword = $matches[2];
+            $token->indent  = mb_strlen($matches[1]);
 
             $this->consumeLine();
 
