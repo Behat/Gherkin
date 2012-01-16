@@ -42,7 +42,7 @@ $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
 $lexer  = new Behat\Gherkin\Lexer($keywords);
 $parser = new Behat\Gherkin\Parser($lexer);
 
-$arrayOfFeatures = $parser->parse(file_get_contents('some.feature'));
+$feature = $parser->parse(file_get_contents('some.feature'));
 ```
 
 Note on Patches/Pull Requests
