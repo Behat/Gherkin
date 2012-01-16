@@ -114,6 +114,47 @@ GHERKIN;
         $this->assertEquals($etalon, $dumped);
     }
 
+    public function testRuKeywordsCustomKeywordsDumper()
+    {
+        $dumper = new KeywordsDumper($this->keywords);
+        $dumper->setKeywordsDumperFunction(function($keywords, $short){
+            return '['.implode(', ', $keywords).']';
+        });
+
+        $dumped = $dumper->dump('ru');
+        $etalon = <<<GHERKIN
+# language: ru
+[Функционал, Фича]: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents' memory
+
+  [Предыстория, Бэкграунд]:
+    [Допустим] there is agent A
+    [И] there is agent B
+
+  [Сценарий, История]: Erasing agent memory
+    [Допустим] there is agent J
+    [И] there is agent K
+    [Если, @] I erase agent K's memory
+    [То] there should be agent J
+    [Но] there should not be agent K
+
+  [Структура сценария, Аутлайн]: Erasing other agents' memory
+    [Допустим] there is agent <agent1>
+    [И] there is agent <agent2>
+    [Если, @] I erase agent <agent2>'s memory
+    [То] there should be agent <agent1>
+    [Но] there should not be agent <agent2>
+
+    [Значения]:
+      | agent1 | agent2 |
+      | D      | M      |
+GHERKIN;
+
+        $this->assertEquals($etalon, $dumped);
+    }
+
     public function testExtendedVersionDumper()
     {
         $dumper = new KeywordsDumper($this->keywords);

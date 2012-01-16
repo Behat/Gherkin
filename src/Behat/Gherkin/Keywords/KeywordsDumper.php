@@ -19,7 +19,8 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
  */
 class KeywordsDumper
 {
-    protected $keywords;
+    private $keywords;
+    private $keywordsDumper;
 
     /**
      * Initializes dumper.
@@ -29,6 +30,36 @@ class KeywordsDumper
     public function __construct(KeywordsInterface $keywords)
     {
         $this->keywords = $keywords;
+        $this->keywordsDumper = array($this, 'dumpKeywords');
+    }
+
+    /**
+     * Sets keywords mapper function.
+     *
+     * Callable should accept 2 arguments (array $keywords and Boolean $isShort)
+     *
+     * @param callable $mapper
+     */
+    public function setKeywordsDumperFunction($mapper)
+    {
+        $this->keywordsDumper = $mapper;
+    }
+
+    /**
+     * Defaults keywords dumper.
+     *
+     * @param   array   $keywords keywords list
+     * @param   Boolean $isShort  is short version
+     *
+     * @return  string
+     */
+    public function dumpKeywords(array $keywords, $isShort)
+    {
+        if ($isShort) {
+            return 1 < count($keywords) ? '('.implode('|', $keywords).')' : $keywords[0];
+        }
+
+        return $keywords[0];
     }
 
     /**
@@ -47,16 +78,17 @@ class KeywordsDumper
             $languageComment = "# language: $language\n";
         }
 
-        $keywords = $this->keywords->getFeatureKeywords();
+        $keywords = explode('|', $this->keywords->getFeatureKeywords());
 
         if ($short) {
-            $keywords = $this->prepareKeyword($keywords);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
 
             return trim($languageComment.$this->dumpFeature($keywords, $short));
         }
 
         $features = array();
-        foreach (explode('|', $keywords) as $keyword) {
+        foreach ($keywords as $keyword) {
+            $keyword    = call_user_func($this->keywordsDumper, array($keyword), $short);
             $features[] = trim($languageComment.$this->dumpFeature($keyword, $short));
         }
 
@@ -83,31 +115,36 @@ class KeywordsDumper
 GHERKIN;
 
         // Background
-        $keywords = $this->keywords->getBackgroundKeywords();
+        $keywords = explode('|', $this->keywords->getBackgroundKeywords());
         if ($short) {
-            $dump .= $this->dumpBackground($this->prepareKeyword($keywords), $short);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpBackground($keywords, $short);
         } else {
-            $keywords = explode('|', $keywords);
-            $dump .= $this->dumpBackground($keywords[0], $short);
+            $keyword  = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+            $dump .= $this->dumpBackground($keyword, $short);
         }
 
         // Scenario
-        $keywords = $this->keywords->getScenarioKeywords();
+        $keywords = explode('|', $this->keywords->getScenarioKeywords());
         if ($short) {
-            $dump .= $this->dumpScenario($this->prepareKeyword($keywords), $short);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpScenario($keywords, $short);
         } else {
-            foreach (explode('|', $keywords) as $keyword) {
-                $dump .= $this->dumpScenario($keyword, $short);
+            foreach ($keywords as $keyword) {
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= $this->dumpScenario($keyword, $short);
             }
         }
 
         // Outline
-        $keywords = $this->keywords->getOutlineKeywords();
+        $keywords = explode('|', $this->keywords->getOutlineKeywords());
         if ($short) {
-            $dump .= $this->dumpOutline($this->prepareKeyword($keywords), $short);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpOutline($keywords, $short);
         } else {
-            foreach (explode('|', $keywords) as $keyword) {
-                $dump .= $this->dumpOutline($keyword, $short);
+            foreach ($keywords as $keyword) {
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= $this->dumpOutline($keyword, $short);
             }
         }
 
@@ -225,13 +262,13 @@ GHERKIN;
             $this->keywords->getButKeywords(), 'there should not be agent <agent2>', $short
         );
 
-        $keywords = $this->keywords->getExamplesKeywords();
+        $keywords = explode('|', $this->keywords->getExamplesKeywords());
         if ($short) {
-            $keyword = $this->prepareKeyword($keywords);
+            $keyword = call_user_func($this->keywordsDumper, $keywords, $short);
         } else {
-            $keywords = explode('|', $keywords);
-            $keyword  = $keywords[0];
+            $keyword = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
         }
+
         $dump .= <<<GHERKIN
 
     {$keyword}:
@@ -255,11 +292,15 @@ GHERKIN;
     protected function dumpStepKeywords($keywords, $text, $short = true)
     {
         $dump = '';
+
+        $keywords = explode('|', $keywords);
         if ($short) {
-            $dump .= $this->dumpStep($this->prepareKeyword($keywords), $text, $short);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpStep($keywords, $text, $short);
         } else {
-            foreach (explode('|', $keywords) as $keyword) {
-                $dump .= $this->dumpStep($keyword, $text, $short);
+            foreach ($keywords as $keyword) {
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= $this->dumpStep($keyword, $text, $short);
             }
         }
 
@@ -288,17 +329,5 @@ GHERKIN;
 GHERKIN;
 
         return $dump."\n";
-    }
-
-    /**
-     * Wrap keyword with "(", ")" if there's multiple variants.
-     *
-     * @param   string  $keyword
-     *
-     * @return  string
-     */
-    protected function prepareKeyword($keyword)
-    {
-        return false !== mb_strpos($keyword, '|') ? "($keyword)" : $keyword;
     }
 }
