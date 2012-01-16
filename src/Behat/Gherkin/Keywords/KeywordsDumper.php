@@ -167,12 +167,12 @@ GHERKIN;
 GHERKIN;
 
         // Given
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getGivenKeywords(), 'there is agent A', $short
         );
 
         // And
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getAndKeywords(), 'there is agent B', $short
         );
 
@@ -195,27 +195,27 @@ GHERKIN;
 GHERKIN;
 
         // Given
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getGivenKeywords(), 'there is agent J', $short
         );
 
         // And
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getAndKeywords(), 'there is agent K', $short
         );
 
         // When
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getWhenKeywords(), 'I erase agent K\'s memory', $short
         );
 
         // Then
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getThenKeywords(), 'there should be agent J', $short
         );
 
         // But
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getButKeywords(), 'there should not be agent K', $short
         );
 
@@ -238,27 +238,27 @@ GHERKIN;
 GHERKIN;
 
         // Given
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getGivenKeywords(), 'there is agent <agent1>', $short
         );
 
         // And
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getAndKeywords(), 'there is agent <agent2>', $short
         );
 
         // When
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getWhenKeywords(), 'I erase agent <agent2>\'s memory', $short
         );
 
         // Then
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getThenKeywords(), 'there should be agent <agent1>', $short
         );
 
         // But
-        $dump .= $this->dumpStepKeywords(
+        $dump .= $this->dumpStep(
             $this->keywords->getButKeywords(), 'there should not be agent <agent2>', $short
         );
 
@@ -281,53 +281,43 @@ GHERKIN;
     }
 
     /**
-     * Dumps step keywords example.
+     * Dumps step example.
      *
-     * @param   string  $keyword    keywords list (splitted with "|")
+     * @param   string  $keywords   item keyword
      * @param   string  $text       step text
      * @param   Boolean $short      dump short version?
      *
      * @return  string
      */
-    protected function dumpStepKeywords($keywords, $text, $short = true)
+    protected function dumpStep($keywords, $text, $short = true)
     {
         $dump = '';
 
         $keywords = explode('|', $keywords);
         if ($short) {
+            $keywords = array_map(function($keyword) {
+                return str_replace('<', '', $keyword);
+            }, $keywords);
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
-            $dump    .= $this->dumpStep($keywords, $text, $short);
+            $dump    .= <<<GHERKIN
+    {$keywords} {$text}
+
+GHERKIN;
         } else {
             foreach ($keywords as $keyword) {
+                $indent = ' ';
+                if (false !== mb_strpos($keyword, '<')) {
+                    $keyword = mb_substr($keyword, 0, -1);
+                    $indent  = '';
+                }
                 $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
-                $dump   .= $this->dumpStep($keyword, $text, $short);
+                $dump   .= <<<GHERKIN
+    {$keyword}{$indent}{$text}
+
+GHERKIN;
             }
         }
 
         return $dump;
-    }
-
-    /**
-     * Dumps step example.
-     *
-     * @param   string  $keyword    item keyword
-     * @param   string  $text       step text
-     * @param   Boolean $short      dump short version?
-     *
-     * @return  string
-     */
-    protected function dumpStep($keyword, $text, $short = true)
-    {
-        if (!$short && false !== mb_strpos($keyword, '<')) {
-            $keyword = mb_substr($keyword, 0, -1);
-        } else {
-            $keyword = str_replace('<', '', $keyword).' ';
-        }
-
-        $dump = <<<GHERKIN
-    {$keyword}{$text}
-GHERKIN;
-
-        return $dump."\n";
     }
 }
