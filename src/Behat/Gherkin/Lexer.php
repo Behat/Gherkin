@@ -25,11 +25,15 @@ class Lexer
     private $lineNumber;
     private $eos;
     private $keywords;
-    private $keywordsCache    = array();
-    private $deferredObjects  = array();
-    private $stash            = array();
-    private $inPyString       = false;
-    private $pyStringSwallow  = 0;
+    private $keywordsCache   = array();
+    private $deferredObjects = array();
+    private $stash           = array();
+    private $inPyString      = false;
+    private $pyStringSwallow = 0;
+
+    private $featureStarted          = false;
+    private $allowMultilineArguments = false;
+    private $allowSteps              = false;
 
     /**
      * Initializes lexer.
@@ -48,17 +52,21 @@ class Lexer
      */
     public function setInput($input)
     {
-        $input                  = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
+        $input = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
 
-        $this->lines            = explode("\n", $input);
-        $this->line             = array_shift($this->lines);
-        $this->lineNumber       = 1;
-        $this->eos              = false;
+        $this->lines      = explode("\n", $input);
+        $this->line       = array_shift($this->lines);
+        $this->lineNumber = 1;
+        $this->eos        = false;
 
         $this->deferredObjects  = array();
         $this->stash            = array();
         $this->inPyString       = false;
         $this->pyStringSwallow  = 0;
+
+        $this->featureStarted          = false;
+        $this->allowMultilineArguments = false;
+        $this->allowSteps              = false;
     }
 
     /**
@@ -229,6 +237,23 @@ class Lexer
 
             $this->consumeLine();
 
+            // turn off language searching
+            if ('Feature' === $type) {
+                $this->featureStarted = true;
+            }
+
+            // turn off PyString and Table searching
+            if (in_array($type, array('Feature', 'Scenario', 'Outline'))) {
+                $this->allowMultilineArguments = false;
+            } elseif ('Examples' === $type) {
+                $this->allowMultilineArguments = true;
+            }
+
+            // turn on steps searching
+            if (in_array($type, array('Scenario', 'Background', 'Outline'))) {
+                $this->allowSteps = true;
+            }
+
             return $token;
         }
     }
@@ -336,6 +361,10 @@ class Lexer
      */
     protected function scanStep()
     {
+        if (!$this->allowSteps) {
+            return;
+        }
+
         $matches = array();
 
         $keywords = $this->getKeywords('Step');
@@ -344,6 +373,7 @@ class Lexer
             $token->text = $matches[2];
 
             $this->consumeLine();
+            $this->allowMultilineArguments = true;
 
             return $token;
         }
@@ -356,6 +386,10 @@ class Lexer
      */
     protected function scanPyStringOperator()
     {
+        if (!$this->allowMultilineArguments) {
+            return;
+        }
+
         $matches = array();
 
         if (false !== ($pos = mb_strpos($this->line, '"""'))) {
@@ -393,6 +427,10 @@ class Lexer
      */
     protected function scanTableRow()
     {
+        if (!$this->allowMultilineArguments) {
+            return;
+        }
+
         $line = trim($this->line);
 
         if (isset($line[0]) && '|' === $line[0]) {
@@ -440,6 +478,10 @@ class Lexer
      */
     protected function scanLanguage()
     {
+        if ($this->featureStarted) {
+            return;
+        }
+
         if (!$this->inPyString) {
             if (0 === mb_strpos(ltrim($this->line), '#') && false !== mb_strpos($this->line, 'language')) {
                 return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');

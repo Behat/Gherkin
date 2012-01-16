@@ -212,40 +212,6 @@ GHERKIN;
     /**
      * @expectedException Behat\Gherkin\Exception\ParserException
      */
-    public function testTableArgumentNotInPlace()
-    {
-        $feature = <<<GHERKIN
-Feature:
-
-    Scenario:
-
-        | as | sa |
-        | ds | sd |
-GHERKIN;
-
-        $this->gherkin->parse($feature);
-    }
-
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
-    public function testPyStringArgumentNotInPlace()
-    {
-        $feature = <<<GHERKIN
-Feature:
-
-    Scenario:
-
-        """
-        """
-GHERKIN;
-
-        $this->gherkin->parse($feature);
-    }
-
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
     public function testEndlessPyString()
     {
         $feature = <<<GHERKIN
