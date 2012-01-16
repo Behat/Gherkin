@@ -96,7 +96,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     protected function parseFixture($fixture)
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
-        return $this->getGherkinParser()->parse(file_get_contents($file), $file);
+        return array($this->getGherkinParser()->parse(file_get_contents($file), $file));
     }
 
     protected function parseEtalon($etalon)

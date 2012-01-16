@@ -48,14 +48,13 @@ class Parser
      */
     public function parse($input, $file = null)
     {
-        $features = array();
-
         $this->file = $file;
 
         $this->lexer->setInput($input);
         $this->lexer->setLanguage($language = 'en');
         $languageSpecifierLine = null;
 
+        $feature = null;
         while ('EOS' !== ($predicted = $this->predictTokenType())) {
             if ('Newline' === $predicted || 'Comment' === $predicted) {
                 $this->lexer->getAdvancedToken();
@@ -70,22 +69,25 @@ class Parser
                     $this->lexer->setLanguage($language);
                 } elseif ($languageSpecifierLine !== $token->line) {
                     // Language already specified
-                    throw new ParserException(sprintf('Ambigious language specifiers on lines: %d and %d%s',
-                        $languageSpecifierLine, $token->line,
+                    throw new ParserException(sprintf(
+                        'Ambigious language specifiers on lines: %d and %d%s',
+                        $languageSpecifierLine,
+                        $token->line,
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
-            } elseif ('Feature' === $predicted
-                   || ('Tag' === $predicted && 'Feature' === $this->predictTokenType(2))) {
+            } elseif (null === $feature &&
+                ('Feature' === $predicted || (
+                     'Tag' === $predicted && 'Feature' === $this->predictTokenType(2))
+                )) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
-                $features[] = $feature;
             } else {
-                $this->expectTokenType('Feature');
+                $this->expectTokenType(array('Comment', 'Scenario', 'Outline', 'Step'));
             }
         }
 
-        return $features;
+        return $feature;
     }
 
     /**

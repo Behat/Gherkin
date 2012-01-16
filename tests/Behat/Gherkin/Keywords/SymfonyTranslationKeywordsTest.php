@@ -31,11 +31,12 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
             $language = basename($i18n, '.xliff');
             $translator->addResource('xliff', $i18n, $language, 'gherkin');
 
-            $etalon     = array();
-            $gherkin    = "# language: $language";
-            $lineNum    = 1;
-            // Features
+            $etalon   = array();
+            $features = array();
             foreach ($this->getTranslatedKeywords('Feature', $language) as $featureNum => $featureKeyword) {
+                $gherkin = "# language: $language";
+                $lineNum = 1;
+
                 $feature = new Node\FeatureNode(null, null, null, ++$lineNum);
                 $feature->setLanguage($language);
                 $feature->setKeyword($featureKeyword);
@@ -109,9 +110,9 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
                     $lineNum += 3;
                 }
 
-                $etalon[] = $feature;
+                $etalon[]   = $feature;
+                $features[] = $this->getParser()->parse($gherkin);
             }
-            $features = $this->getParser()->parse($gherkin);
 
             $data[] = array($language, $etalon, $features);
         }

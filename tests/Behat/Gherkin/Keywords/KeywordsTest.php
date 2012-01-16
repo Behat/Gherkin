@@ -19,13 +19,13 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
 
         $data = array();
         foreach ($this->getKeywordsArray() as $lang => $i18nKeywords) {
-            $line = 1;
-            if ('en' !== $lang) {
-                $line = 2;
-            }
-
             $features = array();
-            foreach (explode('|', $i18nKeywords['feature']) as $featureKeyword) {
+            foreach (explode('|', $i18nKeywords['feature']) as $transNum => $featureKeyword) {
+                $line = 1;
+                if ('en' !== $lang) {
+                    $line = 2;
+                }
+
                 $feature = new Node\FeatureNode(
                     'Internal operations',
                     <<<DESC
@@ -33,7 +33,7 @@ In order to stay secret
 As a secret organization
 We need to be able to erase past agents' memory
 DESC
-                    , $lang.'.feature',
+                    , $lang.'_'.($transNum+1).'.feature',
                     $line
                 );
                 $feature->setLanguage($lang);
@@ -117,8 +117,11 @@ TABLE
             }
 
             $dumped = $dumper->dump($lang, false);
+            $parsed = array();
             try {
-                $parsed = $parser->parse($dumped, $lang.'.feature');
+                foreach ($dumped as $num => $dumpedFeature) {
+                    $parsed[] = $parser->parse($dumpedFeature, $lang.'_'.($num+1).'.feature');
+                }
             } catch (\Exception $e) {
                 throw new \Exception(
                     $e->getMessage().":\n".$dumped, 0, $e

@@ -119,7 +119,8 @@ GHERKIN;
         $dumper = new KeywordsDumper($this->keywords);
 
         $dumped = $dumper->dump('ru', false);
-        $etalon = <<<GHERKIN
+        $etalon = array(
+<<<GHERKIN
 # language: ru
 Функционал: Internal operations
   In order to stay secret
@@ -169,7 +170,9 @@ GHERKIN;
     Значения:
       | agent1 | agent2 |
       | D      | M      |
-
+GHERKIN
+, <<<GHERKIN
+# language: ru
 Фича: Internal operations
   In order to stay secret
   As a secret organization
@@ -218,7 +221,8 @@ GHERKIN;
     Значения:
       | agent1 | agent2 |
       | D      | M      |
-GHERKIN;
+GHERKIN
+        );
 
         $this->assertEquals($etalon, $dumped);
     }

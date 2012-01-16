@@ -53,6 +53,6 @@ class GherkinFileLoader extends AbstractFileLoader
         $filename   = $this->findRelativePath($path);
         $content    = file_get_contents($path);
 
-        return $this->parser->parse($content, $filename);
+        return array($this->parser->parse($content, $filename));
     }
 }

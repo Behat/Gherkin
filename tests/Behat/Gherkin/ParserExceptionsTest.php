@@ -53,7 +53,7 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
 
-        $this->assertEquals("\n  Given some step-like line", $parsed[0]->getDescription());
+        $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
     }
 
     /**
@@ -112,10 +112,9 @@ Examples:
 
 GHERKIN;
 
-        $features  = $this->gherkin->parse($feature);
-        $scenarios = $features[0]->getScenarios();
+        $feature = $this->gherkin->parse($feature);
 
-        $this->assertCount(2, $scenarios);
+        $this->assertCount(2, $scenarios = $feature->getScenarios());
         $this->assertEquals(<<<TEXT
 remove X to cause bug
 Step is red form is not valid
@@ -256,6 +255,20 @@ Feature:
 
     Background:
         Aaand some step
+GHERKIN;
+
+        $parsed = $this->gherkin->parse($feature);
+    }
+
+    /**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+     */
+    public function testMultipleFeatures()
+    {
+        $feature = <<<GHERKIN
+Feature:
+
+Feature:
 GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);

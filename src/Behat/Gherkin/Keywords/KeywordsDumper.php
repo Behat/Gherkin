@@ -42,21 +42,25 @@ class KeywordsDumper
     public function dump($language, $short = true)
     {
         $this->keywords->setLanguage($language);
-        $dump = '';
+        $languageComment = '';
         if ('en' !== $language) {
-            $dump = "# language: $language\n";
+            $languageComment = "# language: $language\n";
         }
 
         $keywords = $this->keywords->getFeatureKeywords();
+
         if ($short) {
-            $dump .= $this->dumpFeature($this->prepareKeyword($keywords), $short);
-        } else {
-            foreach (explode('|', $keywords) as $keyword) {
-                $dump .= $this->dumpFeature($keyword, $short);
-            }
+            $keywords = $this->prepareKeyword($keywords);
+
+            return trim($languageComment.$this->dumpFeature($keywords, $short));
         }
 
-        return trim($dump);
+        $features = array();
+        foreach (explode('|', $keywords) as $keyword) {
+            $features[] = trim($languageComment.$this->dumpFeature($keyword, $short));
+        }
+
+        return $features;
     }
 
     /**
