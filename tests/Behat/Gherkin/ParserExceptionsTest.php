@@ -56,9 +56,6 @@ GHERKIN;
         $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
     }
 
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
     public function testTextInBackground()
     {
         $feature = <<<GHERKIN

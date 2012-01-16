@@ -53,7 +53,7 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
 
                 // Background
                 $backgroundKeyword = $backgroundKeywords[0];
-                $background = new Node\BackgroundNode(++$lineNum);
+                $background = new Node\BackgroundNode(null, ++$lineNum);
                 $background->setKeyword($backgroundKeyword);
                 $feature->setBackground($background);
 

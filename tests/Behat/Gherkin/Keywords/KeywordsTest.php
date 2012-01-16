@@ -40,7 +40,7 @@ DESC
                 $feature->setKeyword($featureKeyword);
                 $line += 5;
 
-                $background = new Node\BackgroundNode($line);
+                $background = new Node\BackgroundNode(null, $line);
                 $keywords = explode('|', $i18nKeywords['background']);
                 $background->setKeyword($keywords[0]);
                 $line += 1;

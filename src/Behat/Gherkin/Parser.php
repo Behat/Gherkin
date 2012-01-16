@@ -241,10 +241,34 @@ class Parser
     protected function parseBackground()
     {
         $token  = $this->expectTokenType('Background');
-        $node   = new Node\BackgroundNode($token->line);
+        $node   = new Node\BackgroundNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
-        $this->skipExtraChars();
+        $this->skipComments();
+
+        // Parse scenario title
+        while (in_array($predicted = $this->predictTokenType(), array('Text', 'Newline'))) {
+            if ('Text' === $predicted) {
+                $text = $this->parseText(false);
+                $text = preg_replace('/^\s{1,'.($token->indent+2).'}|\s*$/', '', $text);
+            } else {
+                $this->acceptTokenType('Newline');
+                $text = '';
+            }
+
+            if (null === $node->getTitle()) {
+                $node->setTitle($text);
+            } else {
+                $node->setTitle($node->getTitle() . "\n" . $text);
+            }
+
+            $this->skipComments();
+        }
+
+        // Trim title end
+        if (null !== $node->getTitle()) {
+            $node->setTitle(rtrim($node->getTitle()));
+        }
 
         // Parse steps
         while ('Step' === $this->predictTokenType()) {
