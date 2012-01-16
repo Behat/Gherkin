@@ -99,12 +99,13 @@ class Parser
      */
     protected function expectTokenType($type)
     {
-        if ($type === $this->predictTokenType()) {
+        $types = (array) $type;
+        if (in_array($this->predictTokenType(), $types)) {
             return $this->lexer->getAdvancedToken();
         }
 
         throw new ParserException(sprintf('Expected %s token, but got %s on line: %d%s',
-            $type, $this->predictTokenType(), $this->lexer->predictToken()->line,
+            implode(' or ', $types), $this->predictTokenType(), $this->lexer->predictToken()->line,
             $this->file ? ' in file: ' . $this->file : ''
         ));
     }
