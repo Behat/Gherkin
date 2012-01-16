@@ -62,7 +62,11 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function setLanguage($language)
     {
-        $this->language = $language;
+        if (!isset($this->keywords[$language])) {
+            $this->language = 'en';
+        } else {
+            $this->language = $language;
+        }
     }
 
     /**
