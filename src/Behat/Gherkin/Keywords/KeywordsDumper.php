@@ -37,7 +37,7 @@ class KeywordsDumper
      * @param   string  $language   keywords language
      * @param   Boolean $short      dump short version
      *
-     * @return  string
+     * @return  string|array        string for short version and array of features for extended
      */
     public function dump($language, $short = true)
     {
