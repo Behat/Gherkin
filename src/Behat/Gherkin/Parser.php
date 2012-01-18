@@ -429,7 +429,7 @@ class Parser
                 $text = '';
             }
 
-            if (null === $node->$getter()) {
+            if ($node instanceof Node\FeatureNode && null === $node->$getter()) {
                 $node->$setter($text);
             } else {
                 $node->$setter($node->$getter() . "\n" . $text);
