@@ -3,7 +3,9 @@ feature:
   language:     en
   line:         1
   description:  |-
+
     Feature description
+
     With etc.
 
   background:
@@ -15,22 +17,25 @@ feature:
     -
       type:     scenario
       title:    |-
+        
         I'm a multiline name
         which goes on and on and on for three lines
         yawn
       line:     13
       steps:
-        - { type: Given, text: passing without a table, line: 18 }
+        - { type: Given, text: passing without a table, line: 19 }
 
     -
       type:     outline
       title:    |-
         I'm a multiline name
-        which goes on and on and on for three lines
+
+                        which goes on and on and on for three lines
+
         yawn
-      line:     20
+      line:     21
       steps:
-        - { type: 'Given',  text: '<state> without a table',  line: 27 }
+        - { type: 'Given',  text: '<state> without a table',  line: 28 }
       examples:
         - [state]
         - [passing]
@@ -38,9 +43,23 @@ feature:
     -
       type:     outline
       title:    name
-      line:     36
+      line:     37
       steps:
-        - { type: 'Given',  text: '<state> without a table',  line: 39 }
+        - { type: 'Given',  text: '<state> without a table',  line: 40 }
+      examples:
+        - [state]
+        - [passing]
+    -
+      type:     outline
+      title:    |-
+
+
+        I'm a multiline name
+        which goes on and on and on for three lines
+        yawn
+      line:     48
+      steps:
+        - { type: 'Given',  text: '<state> without a table',  line: 55 }
       examples:
         - [state]
         - [passing]

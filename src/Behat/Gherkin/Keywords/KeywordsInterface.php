@@ -60,7 +60,42 @@ interface KeywordsInterface
     function getExamplesKeywords();
 
     /**
-     * Returns Step keywords (splitted by "|").
+     * Returns Given keywords (splitted by "|")
+     *
+     * @return  string
+     */
+    function getGivenKeywords();
+
+    /**
+     * Returns When keywords (splitted by "|")
+     *
+     * @return  string
+     */
+    function getWhenKeywords();
+
+    /**
+     * Returns Then keywords (splitted by "|")
+     *
+     * @return  string
+     */
+    function getThenKeywords();
+
+    /**
+     * Returns And keywords (splitted by "|")
+     *
+     * @return  string
+     */
+    function getAndKeywords();
+
+    /**
+     * Returns But keywords (splitted by "|")
+     *
+     * @return  string
+     */
+    function getButKeywords();
+
+    /**
+     * Returns all step keywords (splitted by "|").
      *
      * @return  string
      */

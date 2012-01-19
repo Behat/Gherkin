@@ -48,14 +48,13 @@ class Parser
      */
     public function parse($input, $file = null)
     {
-        $features = array();
-
         $this->file = $file;
 
         $this->lexer->setInput($input);
         $this->lexer->setLanguage($language = 'en');
         $languageSpecifierLine = null;
 
+        $feature = null;
         while ('EOS' !== ($predicted = $this->predictTokenType())) {
             if ('Newline' === $predicted || 'Comment' === $predicted) {
                 $this->lexer->getAdvancedToken();
@@ -70,22 +69,25 @@ class Parser
                     $this->lexer->setLanguage($language);
                 } elseif ($languageSpecifierLine !== $token->line) {
                     // Language already specified
-                    throw new ParserException(sprintf('Ambigious language specifiers on lines: %d and %d%s',
-                        $languageSpecifierLine, $token->line,
+                    throw new ParserException(sprintf(
+                        'Ambigious language specifiers on lines: %d and %d%s',
+                        $languageSpecifierLine,
+                        $token->line,
                         $this->file ? ' in file: ' . $this->file : ''
                     ));
                 }
-            } elseif ('Feature' === $predicted
-                   || ('Tag' === $predicted && 'Feature' === $this->predictTokenType(2))) {
+            } elseif (null === $feature &&
+                ('Feature' === $predicted || (
+                     'Tag' === $predicted && 'Feature' === $this->predictTokenType(2))
+                )) {
                 $feature = $this->parseExpression();
                 $feature->setLanguage($language);
-                $features[] = $feature;
             } else {
-                $this->expectTokenType('Feature');
+                $this->expectTokenType(array('Comment', 'Scenario', 'Outline', 'Step'));
             }
         }
 
-        return $features;
+        return $feature;
     }
 
     /**
@@ -99,12 +101,13 @@ class Parser
      */
     protected function expectTokenType($type)
     {
-        if ($type === $this->predictTokenType()) {
+        $types = (array) $type;
+        if (in_array($this->predictTokenType(), $types)) {
             return $this->lexer->getAdvancedToken();
         }
 
         throw new ParserException(sprintf('Expected %s token, but got %s on line: %d%s',
-            $type, $this->predictTokenType(), $this->lexer->predictToken()->line,
+            implode(' or ', $types), $this->predictTokenType(), $this->lexer->predictToken()->line,
             $this->file ? ' in file: ' . $this->file : ''
         ));
     }
@@ -182,33 +185,12 @@ class Parser
         $node   = new Node\FeatureNode(trim($token->value) ?: null, null, $this->file, $token->line);
 
         $node->setKeyword($token->keyword);
-        $this->skipExtraChars();
 
-        // Parse defered tags
-        if ('Tag' === $this->predictTokenType() && $this->lexer->predictToken()->defered) {
-            $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipExtraChars();
-        }
+        // Parse tags
+        $this->parseNodeTags($node);
 
-        // Parse feature description (even if it look like a step)
-        while ('Text' === ($predicted = $this->predictTokenType())
-            || 'Step' === $predicted) {
-            $expression = $this->parseExpression();
-            switch ($predicted) {
-                case 'Text':
-                    $text = trim($expression);
-                    break;
-                case 'Step':
-                    $text = trim($expression->getType().' '.$expression->getText());
-                    break;
-            }
-
-            if (null === $node->getDescription()) {
-                $node->setDescription($text);
-            } else {
-                $node->setDescription($node->getDescription() . "\n" . $text);
-            }
-        }
+        // Parse description
+        $this->parseNodeDescription($node, $token->indent+2);
 
         // Parse background
         if ('Background' === $this->predictTokenType()) {
@@ -234,10 +216,13 @@ class Parser
     protected function parseBackground()
     {
         $token  = $this->expectTokenType('Background');
-        $node   = new Node\BackgroundNode($token->line);
+        $node   = new Node\BackgroundNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
-        $this->skipExtraChars();
+        $this->skipComments();
+
+        // Parse title
+        $this->parseNodeDescription($node, $token->indent+2);
 
         // Parse steps
         while ('Step' === $this->predictTokenType()) {
@@ -258,23 +243,12 @@ class Parser
         $node   = new Node\OutlineNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
-        $this->skipExtraChars();
 
         // Parse tags
-        if ('Tag' === $this->predictTokenType()) {
-            $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipExtraChars();
-        }
+        $this->parseNodeTags($node);
 
-        // Parse scenario title
-        while ('Text' === $this->predictTokenType()) {
-            $text = trim($this->parseExpression());
-            if (null === $node->getTitle()) {
-                $node->setTitle($text);
-            } else {
-                $node->setTitle($node->getTitle() . "\n" . $text);
-            }
-        }
+        // Parse title
+        $this->parseNodeDescription($node, $token->indent+2);
 
         // Parse steps
         while ('Step' === $this->predictTokenType()) {
@@ -304,23 +278,12 @@ class Parser
         $node   = new Node\ScenarioNode(trim($token->value) ?: null, $token->line);
 
         $node->setKeyword($token->keyword);
-        $this->skipExtraChars();
 
         // Parse tags
-        if ('Tag' === $this->predictTokenType()) {
-            $node->setTags($this->lexer->getAdvancedToken()->tags);
-            $this->skipExtraChars();
-        }
+        $this->parseNodeTags($node);
 
-        // Parse scenario title
-        while ('Text' === $this->predictTokenType()) {
-            $text = trim($this->parseExpression());
-            if (null === $node->getTitle()) {
-                $node->setTitle($text);
-            } else {
-                $node->setTitle($node->getTitle() . "\n" . $text);
-            }
-        }
+        // Parse title
+        $this->parseNodeDescription($node, $token->indent+2);
 
         // Parse scenario steps
         while ('Step' === $this->predictTokenType()) {
@@ -427,10 +390,77 @@ class Parser
     }
 
     /**
+     * Parse tags for the feature/scenario/outline node.
+     *
+     * @param   Node\AbstractNode $node
+     */
+    private function parseNodeTags(Node\AbstractNode $node)
+    {
+        $this->skipComments();
+
+        while ('Tag' === $this->predictTokenType()) {
+            $node->setTags($this->lexer->getAdvancedToken()->tags);
+            $this->skipComments();
+        }
+    }
+
+    /**
+     * Parse description/title for feature/background/scenario/outline node.
+     *
+     * @param   Node\AbstractNode $node
+     * @param   integer           $indentation
+     */
+    private function parseNodeDescription(Node\AbstractNode $node, $indentation)
+    {
+        $setter = 'setTitle';
+        $getter = 'getTitle';
+        if ($node instanceof Node\FeatureNode) {
+            $setter = 'setDescription';
+            $getter = 'getDescription';
+        }
+
+        // Parse description/title
+        while (in_array($predicted = $this->predictTokenType(), array('Text', 'Newline'))) {
+            if ('Text' === $predicted) {
+                $text = $this->parseText(false);
+                $text = preg_replace('/^\s{1,'.$indentation.'}|\s*$/', '', $text);
+            } else {
+                $this->acceptTokenType('Newline');
+                $text = '';
+            }
+
+            if ($node instanceof Node\FeatureNode && null === $node->$getter()) {
+                $node->$setter($text);
+            } else {
+                $node->$setter($node->$getter() . "\n" . $text);
+            }
+
+            $this->skipComments();
+        }
+
+        // Trim title/description
+        if (null !== $node->$getter()) {
+            $node->$setter(rtrim($node->$getter()) ?: null);
+        }
+    }
+
+    /**
      * Skips newlines & comments in input.
+     *
+     * @param   Boolean $skipNL
      */
     private function skipExtraChars()
     {
         while ($this->acceptTokenType('Newline') || $this->acceptTokenType('Comment'));
+    }
+
+    /**
+     * Skips newlines & comments in input.
+     *
+     * @param   Boolean $skipNL
+     */
+    private function skipComments()
+    {
+        while ($this->acceptTokenType('Comment'));
     }
 }

@@ -4,7 +4,10 @@ feature:
   line:         3
   description:  |-
     In order to verify this error   # comment
-    I want to run this feature using the progress format#comment
+
+
+
+      I want to run this feature using the progress format#comment
     So that it can be fixed
 
   scenarios:

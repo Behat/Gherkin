@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__.'/../vendor/.composer/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
+
+$yaml  = file_get_contents('https://raw.github.com/cucumber/gherkin/master/lib/gherkin/i18n.yml');
+$array = Yaml::parse($yaml);
+
+foreach ($array as $lang => $keywords) {
+    foreach (array('given', 'when', 'then', 'and', 'but') as $type) {
+        $stepTypes = explode('|', $keywords[$type]);
+
+        if ('*' === $stepTypes[0]) {
+            array_shift($stepTypes);
+        }
+
+        $array[$lang][$type] = implode('|', $stepTypes);
+    }
+}
+
+file_put_contents(__DIR__.'/i18n.php', '<?php return '.var_export($array, true).';');

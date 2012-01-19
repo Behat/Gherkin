@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Behat\Gherkin;
+namespace Tests\Behat\Gherkin\Keywords;
 
 use Symfony\Component\Finder\Finder,
     Symfony\Component\Translation\Translator,
@@ -12,7 +12,7 @@ use Behat\Gherkin\Lexer,
     Behat\Gherkin\Node,
     Behat\Gherkin\Keywords\SymfonyTranslationKeywords;
 
-class ParserTranslationsTest extends \PHPUnit_Framework_TestCase
+class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
 {
     private $translator;
     private $parser;
@@ -25,17 +25,18 @@ class ParserTranslationsTest extends \PHPUnit_Framework_TestCase
         $parser     = $this->getParser();
 
         $finder     = new Finder();
-        $i18ns      = $finder->files()->name('*.xliff')->in(__DIR__ . '/../../../i18n');
+        $i18ns      = $finder->files()->name('*.xliff')->in(__DIR__ . '/../Fixtures/i18n');
 
         foreach ($i18ns as $i18n) {
             $language = basename($i18n, '.xliff');
             $translator->addResource('xliff', $i18n, $language, 'gherkin');
 
-            $etalon     = array();
-            $gherkin    = "# language: $language";
-            $lineNum    = 1;
-            // Features
+            $etalon   = array();
+            $features = array();
             foreach ($this->getTranslatedKeywords('Feature', $language) as $featureNum => $featureKeyword) {
+                $gherkin = "# language: $language";
+                $lineNum = 1;
+
                 $feature = new Node\FeatureNode(null, null, null, ++$lineNum);
                 $feature->setLanguage($language);
                 $feature->setKeyword($featureKeyword);
@@ -52,7 +53,7 @@ class ParserTranslationsTest extends \PHPUnit_Framework_TestCase
 
                 // Background
                 $backgroundKeyword = $backgroundKeywords[0];
-                $background = new Node\BackgroundNode(++$lineNum);
+                $background = new Node\BackgroundNode(null, ++$lineNum);
                 $background->setKeyword($backgroundKeyword);
                 $feature->setBackground($background);
 
@@ -109,9 +110,9 @@ class ParserTranslationsTest extends \PHPUnit_Framework_TestCase
                     $lineNum += 3;
                 }
 
-                $etalon[] = $feature;
+                $etalon[]   = $feature;
+                $features[] = $this->getParser()->parse($gherkin);
             }
-            $features = $this->getParser()->parse($gherkin);
 
             $data[] = array($language, $etalon, $features);
         }

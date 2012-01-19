@@ -16,20 +16,28 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
     {
         $keywords       = new ArrayKeywords(array(
             'en' => array(
-                'Feature'           => 'Feature',
-                'Background'        => 'Background',
-                'Scenario'          => 'Scenario',
-                'Scenario Outline'  => 'Scenario Outline',
-                'Examples'          => 'Examples',
-                'Step Types'        => 'Given|When|Then|And|But'
+                'feature'          => 'Feature',
+                'background'       => 'Background',
+                'scenario'         => 'Scenario',
+                'scenario_outline' => 'Scenario Outline',
+                'examples'         => 'Examples',
+                'given'            => 'Given',
+                'when'             => 'When',
+                'then'             => 'Then',
+                'and'              => 'And',
+                'but'              => 'But'
             ),
             'ru' => array(
-                'Feature'           => 'Функционал',
-                'Background'        => 'Предыстория',
-                'Scenario'          => 'Сценарий',
-                'Scenario Outline'  => 'Структура сценария',
-                'Examples'          => 'Значения',
-                'Step Types'        => 'Допустим|То|Если|И|Но'
+                'feature'          => 'Функционал',
+                'background'       => 'Предыстория',
+                'scenario'         => 'Сценарий',
+                'scenario_outline' => 'Структура сценария',
+                'examples'         => 'Значения',
+                'given'            => 'Допустим',
+                'when'             => 'То',
+                'then'             => 'Если',
+                'and'              => 'И',
+                'but'              => 'Но'
             )
         ));
         $this->gherkin = new Parser(new Lexer($keywords));
@@ -45,7 +53,91 @@ GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
 
-        $this->assertEquals('Given some step-like line', $parsed[0]->getDescription());
+        $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
+    }
+
+    public function testTextInBackground()
+    {
+        $feature = <<<GHERKIN
+Feature: Behat bug test
+    Background: remove X to couse bug
+    Step is red form is not valid
+    asd
+    asd
+    as
+    da
+    sd
+    as
+    das
+    d
+
+
+Scenario: bug user edit date
+GHERKIN;
+
+        $this->gherkin->parse($feature);
+    }
+
+    public function testTextInScenario()
+    {
+        $feature = <<<GHERKIN
+Feature: Behat bug test
+    Scenario: remove X to cause bug
+    Step is red form is not valid
+    asd
+    asd
+    as
+    da
+    sd
+    as
+    das
+    d
+
+
+Scenario Outline: bug user edit date
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+Examples:
+ ||
+
+GHERKIN;
+
+        $feature = $this->gherkin->parse($feature);
+
+        $this->assertCount(2, $scenarios = $feature->getScenarios());
+        $this->assertEquals(<<<TEXT
+remove X to cause bug
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+TEXT
+        , $scenarios[0]->getTitle());
+        $this->assertEquals(<<<TEXT
+bug user edit date
+Step is red form is not valid
+asd
+asd
+as
+da
+sd
+as
+das
+d
+TEXT
+        , $scenarios[1]->getTitle());
     }
 
     /**
@@ -116,40 +208,6 @@ GHERKIN;
     /**
      * @expectedException Behat\Gherkin\Exception\ParserException
      */
-    public function testTableArgumentNotInPlace()
-    {
-        $feature = <<<GHERKIN
-Feature:
-
-    Scenario:
-
-        | as | sa |
-        | ds | sd |
-GHERKIN;
-
-        $this->gherkin->parse($feature);
-    }
-
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
-    public function testPyStringArgumentNotInPlace()
-    {
-        $feature = <<<GHERKIN
-Feature:
-
-    Scenario:
-
-        """
-        """
-GHERKIN;
-
-        $this->gherkin->parse($feature);
-    }
-
-    /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
-     */
     public function testEndlessPyString()
     {
         $feature = <<<GHERKIN
@@ -194,6 +252,20 @@ Feature:
 
     Background:
         Aaand some step
+GHERKIN;
+
+        $parsed = $this->gherkin->parse($feature);
+    }
+
+    /**
+     * @expectedException Behat\Gherkin\Exception\ParserException
+     */
+    public function testMultipleFeatures()
+    {
+        $feature = <<<GHERKIN
+Feature:
+
+Feature:
 GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);

@@ -13,7 +13,7 @@ class BackgroundNodeTest extends \PHPUnit_Framework_TestCase
         $background = new BackgroundNode();
         $this->assertEquals(0, $background->getLine());
 
-        $background = new BackgroundNode(23);
+        $background = new BackgroundNode(null, 23);
         $this->assertEquals(23, $background->getLine());
     }
 

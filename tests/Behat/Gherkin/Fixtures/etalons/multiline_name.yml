@@ -14,8 +14,8 @@ feature:
       type:     scenario
       title:    |-
         I'm a multiline name
-        which goes on and on and on for three lines
-        yawn
+                which goes on and on and on for three lines
+                yawn
       line:     6
       steps:
         - { type: Given, text: passing without a table, line: 9 }
@@ -25,7 +25,7 @@ feature:
       title:    |-
         I'm a multiline name
         which goes on and on and on for three lines
-        yawn
+                        yawn
       line:     11
       steps:
         - { type: 'Given',  text: '<state> without a table',  line: 14 }

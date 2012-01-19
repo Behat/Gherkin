@@ -96,10 +96,13 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadBackgroundHash(array $hash)
     {
-        $background = new Node\BackgroundNode(isset($hash['line']) ? $hash['line'] : 0);
+        $background = new Node\BackgroundNode(null, isset($hash['line']) ? $hash['line'] : 0);
 
         $background->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Background');
 
+        if (isset($hash['title'])) {
+            $background->setTitle($hash['title']);
+        }
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {
                 $background->addStep($this->loadStepHash($stepHash, $stepIterator));

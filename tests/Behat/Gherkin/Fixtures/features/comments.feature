@@ -8,11 +8,11 @@ Feature: Using the Console Formatter
 
 
 
-  I want to run this feature using the progress format#comment
-  # COMMENT    
-  # COMMENT  
-  # COMMENT 
-  # COMMENT   
+    I want to run this feature using the progress format#comment
+  # COMMENT
+  # COMMENT
+  # COMMENT
+  # COMMENT
   So that it can be fixed
 
   #comment

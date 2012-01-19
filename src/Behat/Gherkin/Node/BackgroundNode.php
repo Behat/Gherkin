@@ -17,4 +17,38 @@ namespace Behat\Gherkin\Node;
  */
 class BackgroundNode extends AbstractScenarioNode
 {
+    private $title;
+
+    /**
+     * Initializes scenario.
+     *
+     * @param   string  $title  scenario title
+     * @param   integer $line   definition line
+     */
+    public function __construct($title = null, $line = 0)
+    {
+        parent::__construct($line);
+
+        $this->title = $title;
+    }
+
+    /**
+     * Sets scenario title.
+     *
+     * @param   string  $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * Returns scenario title.
+     *
+     * @return  string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 }

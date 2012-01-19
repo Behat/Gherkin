@@ -19,7 +19,8 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
  */
 class KeywordsDumper
 {
-    protected $keywords;
+    private $keywords;
+    private $keywordsDumper;
 
     /**
      * Initializes dumper.
@@ -29,58 +30,294 @@ class KeywordsDumper
     public function __construct(KeywordsInterface $keywords)
     {
         $this->keywords = $keywords;
+        $this->keywordsDumper = array($this, 'dumpKeywords');
+    }
+
+    /**
+     * Sets keywords mapper function.
+     *
+     * Callable should accept 2 arguments (array $keywords and Boolean $isShort)
+     *
+     * @param callable $mapper
+     */
+    public function setKeywordsDumperFunction($mapper)
+    {
+        $this->keywordsDumper = $mapper;
+    }
+
+    /**
+     * Defaults keywords dumper.
+     *
+     * @param   array   $keywords keywords list
+     * @param   Boolean $isShort  is short version
+     *
+     * @return  string
+     */
+    public function dumpKeywords(array $keywords, $isShort)
+    {
+        if ($isShort) {
+            return 1 < count($keywords) ? '('.implode('|', $keywords).')' : $keywords[0];
+        }
+
+        return $keywords[0];
     }
 
     /**
      * Dump keyworded feature into string.
      *
      * @param   string  $language   keywords language
+     * @param   Boolean $short      dump short version
      *
-     * @return  string
+     * @return  string|array        string for short version and array of features for extended
      */
-    public function dump($language)
+    public function dump($language, $short = true)
     {
         $this->keywords->setLanguage($language);
-        $keywords  = "# language: $language";
+        $languageComment = '';
+        if ('en' !== $language) {
+            $languageComment = "# language: $language\n";
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getFeatureKeywords());
-        $keywords .= "\n$keyword: feature title";
-        $keywords .= "\n  In order to ...\n  As a ...\n  I need to ...\n";
+        $keywords = explode('|', $this->keywords->getFeatureKeywords());
 
-        $keyword = $this->prepareKeyword($this->keywords->getBackgroundKeywords());
-        $keywords .= "\n  $keyword:";
+        if ($short) {
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
 
-        $stepKeyword = '(' . $this->keywords->getStepKeywords() . ')';
-        $stepKeywords  = "\n    $stepKeyword step 1";
-        $stepKeywords .= "\n    $stepKeyword step 2\n";
-        $keywords .= $stepKeywords;
+            return trim($languageComment.$this->dumpFeature($keywords, $short));
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getScenarioKeywords());
-        $keywords .= "\n  $keyword: scenario title";
-        $keywords .= $stepKeywords;
+        $features = array();
+        foreach ($keywords as $keyword) {
+            $keyword    = call_user_func($this->keywordsDumper, array($keyword), $short);
+            $features[] = trim($languageComment.$this->dumpFeature($keyword, $short));
+        }
 
-        $keyword = $this->prepareKeyword($this->keywords->getOutlineKeywords());
-        $keywords .= "\n  $keyword: outline title";
-        $keywords .= "\n    $stepKeyword step <val1>";
-        $keywords .= "\n    $stepKeyword step <val2>\n";
-
-        $keyword = $this->prepareKeyword($this->keywords->getExamplesKeywords());
-        $keywords .= "\n    $keyword:";
-        $keywords .= "\n      | val1 | val2 |";
-        $keywords .= "\n      | 23   | 122  |";
-
-        return $keywords;
+        return $features;
     }
 
     /**
-     * Wrap keyword with "(", ")" if there's multiple variants.
+     * Dumps feature example.
      *
-     * @param   string  $keyword
-     * 
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
      * @return  string
      */
-    protected function prepareKeyword($keyword)
+    protected function dumpFeature($keyword, $short = true)
     {
-        return false !== mb_strpos($keyword, '|') ? "($keyword)" : $keyword;
+        $dump = <<<GHERKIN
+{$keyword}: Internal operations
+  In order to stay secret
+  As a secret organization
+  We need to be able to erase past agents' memory
+
+
+GHERKIN;
+
+        // Background
+        $keywords = explode('|', $this->keywords->getBackgroundKeywords());
+        if ($short) {
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpBackground($keywords, $short);
+        } else {
+            $keyword  = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+            $dump .= $this->dumpBackground($keyword, $short);
+        }
+
+        // Scenario
+        $keywords = explode('|', $this->keywords->getScenarioKeywords());
+        if ($short) {
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpScenario($keywords, $short);
+        } else {
+            foreach ($keywords as $keyword) {
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= $this->dumpScenario($keyword, $short);
+            }
+        }
+
+        // Outline
+        $keywords = explode('|', $this->keywords->getOutlineKeywords());
+        if ($short) {
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= $this->dumpOutline($keywords, $short);
+        } else {
+            foreach ($keywords as $keyword) {
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= $this->dumpOutline($keyword, $short);
+            }
+        }
+
+        return $dump;
+    }
+
+    /**
+     * Dumps background example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpBackground($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}:
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStep(
+            $this->keywords->getGivenKeywords(), 'there is agent A', $short
+        );
+
+        // And
+        $dump .= $this->dumpStep(
+            $this->keywords->getAndKeywords(), 'there is agent B', $short
+        );
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps scenario example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpScenario($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}: Erasing agent memory
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStep(
+            $this->keywords->getGivenKeywords(), 'there is agent J', $short
+        );
+
+        // And
+        $dump .= $this->dumpStep(
+            $this->keywords->getAndKeywords(), 'there is agent K', $short
+        );
+
+        // When
+        $dump .= $this->dumpStep(
+            $this->keywords->getWhenKeywords(), 'I erase agent K\'s memory', $short
+        );
+
+        // Then
+        $dump .= $this->dumpStep(
+            $this->keywords->getThenKeywords(), 'there should be agent J', $short
+        );
+
+        // But
+        $dump .= $this->dumpStep(
+            $this->keywords->getButKeywords(), 'there should not be agent K', $short
+        );
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps outline example.
+     *
+     * @param   string  $keyword    item keyword
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpOutline($keyword, $short = true)
+    {
+        $dump = <<<GHERKIN
+  {$keyword}: Erasing other agents' memory
+
+GHERKIN;
+
+        // Given
+        $dump .= $this->dumpStep(
+            $this->keywords->getGivenKeywords(), 'there is agent <agent1>', $short
+        );
+
+        // And
+        $dump .= $this->dumpStep(
+            $this->keywords->getAndKeywords(), 'there is agent <agent2>', $short
+        );
+
+        // When
+        $dump .= $this->dumpStep(
+            $this->keywords->getWhenKeywords(), 'I erase agent <agent2>\'s memory', $short
+        );
+
+        // Then
+        $dump .= $this->dumpStep(
+            $this->keywords->getThenKeywords(), 'there should be agent <agent1>', $short
+        );
+
+        // But
+        $dump .= $this->dumpStep(
+            $this->keywords->getButKeywords(), 'there should not be agent <agent2>', $short
+        );
+
+        $keywords = explode('|', $this->keywords->getExamplesKeywords());
+        if ($short) {
+            $keyword = call_user_func($this->keywordsDumper, $keywords, $short);
+        } else {
+            $keyword = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+        }
+
+        $dump .= <<<GHERKIN
+
+    {$keyword}:
+      | agent1 | agent2 |
+      | D      | M      |
+
+GHERKIN;
+
+        return $dump."\n";
+    }
+
+    /**
+     * Dumps step example.
+     *
+     * @param   string  $keywords   item keyword
+     * @param   string  $text       step text
+     * @param   Boolean $short      dump short version?
+     *
+     * @return  string
+     */
+    protected function dumpStep($keywords, $text, $short = true)
+    {
+        $dump = '';
+
+        $keywords = explode('|', $keywords);
+        if ($short) {
+            $keywords = array_map(function($keyword) {
+                return str_replace('<', '', $keyword);
+            }, $keywords);
+            $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
+            $dump    .= <<<GHERKIN
+    {$keywords} {$text}
+
+GHERKIN;
+        } else {
+            foreach ($keywords as $keyword) {
+                $indent = ' ';
+                if (false !== mb_strpos($keyword, '<')) {
+                    $keyword = mb_substr($keyword, 0, -1);
+                    $indent  = '';
+                }
+                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $dump   .= <<<GHERKIN
+    {$keyword}{$indent}{$text}
+
+GHERKIN;
+            }
+        }
+
+        return $dump;
     }
 }

@@ -13,11 +13,13 @@
         }
     ],
     "require": {
-        "php":                  ">=5.3.1",
-        "symfony/finder":       ">=2.0,<2.2-dev",
+        "php":             ">=5.3.1",
+        "symfony/finder":  ">=2.0,<2.2-dev"
+    },
+    "recommend": {
         "symfony/yaml":         ">=2.0,<2.2-dev",
-        "symfony/config":       ">=2.0,<2.2-dev",
-        "symfony/translation":  ">=2.0,<2.2-dev"
+        "symfony/translation":  ">=2.0,<2.2-dev",
+        "symfony/config":       ">=2.0,<2.2-dev"
     },
     "autoload": {
         "psr-0": {
