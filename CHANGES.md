@@ -1,3 +1,14 @@
+2.0.0 / 2012-01-19
+==================
+
+  * Background titles support
+  * Correct parsing of titles/descriptions (hirarchy lexing)
+  * Migration to the cucumber/gherkin i18n dictionary
+  * Speed optimizations
+  * Refactored KeywordsDumper
+  * New loaders
+  * Bugfixes
+
 1.1.4 / 2012-01-08
 ==================
 
