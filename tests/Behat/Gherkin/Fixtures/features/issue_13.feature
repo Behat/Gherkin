@@ -1,6 +1,8 @@
 Feature: test pystring
+second line
 
 Scenario: testing py string in scenario
+second line
 
 Given the pystring is
 """
@@ -10,6 +12,7 @@ Denmark, Kolding
 """
 
 Scenario Outline: testing py string in scenario outline
+second line
 
 Given the pystring is
 """

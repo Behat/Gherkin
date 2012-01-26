@@ -1,18 +1,21 @@
 feature:
   title:        test pystring
+  description:  second line
   language:     en
   line:         1
 
   scenarios:
     -
       type:     scenario
-      title:    testing py string in scenario
-      line:     3
+      title:    |-
+        testing py string in scenario
+        second line
+      line:     4
       steps:
         -
           type: Given
           text: the pystring is
-          line: 5
+          line: 7
           arguments:
             -
               type: pystring
@@ -23,13 +26,15 @@ feature:
 
     -
       type:     outline
-      title:    testing py string in scenario outline
-      line:     12
+      title:    |-
+        testing py string in scenario outline
+        second line
+      line:     14
       steps:
         -
           type: Given
           text: the pystring is
-          line: 14
+          line: 17
           arguments:
           arguments:
             -
