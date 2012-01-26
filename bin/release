@@ -43,9 +43,7 @@ system('php composer.phar update');
 
 $dirs = array(
     'src',
-    'i18n',
-    'tests',
-    'vendor/symfony',
+    'vendor',
 );
 
 $xmlSourceFiles = '';

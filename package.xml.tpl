@@ -33,6 +33,7 @@
 
             <file role="php" baseinstalldir="gherkin" name="autoload.php" />
             <file role="php" baseinstalldir="gherkin" name="libpath.php" />
+            <file role="php" baseinstalldir="gherkin" name="i18n.php" />
 
             <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload.php" />
             <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload_namespaces.php" />

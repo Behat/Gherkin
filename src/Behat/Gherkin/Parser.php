@@ -423,7 +423,7 @@ class Parser
         while (in_array($predicted = $this->predictTokenType(), array('Text', 'Newline'))) {
             if ('Text' === $predicted) {
                 $text = $this->parseText(false);
-                $text = preg_replace('/^\s{1,'.$indentation.'}|\s*$/', '', $text);
+                $text = preg_replace('/^\s{0,'.$indentation.'}|\s*$/', '', $text);
             } else {
                 $this->acceptTokenType('Newline');
                 $text = '';
