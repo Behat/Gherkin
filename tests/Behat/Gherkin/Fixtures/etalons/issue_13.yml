@@ -1,0 +1,42 @@
+feature:
+  title:        test pystring
+  language:     en
+  line:         1
+
+  scenarios:
+    -
+      type:     scenario
+      title:    testing py string in scenario
+      line:     3
+      steps:
+        -
+          type: Given
+          text: the pystring is
+          line: 5
+          arguments:
+            -
+              type: pystring
+              text: |-
+                Test store name
+                Denmark, Kolding
+                6000
+
+    -
+      type:     outline
+      title:    testing py string in scenario outline
+      line:     12
+      steps:
+        -
+          type: Given
+          text: the pystring is
+          line: 14
+          arguments:
+          arguments:
+            -
+              type: pystring
+              text: |-
+                Test store name
+                Denmark, Kolding
+                6000
+      examples:
+        - ['']
