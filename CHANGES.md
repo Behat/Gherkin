@@ -1,3 +1,8 @@
+2.0.1 / 2012-01-26
+==================
+
+  * Fixed issue about parsing features without indentation
+
 2.0.0 / 2012-01-19
 ==================
 
