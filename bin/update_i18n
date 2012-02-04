@@ -20,4 +20,4 @@ foreach ($array as $lang => $keywords) {
     }
 }
 
-file_put_contents(__DIR__.'/i18n.php', '<?php return '.var_export($array, true).';');
+file_put_contents(__DIR__.'/../i18n.php', '<?php return '.var_export($array, true).';');
