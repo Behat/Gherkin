@@ -38,9 +38,6 @@ if (is_file('package.xml')) {
 
 copy(getcwd().'/package.xml.tpl', getcwd().'/package.xml');
 
-system('wget -nc http://getcomposer.org/composer.phar');
-system('php composer.phar update');
-
 $dirs = array(
     'src',
     'vendor',
