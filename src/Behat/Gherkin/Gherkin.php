@@ -65,12 +65,18 @@ class Gherkin
      */
     public function load($resource)
     {
-        $filters = $this->filters;
+        $beginLineFilter = null;
+        $endLineFilter = null;
 
         $matches = array();
-        if (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+        if (preg_match('/^(.*)\:(\d+)\:(\d+)$/', $resource, $matches)) {
             $resource = $matches[1];
-            $filters[] = new LineFilter($matches[2]);
+            $beginLineFilter = new LineFilter($matches[2]);
+            $endLineFilter = new LineFilter($matches[3]);
+        } else if (preg_match('/^(.*?)\:(\d+)$/', $resource, $matches)) {
+            $resource = $matches[1];
+            $beginLineFilter = new LineFilter($matches[2]);
+            $endLineFilter = $beginLineFilter;
         }
 
         $loader = $this->resolveLoader($resource);
@@ -84,11 +90,9 @@ class Gherkin
         foreach ($features as $feature) {
             $scenarios = $feature->getScenarios();
             foreach ($scenarios as $i => $scenario) {
-                foreach ($filters as $filter) {
-                    if (!$filter->isScenarioMatch($scenario)) {
-                        unset($scenarios[$i]);
-                        break;
-                    }
+                if (!is_null($beginLineFilter) && $beginLineFilter->isScenarioPreceding($scenario)
+                        || !is_null($endLineFilter) && $endLineFilter->isScenarioFollowing($scenario)) {
+                    unset($scenarios[$i]);
                 }
             }
 
