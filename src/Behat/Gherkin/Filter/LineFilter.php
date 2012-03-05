@@ -47,4 +47,24 @@ class LineFilter implements FilterInterface
     {
         return $this->filterLine === $scenario->getLine();
     }
+
+    /**
+     * Checks if scenario or outline precedes specified filter.
+     *
+     * @param   Behat\Gherkin\Node\ScenarioNode|Behat\Gherkin\Node\OutlineNode  $scenario
+     */    
+    public function isScenarioPreceding(ScenarioNode $scenario)
+    {
+        return $this->filterLine > $scenario->getLine();
+    }
+
+    /**
+     * Checks if scenario or outline follows specified filter.
+     *
+     * @param   Behat\Gherkin\Node\ScenarioNode|Behat\Gherkin\Node\OutlineNode  $scenario
+     */    
+    public function isScenarioFollowing(ScenarioNode $scenario)
+    {
+        return $this->filterLine < $scenario->getLine();
+    }
 }
