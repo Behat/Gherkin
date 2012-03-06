@@ -72,7 +72,7 @@ class Gherkin
         if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineRangeFilter($matches[2], $matches[3]);
-        } else if (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+        } elseif (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineFilter($matches[2]);
         }
