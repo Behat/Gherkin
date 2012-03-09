@@ -4,7 +4,8 @@ namespace Behat\Gherkin;
 
 use Behat\Gherkin\Loader\LoaderInterface,
     Behat\Gherkin\Filter\FilterInterface,
-    Behat\Gherkin\Filter\LineFilter;
+    Behat\Gherkin\Filter\LineFilter,
+    Behat\Gherkin\Filter\LineRangeFilter;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -68,7 +69,10 @@ class Gherkin
         $filters = $this->filters;
 
         $matches = array();
-        if (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+        if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
+            $resource = $matches[1];
+            $filters[] = new LineRangeFilter($matches[2], $matches[3]);
+        } elseif (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineFilter($matches[2]);
         }

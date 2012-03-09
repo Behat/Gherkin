@@ -22,8 +22,19 @@ feature:
                 - [foo, bar]
                 - [bar, baz]
         - { type: Then, text: I the result should be <c>, line: 10 }
+        -
+          type:   And
+          text:   the table should be properly escaped:
+          line:   12
+          arguments:
+            -
+              type:   table
+              rows:
+                - [|a, b, c]
+                - [1, |2, 3]
+                - [2, 3, |4]
 
       examples:
         - [ a, b, c ]
-        - [ 1, 2, 3 ]
+        - [ 1, |2, 3 ]
         - [ 2, 3, 4 ]
