@@ -34,7 +34,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->write('some_path', $feature);
 
-        $this->assertFalse($this->cache->isFresh('some_path', time() - 100));
+        $this->assertFalse($this->cache->isFresh('some_path', time() + 100));
     }
 
     public function testIsFreshOnOutdated()
@@ -43,7 +43,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
 
         $this->cache->write('some_path', $feature);
 
-        $this->assertTrue($this->cache->isFresh('some_path', time() + 100));
+        $this->assertTrue($this->cache->isFresh('some_path', time() - 100));
     }
 
     public function testCacheAndRead()
