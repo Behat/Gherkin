@@ -1,3 +1,11 @@
+2.1.0 / 2012-03-09
+==================
+
+  * Added parser caching layer
+  * Added support for table delimiter escaping (use `\|` for that)
+  * Added LineRangeFilter (thanks @headrevision)
+  * Synced i18n dictionary with cucumber/gherkin
+
 2.0.2 / 2012-02-04
 ==================
 
