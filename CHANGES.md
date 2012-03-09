@@ -1,3 +1,8 @@
+2.1.1 / 2012-03-09
+==================
+
+  * Fixed caching bug, where `isFresh()` always returned false
+
 2.1.0 / 2012-03-09
 ==================
 
