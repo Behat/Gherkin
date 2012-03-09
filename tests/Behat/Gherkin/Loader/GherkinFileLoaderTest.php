@@ -56,6 +56,45 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->featuresPath.DIRECTORY_SEPARATOR.'multiline_name.feature', $features[0]->getFile());
     }
 
+    public function testParsingUncachedFeature()
+    {
+        $cache = $this->getMockBuilder('Behat\Gherkin\Cache\CacheInterface')->getMock();
+        $this->loader->setCache($cache);
+
+        $cache->expects($this->once())
+            ->method('isFresh')
+            ->with($path = $this->featuresPath.'/pystring.feature', filemtime($path))
+            ->will($this->returnValue(false));
+
+        $cache->expects($this->once())
+            ->method('write');
+
+        $features = $this->loader->load($this->featuresPath . '/pystring.feature');
+        $this->assertEquals(1, count($features));
+    }
+
+    public function testParsingCachedFeature()
+    {
+        $cache = $this->getMockBuilder('Behat\Gherkin\Cache\CacheInterface')->getMock();
+        $this->loader->setCache($cache);
+
+        $cache->expects($this->once())
+            ->method('isFresh')
+            ->with($path = $this->featuresPath.'/pystring.feature', filemtime($path))
+            ->will($this->returnValue(true));
+
+        $cache->expects($this->once())
+            ->method('read')
+            ->with($path)
+            ->will($this->returnValue('cache'));
+
+        $cache->expects($this->never())
+            ->method('write');
+
+        $features = $this->loader->load($this->featuresPath . '/pystring.feature');
+        $this->assertEquals('cache', $features[0]);
+    }
+
     public function testBasePath()
     {
         $this->assertFalse($this->loader->supports('features'));
