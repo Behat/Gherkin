@@ -439,8 +439,8 @@ class Lexer
 
             $line = mb_substr($line, 1, mb_strlen($line) - 2);
             $columns = array_map(function($column) {
-                return trim($column);
-            }, explode('|', $line));
+                return trim(str_replace('\\|', '|', $column));
+            }, preg_split('/(?<!\\\)\|/', $line));
             $token->columns = $columns;
 
             $this->consumeLine();
