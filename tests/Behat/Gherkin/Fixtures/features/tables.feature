@@ -8,8 +8,13 @@ Feature: A scenario outline
       | bar | baz |
           #comment
     Then I the result should be <c>
+    # comment
+    And the table should be properly escaped:
+      | \|a | b   | c   |
+      | 1   | \|2 | 3   |
+      | 2   | 3   | \|4 |
 #comment
     Examples:
       | a   | b   | c |
-      | 1   | 2   | 3 |
+      | 1   | \|2 | 3 |
       | 2   | 3   | 4 |
