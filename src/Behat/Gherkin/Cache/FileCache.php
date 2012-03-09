@@ -41,7 +41,7 @@ class FileCache implements CacheInterface
             return false;
         }
 
-        return filemtime($cachePath) < $timestamp;
+        return filemtime($cachePath) > $timestamp;
     }
 
     /**
