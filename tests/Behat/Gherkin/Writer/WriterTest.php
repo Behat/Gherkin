@@ -167,16 +167,7 @@ class WriterTest extends \PHPUnit_Framework_TestCase
         $feature = $parser->parse($initialContent);
 
         $writer = new Writer($this->keywords);
-
-////        
-//        var_dump(str_replace(' ', '-', $initialContent));
-//        var_dump(str_replace(' ', '-', $writer->writeFeature($feature)));
-////        
-////        var_dump($writer->writeFeature($feature));
-//        exit;
-
         $this->assertEquals($initialContent, $writer->writeFeature($feature));
-//        exit;
     }
 
     public function providerStep() {
