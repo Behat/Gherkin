@@ -20,11 +20,11 @@ use Behat\Gherkin\Exception\Exception,
  */
 
 /**
- * Gherkin writer.
+ * Gherkin Dumper.
  *
  * @author      Jean-François Lépine <dev@lepine.pro>
  */
-class Writer
+class Dumper
 {
 
     private $keywords;
@@ -202,8 +202,6 @@ class Writer
      * @param \Behat\Gherkin\Node\StepNode $step
      * @return string
      * @throws \Behat\Gherkin\Exception\Exception
-     * 
-     * @todo steps with outline arguments
      */
     public function writeStep(StepNode $step) {
         switch ($step->getType()) {
@@ -226,7 +224,6 @@ class Writer
                 throw new \Behat\Gherkin\Exception\Exception("invalid type given : " . $step->getType());
         }
 
-        // todo : steps with outline arguments
         return $this->writeText($kw . ' ' . $step->getText());
     }
 

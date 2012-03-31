@@ -3,7 +3,7 @@
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Gherkin,
-    Behat\Gherkin\Writer,
+    Behat\Gherkin\Dumper,
     Behat\Gherkin\Node\FeatureNode,
     Behat\Gherkin\Node\ScenarioNode,
     Behat\Gherkin\Node\StepNode,
@@ -13,9 +13,9 @@ use Behat\Gherkin\Gherkin,
     Behat\Gherkin\Keywords\ArrayKeywords;
 
 /**
- * @group writer
+ * @group dumper
  */
-class WriterTest extends \PHPUnit_Framework_TestCase
+class DumperTest extends \PHPUnit_Framework_TestCase
 {
 
     private $keywords;
@@ -38,77 +38,85 @@ class WriterTest extends \PHPUnit_Framework_TestCase
         $this->keywords->setLanguage('en');
     }
 
-    public function testWriteSimpleTextReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals('abc', $writer->writeText('abc'));
+    public function testDumpSimpleTextReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals('abc', $dumper->writeText('abc'));
     }
 
     /**
      * @dataProvider providerMultilinesText
      */
-    public function testWriteMultilinesTextReturnWellIndentedContent($given, $expected, $indent) {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals($expected, $writer->writeText($given, $indent));
+    public function testDumpMultilinesTextReturnWellIndentedContent($given, $expected, $indent) {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals($expected, $dumper->writeText($given, $indent));
     }
 
-    public function testWriteCommentReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals('# abc', $writer->writeComment('abc'));
+    public function testDumpCommentReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals('# abc', $dumper->writeComment('abc'));
     }
 
-    public function testWriteTagsReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals('@tag1 @tag2', $writer->writeTags(array('tag1', 'tag2')));
+    public function testDumpTagsReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals('@tag1 @tag2', $dumper->writeTags(array('tag1', 'tag2')));
     }
 
-    public function testWriteTagsWithEmptyValueReturnsNothing() {
-        $writer = new Writer($this->keywords);
-        $this->assertEmpty($writer->writeTags(array()));
+    public function testDumpTagsWithEmptyValueReturnsNothing() {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEmpty($dumper->writeTags(array()));
     }
 
-    public function testWriteKeywordWithTextReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals('key: value', $writer->writeKeyword('key', 'value'));
+    public function testDumpKeywordWithTextReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals('key: value', $dumper->writeKeyword('key', 'value'));
     }
 
     /**
      * @dataProvider providerTableNode
      */
-    public function testWriteTableNodeReturnsTableNodeInText(TableNode $tableNode, $expected) {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals($expected, $writer->writeTableNode($tableNode));
+    public function testDumpTableNodeReturnsTableNodeInText(TableNode $tableNode, $expected) {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals($expected, $dumper->writeTableNode($tableNode));
     }
 
     /**
      * @dataProvider providerStep
      */
-    public function testWriteStepReturnsValidContentWhenSimpleStepIsGiven(StepNode $step, $expected) {
-        $writer = new Writer($this->keywords);
-        $this->assertEquals($expected, $writer->writeStep($step));
+    public function testDumpStepReturnsValidContentWhenSimpleStepIsGiven(StepNode $step, $expected) {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals($expected, $dumper->writeStep($step));
     }
 
     /**
      * @expectedException \Behat\Gherkin\Exception\Exception
      */
-    public function testWriteStepThrowsExceptionWhenInvalidStepIsGiven() {
-        $writer = new Writer($this->keywords);
+    public function testDumpStepThrowsExceptionWhenInvalidStepIsGiven() {
+        $dumper = new Dumper($this->keywords);
         $step = new StepNode('NothingAndDoesNotExist', 'some text');
-        $writer->writeStep($step);
+        $dumper->writeStep($step);
     }
 
-    public function testWritebackgroundReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
+    /**
+     * @dataProvider providerStepOutline
+     */
+    public function testDumpStepReturnsValidContentWhenOutlineStepIsGiven(StepNode $step, $expected) {
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals($expected, $dumper->writeStep($step));
+    }
+
+    public function testDumpBackgroundReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
         $background = new BackgroundNode('my title');
         $background->addStep(new StepNode('Given', 'I use behat'));
 
         $expected = 'Background: my title
   Given I use behat';
 
-        $this->assertEquals($expected, $writer->writeBackground($background));
+        $this->assertEquals($expected, $dumper->writeBackground($background));
     }
 
-    public function testWriteSimpleScenarioReturnsWellFormatedContent() {
-        $writer = new Writer($this->keywords);
+    public function testDumpSimpleScenarioReturnsWellFormatedContent() {
+        $dumper = new Dumper($this->keywords);
         $scenario = new ScenarioNode('my scenario');
         $scenario->addStep(new StepNode('Given', 'my example1'));
         $scenario->addStep(new StepNode('When', 'I do anything'));
@@ -117,11 +125,11 @@ class WriterTest extends \PHPUnit_Framework_TestCase
   Scenario: my scenario
     Given my example1
     When I do anything';
-        $this->assertEquals($expected, $writer->writeScenario($scenario));
+        $this->assertEquals($expected, $dumper->writeScenario($scenario));
     }
 
-    public function testWriteScenarioWithTagsAddTagsToTheContent() {
-        $writer = new Writer($this->keywords);
+    public function testDumpScenarioWithTagsAddTagsToTheContent() {
+        $dumper = new Dumper($this->keywords);
         $scenario = new ScenarioNode('my scenario');
         $scenario->addStep(new StepNode('Given', 'my example1'));
         $scenario->addTag('tag1');
@@ -131,11 +139,11 @@ class WriterTest extends \PHPUnit_Framework_TestCase
   @tag1 @tag2
   Scenario: my scenario
     Given my example1';
-        $this->assertEquals($expected, $writer->writeScenario($scenario));
+        $this->assertEquals($expected, $dumper->writeScenario($scenario));
     }
 
-    public function testWriteOutlineScenarioReturnsContentAndTableNode() {
-        $writer = new Writer($this->keywords);
+    public function testDumpOutlineScenarioReturnsContentAndTableNode() {
+        $dumper = new Dumper($this->keywords);
         $scenario = new OutlineNode('my scenario');
         $scenario->addStep(new StepNode('Given', 'my example1'));
 
@@ -155,19 +163,19 @@ class WriterTest extends \PHPUnit_Framework_TestCase
     | 1    | 2    | 3    |
     | 4    | 5    | 6    |';
 
-        $this->assertEquals($expected, $writer->writeScenario($scenario));
+        $this->assertEquals($expected, $dumper->writeScenario($scenario));
     }
 
     /**
      * @dataProvider providerFeatureInText
      */
-    public function testWriteFeature($initialContent) {
+    public function testDumpFeature($initialContent) {
         $lexer = new \Behat\Gherkin\Lexer($this->keywords);
         $parser = new \Behat\Gherkin\Parser($lexer);
         $feature = $parser->parse($initialContent);
 
-        $writer = new Writer($this->keywords);
-        $this->assertEquals($initialContent, $writer->writeFeature($feature));
+        $dumper = new Dumper($this->keywords);
+        $this->assertEquals($initialContent, $dumper->writeFeature($feature));
     }
 
     public function providerStep() {
@@ -176,6 +184,20 @@ class WriterTest extends \PHPUnit_Framework_TestCase
             , array(new StepNode('When', 'I do anything'), 'When I do anything')
             , array(new StepNode('And', 'I do anything yet'), 'And I do anything yet')
             , array(new StepNode('Then', 'The result is expected'), 'Then The result is expected')
+        );
+    }
+
+    public function providerStepOutline() {
+        return array(
+            array(new StepNode(
+                        'Given', 'there are days:
+  | day    | number |
+  | monday | 1      |
+  | tuesday| 2      |')
+                , 'Given there are days:
+  | day    | number |
+  | monday | 1      |
+  | tuesday| 2      |')
         );
     }
 
