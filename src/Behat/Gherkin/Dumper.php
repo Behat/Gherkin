@@ -13,7 +13,7 @@ use Behat\Gherkin\Exception\Exception,
 
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) 2012 Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -245,9 +245,9 @@ class Dumper
      */
     public function dumpText($text, $indent = 0)
     {
-        return $this->dumpIndent($indent)
-            . implode(PHP_EOL . $this->dumpIndent($indent)
-                , explode(PHP_EOL, $text)
+        return $this->dumpIndent($indent) . implode(
+            PHP_EOL . $this->dumpIndent($indent),
+            explode(PHP_EOL, $text)
         );
     }
 
@@ -274,9 +274,7 @@ class Dumper
      */
     public function dumpLanguage($language)
     {
-        return $this->dumpComment(
-                $this->dumpKeyword('language', $language)
-        );
+        return $this->dumpComment($this->dumpKeyword('language', $language));
     }
 
 }
