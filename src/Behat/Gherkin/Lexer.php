@@ -292,7 +292,7 @@ class Lexer
                 $paded = array();
                 foreach (explode('|', $keywords) as $keyword) {
                     $paded[] = false !== mb_strpos($keyword, '<')
-                        ? mb_substr($keyword, 0, -1)
+                        ? mb_substr($keyword, 0, -1).'\s*'
                         : $keyword.'\s+';
                 }
 

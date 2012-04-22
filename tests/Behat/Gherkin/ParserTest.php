@@ -76,6 +76,18 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'then'             => 'Если',
                     'and'              => 'И',
                     'but'              => 'Но'
+                ),
+                'ja' => array (
+                    'feature'           => 'フィーチャ',
+                    'background'        => '背景',
+                    'scenario'          => 'シナリオ',
+                    'scenario_outline'  => 'シナリオアウトライン',
+                    'examples'          => '例|サンプル',
+                    'given'             => '前提<',
+                    'when'              => 'もし<',
+                    'then'              => 'ならば<',
+                    'and'               => 'かつ<',
+                    'but'               => 'しかし<'
                 )
             ));
             $this->gherkin  = new Parser(new Lexer($keywords));
