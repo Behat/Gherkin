@@ -26,25 +26,24 @@ use Behat\Gherkin\Exception\Exception,
  */
 class Dumper
 {
-
     private $keywords;
     private $indent;
 
     /**
      * Constructor
-     * 
-     * @param \Behat\Gherkin\Keywords\KeywordsInterface $keywords 
-     * @param string $indent 
+     *
+     * @param \Behat\Gherkin\Keywords\KeywordsInterface $keywords
+     * @param string $indent
      */
     public function __construct(KeywordsInterface $keywords, $indent = '  ')
     {
         $this->keywords = $keywords;
-        $this->indent = $indent;
+        $this->indent   = $indent;
     }
 
     /**
      * Dump a feature
-     * 
+     *
      * @see Behat\Gherkin\dumpFeature()
      * @param Behat\Gherkin\Node\FeatureNode
      * @return string
@@ -56,16 +55,16 @@ class Dumper
 
     /**
      * Dump background
-     * 
+     *
      * @param Behat\Gherkin\Node\BackgroundNode
      * @return string
      */
     public function dumpBackground(BackgroundNode $background)
     {
-        $content = $this->dumpKeyword($this->keywords->getBackgroundKeywords(), $background->getTitle());
+        $content = $this->dumpKeyword(
+            $this->keywords->getBackgroundKeywords(), $background->getTitle()
+        );
 
-        //
-        // Steps
         foreach ($background->getSteps() as $step) {
             $content .=
                 PHP_EOL . $this->dumpIndent(1)
@@ -77,7 +76,7 @@ class Dumper
 
     /**
      * Dump comment
-     * 
+     *
      * @param string $comment
      * @return string
      */
@@ -88,7 +87,7 @@ class Dumper
 
     /**
      * Dump feature
-     * 
+     *
      * @param \Behat\Gherkin\Node\FeatureNode $feature
      * @return string
      */
@@ -97,7 +96,6 @@ class Dumper
         $language = $feature->getLanguage();
         $this->keywords->setLanguage($language);
 
-        //
         // Feature's infos
         $content = ''
             . $this->dumpLanguage($language)
@@ -105,13 +103,11 @@ class Dumper
             . PHP_EOL . $this->dumpKeyword($this->keywords->getFeatureKeywords(), $feature->getTitle(), 0)
             . PHP_EOL . $this->dumpText($feature->getDescription(), 1);
 
-        //
         // Background
         if ($feature->getBackground()) {
             $content .= $this->dumpBackground($feature->getBackground());
         }
 
-        //
         // scenarios
         $scenarios = $feature->getScenarios();
         foreach ($scenarios as $scenario) {
@@ -126,7 +122,7 @@ class Dumper
      * @param string $keyword
      * @param string $text
      * @param integer $indent
-     * @return string 
+     * @return string
      */
     public function dumpKeyword($keyword, $text, $indent = 0)
     {
@@ -140,7 +136,7 @@ class Dumper
 
     /**
      * Dump scenario
-     * 
+     *
      * @param \Behat\Gherkin\Node\ScenarioNode $scenario
      * @return string
      */
@@ -148,14 +144,12 @@ class Dumper
     {
         $keyWordToUse = $scenario instanceof OutlineNode ? $this->keywords->getOutlineKeywords() : $this->keywords->getScenarioKeywords();
 
-        //
         // Main content
         $content = ''
             . (sizeof($scenario->getTags()) > 0 ? PHP_EOL . $this->dumpTags($scenario->getTags(), 1) : '')
             . PHP_EOL . $this->dumpKeyword($keyWordToUse, $scenario->getTitle(), 1)
         ;
 
-        //
         // Steps
         foreach ($scenario->getSteps() as $step) {
             $content .=
@@ -163,7 +157,6 @@ class Dumper
                 . $this->dumpStep($step);
         }
 
-        //
         // Examples
         if ($scenario instanceof OutlineNode) {
             $content .= ''
@@ -177,7 +170,7 @@ class Dumper
 
     /**
      * Dump table node
-     * 
+     *
      * @param \Behat\Gherkin\Node\TableNode $tableNode
      * @param integer $indent
      * @return string
@@ -195,7 +188,7 @@ class Dumper
 
     /**
      * Dump indent
-     * 
+     *
      * @param integer $indent
      * @return string
      */
@@ -206,7 +199,7 @@ class Dumper
 
     /**
      * Dump step
-     * 
+     *
      * @param \Behat\Gherkin\Node\StepNode $step
      * @return string
      * @throws \Behat\Gherkin\Exception\Exception
@@ -238,7 +231,7 @@ class Dumper
 
     /**
      * Dump text
-     * 
+     *
      * @param string $text
      * @param integer $indent
      * @return string
@@ -253,7 +246,7 @@ class Dumper
 
     /**
      * Dump tags
-     * 
+     *
      * @param array $tags
      * @param integer $indent
      * @return string
@@ -268,13 +261,12 @@ class Dumper
 
     /**
      * Dump language tag
-     * 
+     *
      * @param string $language
-     * @return string 
+     * @return string
      */
     public function dumpLanguage($language)
     {
         return $this->dumpComment($this->dumpKeyword('language', $language));
     }
-
 }
