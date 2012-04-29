@@ -24,7 +24,6 @@ class GherkinFileLoader extends AbstractFileLoader
 {
     protected $parser;
     protected $cache;
-    protected $freeze = true;
 
     /**
      * Initializes loader.
@@ -36,16 +35,6 @@ class GherkinFileLoader extends AbstractFileLoader
     {
         $this->parser = $parser;
         $this->cache  = $cache;
-    }
-
-    /**
-     * Set whether loader should freeze features.
-     *
-     * @param Boolean $freeze
-     */
-    public function setFreeze($freeze = true)
-    {
-        $this->freeze = (bool) $freeze;
     }
 
     /**
@@ -101,10 +90,6 @@ class GherkinFileLoader extends AbstractFileLoader
         $filename = $this->findRelativePath($path);
         $content  = file_get_contents($path);
         $feature  = $this->parser->parse($content, $filename);
-
-        if ($this->freeze) {
-            $feature->freeze();
-        }
 
         return $feature;
     }

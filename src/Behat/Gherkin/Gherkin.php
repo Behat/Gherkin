@@ -22,8 +22,19 @@ use Behat\Gherkin\Loader\LoaderInterface,
  */
 class Gherkin
 {
+    protected $freeze  = true;
     protected $loaders = array();
     protected $filters = array();
+
+    /**
+     * Either to freeze features after loading or not.
+     *
+     * @param Boolean $freeze
+     */
+    public function setFreeze($freeze = true)
+    {
+        $this->freeze = (bool) $freeze;
+    }
 
     /**
      * Adds loader to manager.
@@ -97,6 +108,10 @@ class Gherkin
             }
 
             $feature->setScenarios($scenarios);
+
+            if ($this->freeze) {
+                $feature->freeze();
+            }
         }
 
         return $features;

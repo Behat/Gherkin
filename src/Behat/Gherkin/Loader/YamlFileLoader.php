@@ -39,21 +39,12 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
         $path = $this->findAbsolutePath($path);
         $hash = Yaml::parse($path);
 
-        $currentFreeze = $this->freeze;
-        $this->freeze  = false;
-
         $features = parent::load($hash);
         $filename = $this->findRelativePath($path);
 
         foreach ($features as $feature) {
             $feature->setFile($filename);
-
-            if ($currentFreeze) {
-                $feature->freeze();
-            }
         }
-
-        $this->freeze = $currentFreeze;
 
         return $features;
     }
