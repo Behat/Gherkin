@@ -179,11 +179,9 @@ class StepNode extends AbstractNode
      */
     public function getFile()
     {
-        if (null !== $this->parent) {
-            return $this->parent->getFile();
-        }
-
-        return null;
+        return null !== $this->parent
+             ? $this->parent->getFile()
+             : false;
     }
 
     /**
@@ -193,11 +191,9 @@ class StepNode extends AbstractNode
      */
     public function getLanguage()
     {
-        if (null !== $this->parent) {
-            return $this->parent->getLanguage();
-        }
-
-        return null;
+        return null !== $this->parent
+             ? $this->parent->getLanguage()
+             : false;
     }
 
     /**
@@ -207,8 +203,8 @@ class StepNode extends AbstractNode
      */
     public function isFrozen()
     {
-        return null !== $this->getParent()
-             ? $this->getParent()->isFrozen()
+        return null !== $this->parent
+             ? $this->parent->isFrozen()
              : false;
     }
 }

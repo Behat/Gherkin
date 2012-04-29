@@ -142,11 +142,9 @@ abstract class AbstractScenarioNode extends AbstractNode
      */
     public function getFile()
     {
-        if (null !== $this->feature) {
-            return $this->feature->getFile();
-        }
-
-        return null;
+        return null !== $this->feature
+             ? $this->feature->getFile()
+             : null;
     }
 
     /**
@@ -156,11 +154,9 @@ abstract class AbstractScenarioNode extends AbstractNode
      */
     public function getLanguage()
     {
-        if (null !== $this->feature) {
-            return $this->feature->getLanguage();
-        }
-
-        return null;
+        return null !== $this->feature
+             ? $this->feature->getLanguage()
+             : null;
     }
 
     /**
