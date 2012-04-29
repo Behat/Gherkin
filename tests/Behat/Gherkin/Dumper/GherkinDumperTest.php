@@ -3,7 +3,7 @@
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Gherkin,
-    Behat\Gherkin\Dumper,
+    Behat\Gherkin\Dumper\GherkinDumper as Dumper,
     Behat\Gherkin\Node\FeatureNode,
     Behat\Gherkin\Node\ScenarioNode,
     Behat\Gherkin\Node\StepNode,
@@ -15,9 +15,8 @@ use Behat\Gherkin\Gherkin,
 /**
  * @group dumper
  */
-class DumperTest extends \PHPUnit_Framework_TestCase
+class GherkinDumperTest extends \PHPUnit_Framework_TestCase
 {
-
     private $keywords;
 
     public function setUp()
@@ -285,5 +284,4 @@ Feature: Addition
             )
         );
     }
-
 }

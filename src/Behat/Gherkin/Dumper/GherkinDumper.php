@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\Gherkin;
+namespace Behat\Gherkin\Dumper;
 
 use Behat\Gherkin\Exception\Exception,
     Behat\Gherkin\Keywords\KeywordsInterface,
@@ -24,7 +24,7 @@ use Behat\Gherkin\Exception\Exception,
  *
  * @author      Jean-François Lépine <dev@lepine.pro>
  */
-class Dumper
+class GherkinDumper
 {
     private $keywords;
     private $indent;
