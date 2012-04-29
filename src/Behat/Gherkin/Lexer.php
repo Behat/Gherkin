@@ -2,7 +2,7 @@
 
 namespace Behat\Gherkin;
 
-use Behat\Gherkin\Exception\Exception,
+use Behat\Gherkin\Exception\LexerException,
     Behat\Gherkin\Keywords\KeywordsInterface;
 
 /*
@@ -52,6 +52,11 @@ class Lexer
      */
     public function setInput($input)
     {
+        // try to detect unsupported encoding
+        if ('UTF-8' !== mb_detect_encoding($input, 'UTF-8', true)) {
+            throw new LexerException('Feature file is not in UTF8 encoding');
+        }
+
         $input = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
 
         $this->lines      = explode("\n", $input);

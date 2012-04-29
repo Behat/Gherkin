@@ -3,6 +3,7 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\ParserException,
+    Behat\Gherkin\Exception\LexerException,
     Behat\Gherkin\Node;
 
 /*
@@ -50,7 +51,14 @@ class Parser
     {
         $this->file = $file;
 
-        $this->lexer->setInput($input);
+        try {
+            $this->lexer->setInput($input);
+        } catch (LexerException $e) {
+            throw new ParserException(
+                sprintf('Lexer exception "%s" throwed for file %s', $e->getMessage(), $file)
+            );
+        }
+
         $this->lexer->setLanguage($language = 'en');
         $languageSpecifierLine = null;
 
