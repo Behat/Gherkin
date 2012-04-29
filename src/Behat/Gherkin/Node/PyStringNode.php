@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class PyStringNode
+class PyStringNode implements StepArgumentNodeInterface
 {
     private $lines = array();
 
@@ -33,17 +33,13 @@ class PyStringNode
     }
 
     /**
-     * Replaces PyString holders with tokens.
+     * Returns new PyString node with replaced outline example row tokens.
      *
-     * @param   array   $tokens     hash (search => replace)
+     * @return ExamplePyStringNode
      */
-    public function replaceTokens(array $tokens)
+    public function createExampleRowStepArgument(array $tokens)
     {
-        foreach ($tokens as $key => $value) {
-            foreach (array_keys($this->lines) as $line) {
-                $this->lines[$line] = str_replace('<' . $key . '>', $value, $this->lines[$line], $count);
-            }
-        }
+        return new ExamplePyStringNode($this, $tokens);
     }
 
     /**
@@ -54,6 +50,16 @@ class PyStringNode
     public function addLine($line)
     {
         $this->lines[] = $line;
+    }
+
+    /**
+     * Sets PyString lines.
+     *
+     * @param array $lines
+     */
+    public function setLines(array $lines)
+    {
+        $this->lines = $lines;
     }
 
     /**

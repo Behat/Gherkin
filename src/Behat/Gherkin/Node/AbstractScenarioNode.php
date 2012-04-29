@@ -17,8 +17,46 @@ namespace Behat\Gherkin\Node;
  */
 abstract class AbstractScenarioNode extends AbstractNode
 {
+    protected $title;
     protected $steps = array();
     protected $feature;
+
+    /**
+     * Initializes scenario.
+     *
+     * @param   string  $title  scenario title
+     * @param   integer $line   definition line
+     */
+    public function __construct($title = null, $line = 0)
+    {
+        parent::__construct($line);
+
+        $this->title = $title;
+    }
+
+    /**
+     * Sets scenario title.
+     *
+     * @param   string  $title
+     */
+    public function setTitle($title)
+    {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background title in frozen feature.');
+        }
+
+        $this->title = $title;
+    }
+
+    /**
+     * Returns scenario title.
+     *
+     * @return  string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
     /**
      * Adds step to the node.
@@ -27,6 +65,10 @@ abstract class AbstractScenarioNode extends AbstractNode
      */
     public function addStep(StepNode $step)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background steps in frozen feature.');
+        }
+
         $step->setParent($this);
         $this->steps[] = $step;
     }
@@ -38,6 +80,10 @@ abstract class AbstractScenarioNode extends AbstractNode
      */
     public function setSteps(array $steps)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background steps in frozen feature.');
+        }
+
         $this->steps = array();
 
         foreach ($steps as $step) {
@@ -72,6 +118,10 @@ abstract class AbstractScenarioNode extends AbstractNode
      */
     public function setFeature(FeatureNode $feature)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to reassign scenario/background in frozen feature.');
+        }
+
         $this->feature = $feature;
     }
 
@@ -111,5 +161,17 @@ abstract class AbstractScenarioNode extends AbstractNode
         }
 
         return null;
+    }
+
+    /**
+     * Checks whether scenario has been frozen.
+     *
+     * @return Boolean
+     */
+    public function isFrozen()
+    {
+        return null !== $this->feature
+             ? $this->feature->isFrozen()
+             : false;
     }
 }

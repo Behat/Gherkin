@@ -59,6 +59,10 @@ abstract class AbstractNode
      */
     public function setKeyword($keyword)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen node keyword.');
+        }
+
         $this->keyword = $keyword;
     }
 
@@ -71,4 +75,11 @@ abstract class AbstractNode
     {
         return $this->keyword;
     }
+
+    /**
+     * Checks whether node has been frozen.
+     *
+     * @return Boolean
+     */
+    abstract public function isFrozen();
 }

@@ -82,4 +82,24 @@ TABLE
           , $table2->getRowsHash()
         );
     }
+
+    public function testTokens()
+    {
+        $table = new TableNode();
+        $table->addRow(array('username', 'password'));
+        $table->addRow(array('<username>', '<password>'));
+
+        $tableCompare = new TableNode(<<<TABLE
+| username | password |
+| everzet  | qwerty   |
+TABLE
+        );
+
+        $exampleTable = $table->createExampleRowStepArgument(array(
+            'username'=>'everzet',
+            'password'=>'qwerty'
+        ));
+        $this->assertNotSame($table, $exampleTable);
+        $this->assertSame($tableCompare->getRows(), $exampleTable->getRows());
+    }
 }

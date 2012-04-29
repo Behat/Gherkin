@@ -5,7 +5,8 @@ namespace Tests\Behat\Gherkin\Node;
 use Behat\Gherkin\Node\StepNode,
     Behat\Gherkin\Node\PyStringNode,
     Behat\Gherkin\Node\TableNode,
-    Behat\Gherkin\Node\ScenarioNode;
+    Behat\Gherkin\Node\ScenarioNode,
+    Behat\Gherkin\Node\FeatureNode;
 
 class StepNodeTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,20 +32,28 @@ class StepNodeTest extends \PHPUnit_Framework_TestCase
 
         $step->setText('Some "<text>" in <string>');
         $this->assertEquals('Some "<text>" in <string>', $step->getText());
-        $this->assertEquals('Some "<text>" in <string>', $step->getCleanText());
     }
 
     public function testTokens()
     {
         $step = new StepNode('When', 'Some "<text>" in <string>');
 
-        $step->setTokens(array('text' => 'change'));
-        $this->assertEquals('Some "change" in <string>', $step->getText());
-        $this->assertEquals('Some "<text>" in <string>', $step->getCleanText());
+        $scenario = new ScenarioNode();
+        $scenario->addStep($step);
 
-        $step->setTokens(array('text' => 'change', 'string' => 'browser'));
-        $this->assertEquals('Some "change" in browser', $step->getText());
-        $this->assertEquals('Some "<text>" in <string>', $step->getCleanText());
+        $feature = new FeatureNode();
+        $feature->addScenario($scenario);
+        $feature->freeze();
+
+        $step1 = $step->createExampleRowStep(array('text' => 'change'));
+        $this->assertNotSame($step, $step1);
+        $this->assertEquals('Some "change" in <string>', $step1->getText());
+        $this->assertEquals('Some "<text>" in <string>', $step1->getCleanText());
+
+        $step2 = $step->createExampleRowStep(array('text' => 'change', 'string' => 'browser'));
+        $this->assertNotSame($step, $step2);
+        $this->assertEquals('Some "change" in browser', $step2->getText());
+        $this->assertEquals('Some "<text>" in <string>', $step2->getCleanText());
     }
 
     public function testArguments()

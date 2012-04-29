@@ -20,8 +20,7 @@ class StepNode extends AbstractNode
     private $type;
     private $text;
     private $parent;
-    private $tokens     = array();
-    private $arguments  = array();
+    private $arguments = array();
 
     /**
      * Initizalizes step.
@@ -39,12 +38,30 @@ class StepNode extends AbstractNode
     }
 
     /**
+     * Returns new example step, initialized with values from specific row.
+     *
+     * @return ExampleStepNode
+     */
+    public function createExampleRowStep(array $tokens)
+    {
+        if (!$this->isFrozen()) {
+            throw new \LogicException('Impossible to get example step from non-frozen one.');
+        }
+
+        return new ExampleStepNode($this, $tokens);
+    }
+
+    /**
      * Sets step type.
      *
      * @param   string  $type   Given|When|Then|And etc.
      */
     public function setType($type)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step type in frozen feature.');
+        }
+
         $this->type = $type;
     }
 
@@ -65,17 +82,11 @@ class StepNode extends AbstractNode
      */
     public function setText($text)
     {
-        $this->text = $text;
-    }
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step text in frozen feature.');
+        }
 
-    /**
-     * Returns untokenized step text.
-     *
-     * @return  string
-     */
-    public function getCleanText()
-    {
-        return $this->text;
+        $this->text = $text;
     }
 
     /**
@@ -86,33 +97,7 @@ class StepNode extends AbstractNode
      */
     public function getText()
     {
-        $text = $this->text;
-
-        foreach ($this->tokens as $key => $value) {
-            $text = str_replace('<' . $key . '>', $value, $text);
-        }
-
-        return $text;
-    }
-
-    /**
-     * Sets text tokens (replacers).
-     *
-     * @param   array   $tokens     hash of tokens (search => replace, search => replace, ...)
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->tokens = $tokens;
-    }
-
-    /**
-     * Returns tokens (replacers).
-     *
-     * @return  array
-     */
-    public function getTokens()
-    {
-        return $this->tokens;
+        return $this->text;
     }
 
     /**
@@ -122,6 +107,10 @@ class StepNode extends AbstractNode
      */
     public function addArgument($argument)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step arguments in frozen feature.');
+        }
+
         $this->arguments[] = $argument;
     }
 
@@ -132,6 +121,10 @@ class StepNode extends AbstractNode
      */
     public function setArguments(array $arguments)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step arguments in frozen feature.');
+        }
+
         $this->arguments = $arguments;
     }
 
@@ -162,6 +155,10 @@ class StepNode extends AbstractNode
      */
     public function setParent(AbstractScenarioNode $node)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to reassign step from frozen feature.');
+        }
+
         $this->parent = $node;
     }
 
@@ -201,5 +198,17 @@ class StepNode extends AbstractNode
         }
 
         return null;
+    }
+
+    /**
+     * Checks whether step has been frozen.
+     *
+     * @return Boolean
+     */
+    public function isFrozen()
+    {
+        return null !== $this->getParent()
+             ? $this->getParent()->isFrozen()
+             : false;
     }
 }

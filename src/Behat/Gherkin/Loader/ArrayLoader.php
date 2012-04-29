@@ -19,6 +19,18 @@ use Behat\Gherkin\Node;
  */
 class ArrayLoader implements LoaderInterface
 {
+    protected $freeze = true;
+
+    /**
+     * Set whether loader should freeze features.
+     *
+     * @param Boolean $freeze
+     */
+    public function setFreeze($freeze = true)
+    {
+        $this->freeze = (bool) $freeze;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -36,10 +48,18 @@ class ArrayLoader implements LoaderInterface
 
         if (isset($resource['features'])) {
             foreach ($resource['features'] as $iterator => $hash) {
-                $features[] = $this->loadFeatureHash($hash, $iterator);
+                $feature = $this->loadFeatureHash($hash, $iterator);
+                if ($this->freeze) {
+                    $feature->freeze();
+                }
+                $features[] = $feature;
             }
         } elseif (isset($resource['feature'])) {
-            $features[] = $this->loadFeatureHash($resource['feature'], 0);
+            $feature = $this->loadFeatureHash($resource['feature'], 0);
+            if ($this->freeze) {
+                $feature->freeze();
+            }
+            $features[] = $feature;
         }
 
         return $features;

@@ -24,6 +24,7 @@ class FeatureNode extends AbstractNode
     private $language   = 'en';
     private $scenarios  = array();
     private $tags       = array();
+    private $frozen     = false;
 
     /**
      * Initializes feature.
@@ -49,6 +50,10 @@ class FeatureNode extends AbstractNode
      */
     public function setTitle($title)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature title.');
+        }
+
         $this->title = $title;
     }
 
@@ -69,6 +74,10 @@ class FeatureNode extends AbstractNode
      */
     public function setDescription($description)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature description.');
+        }
+
         $this->description = $description;
     }
 
@@ -89,6 +98,10 @@ class FeatureNode extends AbstractNode
      */
     public function setLanguage($language)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature language.');
+        }
+
         $this->language = $language;
     }
 
@@ -109,6 +122,10 @@ class FeatureNode extends AbstractNode
      */
     public function setBackground(BackgroundNode $background)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature background.');
+        }
+
         $background->setFeature($this);
         $this->background = $background;
     }
@@ -140,6 +157,10 @@ class FeatureNode extends AbstractNode
      */
     public function addScenario(ScenarioNode $scenario)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature scenarios.');
+        }
+
         $scenario->setFeature($this);
         $this->scenarios[] = $scenario;
     }
@@ -151,6 +172,10 @@ class FeatureNode extends AbstractNode
      */
     public function setScenarios(array $scenarios)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature scenarios.');
+        }
+
         $this->scenarios = array();
 
         foreach ($scenarios as $scenario) {
@@ -185,6 +210,10 @@ class FeatureNode extends AbstractNode
      */
     public function setTags(array $tags)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature tags.');
+        }
+
         $this->tags = $tags;
     }
 
@@ -195,6 +224,10 @@ class FeatureNode extends AbstractNode
      */
     public function addTag($tag)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature tags.');
+        }
+
         $this->tags[] = $tag;
     }
 
@@ -247,6 +280,10 @@ class FeatureNode extends AbstractNode
      */
     public function setFile($path)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen feature.');
+        }
+
         $this->file = $path;
     }
 
@@ -258,5 +295,25 @@ class FeatureNode extends AbstractNode
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * Freeze feature to changes.
+     *
+     * Prevents feature modification in future
+     */
+    public function freeze()
+    {
+        $this->frozen = true;
+    }
+
+    /**
+     * Checks whether feature has been frozen.
+     *
+     * @return Boolean
+     */
+    public function isFrozen()
+    {
+        return $this->frozen;
     }
 }

@@ -17,41 +17,7 @@ namespace Behat\Gherkin\Node;
  */
 class ScenarioNode extends AbstractScenarioNode
 {
-    private $title;
     private $tags = array();
-
-    /**
-     * Initializes scenario.
-     *
-     * @param   string  $title  scenario title
-     * @param   integer $line   definition line
-     */
-    public function __construct($title = null, $line = 0)
-    {
-        parent::__construct($line);
-
-        $this->title = $title;
-    }
-
-    /**
-     * Sets scenario title.
-     *
-     * @param   string  $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * Returns scenario title.
-     *
-     * @return  string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
 
     /**
      * Sets scenario tags.
@@ -60,6 +26,10 @@ class ScenarioNode extends AbstractScenarioNode
      */
     public function setTags(array $tags)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario tags in frozen feature.');
+        }
+
         $this->tags = $tags;
     }
 
@@ -70,6 +40,10 @@ class ScenarioNode extends AbstractScenarioNode
      */
     public function addTag($tag)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario tags in frozen feature.');
+        }
+
         $this->tags[] = $tag;
     }
 

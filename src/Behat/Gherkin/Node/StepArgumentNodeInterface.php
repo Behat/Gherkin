@@ -11,10 +11,16 @@ namespace Behat\Gherkin\Node;
  */
 
 /**
- * Background Gherkin AST node.
+ * Node Visitor Interface.
  *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class BackgroundNode extends AbstractScenarioNode
+interface StepArgumentNodeInterface
 {
+    /**
+     * Returns new node with replaced outline example row tokens.
+     *
+     * @return ExamplePyStringNode
+     */
+    function createExampleRowStepArgument(array $tokens);
 }

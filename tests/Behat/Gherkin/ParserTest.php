@@ -100,6 +100,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         if (null === $this->yaml) {
             $this->yaml = new YamlFileLoader();
+            $this->yaml->setFreeze(false);
         }
 
         return $this->yaml;

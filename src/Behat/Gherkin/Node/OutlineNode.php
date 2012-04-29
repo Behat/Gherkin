@@ -26,6 +26,10 @@ class OutlineNode extends ScenarioNode
      */
     public function setExamples(TableNode $examples)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change outline examples in frozen feature.');
+        }
+
         $this->examples = $examples;
     }
 

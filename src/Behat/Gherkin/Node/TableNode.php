@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author      Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class TableNode
+class TableNode implements StepArgumentNodeInterface
 {
     private $rows = array();
     private $keyword;
@@ -34,6 +34,16 @@ class TableNode
                 $this->addRow($row);
             }
         }
+    }
+
+    /**
+     * Returns new node with replaced outline example row tokens.
+     *
+     * @returns ExampleTableNode
+     */
+    public function createExampleRowStepArgument(array $tokens)
+    {
+        return new ExampleTableNode($this, $tokens);
     }
 
     /**
@@ -65,6 +75,16 @@ class TableNode
     }
 
     /**
+     * Sets table rows.
+     *
+     * @param array $rows
+     */
+    public function setRows(array $rows)
+    {
+        $this->rows = $rows;
+    }
+
+    /**
      * Returns specific row in a table.
      *
      * @param   integer $rowNum row number
@@ -91,22 +111,6 @@ class TableNode
         }
 
         return sprintf('|%s|', implode('|', $values));
-    }
-
-    /**
-     * Replaces column value holders with tokens.
-     *
-     * @param   array   $tokens     hash (search => replace)
-     */
-    public function replaceTokens(array $tokens)
-    {
-        foreach ($tokens as $key => $value) {
-            foreach (array_keys($this->rows) as $row) {
-                foreach (array_keys($this->rows[$row]) as $col) {
-                    $this->rows[$row][$col] = str_replace('<'.$key.'>', $value, $this->rows[$row][$col], $count);
-                }
-            }
-        }
     }
 
     /**
