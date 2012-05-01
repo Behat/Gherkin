@@ -17,14 +17,14 @@ use Symfony\Component\Yaml\Yaml;
  *
  * $keywords = new Behat\Gherkin\Keywords\CucumberKeywords($i18nYmlPath);
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class CucumberKeywords extends ArrayKeywords
 {
     /**
      * Initializes holder with yaml string OR file.
      *
-     * @param   string   $yaml
+     * @param string $yaml Yaml string
      */
     public function __construct($yaml)
     {
@@ -32,7 +32,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Feature keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getGivenKeywords()
     {
@@ -40,7 +42,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
+     * Returns When keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getWhenKeywords()
     {
@@ -48,7 +52,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Then keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getThenKeywords()
     {
@@ -56,7 +62,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
+     * Returns And keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getAndKeywords()
     {
@@ -64,7 +72,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * {@inheritdoc}
+     * Returns But keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getButKeywords()
     {
@@ -74,9 +84,9 @@ class CucumberKeywords extends ArrayKeywords
     /**
      * Trim *| from the begining of the list.
      *
-     * @param   string $keywordsString
+     * @param string $keywordsString Keywords string
      *
-     * @return  string
+     * @return string
      */
     private function prepareStepString($keywordsString)
     {

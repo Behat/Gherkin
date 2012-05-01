@@ -4,8 +4,19 @@ namespace Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Node\FeatureNode;
 
+/*
+* This file is part of the Behat Gherkin.
+* (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+
 /**
- * Features filecache.
+ * File cache.
+ * Caches feature into a file.
+ *
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class FileCache implements CacheInterface
 {
@@ -14,7 +25,7 @@ class FileCache implements CacheInterface
     /**
      * Initializes file cache.
      *
-     * @param string $path path to the folder where to store caches.
+     * @param string $path Path to the folder where to store caches.
      */
     public function __construct($path)
     {
@@ -28,8 +39,8 @@ class FileCache implements CacheInterface
     /**
      * Checks that cache for feature exists and is fresh.
      *
-     * @param  string  $path      feature path
-     * @param  integer $timestamp the last time feature was updated
+     * @param string  $path      Feature path
+     * @param integer $timestamp The last time feature was updated
      *
      * @return Boolean
      */
@@ -47,9 +58,9 @@ class FileCache implements CacheInterface
     /**
      * Reads feature cache from path.
      *
-     * @param   string $path feature path
+     * @param string $path Feature path
      *
-     * @return  FeatureNode
+     * @return FeatureNode
      */
     public function read($path)
     {
@@ -59,8 +70,8 @@ class FileCache implements CacheInterface
     /**
      * Caches feature node.
      *
-     * @param string      $path    feature path
-     * @param FeatureNode $feature feature instance
+     * @param string      $path    Feature path
+     * @param FeatureNode $feature Feature instance
      */
     public function write($path, FeatureNode $feature)
     {
@@ -70,7 +81,7 @@ class FileCache implements CacheInterface
     /**
      * Returns feature cache file path from features path.
      *
-     * @param  string $path feature path
+     * @param string $path Feature path
      *
      * @return string
      */

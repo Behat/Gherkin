@@ -13,16 +13,16 @@ namespace Behat\Gherkin\Node;
 /**
  * Node Visitor Interface.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface NodeVisitorInterface
 {
     /**
      * Visits specific node.
      *
-     * @param   Behat\Gherkin\Node\AbstractNode    $visitee visitee object
+     * @param AbstractNode $visitee Visitee object
      *
-     * @return  mixed
+     * @return mixed
      */
     function visit(AbstractNode $visitee);
 }

@@ -13,14 +13,14 @@ namespace Behat\Gherkin\Loader;
 /**
  * File Loader interface.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface FileLoaderInterface extends LoaderInterface
 {
     /**
      * Sets base features path.
      *
-     * @param   string  $path
+     * @param string $path Base loader path
      */
     function setBasePath($path);
 }

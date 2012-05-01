@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Abstract Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractScenarioNode extends AbstractNode
 {
@@ -24,8 +24,8 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Initializes scenario.
      *
-     * @param   string  $title  scenario title
-     * @param   integer $line   definition line
+     * @param string  $title Scenario title
+     * @param integer $line  Definition line
      */
     public function __construct($title = null, $line = 0)
     {
@@ -37,7 +37,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Sets scenario title.
      *
-     * @param   string  $title
+     * @param string $title Scenario title
      */
     public function setTitle($title)
     {
@@ -51,7 +51,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns scenario title.
      *
-     * @return  string
+     * @return string
      */
     public function getTitle()
     {
@@ -61,7 +61,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Adds step to the node.
      *
-     * @param   Behat\Gherkin\Node\StepNode $step
+     * @param StepNode $step Step
      */
     public function addStep(StepNode $step)
     {
@@ -74,9 +74,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Sets steps array.
+     * Sets scenario steps.
      *
-     * @param   array   $steps  array of StepNode
+     * @param array $steps Array of StepNode
      */
     public function setSteps(array $steps)
     {
@@ -94,7 +94,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Checks if node has steps.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasSteps()
     {
@@ -102,9 +102,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Returns steps array.
+     * Returns scenario steps.
      *
-     * @return  array           array of StepNode
+     * @return array
      */
     public function getSteps()
     {
@@ -114,7 +114,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Sets parent feature of the node.
      *
-     * @param   Behat\Gherkin\Node\FeatureNode $feature
+     * @param FeatureNode $feature Feature instance
      */
     public function setFeature(FeatureNode $feature)
     {
@@ -128,7 +128,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns parent feature of the node.
      *
-     * @return  Behat\Gherkin\Node\FeatureNode
+     * @return FeatureNode
      */
     public function getFeature()
     {
@@ -138,7 +138,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns definition file.
      *
-     * @return  string
+     * @return string
      */
     public function getFile()
     {
@@ -150,7 +150,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns language of the feature.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguage()
     {

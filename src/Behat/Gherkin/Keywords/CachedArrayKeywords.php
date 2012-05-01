@@ -15,14 +15,14 @@ namespace Behat\Gherkin\Keywords;
  *
  * $keywords = new Behat\Gherkin\Keywords\CachedArrayKeywords($file);
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class CachedArrayKeywords extends ArrayKeywords
 {
     /**
      * Initializes holder with file.
      *
-     * @param   string   $file
+     * @param string $file Cached array path
      */
     public function __construct($file)
     {

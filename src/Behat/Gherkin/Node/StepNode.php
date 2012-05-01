@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Step Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class StepNode extends AbstractNode
 {
@@ -25,9 +25,9 @@ class StepNode extends AbstractNode
     /**
      * Initizalizes step.
      *
-     * @param   string  $type   step type
-     * @param   string  $text   step text
-     * @param   integer $line   definition line
+     * @param string  $type Step type
+     * @param string  $text Step text
+     * @param integer $line Definition line
      */
     public function __construct($type, $text = null, $line = 0)
     {
@@ -54,7 +54,7 @@ class StepNode extends AbstractNode
     /**
      * Sets step type.
      *
-     * @param   string  $type   Given|When|Then|And etc.
+     * @param string $type Step type (Given|When|Then|And etc)
      */
     public function setType($type)
     {
@@ -68,7 +68,7 @@ class StepNode extends AbstractNode
     /**
      * Returns step type.
      *
-     * @return  string
+     * @return string
      */
     public function getType()
     {
@@ -78,7 +78,7 @@ class StepNode extends AbstractNode
     /**
      * Sets step text.
      *
-     * @param   string  $text
+     * @param string $text Step text
      */
     public function setText($text)
     {
@@ -90,10 +90,9 @@ class StepNode extends AbstractNode
     }
 
     /**
-     * Returns tokenized step text.
+     * Returns step text.
      *
-     * @see     setTokens
-     * @return  string
+     * @return string
      */
     public function getText()
     {
@@ -103,9 +102,9 @@ class StepNode extends AbstractNode
     /**
      * Adds argument to step.
      *
-     * @param   Behat\Gherkin\Node\PyStringNode|Behat\Gherkin\Node\TableNode    $argument
+     * @param StepArgumentNodeInterface $argument Step argument
      */
-    public function addArgument($argument)
+    public function addArgument(StepArgumentNodeInterface $argument)
     {
         if ($this->isFrozen()) {
             throw new \LogicException('Impossible to change step arguments in frozen feature.');
@@ -117,7 +116,7 @@ class StepNode extends AbstractNode
     /**
      * Sets step arguments.
      *
-     * @param   array   $arguments
+     * @param array $arguments Array of arguments
      */
     public function setArguments(array $arguments)
     {
@@ -125,13 +124,15 @@ class StepNode extends AbstractNode
             throw new \LogicException('Impossible to change step arguments in frozen feature.');
         }
 
-        $this->arguments = $arguments;
+        foreach ($arguments as $argument) {
+            $this->addArgument($argument);
+        }
     }
 
     /**
      * Checks if step has arguments.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasArguments()
     {
@@ -141,7 +142,7 @@ class StepNode extends AbstractNode
     /**
      * Returns step arguments.
      *
-     * @return  array
+     * @return array
      */
     public function getArguments()
     {
@@ -151,7 +152,7 @@ class StepNode extends AbstractNode
     /**
      * Sets parent node of the step.
      *
-     * @param   Behat\Gherkin\Node\AbstractScenarioNode  $node
+     * @param AbstractScenarioNode $node Parent scenario
      */
     public function setParent(AbstractScenarioNode $node)
     {
@@ -165,7 +166,7 @@ class StepNode extends AbstractNode
     /**
      * Returns parent node of the step.
      *
-     * @return  Behat\Gherkin\Node\AbstractScenarioNode
+     * @return AbstractScenarioNode
      */
     public function getParent()
     {
@@ -175,7 +176,7 @@ class StepNode extends AbstractNode
     /**
      * Returns definition file.
      *
-     * @return  string
+     * @return string
      */
     public function getFile()
     {
@@ -187,7 +188,7 @@ class StepNode extends AbstractNode
     /**
      * Returns language of the feature.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguage()
     {

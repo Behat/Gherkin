@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Node Visitor Interface.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface StepArgumentNodeInterface
 {

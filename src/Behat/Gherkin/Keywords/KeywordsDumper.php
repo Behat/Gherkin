@@ -15,7 +15,7 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
 /**
  * Gherkin keywords dumper.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class KeywordsDumper
 {
@@ -25,7 +25,7 @@ class KeywordsDumper
     /**
      * Initializes dumper.
      *
-     * @param   Behat\Gherkin\Keywords\KeywordsInterface   $keywords
+     * @param KeywordsInterface $keywords Keywords instance
      */
     public function __construct(KeywordsInterface $keywords)
     {
@@ -38,7 +38,7 @@ class KeywordsDumper
      *
      * Callable should accept 2 arguments (array $keywords and Boolean $isShort)
      *
-     * @param callable $mapper
+     * @param callable $mapper Mapper function
      */
     public function setKeywordsDumperFunction($mapper)
     {
@@ -48,10 +48,10 @@ class KeywordsDumper
     /**
      * Defaults keywords dumper.
      *
-     * @param   array   $keywords keywords list
-     * @param   Boolean $isShort  is short version
+     * @param array   $keywords Keywords list
+     * @param Boolean $isShort  Is short version
      *
-     * @return  string
+     * @return string
      */
     public function dumpKeywords(array $keywords, $isShort)
     {
@@ -63,12 +63,12 @@ class KeywordsDumper
     }
 
     /**
-     * Dump keyworded feature into string.
+     * Dumps keyworded feature into string.
      *
-     * @param   string  $language   keywords language
-     * @param   Boolean $short      dump short version
+     * @param string  $language Keywords language
+     * @param Boolean $short    Dump short version
      *
-     * @return  string|array        string for short version and array of features for extended
+     * @return string|array String for short version and array of features for extended
      */
     public function dump($language, $short = true)
     {
@@ -98,8 +98,8 @@ class KeywordsDumper
     /**
      * Dumps feature example.
      *
-     * @param   string  $keyword    item keyword
-     * @param   Boolean $short      dump short version?
+     * @param string  $keyword Item keyword
+     * @param Boolean $short   Dump short version?
      *
      * @return  string
      */
@@ -154,10 +154,10 @@ GHERKIN;
     /**
      * Dumps background example.
      *
-     * @param   string  $keyword    item keyword
-     * @param   Boolean $short      dump short version?
+     * @param string  $keyword Item keyword
+     * @param Boolean $short   Dump short version?
      *
-     * @return  string
+     * @return string
      */
     protected function dumpBackground($keyword, $short = true)
     {
@@ -182,10 +182,10 @@ GHERKIN;
     /**
      * Dumps scenario example.
      *
-     * @param   string  $keyword    item keyword
-     * @param   Boolean $short      dump short version?
+     * @param string  $keyword Item keyword
+     * @param Boolean $short   Dump short version?
      *
-     * @return  string
+     * @return string
      */
     protected function dumpScenario($keyword, $short = true)
     {
@@ -225,10 +225,10 @@ GHERKIN;
     /**
      * Dumps outline example.
      *
-     * @param   string  $keyword    item keyword
-     * @param   Boolean $short      dump short version?
+     * @param string  $keyword Item keyword
+     * @param Boolean $short   Dump short version?
      *
-     * @return  string
+     * @return string
      */
     protected function dumpOutline($keyword, $short = true)
     {
@@ -283,11 +283,11 @@ GHERKIN;
     /**
      * Dumps step example.
      *
-     * @param   string  $keywords   item keyword
-     * @param   string  $text       step text
-     * @param   Boolean $short      dump short version?
+     * @param string  $keywords Item keyword
+     * @param string  $text     Step text
+     * @param Boolean $short    Dump short version?
      *
-     * @return  string
+     * @return string
      */
     protected function dumpStep($keywords, $text, $short = true)
     {

@@ -13,14 +13,16 @@ namespace Behat\Gherkin\Loader;
 /**
  * Abstract filesystem loader.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractFileLoader implements FileLoaderInterface
 {
     protected $basePath;
 
     /**
-     * {@inheritdoc}
+     * Sets base features path.
+     *
+     * @param string $path Base loader path
      */
     public function setBasePath($path)
     {
@@ -30,9 +32,9 @@ abstract class AbstractFileLoader implements FileLoaderInterface
     /**
      * Finds relative path for provided absolute (relative to base features path).
      *
-     * @param   string  $path   absolute path
+     * @param string $path Absolute path
      *
-     * @return  string
+     * @return string
      */
     protected function findRelativePath($path)
     {
@@ -46,9 +48,9 @@ abstract class AbstractFileLoader implements FileLoaderInterface
     /**
      * Finds absolute path for provided relative (relative to base features path).
      *
-     * @param   string  $path   relative path
+     * @param string $path Relative path
      *
-     * @return  string
+     * @return string
      */
     protected function findAbsolutePath($path)
     {

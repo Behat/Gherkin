@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Outline example step Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ExampleStepNode extends StepNode
 {
@@ -22,8 +22,8 @@ class ExampleStepNode extends StepNode
     /**
      * Initizalizes step.
      *
-     * @param StepNode $simpleStep initial step
-     * @param array    $tokens     example table row tokens
+     * @param StepNode $simpleStep Initial step
+     * @param array    $tokens     Example table row tokens
      */
     public function __construct(StepNode $simpleStep, array $tokens)
     {
@@ -50,7 +50,7 @@ class ExampleStepNode extends StepNode
     /**
      * Returns untokenized step text.
      *
-     * @return  string
+     * @return string
      */
     public function getCleanText()
     {

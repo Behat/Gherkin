@@ -18,7 +18,7 @@ use Behat\Gherkin\Loader\LoaderInterface,
 /**
  * Gherkin manager.
  *
- * @author     Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Gherkin
 {
@@ -29,7 +29,7 @@ class Gherkin
     /**
      * Either to freeze features after loading or not.
      *
-     * @param Boolean $freeze
+     * @param Boolean $freeze To freeze?
      */
     public function setFreeze($freeze = true)
     {
@@ -39,7 +39,7 @@ class Gherkin
     /**
      * Adds loader to manager.
      *
-     * @param   Behat\Gherkin\Loader\LoaderInterface    $loader loader
+     * @param LoaderInterface $loader Feature loader
      */
     public function addLoader(LoaderInterface $loader)
     {
@@ -49,7 +49,7 @@ class Gherkin
     /**
      * Adds filter to manager.
      *
-     * @param   Behat\Gherkin\Filter\FilterInterface    $filter filter
+     * @param FilterInterface $filter Feature/Scenario filter
      */
     public function addFilter(FilterInterface $filter)
     {
@@ -59,7 +59,7 @@ class Gherkin
     /**
      * Sets base features path.
      *
-     * @param   string  $path
+     * @param string $path Loaders base path
      */
     public function setBasePath($path)
     {
@@ -71,9 +71,9 @@ class Gherkin
     /**
      * Loads & filters resource with added loaders.
      *
-     * @param   mixed   $resource   resource to load
+     * @param mixed $resource Resource to load
      *
-     * @return  array               features
+     * @return array
      */
     public function load($resource)
     {
@@ -120,9 +120,9 @@ class Gherkin
     /**
      * Resolves loader by resource.
      *
-     * @param   mixed   $resoruce   resource to load
+     * @param mixed $resoruce Resource to load
      *
-     * @return  Behat\Gherkin\Loader\LoaderInterface    loader for resource
+     * @return LoaderInterface
      */
     public function resolveLoader($resource)
     {

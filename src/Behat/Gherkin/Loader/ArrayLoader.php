@@ -15,12 +15,16 @@ use Behat\Gherkin\Node;
 /**
  * From-array loader.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ArrayLoader implements LoaderInterface
 {
     /**
-     * {@inheritdoc}
+     * Checks if current loader supports provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return Boolean
      */
     public function supports($resource)
     {
@@ -28,7 +32,11 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Loads features from provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return array
      */
     public function load($resource)
     {
@@ -50,10 +58,10 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads feature from provided feature hash.
      *
-     * @param   array   $hash   feature hash
-     * @param   integer $line   feature definition line
+     * @param array   $hash Feature hash
+     * @param integer $line Feature definition line
      *
-     * @return  Behat\Gherkin\Node\FeatureNode
+     * @return FeatureNode
      */
     protected function loadFeatureHash(array $hash, $line = 0)
     {
@@ -92,9 +100,9 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads background from provided hash.
      *
-     * @param   array   $hash   background hash
+     * @param array $hash Background hash
      *
-     * @return  Behat\Gherkin\Node\BackgroundHash
+     * @return BackgroundNode
      */
     protected function loadBackgroundHash(array $hash)
     {
@@ -117,10 +125,10 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads scenario from provided scenario hash.
      *
-     * @param   array   $hash   scenario hash
-     * @param   integer $line   scenario definition line
+     * @param array   $hash Scenario hash
+     * @param integer $line Scenario definition line
      *
-     * @return  Behat\Gherkin\Node\ScenarioNode
+     * @return ScenarioNode
      */
     protected function loadScenarioHash(array $hash, $line = 0)
     {
@@ -146,10 +154,10 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads outline from provided outline hash.
      *
-     * @param   array   $hash   outline hash
-     * @param   integer $line   outline definition line
+     * @param array   $hash Outline hash
+     * @param integer $line Outline definition line
      *
-     * @return  Behat\Gherkin\Node\OutlineNode
+     * @return OutlineNode
      */
     protected function loadOutlineHash(array $hash, $line = 0)
     {
@@ -186,10 +194,10 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads step from provided hash.
      *
-     * @param   array   $hash   step hash
-     * @param   integer $line   step definition line
+     * @param array   $hash Step hash
+     * @param integer $line Step definition line
      *
-     * @return  Behat\Gherkin\Node\StepNode
+     * @return StepNode
      */
     protected function loadStepHash(array $hash, $line = 0)
     {
@@ -213,9 +221,9 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads table from provided hash.
      *
-     * @param   array   $hash   table hash
+     * @param array $hash Table hash
      *
-     * @return  Behat\Gherkin\Node\TableNode
+     * @return TableNode
      */
     protected function loadTableHash(array $hash)
     {
@@ -231,9 +239,9 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads PyString from provided hash.
      *
-     * @param   array   $hash   pystring hash
+     * @param array $hash PyString hash
      *
-     * @return  Behat\Gherkin\Node\PyStringNode
+     * @return PyStringNode
      */
     protected function loadPyStringHash(array $hash)
     {

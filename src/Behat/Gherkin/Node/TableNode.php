@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Table Argument Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class TableNode implements StepArgumentNodeInterface
 {
@@ -23,7 +23,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Initializes table.
      *
-     * @param   string  $table  initial table string
+     * @param string $table Initial table string
      */
     public function __construct($table = null)
     {
@@ -49,7 +49,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Adds a row to the string.
      *
-     * @param   string  $row    columns hash (column1 => value, column2 => value)
+     * @param string|array $row Columns hash (column1 => value, column2 => value) or row string
      */
     public function addRow($row)
     {
@@ -67,7 +67,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Returns table rows.
      *
-     * @return  array
+     * @return array
      */
     public function getRows()
     {
@@ -87,9 +87,9 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Returns specific row in a table.
      *
-     * @param   integer $rowNum row number
+     * @param integer $rowNum Row number
      *
-     * @return  array           columns hash (column1 => value, column2 => value)
+     * @return array
      */
     public function getRow($rowNum)
     {
@@ -99,9 +99,9 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Converts row into delimited string.
      *
-     * @param   integer $rowNum row number
+     * @param integer $rowNum Row number
      *
-     * @return  string
+     * @return string
      */
     public function getRowAsString($rowNum)
     {
@@ -116,7 +116,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Returns table hash, formed by columns (ColumnHash).
      *
-     * @return  array
+     * @return array
      */
     public function getHash()
     {
@@ -134,7 +134,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Returns table hash, formed by rows (RowsHash).
      *
-     * @return  array
+     * @return array
      */
     public function getRowsHash()
     {
@@ -151,7 +151,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Converts table into string
      *
-     * @return  string
+     * @return string
      */
     public function __toString()
     {
@@ -168,11 +168,31 @@ class TableNode implements StepArgumentNodeInterface
     }
 
     /**
+     * Sets current node definition keyword.
+     *
+     * @param string $keyword Sets table keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Returns current node definition keyword.
+     *
+     * @return string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    /**
      * Returns max length of specific column.
      *
-     * @param   integer $columnNum  column number
+     * @param integer $columnNum Column number
      *
-     * @return  integer
+     * @return integer
      */
     protected function getMaxLengthForColumn($columnNum)
     {
@@ -190,10 +210,10 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Pads string right.
      *
-     * @param   string  $text
-     * @param   integer $length
+     * @param string  $text   Text to pad
+     * @param integer $length Lenght
      *
-     * @return  string
+     * @return string
      */
     protected function padRight($text, $length)
     {
@@ -202,25 +222,5 @@ class TableNode implements StepArgumentNodeInterface
         }
 
         return $text;
-    }
-
-    /**
-     * Sets current node definition keyword.
-     *
-     * @param   string  $keyword
-     */
-    public function setKeyword($keyword)
-    {
-        $this->keyword = $keyword;
-    }
-
-    /**
-     * Returns current node definition keyword.
-     *
-     * @return  string
-     */
-    public function getKeyword()
-    {
-        return $this->keyword;
     }
 }

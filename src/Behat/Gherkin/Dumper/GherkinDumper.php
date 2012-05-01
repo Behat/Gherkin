@@ -22,7 +22,7 @@ use Behat\Gherkin\Exception\Exception,
 /**
  * Gherkin Dumper.
  *
- * @author      Jean-François Lépine <dev@lepine.pro>
+ * @author Jean-François Lépine <dev@lepine.pro>
  */
 class GherkinDumper
 {
@@ -30,10 +30,10 @@ class GherkinDumper
     private $indent;
 
     /**
-     * Constructor
+     * Constructs dumper.
      *
-     * @param \Behat\Gherkin\Keywords\KeywordsInterface $keywords
-     * @param string $indent
+     * @param KeywordsInterface $keywords Keywords container
+     * @param string            $indent   Indentation
      */
     public function __construct(KeywordsInterface $keywords, $indent = '  ')
     {
@@ -42,10 +42,12 @@ class GherkinDumper
     }
 
     /**
-     * Dump a feature
+     * Dumps a feature.
      *
-     * @see Behat\Gherkin\dumpFeature()
-     * @param Behat\Gherkin\Node\FeatureNode
+     * @see dumpFeature()
+     *
+     * @param FeatureNode $feature Feature instance
+     *
      * @return string
      */
     public function dump(FeatureNode $feature)
@@ -54,9 +56,10 @@ class GherkinDumper
     }
 
     /**
-     * Dump background
+     * Dumps a background.
      *
-     * @param Behat\Gherkin\Node\BackgroundNode
+     * @param BackgroundNode $background Background instance
+     *
      * @return string
      */
     public function dumpBackground(BackgroundNode $background)
@@ -75,9 +78,10 @@ class GherkinDumper
     }
 
     /**
-     * Dump comment
+     * Dumps comment.
      *
-     * @param string $comment
+     * @param string $comment Comment string
+     *
      * @return string
      */
     public function dumpComment($comment)
@@ -86,9 +90,10 @@ class GherkinDumper
     }
 
     /**
-     * Dump feature
+     * Dumps feature.
      *
-     * @param \Behat\Gherkin\Node\FeatureNode $feature
+     * @param FeatureNode $feature Feature instance
+     *
      * @return string
      */
     public function dumpFeature(FeatureNode $feature)
@@ -96,19 +101,16 @@ class GherkinDumper
         $language = $feature->getLanguage();
         $this->keywords->setLanguage($language);
 
-        // Feature's infos
         $content = ''
             . $this->dumpLanguage($language)
             . ($feature->getTags() ? PHP_EOL . $this->dumpTags($feature->getTags(), 0) : '')
             . PHP_EOL . $this->dumpKeyword($this->keywords->getFeatureKeywords(), $feature->getTitle(), 0)
             . PHP_EOL . $this->dumpText($feature->getDescription(), 1);
 
-        // Background
         if ($feature->getBackground()) {
             $content .= $this->dumpBackground($feature->getBackground());
         }
 
-        // scenarios
         $scenarios = $feature->getScenarios();
         foreach ($scenarios as $scenario) {
             $content .= PHP_EOL . $this->dumpScenario($scenario);
@@ -117,11 +119,12 @@ class GherkinDumper
     }
 
     /**
-     * Dump keyword
+     * Dumps keyword.
      *
-     * @param string $keyword
-     * @param string $text
-     * @param integer $indent
+     * @param string  $keyword Keyword string
+     * @param string  $text    Text
+     * @param integer $indent  Indentation
+     *
      * @return string
      */
     public function dumpKeyword($keyword, $text, $indent = 0)
@@ -135,29 +138,27 @@ class GherkinDumper
     }
 
     /**
-     * Dump scenario
+     * Dumps scenario.
      *
-     * @param \Behat\Gherkin\Node\ScenarioNode $scenario
+     * @param ScenarioNode $scenario Scenario instance
+     *
      * @return string
      */
     public function dumpScenario(ScenarioNode $scenario)
     {
         $keyWordToUse = $scenario instanceof OutlineNode ? $this->keywords->getOutlineKeywords() : $this->keywords->getScenarioKeywords();
 
-        // Main content
         $content = ''
             . (sizeof($scenario->getTags()) > 0 ? PHP_EOL . $this->dumpTags($scenario->getTags(), 1) : '')
             . PHP_EOL . $this->dumpKeyword($keyWordToUse, $scenario->getTitle(), 1)
         ;
 
-        // Steps
         foreach ($scenario->getSteps() as $step) {
             $content .=
                 PHP_EOL . $this->dumpIndent(2)
                 . $this->dumpStep($step);
         }
 
-        // Examples
         if ($scenario instanceof OutlineNode) {
             $content .= ''
                 . PHP_EOL . PHP_EOL . $this->dumpKeyword($this->keywords->getExamplesKeywords(), '', 1)
@@ -169,10 +170,10 @@ class GherkinDumper
     }
 
     /**
-     * Dump table node
+     * Dumps table node.
      *
-     * @param \Behat\Gherkin\Node\TableNode $tableNode
-     * @param integer $indent
+     * @param TableNode $tableNode Table node
+     * @param integer   $indent    Indentation
      * @return string
      */
     public function dumpTableNode(TableNode $tableNode, $indent = 0)
@@ -187,9 +188,10 @@ class GherkinDumper
     }
 
     /**
-     * Dump indent
+     * Dumps indentation.
      *
-     * @param integer $indent
+     * @param  integer $indent Indentation
+     *
      * @return string
      */
     public function dumpIndent($indent)
@@ -198,11 +200,13 @@ class GherkinDumper
     }
 
     /**
-     * Dump step
+     * Dumps a step.
      *
-     * @param \Behat\Gherkin\Node\StepNode $step
+     * @param StepNode $step Step node instance
+     *
      * @return string
-     * @throws \Behat\Gherkin\Exception\Exception
+     *
+     * @throws Exception if invalid step type providen
      */
     public function dumpStep(StepNode $step)
     {
@@ -230,10 +234,11 @@ class GherkinDumper
     }
 
     /**
-     * Dump text
+     * Dumps text.
      *
-     * @param string $text
-     * @param integer $indent
+     * @param string  $text   Text to dump
+     * @param integer $indent Indentation
+     *
      * @return string
      */
     public function dumpText($text, $indent = 0)
@@ -245,24 +250,26 @@ class GherkinDumper
     }
 
     /**
-     * Dump tags
+     * Dumps tags.
      *
-     * @param array $tags
-     * @param integer $indent
+     * @param array   $tags   Array of tags
+     * @param integer $indent Indentation
+     *
      * @return string
      */
-    public function dumpTags(array $array, $indent = 0)
+    public function dumpTags(array $tags, $indent = 0)
     {
-        if (empty($array)) {
+        if (empty($tags)) {
             return '';
         }
-        return $this->dumpIndent($indent) . '@' . ltrim(implode(' @', $array));
+        return $this->dumpIndent($indent) . '@' . ltrim(implode(' @', $tags));
     }
 
     /**
-     * Dump language tag
+     * Dumps language tag.
      *
-     * @param string $language
+     * @param string $language Language name
+     *
      * @return string
      */
     public function dumpLanguage($language)

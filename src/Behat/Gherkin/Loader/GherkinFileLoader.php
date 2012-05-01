@@ -18,7 +18,7 @@ use Behat\Gherkin\Parser,
 /**
  * Gherkin *.feature files loader.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class GherkinFileLoader extends AbstractFileLoader
 {
@@ -28,8 +28,8 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Initializes loader.
      *
-     * @param   Behat\Gherkin\Parser                $parser
-     * @param   Behat\Gherkin\Cache\CacheInterface  $cache
+     * @param Parser         $parser Parser
+     * @param CacheInterface $cache  Cache layer
      */
     public function __construct(Parser $parser, CacheInterface $cache = null)
     {
@@ -38,9 +38,9 @@ class GherkinFileLoader extends AbstractFileLoader
     }
 
     /**
-     * Sets loader cache.
+     * Sets cache layer.
      *
-     * @param   Behat\Gherkin\Cache\CacheInterface $cache cache instance
+     * @param CacheInterface $cache Cache layer
      */
     public function setCache(CacheInterface $cache)
     {
@@ -48,7 +48,11 @@ class GherkinFileLoader extends AbstractFileLoader
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if current loader supports provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return Boolean
      */
     public function supports($path)
     {
@@ -58,7 +62,11 @@ class GherkinFileLoader extends AbstractFileLoader
     }
 
     /**
-     * {@inheritdoc}
+     * Loads features from provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return array
      */
     public function load($path)
     {
@@ -81,7 +89,7 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Parses feature at provided absolute path.
      *
-     * @param  string $path
+     * @param string $path Feature path
      *
      * @return FeatureNode
      */

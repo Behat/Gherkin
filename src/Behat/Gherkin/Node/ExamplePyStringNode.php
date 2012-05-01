@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * PyString Argument for outline examples row Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ExamplePyStringNode extends PyStringNode
 {
@@ -22,7 +22,8 @@ class ExamplePyStringNode extends PyStringNode
     /**
      * Initializes PyString.
      *
-     * @param   string  $string         initial string
+     * @param PyStringNode $simpleString String from which this example string should be created
+     * @param array        $tokens       Replacement tokens values
      */
     public function __construct(PyStringNode $simpleString, array $tokens)
     {

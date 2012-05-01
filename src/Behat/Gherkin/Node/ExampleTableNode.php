@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Table Argument Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ExampleTableNode extends TableNode
 {
@@ -22,7 +22,7 @@ class ExampleTableNode extends TableNode
     /**
      * Initializes table.
      *
-     * @param   string  $table  initial table string
+     * @param string $table Initial table string
      */
     public function __construct(TableNode $cleanTable, array $tokens)
     {

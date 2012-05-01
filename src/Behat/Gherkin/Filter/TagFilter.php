@@ -17,7 +17,7 @@ use Behat\Gherkin\Node\AbstractNode,
 /**
  * Filters scenarios by feature/scenario tag.
  *
- * @author     Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class TagFilter implements FilterInterface
 {
@@ -26,7 +26,7 @@ class TagFilter implements FilterInterface
     /**
      * Initializes filter.
      *
-     * @param   string  $filterStringString name filter string
+     * @param string $filterStringString Name filter string
      */
     public function __construct($filterString)
     {
@@ -34,7 +34,11 @@ class TagFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if Feature matches specified filter.
+     *
+     * @param FeatureNode $feature Feature instance
+     *
+     * @return Boolean
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
@@ -42,7 +46,11 @@ class TagFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if scenario or outline matches specified filter.
+     *
+     * @param ScenarioNode $scenario Scenario or Outline node instance
+     *
+     * @return Boolean
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {
@@ -52,7 +60,7 @@ class TagFilter implements FilterInterface
     /**
      * Checks that node matches condition.
      *
-     * @param   Behat\Gherkin\Node\Node\AbstractNode $node  node to check
+     * @param AbstractNode $node Node to check
      */
     protected function matchesCondition(AbstractNode $node)
     {

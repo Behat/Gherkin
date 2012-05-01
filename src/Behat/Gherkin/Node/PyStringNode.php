@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * PyString Argument Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class PyStringNode implements StepArgumentNodeInterface
 {
@@ -22,7 +22,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Initializes PyString.
      *
-     * @param   string  $string         initial string
+     * @param string $string Initial string
      */
     public function __construct($string = null)
     {
@@ -45,7 +45,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Adds a line to the PyString.
      *
-     * @param   string  $line
+     * @param string $line Line of text
      */
     public function addLine($line)
     {
@@ -55,7 +55,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Sets PyString lines.
      *
-     * @param array $lines
+     * @param array $lines Array of text lines
      */
     public function setLines(array $lines)
     {
@@ -65,7 +65,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Returns PyString lines.
      *
-     * @return  array
+     * @return array
      */
     public function getLines()
     {
@@ -75,7 +75,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Returns raw string.
      *
-     * @return  string
+     * @return string
      */
     public function getRaw()
     {
@@ -85,7 +85,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Converts PyString into string.
      *
-     * @return  string
+     * @return string
      */
     public function __toString()
     {

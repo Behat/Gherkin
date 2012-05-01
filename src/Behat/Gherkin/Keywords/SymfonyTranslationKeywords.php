@@ -25,7 +25,7 @@ use Symfony\Component\Finder\Finder,
  *
  * $keywords = new Behat\Gherkin\Keywords\SymfonyTranslationKeywords($translator);
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class SymfonyTranslationKeywords implements KeywordsInterface
 {
@@ -35,7 +35,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Initializes keywords holder.
      *
-     * @param   Symfony\Component\Translation\Translator    $translator
+     * @param Translator $translator Translator instance
      */
     public function __construct(Translator $translator)
     {
@@ -43,7 +43,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Sets keywords holder language.
+     *
+     * @param string $language Language name
      */
     public function setLanguage($language)
     {
@@ -51,7 +53,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Feature keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getFeatureKeywords()
     {
@@ -59,7 +63,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Background keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getBackgroundKeywords()
     {
@@ -67,7 +73,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Scenario keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getScenarioKeywords()
     {
@@ -75,7 +83,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Scenario Outline keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getOutlineKeywords()
     {
@@ -83,7 +93,9 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Examples keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getExamplesKeywords()
     {
@@ -91,42 +103,54 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Given keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getGivenKeywords()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Returns When keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getWhenKeywords()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Then keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getThenKeywords()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Returns And keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getAndKeywords()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Returns But keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getButKeywords()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Returns all step keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getStepKeywords()
     {

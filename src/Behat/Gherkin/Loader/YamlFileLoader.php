@@ -15,14 +15,18 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Yaml files loader.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
 {
     protected $basePath;
 
     /**
-     * {@inheritdoc}
+     * Checks if current loader supports provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return Boolean
      */
     public function supports($path)
     {
@@ -32,7 +36,11 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Loads features from provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return array
      */
     public function load($path)
     {
@@ -50,7 +58,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Sets base features path.
+     *
+     * @param string $path Base loader path
      */
     public function setBasePath($path)
     {
@@ -60,9 +70,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Finds relative path for provided absolute (relative to base features path).
      *
-     * @param   string  $path   absolute path
+     * @param string $path Absolute path
      *
-     * @return  string
+     * @return string
      */
     protected function findRelativePath($path)
     {
@@ -76,9 +86,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Finds absolute path for provided relative (relative to base features path).
      *
-     * @param   string  $path   relative path
+     * @param string $path Relative path
      *
-     * @return  string
+     * @return string
      */
     protected function findAbsolutePath($path)
     {

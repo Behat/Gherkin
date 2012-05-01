@@ -20,18 +20,18 @@ interface LoaderInterface
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param   string  $resource
+     * @param mixed $resource Resource to load
      *
-     * @return  boolean
+     * @return Boolean
      */
     function supports($resource);
 
     /**
      * Loads features from provided resource.
      *
-     * @param   string  $resource
+     * @param mixed $resource Resource to load
      *
-     * @return  array
+     * @return array
      */
     function load($resource);
 }

@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Feature Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class FeatureNode extends AbstractNode
 {
@@ -29,10 +29,10 @@ class FeatureNode extends AbstractNode
     /**
      * Initializes feature.
      *
-     * @param   string  $title          feature title
-     * @param   string  $description    feature description (3-liner)
-     * @param   string  $file           feature filename
-     * @param   integer $line           definition line
+     * @param string  $title       Feature title
+     * @param string  $description Feature description (3-liner)
+     * @param string  $file        Feature filename
+     * @param integer $line        Definition line
      */
     public function __construct($title = null, $description = null, $file = null, $line = 0)
     {
@@ -46,7 +46,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets feature title.
      *
-     * @param   string  $title
+     * @param string $title Feature title
      */
     public function setTitle($title)
     {
@@ -60,7 +60,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature title.
      *
-     * @return  string
+     * @return string
      */
     public function getTitle()
     {
@@ -68,9 +68,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Sets feature description (3-liner).
+     * Sets feature description (narrative).
      *
-     * @param   string  $description
+     * @param string $description Feature description
      */
     public function setDescription($description)
     {
@@ -82,9 +82,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Returns feature description (3-liner).
+     * Returns feature description (narrative).
      *
-     * @return  string
+     * @return string
      */
     public function getDescription()
     {
@@ -94,7 +94,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets language of the feature.
      *
-     * @param   string  $language   en|ru|pt-BR etc.
+     * @param string $language Langauge name
      */
     public function setLanguage($language)
     {
@@ -108,7 +108,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns language of the feature.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguage()
     {
@@ -118,7 +118,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets feature background.
      *
-     * @param   Behat\Gherkin\Node\BackgroundNode  $background
+     * @param BackgroundNode $background Background instance
      */
     public function setBackground(BackgroundNode $background)
     {
@@ -133,7 +133,7 @@ class FeatureNode extends AbstractNode
     /**
      * Checks if feature has background.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasBackground()
     {
@@ -143,7 +143,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature background.
      *
-     * @return  BackgroundNode
+     * @return BackgroundNode
      */
     public function getBackground()
     {
@@ -153,7 +153,7 @@ class FeatureNode extends AbstractNode
     /**
      * Adds scenario or outline to the feature.
      *
-     * @param   Behat\Gherkin\Node\ScenarioNode $scenario
+     * @param ScenarioNode $scenario Scenario instance
      */
     public function addScenario(ScenarioNode $scenario)
     {
@@ -168,7 +168,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets scenarios & outlines to the feature.
      *
-     * @param   array   $scenarios  array of ScenariosNode & OutlineNode
+     * @param array $scenarios Array of ScenariosNode's or OutlineNode's
      */
     public function setScenarios(array $scenarios)
     {
@@ -186,7 +186,7 @@ class FeatureNode extends AbstractNode
     /**
      * Checks that feature has scenarios.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasScenarios()
     {
@@ -196,7 +196,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature scenarios & outlines.
      *
-     * @return  array               array of ScenariosNode & OutlineNode
+     * @return array
      */
     public function getScenarios()
     {
@@ -206,7 +206,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets feature tags.
      *
-     * @param   array   $tags
+     * @param array $tags Array of tags
      */
     public function setTags(array $tags)
     {
@@ -220,7 +220,7 @@ class FeatureNode extends AbstractNode
     /**
      * Adds tag to the feature.
      *
-     * @param   string  $tag
+     * @param string $tag Tag name
      */
     public function addTag($tag)
     {
@@ -234,7 +234,7 @@ class FeatureNode extends AbstractNode
     /**
      * Checks if the feature has tags.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasTags()
     {
@@ -244,9 +244,9 @@ class FeatureNode extends AbstractNode
     /**
      * Checks if the feature has tag.
      *
-     * @param   string  $tag
+     * @param string $tag Tag name
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasTag($tag)
     {
@@ -256,7 +256,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature tags.
      *
-     * @return  array
+     * @return array
      */
     public function getTags()
     {
@@ -264,9 +264,9 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Returns only own tags (without inherited).
+     * Returns only own tags (without inherited ones).
      *
-     * @return  array
+     * @return array
      */
     public function getOwnTags()
     {
@@ -276,7 +276,7 @@ class FeatureNode extends AbstractNode
     /**
      * Sets feature filename.
      *
-     * @param   string  $path
+     * @param string $path Sets feature file
      */
     public function setFile($path)
     {
@@ -290,7 +290,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature filename.
      *
-     * @return  string
+     * @return string
      */
     public function getFile()
     {
@@ -299,7 +299,6 @@ class FeatureNode extends AbstractNode
 
     /**
      * Freeze feature to changes.
-     *
      * Prevents feature modification in future
      */
     public function freeze()
