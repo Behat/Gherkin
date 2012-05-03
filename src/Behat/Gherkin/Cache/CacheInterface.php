@@ -22,8 +22,8 @@ interface CacheInterface
     /**
      * Checks that cache for feature exists and is fresh.
      *
-     * @param  string  $path      feature path
-     * @param  integer $timestamp the last time feature was updated
+     * @param string  $path      Feature path
+     * @param integer $timestamp The last time feature was updated
      *
      * @return Boolean
      */
@@ -32,17 +32,17 @@ interface CacheInterface
     /**
      * Reads feature cache from path.
      *
-     * @param   string $path feature path
+     * @param string $path Feature path
      *
-     * @return  FeatureNode
+     * @return FeatureNode
      */
     function read($path);
 
     /**
      * Caches feature node.
      *
-     * @param string      $path    feature path
-     * @param FeatureNode $feature feature instance
+     * @param string      $path    Feature path
+     * @param FeatureNode $feature Feature instance
      */
     function write($path, FeatureNode $feature);
 }

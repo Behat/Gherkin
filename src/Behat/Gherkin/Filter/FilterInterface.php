@@ -16,21 +16,25 @@ use Behat\Gherkin\Node\FeatureNode,
 /**
  * Filter interface.
  *
- * @author     Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface FilterInterface
 {
     /**
      * Checks if Feature matches specified filter.
      *
-     * @param   Behat\Gherkin\Node\FeatureNode  $feature
+     * @param FeatureNode $feature Feature instance
+     *
+     * @return Boolean
      */
     function isFeatureMatch(FeatureNode $feature);
 
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param   Behat\Gherkin\Node\ScenarioNode|Behat\Gherkin\Node\OutlineNode  $scenario
+     * @param ScenarioNode $scenario Scenario or Outline node instance
+     *
+     * @return Boolean
      */
     function isScenarioMatch(ScenarioNode $scenario);
 }

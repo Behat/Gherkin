@@ -40,7 +40,7 @@ namespace Behat\Gherkin\Keywords;
  *     )
  * ));
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ArrayKeywords implements KeywordsInterface
 {
@@ -50,7 +50,7 @@ class ArrayKeywords implements KeywordsInterface
     /**
      * Initializes holder with keywords.
      *
-     * @param   array   $keywords
+     * @param array $keywords Keywords array
      */
     public function __construct(array $keywords)
     {
@@ -58,7 +58,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Sets keywords holder language.
+     *
+     * @param string $language Language name
      */
     public function setLanguage($language)
     {
@@ -70,7 +72,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Feature keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getFeatureKeywords()
     {
@@ -78,7 +82,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Background keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getBackgroundKeywords()
     {
@@ -86,7 +92,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Scenario keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getScenarioKeywords()
     {
@@ -94,7 +102,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Scenario Outline keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getOutlineKeywords()
     {
@@ -102,7 +112,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Examples keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getExamplesKeywords()
     {
@@ -110,7 +122,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Given keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getGivenKeywords()
     {
@@ -118,7 +132,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns When keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getWhenKeywords()
     {
@@ -126,7 +142,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns Then keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getThenKeywords()
     {
@@ -134,7 +152,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns And keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getAndKeywords()
     {
@@ -142,7 +162,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns But keywords (splitted by "|").
+     *
+     * @return string
      */
     public function getButKeywords()
     {
@@ -150,7 +172,9 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns all step keywords (Given, When, Then, And, But).
+     *
+     * @return string
      */
     public function getStepKeywords()
     {

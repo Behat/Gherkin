@@ -13,22 +13,21 @@ namespace Behat\Gherkin\Node;
 /**
  * Step Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class StepNode extends AbstractNode
 {
     private $type;
     private $text;
     private $parent;
-    private $tokens     = array();
-    private $arguments  = array();
+    private $arguments = array();
 
     /**
      * Initizalizes step.
      *
-     * @param   string  $type   step type
-     * @param   string  $text   step text
-     * @param   integer $line   definition line
+     * @param string  $type Step type
+     * @param string  $text Step text
+     * @param integer $line Definition line
      */
     public function __construct($type, $text = null, $line = 0)
     {
@@ -39,19 +38,37 @@ class StepNode extends AbstractNode
     }
 
     /**
+     * Returns new example step, initialized with values from specific row.
+     *
+     * @return ExampleStepNode
+     */
+    public function createExampleRowStep(array $tokens)
+    {
+        if (!$this->isFrozen()) {
+            throw new \LogicException('Impossible to get example step from non-frozen one.');
+        }
+
+        return new ExampleStepNode($this, $tokens);
+    }
+
+    /**
      * Sets step type.
      *
-     * @param   string  $type   Given|When|Then|And etc.
+     * @param string $type Step type (Given|When|Then|And etc)
      */
     public function setType($type)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step type in frozen feature.');
+        }
+
         $this->type = $type;
     }
 
     /**
      * Returns step type.
      *
-     * @return  string
+     * @return string
      */
     public function getType()
     {
@@ -61,84 +78,61 @@ class StepNode extends AbstractNode
     /**
      * Sets step text.
      *
-     * @param   string  $text
+     * @param string $text Step text
      */
     public function setText($text)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step text in frozen feature.');
+        }
+
         $this->text = $text;
     }
 
     /**
-     * Returns untokenized step text.
+     * Returns step text.
      *
-     * @return  string
+     * @return string
      */
-    public function getCleanText()
+    public function getText()
     {
         return $this->text;
     }
 
     /**
-     * Returns tokenized step text.
-     *
-     * @see     setTokens
-     * @return  string
-     */
-    public function getText()
-    {
-        $text = $this->text;
-
-        foreach ($this->tokens as $key => $value) {
-            $text = str_replace('<' . $key . '>', $value, $text);
-        }
-
-        return $text;
-    }
-
-    /**
-     * Sets text tokens (replacers).
-     *
-     * @param   array   $tokens     hash of tokens (search => replace, search => replace, ...)
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->tokens = $tokens;
-    }
-
-    /**
-     * Returns tokens (replacers).
-     *
-     * @return  array
-     */
-    public function getTokens()
-    {
-        return $this->tokens;
-    }
-
-    /**
      * Adds argument to step.
      *
-     * @param   Behat\Gherkin\Node\PyStringNode|Behat\Gherkin\Node\TableNode    $argument
+     * @param StepArgumentNodeInterface $argument Step argument
      */
-    public function addArgument($argument)
+    public function addArgument(StepArgumentNodeInterface $argument)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step arguments in frozen feature.');
+        }
+
         $this->arguments[] = $argument;
     }
 
     /**
      * Sets step arguments.
      *
-     * @param   array   $arguments
+     * @param array $arguments Array of arguments
      */
     public function setArguments(array $arguments)
     {
-        $this->arguments = $arguments;
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change step arguments in frozen feature.');
+        }
+
+        foreach ($arguments as $argument) {
+            $this->addArgument($argument);
+        }
     }
 
     /**
      * Checks if step has arguments.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasArguments()
     {
@@ -148,7 +142,7 @@ class StepNode extends AbstractNode
     /**
      * Returns step arguments.
      *
-     * @return  array
+     * @return array
      */
     public function getArguments()
     {
@@ -158,17 +152,21 @@ class StepNode extends AbstractNode
     /**
      * Sets parent node of the step.
      *
-     * @param   Behat\Gherkin\Node\AbstractScenarioNode  $node
+     * @param AbstractScenarioNode $node Parent scenario
      */
     public function setParent(AbstractScenarioNode $node)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to reassign step from frozen feature.');
+        }
+
         $this->parent = $node;
     }
 
     /**
      * Returns parent node of the step.
      *
-     * @return  Behat\Gherkin\Node\AbstractScenarioNode
+     * @return AbstractScenarioNode
      */
     public function getParent()
     {
@@ -178,28 +176,36 @@ class StepNode extends AbstractNode
     /**
      * Returns definition file.
      *
-     * @return  string
+     * @return string
      */
     public function getFile()
     {
-        if (null !== $this->parent) {
-            return $this->parent->getFile();
-        }
-
-        return null;
+        return null !== $this->parent
+             ? $this->parent->getFile()
+             : false;
     }
 
     /**
      * Returns language of the feature.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguage()
     {
-        if (null !== $this->parent) {
-            return $this->parent->getLanguage();
-        }
+        return null !== $this->parent
+             ? $this->parent->getLanguage()
+             : false;
+    }
 
-        return null;
+    /**
+     * Checks whether step has been frozen.
+     *
+     * @return Boolean
+     */
+    public function isFrozen()
+    {
+        return null !== $this->parent
+             ? $this->parent->isFrozen()
+             : false;
     }
 }

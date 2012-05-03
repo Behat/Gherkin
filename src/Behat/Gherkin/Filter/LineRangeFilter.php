@@ -16,7 +16,7 @@ use Behat\Gherkin\Node\FeatureNode,
 /**
  * Filters scenarios by definition line number range.
  *
- * @author     Fabian Kiss <headrevision@gmail.com>
+ * @author Fabian Kiss <headrevision@gmail.com>
  */
 class LineRangeFilter implements FilterInterface
 {
@@ -26,8 +26,8 @@ class LineRangeFilter implements FilterInterface
     /**
      * Initializes filter.
      *
-     * @param   string  $filterMinLine minimum line of a scenario to filter on
-     * @param   string  $filterMaxLine maximum line of a scenario to filter on
+     * @param string $filterMinLine Minimum line of a scenario to filter on
+     * @param string $filterMaxLine Maximum line of a scenario to filter on
      */
     public function __construct($filterMinLine, $filterMaxLine)
     {
@@ -40,7 +40,11 @@ class LineRangeFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if Feature matches specified filter.
+     *
+     * @param FeatureNode $feature Feature instance
+     *
+     * @return Boolean
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
@@ -48,7 +52,11 @@ class LineRangeFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if scenario or outline matches specified filter.
+     *
+     * @param ScenarioNode $scenario Scenario or Outline node instance
+     *
+     * @return Boolean
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {

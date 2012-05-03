@@ -13,9 +13,9 @@ namespace Behat\Gherkin\Node;
 /**
  * Table Argument Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class TableNode
+class TableNode implements StepArgumentNodeInterface
 {
     private $rows = array();
     private $keyword;
@@ -23,7 +23,7 @@ class TableNode
     /**
      * Initializes table.
      *
-     * @param   string  $table  initial table string
+     * @param string $table Initial table string
      */
     public function __construct($table = null)
     {
@@ -37,9 +37,19 @@ class TableNode
     }
 
     /**
+     * Returns new node with replaced outline example row tokens.
+     *
+     * @returns ExampleTableNode
+     */
+    public function createExampleRowStepArgument(array $tokens)
+    {
+        return new ExampleTableNode($this, $tokens);
+    }
+
+    /**
      * Adds a row to the string.
      *
-     * @param   string  $row    columns hash (column1 => value, column2 => value)
+     * @param string|array $row Columns hash (column1 => value, column2 => value) or row string
      */
     public function addRow($row)
     {
@@ -57,7 +67,7 @@ class TableNode
     /**
      * Returns table rows.
      *
-     * @return  array
+     * @return array
      */
     public function getRows()
     {
@@ -65,11 +75,21 @@ class TableNode
     }
 
     /**
+     * Sets table rows.
+     *
+     * @param array $rows
+     */
+    public function setRows(array $rows)
+    {
+        $this->rows = $rows;
+    }
+
+    /**
      * Returns specific row in a table.
      *
-     * @param   integer $rowNum row number
+     * @param integer $rowNum Row number
      *
-     * @return  array           columns hash (column1 => value, column2 => value)
+     * @return array
      */
     public function getRow($rowNum)
     {
@@ -79,9 +99,9 @@ class TableNode
     /**
      * Converts row into delimited string.
      *
-     * @param   integer $rowNum row number
+     * @param integer $rowNum Row number
      *
-     * @return  string
+     * @return string
      */
     public function getRowAsString($rowNum)
     {
@@ -94,25 +114,9 @@ class TableNode
     }
 
     /**
-     * Replaces column value holders with tokens.
-     *
-     * @param   array   $tokens     hash (search => replace)
-     */
-    public function replaceTokens(array $tokens)
-    {
-        foreach ($tokens as $key => $value) {
-            foreach (array_keys($this->rows) as $row) {
-                foreach (array_keys($this->rows[$row]) as $col) {
-                    $this->rows[$row][$col] = str_replace('<'.$key.'>', $value, $this->rows[$row][$col], $count);
-                }
-            }
-        }
-    }
-
-    /**
      * Returns table hash, formed by columns (ColumnHash).
      *
-     * @return  array
+     * @return array
      */
     public function getHash()
     {
@@ -130,7 +134,7 @@ class TableNode
     /**
      * Returns table hash, formed by rows (RowsHash).
      *
-     * @return  array
+     * @return array
      */
     public function getRowsHash()
     {
@@ -147,7 +151,7 @@ class TableNode
     /**
      * Converts table into string
      *
-     * @return  string
+     * @return string
      */
     public function __toString()
     {
@@ -164,11 +168,31 @@ class TableNode
     }
 
     /**
+     * Sets current node definition keyword.
+     *
+     * @param string $keyword Sets table keyword
+     */
+    public function setKeyword($keyword)
+    {
+        $this->keyword = $keyword;
+    }
+
+    /**
+     * Returns current node definition keyword.
+     *
+     * @return string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    /**
      * Returns max length of specific column.
      *
-     * @param   integer $columnNum  column number
+     * @param integer $columnNum Column number
      *
-     * @return  integer
+     * @return integer
      */
     protected function getMaxLengthForColumn($columnNum)
     {
@@ -186,10 +210,10 @@ class TableNode
     /**
      * Pads string right.
      *
-     * @param   string  $text
-     * @param   integer $length
+     * @param string  $text   Text to pad
+     * @param integer $length Lenght
      *
-     * @return  string
+     * @return string
      */
     protected function padRight($text, $length)
     {
@@ -198,25 +222,5 @@ class TableNode
         }
 
         return $text;
-    }
-
-    /**
-     * Sets current node definition keyword.
-     *
-     * @param   string  $keyword
-     */
-    public function setKeyword($keyword)
-    {
-        $this->keyword = $keyword;
-    }
-
-    /**
-     * Returns current node definition keyword.
-     *
-     * @return  string
-     */
-    public function getKeyword()
-    {
-        return $this->keyword;
     }
 }

@@ -16,7 +16,7 @@ use Behat\Gherkin\Node\FeatureNode,
 /**
  * Filters scenarios by feature/scenario name.
  *
- * @author     Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class NameFilter implements FilterInterface
 {
@@ -25,7 +25,7 @@ class NameFilter implements FilterInterface
     /**
      * Initializes filter.
      *
-     * @param   string  $filterStringString name filter string
+     * @param string $filterStringString Name filter string
      */
     public function __construct($filterString)
     {
@@ -33,7 +33,11 @@ class NameFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if Feature matches specified filter.
+     *
+     * @param FeatureNode $feature Feature instance
+     *
+     * @return Boolean
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
@@ -45,7 +49,11 @@ class NameFilter implements FilterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if scenario or outline matches specified filter.
+     *
+     * @param ScenarioNode $scenario Scenario or Outline node instance
+     *
+     * @return Boolean
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {

@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Node;
 /**
  * Abstract Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractNode
 {
@@ -23,7 +23,7 @@ abstract class AbstractNode
     /**
      * Initializes node.
      *
-     * @param   integer $line   line number
+     * @param integer $line Line number
      */
     public function __construct($line = 0)
     {
@@ -33,9 +33,9 @@ abstract class AbstractNode
     /**
      * Accepts specific visitor & visits current node.
      *
-     * @param   Behat\Gherkin\Node\NodeVisitorInterface $visitor
+     * @param NodeVisitorInterface $visitor Node visitor
      *
-     * @return  mixed
+     * @return mixed
      */
     public function accept(NodeVisitorInterface $visitor)
     {
@@ -43,9 +43,9 @@ abstract class AbstractNode
     }
 
     /**
-     * Returns definition line number.
+     * Returns node line number.
      *
-     * @return  integer
+     * @return integer
      */
     public function getLine()
     {
@@ -55,20 +55,31 @@ abstract class AbstractNode
     /**
      * Sets current node definition keyword.
      *
-     * @param   string  $keyword
+     * @param string $keyword Keyword
      */
     public function setKeyword($keyword)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change frozen node keyword.');
+        }
+
         $this->keyword = $keyword;
     }
 
     /**
      * Returns current node definition keyword.
      *
-     * @return  string
+     * @return string
      */
     public function getKeyword()
     {
         return $this->keyword;
     }
+
+    /**
+     * Checks whether node has been frozen.
+     *
+     * @return Boolean
+     */
+    abstract public function isFrozen();
 }

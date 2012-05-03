@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\Gherkin\Node;
+namespace Behat\Gherkin\Exception;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -10,11 +10,5 @@ namespace Behat\Gherkin\Node;
  * file that was distributed with this source code.
  */
 
-/**
- * Background Gherkin AST node.
- *
- * @author Konstantin Kudryashov <ever.zet@gmail.com>
- */
-class BackgroundNode extends AbstractScenarioNode
-{
-}
+class LexerException extends Exception
+{}

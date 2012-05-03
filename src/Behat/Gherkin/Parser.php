@@ -3,6 +3,7 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\ParserException,
+    Behat\Gherkin\Exception\LexerException,
     Behat\Gherkin\Node;
 
 /*
@@ -20,7 +21,7 @@ use Behat\Gherkin\Exception\ParserException,
  * $parser = new Behat\Gherkin\Parser($lexer);
  * $featuresArray = $parser->parse('/path/to/feature.feature');
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Parser
 {
@@ -30,7 +31,7 @@ class Parser
     /**
      * Initializes parser.
      *
-     * @param   Behat\Gherkin\Lexer     $lexer  lexer instance
+     * @param Lexer $lexer Lexer instance
      */
     public function __construct(Lexer $lexer)
     {
@@ -40,17 +41,24 @@ class Parser
     /**
      * Parses input & returns features array.
      *
-     * @param   string          $input  gherkin string document
+     * @param string $input Gherkin string document
      *
-     * @return  array                   array of feature nodes
+     * @return array
      *
-     * @throws  Behat\Gherkin\Exception\ParserException if feature file has more than one language specifier
+     * @throws ParserException
      */
     public function parse($input, $file = null)
     {
         $this->file = $file;
 
-        $this->lexer->setInput($input);
+        try {
+            $this->lexer->setInput($input);
+        } catch (LexerException $e) {
+            throw new ParserException(
+                sprintf('Lexer exception "%s" throwed for file %s', $e->getMessage(), $file)
+            );
+        }
+
         $this->lexer->setLanguage($language = 'en');
         $languageSpecifierLine = null;
 
@@ -93,11 +101,11 @@ class Parser
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param   string  $types  expected type
+     * @param string $types Token type
      *
-     * @return  stdClass
+     * @return stdClass
      *
-     * @throws  Behat\Gherkin\Exception\ParserException if token type is differ from expected one
+     * @throws ParserException if token type is differ from expected one
      */
     protected function expectTokenType($type)
     {
@@ -115,9 +123,9 @@ class Parser
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param   string  $type   type
+     * @param string $type Token type
      *
-     * @return  stdClass
+     * @return stdClass
      */
     protected function acceptTokenType($type)
     {
@@ -129,9 +137,9 @@ class Parser
     /**
      * Returns next token type without real input reading (prediction).
      *
-     * @param   integer     $number number of tokens to predict
+     * @param integer $number Number of tokens to predict
      *
-     * @return  string              predicted token type
+     * @return string
      */
     protected function predictTokenType($number = 1)
     {
@@ -141,7 +149,7 @@ class Parser
     /**
      * Parses current expression & returns Node.
      *
-     * @return  string|Behat\Gherkin\Node\AbstractNode
+     * @return string|AbstractNode
      */
     protected function parseExpression()
     {
@@ -177,7 +185,7 @@ class Parser
     /**
      * Parses feature token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\FeatureNode
+     * @return FeatureNode
      */
     protected function parseFeature()
     {
@@ -211,7 +219,7 @@ class Parser
     /**
      * Parses background token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\BackgroundNode
+     * @return BackgroundNode
      */
     protected function parseBackground()
     {
@@ -235,7 +243,7 @@ class Parser
     /**
      * Parses scenario outline token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\OutlineNode
+     * @return OutlineNode
      */
     protected function parseOutline()
     {
@@ -270,7 +278,7 @@ class Parser
     /**
      * Parses scenario token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\ScenarioNode
+     * @return ScenarioNode
      */
     protected function parseScenario()
     {
@@ -296,7 +304,7 @@ class Parser
     /**
      * Parses step token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\StepNode
+     * @return StepNode
      */
     protected function parseStep()
     {
@@ -321,7 +329,7 @@ class Parser
     /**
      * Parses table token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\TableNode
+     * @return TableNode
      */
     protected function parseTable()
     {
@@ -342,7 +350,7 @@ class Parser
     /**
      * Parses PyString token & returns it's node.
      *
-     * @return  Behat\Gherkin\Node\PyStringNode
+     * @return PyStringNode
      */
     protected function parsePyString()
     {
@@ -362,9 +370,9 @@ class Parser
     /**
      * Parses next text token & returns it's string content.
      *
-     * @param   boolean $skipExtraChars do we need to skip newlines & spaces
+     * @param Boolean $skipExtraChars Do we need to skip newlines & spaces
      *
-     * @return  string
+     * @return string
      */
     protected function parseText($skipExtraChars = true)
     {
@@ -380,7 +388,7 @@ class Parser
     /**
      * Parses next comment token & returns it's string content.
      *
-     * @return  string
+     * @return string
      */
     protected function parseComment()
     {
@@ -392,7 +400,7 @@ class Parser
     /**
      * Parse tags for the feature/scenario/outline node.
      *
-     * @param   Node\AbstractNode $node
+     * @param AbstractNode $node Node with tags
      */
     private function parseNodeTags(Node\AbstractNode $node)
     {
@@ -407,8 +415,8 @@ class Parser
     /**
      * Parse description/title for feature/background/scenario/outline node.
      *
-     * @param   Node\AbstractNode $node
-     * @param   integer           $indentation
+     * @param AbstractNode $node        Node with description
+     * @param integer      $indentation Indentation
      */
     private function parseNodeDescription(Node\AbstractNode $node, $indentation)
     {
@@ -447,7 +455,7 @@ class Parser
     /**
      * Skips newlines & comments in input.
      *
-     * @param   Boolean $skipNL
+     * @param Boolean $skipNL Skip newline?
      */
     private function skipExtraChars()
     {
@@ -456,8 +464,6 @@ class Parser
 
     /**
      * Skips newlines & comments in input.
-     *
-     * @param   Boolean $skipNL
      */
     private function skipComments()
     {

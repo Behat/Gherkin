@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\Gherkin\Loader;
+namespace Behat\Gherkin\Node;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -11,16 +11,16 @@ namespace Behat\Gherkin\Loader;
  */
 
 /**
- * File Loader interface.
+ * Node Visitor Interface.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-interface FileLoaderInterface extends LoaderInterface
+interface StepArgumentNodeInterface
 {
     /**
-     * Sets base features path.
+     * Returns new node with replaced outline example row tokens.
      *
-     * @param string $path Base loader path
+     * @return ExamplePyStringNode
      */
-    function setBasePath($path);
+    function createExampleRowStepArgument(array $tokens);
 }

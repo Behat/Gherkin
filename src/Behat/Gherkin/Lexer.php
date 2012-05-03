@@ -2,7 +2,7 @@
 
 namespace Behat\Gherkin;
 
-use Behat\Gherkin\Exception\Exception,
+use Behat\Gherkin\Exception\LexerException,
     Behat\Gherkin\Keywords\KeywordsInterface;
 
 /*
@@ -16,7 +16,7 @@ use Behat\Gherkin\Exception\Exception,
 /**
  * Gherkin lexer.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class Lexer
 {
@@ -30,7 +30,6 @@ class Lexer
     private $stash           = array();
     private $inPyString      = false;
     private $pyStringSwallow = 0;
-
     private $featureStarted          = false;
     private $allowMultilineArguments = false;
     private $allowSteps              = false;
@@ -38,7 +37,7 @@ class Lexer
     /**
      * Initializes lexer.
      *
-     * @param   Behat\Gherkin\Keywords\KeywordsInterface    $keywords   keywords holder
+     * @param KeywordsInterface $keywords Keywords holder
      */
     public function __construct(KeywordsInterface $keywords)
     {
@@ -48,10 +47,15 @@ class Lexer
     /**
      * Sets lexer input.
      *
-     * @param   string  $input  input string
+     * @param string $input Input string
      */
     public function setInput($input)
     {
+        // try to detect unsupported encoding
+        if ('UTF-8' !== mb_detect_encoding($input, 'UTF-8', true)) {
+            throw new LexerException('Feature file is not in UTF8 encoding');
+        }
+
         $input = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
 
         $this->lines      = explode("\n", $input);
@@ -72,7 +76,7 @@ class Lexer
     /**
      * Sets keywords language.
      *
-     * @param   string  $language
+     * @param string $language Language name
      */
     public function setLanguage($language)
     {
@@ -83,7 +87,7 @@ class Lexer
     /**
      * Returns next token or previously stashed one.
      *
-     * @return  stdClass
+     * @return stdClass
      */
     public function getAdvancedToken()
     {
@@ -93,7 +97,7 @@ class Lexer
     /**
      * Defers token.
      *
-     * @param   stdClass    $token  token to defer
+     * @param stdClass $token Token to defer
      */
     public function deferToken(\stdClass $token)
     {
@@ -104,9 +108,9 @@ class Lexer
     /**
      * Predicts for number of tokens.
      *
-     * @param   integer     $number number of tokens to predict
+     * @param integer $number Number of tokens to predict
      *
-     * @return  stdClass            predicted token
+     * @return stdClass
      */
     public function predictToken($number = 1)
     {
@@ -122,10 +126,10 @@ class Lexer
     /**
      * Constructs token with specified parameters.
      *
-     * @param   string  $type   token type
-     * @param   string  $value  token value
+     * @param string $type  Token type
+     * @param string $value Token value
      *
-     * @return  stdClass        new token object
+     * @return stdClass
      */
     public function takeToken($type, $value = null)
     {
@@ -156,7 +160,7 @@ class Lexer
     /**
      * Returns stashed token or false if hasn't.
      *
-     * @return  stdClass|boolean    token if has stashed, false otherways
+     * @return stdClass|Boolean
      */
     protected function getStashedToken()
     {
@@ -166,7 +170,7 @@ class Lexer
     /**
      * Returns deferred token or false if hasn't.
      *
-     * @return  stdClass|boolean    token if has deferred, false otherways
+     * @return stdClass|Boolean
      */
     protected function getDeferredToken()
     {
@@ -176,7 +180,7 @@ class Lexer
     /**
      * Returns next token from input.
      *
-     * @return  stdClass
+     * @return stdClass
      */
     protected function getNextToken()
     {
@@ -201,10 +205,10 @@ class Lexer
     /**
      * Scans for token with specified regex.
      *
-     * @param   string  $regex  regular expression
-     * @param   string  $type   expected token type
+     * @param string $regex Regular expression
+     * @param string $type  Expected token type
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanInput($regex, $type)
     {
@@ -222,10 +226,10 @@ class Lexer
     /**
      * Scans for token with specified keywords.
      *
-     * @param   string  $keywords   keywords (splitted with |)
-     * @param   string  $type       expected token type
+     * @param string $keywords Keywords (splitted with |)
+     * @param string $type     Expected token type
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanInputForKeywords($keywords, $type)
     {
@@ -262,7 +266,7 @@ class Lexer
     /**
      * Scans EOS from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanEOS()
     {
@@ -276,11 +280,9 @@ class Lexer
     /**
      * Returns keywords for provided type.
      *
-     * @param   string  $type
+     * @param string $type Keyword type
      *
-     * @return  string
-     *
-     * @uses    Behat\Gherkin\Keywords\KeywordsInterface
+     * @return string
      */
     protected function getKeywords($type)
     {
@@ -292,7 +294,7 @@ class Lexer
                 $paded = array();
                 foreach (explode('|', $keywords) as $keyword) {
                     $paded[] = false !== mb_strpos($keyword, '<')
-                        ? mb_substr($keyword, 0, -1)
+                        ? mb_substr($keyword, 0, -1).'\s*'
                         : $keyword.'\s+';
                 }
 
@@ -308,7 +310,7 @@ class Lexer
     /**
      * Scans Feature from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanFeature()
     {
@@ -318,7 +320,7 @@ class Lexer
     /**
      * Scans Background from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanBackground()
     {
@@ -328,7 +330,7 @@ class Lexer
     /**
      * Scans Scenario from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanScenario()
     {
@@ -338,7 +340,7 @@ class Lexer
     /**
      * Scans Scenario Outline from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanOutline()
     {
@@ -348,7 +350,7 @@ class Lexer
     /**
      * Scans Scenario Outline Examples from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanExamples()
     {
@@ -358,7 +360,7 @@ class Lexer
     /**
      * Scans Step from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanStep()
     {
@@ -383,7 +385,7 @@ class Lexer
     /**
      * Scans PyString from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanPyStringOperator()
     {
@@ -407,7 +409,7 @@ class Lexer
     /**
      * Scans PyString content.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanPyStringContent()
     {
@@ -424,7 +426,7 @@ class Lexer
     /**
      * Scans Table Row from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanTableRow()
     {
@@ -452,7 +454,7 @@ class Lexer
     /**
      * Scans Tags from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanTags()
     {
@@ -475,7 +477,7 @@ class Lexer
     /**
      * Scans Language specifier from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanLanguage()
     {
@@ -493,7 +495,7 @@ class Lexer
     /**
      * Scans Comment from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanComment()
     {
@@ -511,7 +513,7 @@ class Lexer
     /**
      * Scans Newline from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanNewline()
     {
@@ -527,7 +529,7 @@ class Lexer
     /**
      * Scans text from input & returns it if found.
      *
-     * @return  stdClass|null
+     * @return stdClass|null
      */
     protected function scanText()
     {

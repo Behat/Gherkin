@@ -13,31 +13,77 @@ namespace Behat\Gherkin\Node;
 /**
  * Abstract Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 abstract class AbstractScenarioNode extends AbstractNode
 {
+    protected $title;
     protected $steps = array();
     protected $feature;
 
     /**
+     * Initializes scenario.
+     *
+     * @param string  $title Scenario title
+     * @param integer $line  Definition line
+     */
+    public function __construct($title = null, $line = 0)
+    {
+        parent::__construct($line);
+
+        $this->title = $title;
+    }
+
+    /**
+     * Sets scenario title.
+     *
+     * @param string $title Scenario title
+     */
+    public function setTitle($title)
+    {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background title in frozen feature.');
+        }
+
+        $this->title = $title;
+    }
+
+    /**
+     * Returns scenario title.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * Adds step to the node.
      *
-     * @param   Behat\Gherkin\Node\StepNode $step
+     * @param StepNode $step Step
      */
     public function addStep(StepNode $step)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background steps in frozen feature.');
+        }
+
         $step->setParent($this);
         $this->steps[] = $step;
     }
 
     /**
-     * Sets steps array.
+     * Sets scenario steps.
      *
-     * @param   array   $steps  array of StepNode
+     * @param array $steps Array of StepNode
      */
     public function setSteps(array $steps)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario/background steps in frozen feature.');
+        }
+
         $this->steps = array();
 
         foreach ($steps as $step) {
@@ -48,7 +94,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Checks if node has steps.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasSteps()
     {
@@ -56,9 +102,9 @@ abstract class AbstractScenarioNode extends AbstractNode
     }
 
     /**
-     * Returns steps array.
+     * Returns scenario steps.
      *
-     * @return  array           array of StepNode
+     * @return array
      */
     public function getSteps()
     {
@@ -68,17 +114,21 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Sets parent feature of the node.
      *
-     * @param   Behat\Gherkin\Node\FeatureNode $feature
+     * @param FeatureNode $feature Feature instance
      */
     public function setFeature(FeatureNode $feature)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to reassign scenario/background in frozen feature.');
+        }
+
         $this->feature = $feature;
     }
 
     /**
      * Returns parent feature of the node.
      *
-     * @return  Behat\Gherkin\Node\FeatureNode
+     * @return FeatureNode
      */
     public function getFeature()
     {
@@ -88,28 +138,36 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns definition file.
      *
-     * @return  string
+     * @return string
      */
     public function getFile()
     {
-        if (null !== $this->feature) {
-            return $this->feature->getFile();
-        }
-
-        return null;
+        return null !== $this->feature
+             ? $this->feature->getFile()
+             : null;
     }
 
     /**
      * Returns language of the feature.
      *
-     * @return  string
+     * @return string
      */
     public function getLanguage()
     {
-        if (null !== $this->feature) {
-            return $this->feature->getLanguage();
-        }
+        return null !== $this->feature
+             ? $this->feature->getLanguage()
+             : null;
+    }
 
-        return null;
+    /**
+     * Checks whether scenario has been frozen.
+     *
+     * @return Boolean
+     */
+    public function isFrozen()
+    {
+        return null !== $this->feature
+             ? $this->feature->isFrozen()
+             : false;
     }
 }

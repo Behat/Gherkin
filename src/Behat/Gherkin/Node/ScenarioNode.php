@@ -13,70 +13,44 @@ namespace Behat\Gherkin\Node;
 /**
  * Scenario Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ScenarioNode extends AbstractScenarioNode
 {
-    private $title;
     private $tags = array();
-
-    /**
-     * Initializes scenario.
-     *
-     * @param   string  $title  scenario title
-     * @param   integer $line   definition line
-     */
-    public function __construct($title = null, $line = 0)
-    {
-        parent::__construct($line);
-
-        $this->title = $title;
-    }
-
-    /**
-     * Sets scenario title.
-     *
-     * @param   string  $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * Returns scenario title.
-     *
-     * @return  string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
 
     /**
      * Sets scenario tags.
      *
-     * @param   array   $tags
+     * @param array $tags Array of tag names
      */
     public function setTags(array $tags)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario tags in frozen feature.');
+        }
+
         $this->tags = $tags;
     }
 
     /**
      * Adds tag to scenario.
      *
-     * @param   string  $tag
+     * @param string $tag Tag name
      */
     public function addTag($tag)
     {
+        if ($this->isFrozen()) {
+            throw new \LogicException('Impossible to change scenario tags in frozen feature.');
+        }
+
         $this->tags[] = $tag;
     }
 
     /**
      * Checks if scenario has tags.
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasTags()
     {
@@ -86,9 +60,9 @@ class ScenarioNode extends AbstractScenarioNode
     /**
      * Checks if scenario has tag.
      *
-     * @param   string  $tag
+     * @param string $tag
      *
-     * @return  boolean
+     * @return Boolean
      */
     public function hasTag($tag)
     {
@@ -98,7 +72,7 @@ class ScenarioNode extends AbstractScenarioNode
     /**
      * Returns scenario tags.
      *
-     * @return  array
+     * @return array
      */
     public function getTags()
     {
@@ -114,7 +88,7 @@ class ScenarioNode extends AbstractScenarioNode
     /**
      * Returns only own tags (without inherited ones).
      *
-     * @return  array
+     * @return array
      */
     public function getOwnTags()
     {

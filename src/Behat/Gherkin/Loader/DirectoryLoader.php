@@ -17,7 +17,7 @@ use Behat\Gherkin\Gherkin;
 /**
  * Directory contents loader.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class DirectoryLoader extends AbstractFileLoader
 {
@@ -26,7 +26,7 @@ class DirectoryLoader extends AbstractFileLoader
     /**
      * Initializes loader.
      *
-     * @param   Behat\Gherkin\Gherkin  $gherkin
+     * @param Gherkin $gherkin Gherkin manager
      */
     public function __construct(Gherkin $gherkin)
     {
@@ -34,7 +34,11 @@ class DirectoryLoader extends AbstractFileLoader
     }
 
     /**
-     * {@inheritdoc}
+     * Checks if current loader supports provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return Boolean
      */
     public function supports($path)
     {
@@ -43,7 +47,11 @@ class DirectoryLoader extends AbstractFileLoader
     }
 
     /**
-     * {@inheritdoc}
+     * Loads features from provided resource.
+     *
+     * @param mixed $resource Resource to load
+     *
+     * @return array
      */
     public function load($path)
     {

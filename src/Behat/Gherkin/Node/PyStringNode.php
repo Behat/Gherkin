@@ -13,16 +13,16 @@ namespace Behat\Gherkin\Node;
 /**
  * PyString Argument Gherkin AST node.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class PyStringNode
+class PyStringNode implements StepArgumentNodeInterface
 {
     private $lines = array();
 
     /**
      * Initializes PyString.
      *
-     * @param   string  $string         initial string
+     * @param string $string Initial string
      */
     public function __construct($string = null)
     {
@@ -33,23 +33,19 @@ class PyStringNode
     }
 
     /**
-     * Replaces PyString holders with tokens.
+     * Returns new PyString node with replaced outline example row tokens.
      *
-     * @param   array   $tokens     hash (search => replace)
+     * @return ExamplePyStringNode
      */
-    public function replaceTokens(array $tokens)
+    public function createExampleRowStepArgument(array $tokens)
     {
-        foreach ($tokens as $key => $value) {
-            foreach (array_keys($this->lines) as $line) {
-                $this->lines[$line] = str_replace('<' . $key . '>', $value, $this->lines[$line], $count);
-            }
-        }
+        return new ExamplePyStringNode($this, $tokens);
     }
 
     /**
      * Adds a line to the PyString.
      *
-     * @param   string  $line
+     * @param string $line Line of text
      */
     public function addLine($line)
     {
@@ -57,9 +53,19 @@ class PyStringNode
     }
 
     /**
+     * Sets PyString lines.
+     *
+     * @param array $lines Array of text lines
+     */
+    public function setLines(array $lines)
+    {
+        $this->lines = $lines;
+    }
+
+    /**
      * Returns PyString lines.
      *
-     * @return  array
+     * @return array
      */
     public function getLines()
     {
@@ -69,7 +75,7 @@ class PyStringNode
     /**
      * Returns raw string.
      *
-     * @return  string
+     * @return string
      */
     public function getRaw()
     {
@@ -79,7 +85,7 @@ class PyStringNode
     /**
      * Converts PyString into string.
      *
-     * @return  string
+     * @return string
      */
     public function __toString()
     {
