@@ -1,3 +1,11 @@
+2.2.0 / 2012-05-03
+==================
+
+  * Features freeze after parsing
+  * Implemented GherkinDumper (@Halleck45)
+  * Synced i18n with Cucumber
+  * Updated inline documentation
+
 2.1.1 / 2012-03-09
 ==================
 
