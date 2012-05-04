@@ -182,7 +182,7 @@ class StepNode extends AbstractNode
     {
         return null !== $this->parent
              ? $this->parent->getFile()
-             : false;
+             : null;
     }
 
     /**
@@ -194,7 +194,7 @@ class StepNode extends AbstractNode
     {
         return null !== $this->parent
              ? $this->parent->getLanguage()
-             : false;
+             : null;
     }
 
     /**
