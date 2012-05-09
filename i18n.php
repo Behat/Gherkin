@@ -29,6 +29,21 @@
     'and' => 'و',
     'but' => 'لكن',
   ),
+  'bm' => 
+  array (
+    'name' => 'Malay',
+    'native' => 'Bahasa Melayu',
+    'feature' => 'Fungsi',
+    'background' => 'Latar Belakang',
+    'scenario' => 'Senario',
+    'scenario_outline' => 'Menggariskan Senario',
+    'examples' => 'Contoh',
+    'given' => 'Bagi',
+    'when' => 'Apabila',
+    'then' => 'Kemudian',
+    'and' => 'Dan',
+    'but' => 'Tetapi',
+  ),
   'bg' => 
   array (
     'name' => 'Bulgarian',
