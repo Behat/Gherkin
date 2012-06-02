@@ -27,7 +27,7 @@ interface FilterInterface
      *
      * @return Boolean
      */
-    function isFeatureMatch(FeatureNode $feature);
+    public function isFeatureMatch(FeatureNode $feature);
 
     /**
      * Checks if scenario or outline matches specified filter.
@@ -36,5 +36,5 @@ interface FilterInterface
      *
      * @return Boolean
      */
-    function isScenarioMatch(ScenarioNode $scenario);
+    public function isScenarioMatch(ScenarioNode $scenario);
 }

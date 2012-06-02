@@ -22,5 +22,5 @@ interface StepArgumentNodeInterface
      *
      * @return ExamplePyStringNode
      */
-    function createExampleRowStepArgument(array $tokens);
+    public function createExampleRowStepArgument(array $tokens);
 }

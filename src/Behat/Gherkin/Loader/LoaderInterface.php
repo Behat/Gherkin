@@ -24,7 +24,7 @@ interface LoaderInterface
      *
      * @return Boolean
      */
-    function supports($resource);
+    public function supports($resource);
 
     /**
      * Loads features from provided resource.
@@ -33,5 +33,5 @@ interface LoaderInterface
      *
      * @return array
      */
-    function load($resource);
+    public function load($resource);
 }

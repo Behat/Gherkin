@@ -22,5 +22,5 @@ interface FileLoaderInterface extends LoaderInterface
      *
      * @param string $path Base loader path
      */
-    function setBasePath($path);
+    public function setBasePath($path);
 }

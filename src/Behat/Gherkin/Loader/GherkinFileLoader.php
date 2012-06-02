@@ -2,8 +2,6 @@
 
 namespace Behat\Gherkin\Loader;
 
-use Symfony\Component\Finder\Finder;
-
 use Behat\Gherkin\Parser,
     Behat\Gherkin\Cache\CacheInterface;
 

@@ -27,7 +27,7 @@ interface CacheInterface
      *
      * @return Boolean
      */
-    function isFresh($path, $timestamp);
+    public function isFresh($path, $timestamp);
 
     /**
      * Reads feature cache from path.
@@ -36,7 +36,7 @@ interface CacheInterface
      *
      * @return FeatureNode
      */
-    function read($path);
+    public function read($path);
 
     /**
      * Caches feature node.
@@ -44,5 +44,5 @@ interface CacheInterface
      * @param string      $path    Feature path
      * @param FeatureNode $feature Feature instance
      */
-    function write($path, FeatureNode $feature);
+    public function write($path, FeatureNode $feature);
 }

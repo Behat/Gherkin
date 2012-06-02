@@ -22,82 +22,82 @@ interface KeywordsInterface
      *
      * @param string $language Language name
      */
-    function setLanguage($language);
+    public function setLanguage($language);
 
     /**
      * Returns Feature keywords (splitted by "|").
      *
      * @return string
      */
-    function getFeatureKeywords();
+    public function getFeatureKeywords();
 
     /**
      * Returns Background keywords (splitted by "|").
      *
      * @return string
      */
-    function getBackgroundKeywords();
+    public function getBackgroundKeywords();
 
     /**
      * Returns Scenario keywords (splitted by "|").
      *
      * @return string
      */
-    function getScenarioKeywords();
+    public function getScenarioKeywords();
 
     /**
      * Returns Scenario Outline keywords (splitted by "|").
      *
      * @return string
      */
-    function getOutlineKeywords();
+    public function getOutlineKeywords();
 
     /**
      * Returns Examples keywords (splitted by "|").
      *
      * @return string
      */
-    function getExamplesKeywords();
+    public function getExamplesKeywords();
 
     /**
      * Returns Given keywords (splitted by "|").
      *
      * @return string
      */
-    function getGivenKeywords();
+    public function getGivenKeywords();
 
     /**
      * Returns When keywords (splitted by "|").
      *
      * @return string
      */
-    function getWhenKeywords();
+    public function getWhenKeywords();
 
     /**
      * Returns Then keywords (splitted by "|").
      *
      * @return string
      */
-    function getThenKeywords();
+    public function getThenKeywords();
 
     /**
      * Returns And keywords (splitted by "|").
      *
      * @return string
      */
-    function getAndKeywords();
+    public function getAndKeywords();
 
     /**
      * Returns But keywords (splitted by "|").
      *
      * @return string
      */
-    function getButKeywords();
+    public function getButKeywords();
 
     /**
      * Returns all step keywords (splitted by "|").
      *
      * @return string
      */
-    function getStepKeywords();
+    public function getStepKeywords();
 }
