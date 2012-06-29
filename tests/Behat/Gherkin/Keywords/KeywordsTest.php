@@ -100,14 +100,13 @@ DESC
                     );
                     $line += 1;
 
-                    $outline->setExamples($examples = new Node\TableNode(<<<TABLE
-                      | agent1 | agent2 |
-                      | D      | M      |
-TABLE
-                    ));
+                    $examples = new Node\TableNode();
+                    $examples->addRow('                      | agent1 | agent2 |', ++$line);
+                    $examples->addRow('                      | D      | M      |', ++$line);
+                    $outline->setExamples($examples);
                     $keywords = explode('|', $i18nKeywords['examples']);
                     $examples->setKeyword($keywords[0]);
-                    $line += 3;
+                    $line += 1;
 
                     $feature->addScenario($outline);
                     $line += 1;

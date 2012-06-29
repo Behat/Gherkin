@@ -229,8 +229,8 @@ class ArrayLoader implements LoaderInterface
     {
         $table = new Node\TableNode();
 
-        foreach ($hash as $row) {
-            $table->addRow($row);
+        foreach ($hash as $line => $row) {
+            $table->addRow($row, $line);
         }
 
         return $table;

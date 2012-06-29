@@ -335,12 +335,12 @@ class Parser
     {
         $token  = $this->expectTokenType('TableRow');
         $node   = new Node\TableNode();
-        $node->addRow($token->columns);
+        $node->addRow($token->columns, $token->line);
         $this->skipExtraChars();
 
         while ('TableRow' === $this->predictTokenType()) {
             $token = $this->expectTokenType('TableRow');
-            $node->addRow($token->columns);
+            $node->addRow($token->columns, $token->line);
             $this->skipExtraChars();
         }
 

@@ -23,8 +23,8 @@ feature:
         - { type: 'Given',  text: '<state>',  line: 10 }
 
       examples:
-        - [state]
-        - [missing]
+        12: [state]
+        13: [missing]
 
     -
       type:     scenario

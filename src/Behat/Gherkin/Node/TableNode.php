@@ -18,6 +18,7 @@ namespace Behat\Gherkin\Node;
 class TableNode implements StepArgumentNodeInterface
 {
     private $rows = array();
+    private $rowLines = array();
     private $keyword;
 
     /**
@@ -49,10 +50,15 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Adds a row to the string.
      *
-     * @param string|array $row Columns hash (column1 => value, column2 => value) or row string
+     * @param string|array $row  Columns hash (column1 => value, column2 => value) or row string
+     * @param null|integer $line Row line number
      */
-    public function addRow($row)
+    public function addRow($row, $line = null)
     {
+        if (null !== $line) {
+            $this->rowLines[] = $line;
+        }
+
         if (is_array($row)) {
             $this->rows[] = $row;
         } else {
@@ -184,6 +190,26 @@ class TableNode implements StepArgumentNodeInterface
     public function getKeyword()
     {
         return $this->keyword;
+    }
+
+    /**
+     * Returns line numbers for rows.
+     *
+     * @return array
+     */
+    public function getRowLines()
+    {
+        return $this->rowLines;
+    }
+
+    /**
+     * Returns table start line number.
+     *
+     * @return integer
+     */
+    public function getLine()
+    {
+        return count($this->rowLines) ? $this->rowLines[0] : 0;
     }
 
     /**

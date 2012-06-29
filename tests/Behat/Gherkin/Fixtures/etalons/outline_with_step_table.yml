@@ -18,11 +18,11 @@ feature:
             -
               type:   table
               rows:
-                - [ name, email, role_assignments, group_memberships ]
-                - [ Jane, jane@fmail.com, <role>, Sales (manager) ]
-                - [ Max, max@fmail.com, '', Sales (member) ]
-                - [ Carol, carol@fmail.com, '', Sales (member) ]
-                - [ Cat, cat@fmail.com, '', '' ]
+                5: [ name, email, role_assignments, group_memberships ]
+                6: [ Jane, jane@fmail.com, <role>, Sales (manager) ]
+                7: [ Max, max@fmail.com, '', Sales (member) ]
+                8: [ Carol, carol@fmail.com, '', Sales (member) ]
+                9: [ Cat, cat@fmail.com, '', '' ]
       examples:
-        - [ role ]
-        - [ HUMAN RESOURCE ]
+        12: [ role ]
+        13: [ HUMAN RESOURCE ]
