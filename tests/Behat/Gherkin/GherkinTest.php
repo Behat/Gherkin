@@ -41,7 +41,21 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
             ->with($scenario)
             ->will($this->returnValue(true));
 
-        $features = $gherkin->load($resource);
+        $customFilter1 = $this->getCustomFilterMock();
+        $customFilter1
+            ->expects($this->once())
+            ->method('isScenarioMatch')
+            ->with($scenario)
+            ->will($this->returnValue(true));
+
+        $customFilter2 = $this->getCustomFilterMock();
+        $customFilter2
+            ->expects($this->once())
+            ->method('isScenarioMatch')
+            ->with($scenario)
+            ->will($this->returnValue(true));
+
+        $features = $gherkin->load($resource, array($customFilter1, $customFilter2));
         $this->assertEquals(1, count($features));
 
         $scenarios = $features[0]->getScenarios();
@@ -73,6 +87,13 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
     protected function getLoaderMock()
     {
         return $this->getMockBuilder('Behat\Gherkin\Loader\GherkinFileLoader')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    protected function getCustomFilterMock()
+    {
+        return $this->getMockBuilder('Behat\Gherkin\Filter\FilterInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }

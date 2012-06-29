@@ -72,12 +72,15 @@ class Gherkin
      * Loads & filters resource with added loaders.
      *
      * @param mixed $resource Resource to load
+     * @param array $filters  Additional filters
      *
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
-    public function load($resource)
+    public function load($resource, array $filters = array())
     {
-        $filters = $this->filters;
+        $filters = array_merge($this->filters, $filters);
 
         $matches = array();
         if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
