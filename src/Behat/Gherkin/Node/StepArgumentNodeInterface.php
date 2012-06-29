@@ -20,6 +20,8 @@ interface StepArgumentNodeInterface
     /**
      * Returns new node with replaced outline example row tokens.
      *
+     * @param array $tokens
+     *
      * @return ExamplePyStringNode
      */
     public function createExampleRowStepArgument(array $tokens);
