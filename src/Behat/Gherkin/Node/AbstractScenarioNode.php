@@ -38,6 +38,8 @@ abstract class AbstractScenarioNode extends AbstractNode
      * Sets scenario title.
      *
      * @param string $title Scenario title
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setTitle($title)
     {
@@ -62,6 +64,8 @@ abstract class AbstractScenarioNode extends AbstractNode
      * Adds step to the node.
      *
      * @param StepNode $step Step
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function addStep(StepNode $step)
     {
@@ -77,6 +81,8 @@ abstract class AbstractScenarioNode extends AbstractNode
      * Sets scenario steps.
      *
      * @param array $steps Array of StepNode
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setSteps(array $steps)
     {
@@ -115,6 +121,8 @@ abstract class AbstractScenarioNode extends AbstractNode
      * Sets parent feature of the node.
      *
      * @param FeatureNode $feature Feature instance
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setFeature(FeatureNode $feature)
     {

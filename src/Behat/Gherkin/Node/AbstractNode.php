@@ -56,6 +56,8 @@ abstract class AbstractNode
      * Sets current node definition keyword.
      *
      * @param string $keyword Keyword
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setKeyword($keyword)
     {

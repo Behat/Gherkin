@@ -24,7 +24,7 @@ class OutlineNode extends ScenarioNode
      *
      * @param TableNode $examples Examples table
      *
-     * @throws \LogicException
+     * @throws \LogicException if feature is frozen
      */
     public function setExamples(TableNode $examples)
     {

@@ -47,6 +47,8 @@ class FeatureNode extends AbstractNode
      * Sets feature title.
      *
      * @param string $title Feature title
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setTitle($title)
     {
@@ -71,6 +73,8 @@ class FeatureNode extends AbstractNode
      * Sets feature description (narrative).
      *
      * @param string $description Feature description
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setDescription($description)
     {
@@ -95,6 +99,8 @@ class FeatureNode extends AbstractNode
      * Sets language of the feature.
      *
      * @param string $language Langauge name
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setLanguage($language)
     {
@@ -119,6 +125,8 @@ class FeatureNode extends AbstractNode
      * Sets feature background.
      *
      * @param BackgroundNode $background Background instance
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setBackground(BackgroundNode $background)
     {
@@ -154,6 +162,8 @@ class FeatureNode extends AbstractNode
      * Adds scenario or outline to the feature.
      *
      * @param ScenarioNode $scenario Scenario instance
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function addScenario(ScenarioNode $scenario)
     {
@@ -169,6 +179,8 @@ class FeatureNode extends AbstractNode
      * Sets scenarios & outlines to the feature.
      *
      * @param array $scenarios Array of ScenariosNode's or OutlineNode's
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setScenarios(array $scenarios)
     {
@@ -207,6 +219,8 @@ class FeatureNode extends AbstractNode
      * Sets feature tags.
      *
      * @param array $tags Array of tags
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setTags(array $tags)
     {
@@ -221,6 +235,8 @@ class FeatureNode extends AbstractNode
      * Adds tag to the feature.
      *
      * @param string $tag Tag name
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function addTag($tag)
     {
@@ -277,6 +293,8 @@ class FeatureNode extends AbstractNode
      * Sets feature filename.
      *
      * @param string $path Sets feature file
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setFile($path)
     {

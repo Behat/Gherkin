@@ -23,6 +23,8 @@ class ScenarioNode extends AbstractScenarioNode
      * Sets scenario tags.
      *
      * @param array $tags Array of tag names
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setTags(array $tags)
     {
@@ -37,6 +39,8 @@ class ScenarioNode extends AbstractScenarioNode
      * Adds tag to scenario.
      *
      * @param string $tag Tag name
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function addTag($tag)
     {
