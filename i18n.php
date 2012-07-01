@@ -3,7 +3,7 @@
   array (
     'name' => 'English',
     'native' => 'English',
-    'feature' => 'Feature',
+    'feature' => 'Feature|Business Need|Ability',
     'background' => 'Background',
     'scenario' => 'Scenario',
     'scenario_outline' => 'Scenario Outline|Scenario Template',
@@ -28,6 +28,21 @@
     'then' => 'اذاً|ثم',
     'and' => 'و',
     'but' => 'لكن',
+  ),
+  'bm' => 
+  array (
+    'name' => 'Malay',
+    'native' => 'Bahasa Melayu',
+    'feature' => 'Fungsi',
+    'background' => 'Latar Belakang',
+    'scenario' => 'Senario',
+    'scenario_outline' => 'Menggariskan Senario',
+    'examples' => 'Contoh',
+    'given' => 'Bagi',
+    'when' => 'Apabila',
+    'then' => 'Kemudian',
+    'and' => 'Dan',
+    'but' => 'Tetapi',
   ),
   'bg' => 
   array (
@@ -468,13 +483,13 @@
   array (
     'name' => 'Polish',
     'native' => 'polski',
-    'feature' => 'Właściwość',
+    'feature' => 'Właściwość|Funkcja|Aspekt|Potrzeba biznesowa',
     'background' => 'Założenia',
     'scenario' => 'Scenariusz',
     'scenario_outline' => 'Szablon scenariusza',
     'examples' => 'Przykłady',
     'given' => 'Zakładając|Mając',
-    'when' => 'Jeżeli|Jeśli',
+    'when' => 'Jeżeli|Jeśli|Gdy|Kiedy',
     'then' => 'Wtedy',
     'and' => 'Oraz|I',
     'but' => 'Ale',

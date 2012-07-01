@@ -18,6 +18,7 @@ namespace Behat\Gherkin\Node;
 class TableNode implements StepArgumentNodeInterface
 {
     private $rows = array();
+    private $rowLines = array();
     private $keyword;
 
     /**
@@ -49,9 +50,10 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Adds a row to the string.
      *
-     * @param string|array $row Columns hash (column1 => value, column2 => value) or row string
+     * @param string|array $row  Columns hash (column1 => value, column2 => value) or row string
+     * @param null|integer $line Row line number
      */
-    public function addRow($row)
+    public function addRow($row, $line = null)
     {
         if (is_array($row)) {
             $this->rows[] = $row;
@@ -62,6 +64,8 @@ class TableNode implements StepArgumentNodeInterface
                 return preg_replace("/^\s*|\s*$/", '', $item);
             }, explode('|', $row));
         }
+
+        $this->rowLines[count($this->rows) - 1] = $line;
     }
 
     /**
@@ -82,6 +86,7 @@ class TableNode implements StepArgumentNodeInterface
     public function setRows(array $rows)
     {
         $this->rows = $rows;
+        $this->rowLines = array();
     }
 
     /**
@@ -139,32 +144,12 @@ class TableNode implements StepArgumentNodeInterface
     public function getRowsHash()
     {
         $hash = array();
-        $rows = $this->getRows();
 
         foreach ($this->getRows() as $row) {
             $hash[$row[0]] = $row[1];
         }
 
         return $hash;
-    }
-
-    /**
-     * Converts table into string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        $string = '';
-
-        for ($i = 0; $i < count($this->getRows()); $i++) {
-            if ('' !== $string) {
-                $string .= "\n";
-            }
-            $string .= $this->getRowAsString($i);
-        }
-
-        return $string;
     }
 
     /**
@@ -185,6 +170,56 @@ class TableNode implements StepArgumentNodeInterface
     public function getKeyword()
     {
         return $this->keyword;
+    }
+
+    /**
+     * Returns numerated table lines.
+     * Line numbers are keys, lines are values.
+     *
+     * @return array
+     */
+    public function getNumeratedRows()
+    {
+        return array_combine($this->rowLines, $this->rows);
+    }
+
+    /**
+     * Returns line numbers for rows.
+     *
+     * @return array
+     */
+    public function getRowLines()
+    {
+        return $this->rowLines;
+    }
+
+    /**
+     * Returns table start line number.
+     *
+     * @return integer
+     */
+    public function getLine()
+    {
+        return count($this->rowLines) ? $this->rowLines[0] : 0;
+    }
+
+    /**
+     * Converts table into string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = '';
+
+        for ($i = 0; $i < count($this->getRows()); $i++) {
+            if ('' !== $string) {
+                $string .= "\n";
+            }
+            $string .= $this->getRowAsString($i);
+        }
+
+        return $string;
     }
 
     /**

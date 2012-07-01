@@ -22,7 +22,10 @@ class ExampleTableNode extends TableNode
     /**
      * Initializes table.
      *
-     * @param string $table Initial table string
+     * @param TableNode $cleanTable
+     * @param array     $tokens
+     *
+     * @internal param string $table Initial table string
      */
     public function __construct(TableNode $cleanTable, array $tokens)
     {

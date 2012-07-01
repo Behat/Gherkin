@@ -3,7 +3,8 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
+    Behat\Gherkin\Node\ScenarioNode,
+    Behat\Gherkin\Node\OutlineNode;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -53,6 +54,47 @@ class LineFilter implements FilterInterface
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {
-        return $this->filterLine === $scenario->getLine();
+        if ($this->filterLine === $scenario->getLine()) {
+            return true;
+        }
+
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            return $this->filterLine === $scenario->getLine()
+                || in_array($this->filterLine, $scenario->getExamples()->getRowLines());
+        }
+
+        return false;
+    }
+
+    /**
+     * Filters feature according to the filter.
+     *
+     * @param FeatureNode $feature
+     */
+    public function filterFeature(FeatureNode $feature)
+    {
+        $scenarios = $feature->getScenarios();
+        foreach ($scenarios as $i => $scenario) {
+            if (!$this->isScenarioMatch($scenario)) {
+                unset($scenarios[$i]);
+                continue;
+            }
+
+            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+                $lines = $scenario->getExamples()->getRowLines();
+                $rows  = $scenario->getExamples()->getNumeratedRows();
+
+                if (current($lines) <= $this->filterLine && end($lines) >= $this->filterLine) {
+                    $scenario->getExamples()->setRows(array());
+                    $scenario->getExamples()->addRow($rows[$lines[0]], $lines[0]);
+
+                    if ($lines[0] !== $this->filterLine) {
+                        $scenario->getExamples()->addRow($rows[$this->filterLine], $this->filterLine);
+                    }
+                }
+            }
+        }
+
+        $feature->setScenarios($scenarios);
     }
 }

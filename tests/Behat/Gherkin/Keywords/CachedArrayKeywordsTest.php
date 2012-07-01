@@ -18,6 +18,7 @@ class CachedArrayKeywordsTest extends KeywordsTest
     {
         return include(__DIR__.'/../../../../i18n.php');
     }
+
     protected function addSteps(Node\AbstractScenarioNode $scenario, $keywords, $text, $line)
     {
         foreach (explode('|', $keywords) as $keyword) {

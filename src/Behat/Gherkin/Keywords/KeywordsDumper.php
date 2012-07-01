@@ -101,7 +101,7 @@ class KeywordsDumper
      * @param string  $keyword Item keyword
      * @param Boolean $short   Dump short version?
      *
-     * @return  string
+     * @return string
      */
     protected function dumpFeature($keyword, $short = true)
     {

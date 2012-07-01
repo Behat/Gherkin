@@ -37,8 +37,8 @@ feature:
       steps:
         - { type: 'Given',  text: '<state> without a table',  line: 28 }
       examples:
-        - [state]
-        - [passing]
+        34: [state]
+        35: [passing]
 
     -
       type:     outline
@@ -47,8 +47,8 @@ feature:
       steps:
         - { type: 'Given',  text: '<state> without a table',  line: 40 }
       examples:
-        - [state]
-        - [passing]
+        45: [state]
+        46: [passing]
     -
       type:     outline
       title:    |-
@@ -61,5 +61,5 @@ feature:
       steps:
         - { type: 'Given',  text: '<state> without a table',  line: 55 }
       examples:
-        - [state]
-        - [passing]
+        60: [state]
+        61: [passing]

@@ -58,7 +58,7 @@ class DirectoryLoader extends AbstractFileLoader
         $path = $this->findAbsolutePath($path);
 
         $finder     = new Finder();
-        $iterator   = $finder->files()->in($path);
+        $iterator   = $finder->files()->sortByName()->in($path);
         $features   = array();
 
         foreach ($iterator as $path) {

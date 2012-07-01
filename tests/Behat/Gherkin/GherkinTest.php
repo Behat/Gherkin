@@ -10,6 +10,9 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoader()
     {
+        $customFilter1 = $this->getCustomFilterMock();
+        $customFilter2 = $this->getCustomFilterMock();
+
         $gherkin = new Gherkin();
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
@@ -29,20 +32,27 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
             ->with($resource)
             ->will($this->returnValue(array($feature)));
 
+        $filterFeature = clone $feature;
         $nameFilter
             ->expects($this->once())
-            ->method('isScenarioMatch')
-            ->with($scenario)
-            ->will($this->returnValue(true));
-
+            ->method('filterFeature')
+            ->with($filterFeature);
         $tagFilter
             ->expects($this->once())
-            ->method('isScenarioMatch')
-            ->with($scenario)
-            ->will($this->returnValue(true));
+            ->method('filterFeature')
+            ->with($filterFeature);
+        $customFilter1
+            ->expects($this->once())
+            ->method('filterFeature')
+            ->with($filterFeature);
+        $customFilter2
+            ->expects($this->once())
+            ->method('filterFeature')
+            ->with($filterFeature);
 
-        $features = $gherkin->load($resource);
+        $features = $gherkin->load($resource, array($customFilter1, $customFilter2));
         $this->assertEquals(1, count($features));
+        $this->assertTrue($feature->isFrozen());
 
         $scenarios = $features[0]->getScenarios();
         $this->assertEquals(1, count($scenarios));
@@ -73,6 +83,13 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
     protected function getLoaderMock()
     {
         return $this->getMockBuilder('Behat\Gherkin\Loader\GherkinFileLoader')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    protected function getCustomFilterMock()
+    {
+        return $this->getMockBuilder('Behat\Gherkin\Filter\FilterInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }

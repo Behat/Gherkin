@@ -115,6 +115,7 @@ class GherkinDumper
         foreach ($scenarios as $scenario) {
             $content .= PHP_EOL . $this->dumpScenario($scenario);
         }
+
         return $content;
     }
 
@@ -132,6 +133,7 @@ class GherkinDumper
         if (preg_match('!(^.*)\|!', $keyword, $matches)) {
             $keyword = $matches[1];
         }
+
         return $this->dumpIndent($indent) . $keyword . ':'
             . ((strlen($text) > 0) ? ' ' . ltrim($this->dumpText($text, $indent + 1)) : '')
         ;
@@ -166,14 +168,15 @@ class GherkinDumper
             $examples = $scenario->getExamples();
             $content .= $this->dumpTableNode($examples, 2);
         }
+
         return $content;
     }
 
     /**
      * Dumps table node.
      *
-     * @param TableNode $tableNode Table node
-     * @param integer   $indent    Indentation
+     * @param  TableNode $tableNode Table node
+     * @param  integer   $indent    Indentation
      * @return string
      */
     public function dumpTableNode(TableNode $tableNode, $indent = 0)
@@ -184,13 +187,14 @@ class GherkinDumper
             $content .= PHP_EOL . $this->dumpIndent($indent)
                 . $tableNode->getRowAsString($i);
         }
+
         return $content;
     }
 
     /**
      * Dumps indentation.
      *
-     * @param  integer $indent Indentation
+     * @param integer $indent Indentation
      *
      * @return string
      */
@@ -262,6 +266,7 @@ class GherkinDumper
         if (empty($tags)) {
             return '';
         }
+
         return $this->dumpIndent($indent) . '@' . ltrim(implode(' @', $tags));
     }
 

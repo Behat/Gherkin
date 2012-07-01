@@ -72,12 +72,15 @@ class Gherkin
      * Loads & filters resource with added loaders.
      *
      * @param mixed $resource Resource to load
+     * @param array $filters  Additional filters
      *
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
-    public function load($resource)
+    public function load($resource, array $filters = array())
     {
-        $filters = $this->filters;
+        $filters = array_merge($this->filters, $filters);
 
         $matches = array();
         if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
@@ -95,19 +98,10 @@ class Gherkin
         }
 
         $features = $loader->load($resource);
-
         foreach ($features as $feature) {
-            $scenarios = $feature->getScenarios();
-            foreach ($scenarios as $i => $scenario) {
-                foreach ($filters as $filter) {
-                    if (!$filter->isScenarioMatch($scenario)) {
-                        unset($scenarios[$i]);
-                        break;
-                    }
-                }
+            foreach ($filters as $filter) {
+                $filter->filterFeature($feature);
             }
-
-            $feature->setScenarios($scenarios);
 
             if ($this->freeze) {
                 $feature->freeze();

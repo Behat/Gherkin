@@ -41,6 +41,8 @@ class StepNode extends AbstractNode
      * Returns new example step, initialized with values from specific row.
      *
      * @return ExampleStepNode
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function createExampleRowStep(array $tokens)
     {
@@ -55,6 +57,8 @@ class StepNode extends AbstractNode
      * Sets step type.
      *
      * @param string $type Step type (Given|When|Then|And etc)
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setType($type)
     {
@@ -79,6 +83,8 @@ class StepNode extends AbstractNode
      * Sets step text.
      *
      * @param string $text Step text
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setText($text)
     {
@@ -103,6 +109,8 @@ class StepNode extends AbstractNode
      * Adds argument to step.
      *
      * @param StepArgumentNodeInterface $argument Step argument
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function addArgument(StepArgumentNodeInterface $argument)
     {
@@ -117,6 +125,8 @@ class StepNode extends AbstractNode
      * Sets step arguments.
      *
      * @param array $arguments Array of arguments
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setArguments(array $arguments)
     {
@@ -153,6 +163,8 @@ class StepNode extends AbstractNode
      * Sets parent node of the step.
      *
      * @param AbstractScenarioNode $node Parent scenario
+     *
+     * @throws \LogicException if feature is frozen
      */
     public function setParent(AbstractScenarioNode $node)
     {

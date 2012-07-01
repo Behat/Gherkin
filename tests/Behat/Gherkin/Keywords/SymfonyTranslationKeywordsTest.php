@@ -99,15 +99,15 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
                     $examplesKeyword = $examplesKeywords[0];
                     $examples = new Node\TableNode();
                     $examples->setKeyword($examplesKeyword);
-                    $examples->addRow(array('num'));
-                    $examples->addRow(array(2));
+                    $lineNum += 1;
+
+                    $examples->addRow(array('num'), ++$lineNum);
+                    $examples->addRow(array(2), ++$lineNum);
                     $outline->setExamples($examples);
 
                     $gherkin .= "\n$examplesKeyword:";
                     $gherkin .= "\n  | num |";
                     $gherkin .= "\n  | 2   |";
-
-                    $lineNum += 3;
                 }
 
                 $etalon[]   = $feature;

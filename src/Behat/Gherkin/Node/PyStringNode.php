@@ -35,6 +35,8 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Returns new PyString node with replaced outline example row tokens.
      *
+     * @param array $tokens
+     *
      * @return ExamplePyStringNode
      */
     public function createExampleRowStepArgument(array $tokens)

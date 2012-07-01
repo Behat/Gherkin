@@ -22,12 +22,12 @@ feature:
         - { type: 'Then',   text: 'the login request should fail',          line: 16 }
         - { type: 'And',    text: 'I should see the error message "Login or Password incorrect"',  line: 17 }
       examples:
-        - [login, password]
-        - ['', '']
-        - [unknown_user, '']
-        - [known_user, '']
-        - ['', wrong_password]
-        - ['', known_userpass]
-        - [unknown_user, wrong_password]
-        - [unknown_user, known_userpass]
-        - [known_user, wrong_password]
+        20: [login, password]
+        21: ['', '']
+        22: [unknown_user, '']
+        23: [known_user, '']
+        24: ['', wrong_password]
+        25: ['', known_userpass]
+        26: [unknown_user, wrong_password]
+        27: [unknown_user, known_userpass]
+        28: [known_user, wrong_password]

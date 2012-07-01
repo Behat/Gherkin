@@ -32,5 +32,5 @@ feature:
             -
               type:     table
               rows:
-                - [table]
-                - [example]
+                11: [table]
+                12: [example]
