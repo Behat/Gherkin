@@ -19,14 +19,14 @@ use Behat\Gherkin\Node\AbstractNode,
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class TagFilter implements FilterInterface
+class TagFilter extends SimpleFilter
 {
     protected $filterString;
 
     /**
      * Initializes filter.
      *
-     * @param string $filterStringString Name filter string
+     * @param string $filterString Name filter string
      */
     public function __construct($filterString)
     {
@@ -61,6 +61,8 @@ class TagFilter implements FilterInterface
      * Checks that node matches condition.
      *
      * @param AbstractNode $node Node to check
+     *
+     * @return Boolean
      */
     protected function matchesCondition(AbstractNode $node)
     {

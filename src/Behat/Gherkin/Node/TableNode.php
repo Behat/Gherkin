@@ -55,10 +55,6 @@ class TableNode implements StepArgumentNodeInterface
      */
     public function addRow($row, $line = null)
     {
-        if (null !== $line) {
-            $this->rowLines[] = $line;
-        }
-
         if (is_array($row)) {
             $this->rows[] = $row;
         } else {
@@ -68,6 +64,8 @@ class TableNode implements StepArgumentNodeInterface
                 return preg_replace("/^\s*|\s*$/", '', $item);
             }, explode('|', $row));
         }
+
+        $this->rowLines[count($this->rows) - 1] = $line;
     }
 
     /**
@@ -88,6 +86,7 @@ class TableNode implements StepArgumentNodeInterface
     public function setRows(array $rows)
     {
         $this->rows = $rows;
+        $this->rowLines = array();
     }
 
     /**
@@ -154,25 +153,6 @@ class TableNode implements StepArgumentNodeInterface
     }
 
     /**
-     * Converts table into string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        $string = '';
-
-        for ($i = 0; $i < count($this->getRows()); $i++) {
-            if ('' !== $string) {
-                $string .= "\n";
-            }
-            $string .= $this->getRowAsString($i);
-        }
-
-        return $string;
-    }
-
-    /**
      * Sets current node definition keyword.
      *
      * @param string $keyword Sets table keyword
@@ -193,6 +173,17 @@ class TableNode implements StepArgumentNodeInterface
     }
 
     /**
+     * Returns numerated table lines.
+     * Line numbers are keys, lines are values.
+     *
+     * @return array
+     */
+    public function getNumeratedRows()
+    {
+        return array_combine($this->rowLines, $this->rows);
+    }
+
+    /**
      * Returns line numbers for rows.
      *
      * @return array
@@ -210,6 +201,25 @@ class TableNode implements StepArgumentNodeInterface
     public function getLine()
     {
         return count($this->rowLines) ? $this->rowLines[0] : 0;
+    }
+
+    /**
+     * Converts table into string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = '';
+
+        for ($i = 0; $i < count($this->getRows()); $i++) {
+            if ('' !== $string) {
+                $string .= "\n";
+            }
+            $string .= $this->getRowAsString($i);
+        }
+
+        return $string;
     }
 
     /**

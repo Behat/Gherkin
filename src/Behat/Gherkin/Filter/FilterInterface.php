@@ -37,4 +37,11 @@ interface FilterInterface
      * @return Boolean
      */
     public function isScenarioMatch(ScenarioNode $scenario);
+
+    /**
+     * Filters feature according to the filter.
+     *
+     * @param FeatureNode $feature
+     */
+    public function filterFeature(FeatureNode $feature);
 }

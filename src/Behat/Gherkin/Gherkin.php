@@ -98,19 +98,10 @@ class Gherkin
         }
 
         $features = $loader->load($resource);
-
         foreach ($features as $feature) {
-            $scenarios = $feature->getScenarios();
-            foreach ($scenarios as $i => $scenario) {
-                foreach ($filters as $filter) {
-                    if (!$filter->isScenarioMatch($scenario)) {
-                        unset($scenarios[$i]);
-                        break;
-                    }
-                }
+            foreach ($filters as $filter) {
+                $filter->filterFeature($feature);
             }
-
-            $feature->setScenarios($scenarios);
 
             if ($this->freeze) {
                 $feature->freeze();
