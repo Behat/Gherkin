@@ -1,3 +1,10 @@
+2.2.2 / 2012-07-01
+==================
+
+  * Added ability to filter outline scenarios by line and range filters
+  * Synced Gherkin i18n
+  * Refactored table parser to read row line numbers too
+
 2.2.1 / 2012-05-04
 ==================
 
