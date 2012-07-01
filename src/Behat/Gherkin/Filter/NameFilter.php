@@ -18,14 +18,14 @@ use Behat\Gherkin\Node\FeatureNode,
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class NameFilter implements FilterInterface
+class NameFilter extends SimpleFilter
 {
     protected $filterString;
 
     /**
      * Initializes filter.
      *
-     * @param string $filterStringString Name filter string
+     * @param string $filterString Name filter string
      */
     public function __construct($filterString)
     {

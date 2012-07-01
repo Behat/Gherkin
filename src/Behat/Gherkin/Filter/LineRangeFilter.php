@@ -3,7 +3,8 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
+    Behat\Gherkin\Node\ScenarioNode,
+    Behat\Gherkin\Node\OutlineNode;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -60,7 +61,52 @@ class LineRangeFilter implements FilterInterface
      */
     public function isScenarioMatch(ScenarioNode $scenario)
     {
-        return $this->filterMinLine <= $scenario->getLine()
-            && $this->filterMaxLine >= $scenario->getLine();
+        if ($this->filterMinLine <= $scenario->getLine()
+         && $this->filterMaxLine >= $scenario->getLine()) {
+            return true;
+        }
+
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            foreach ($scenario->getExamples()->getRowLines() as $line) {
+                if ($line >= $this->filterMinLine && $line <= $this->filterMaxLine) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Filters feature according to the filter.
+     *
+     * @param FeatureNode $feature
+     */
+    public function filterFeature(FeatureNode $feature)
+    {
+        $scenarios = $feature->getScenarios();
+        foreach ($scenarios as $i => $scenario) {
+            if (!$this->isScenarioMatch($scenario)) {
+                unset($scenarios[$i]);
+                continue;
+            }
+
+            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+                $lines = $scenario->getExamples()->getRowLines();
+                $rows  = $scenario->getExamples()->getNumeratedRows();
+
+                $scenario->getExamples()->setRows(array());
+                $scenario->getExamples()->addRow($rows[$lines[0]], $lines[0]);
+                unset($rows[$lines[0]]);
+
+                foreach ($rows as $line => $row) {
+                    if ($this->filterMinLine <= $line && $this->filterMaxLine >= $line) {
+                        $scenario->getExamples()->addRow($row, $line);
+                    }
+                }
+            }
+        }
+
+        $feature->setScenarios($scenarios);
     }
 }
