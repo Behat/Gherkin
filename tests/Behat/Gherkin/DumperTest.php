@@ -123,9 +123,10 @@ class DumperTest extends \PHPUnit_Framework_TestCase
         $background = new BackgroundNode('my title');
         $background->addStep(new StepNode('Given', 'I use behat'));
 
-        $expected = 'Background: my title
-  Given I use behat';
+        $expected = '
 
+  Background: my title
+    Given I use behat';
         $this->assertEquals($expected, $dumper->dumpBackground($background));
     }
 

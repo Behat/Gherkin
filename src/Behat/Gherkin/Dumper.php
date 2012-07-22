@@ -62,13 +62,13 @@ class Dumper
      */
     public function dumpBackground(BackgroundNode $background)
     {
-        $content = $this->dumpKeyword($this->keywords->getBackgroundKeywords(), $background->getTitle());
+        $content = PHP_EOL . PHP_EOL. $this->dumpKeyword($this->keywords->getBackgroundKeywords(), $background->getTitle(),1);
 
         //
         // Steps
         foreach ($background->getSteps() as $step) {
             $content .=
-                PHP_EOL . $this->dumpIndent(1)
+                PHP_EOL . $this->dumpIndent(2)
                 . $this->dumpStep($step);
         }
 
