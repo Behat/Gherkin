@@ -233,7 +233,15 @@ class Dumper
                 throw new Exception("invalid type given : " . $step->getType());
         }
 
-        return $this->dumpText($kw . ' ' . $step->getText());
+        $outline = '';
+        $args = $step->getArguments();
+        foreach ($args as $argument) {
+            $nbRows = sizeof($argument->getRows());
+            for($i = 0; $i < $nbRows; $i++) {
+                $outline.= PHP_EOL. $this->dumpIndent(3) . $argument->getRowAsString($i);
+            }
+        }
+        return $this->dumpText($kw . ' ' . $step->getText() . $outline);
     }
 
     /**
