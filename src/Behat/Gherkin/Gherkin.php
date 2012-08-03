@@ -94,7 +94,16 @@ class Gherkin
         $loader = $this->resolveLoader($resource);
 
         if (null === $loader) {
-            throw new \InvalidArgumentException(sprintf('Can\'t find loader for resource: %s', $resource));
+            if ($resource) {
+                $message = sprintf('Can\'t find applicable feature loader for: "%s"', $resource);
+            } else {
+                $message = sprintf('Can\'t find applicable feature loader');
+            }
+
+            throw new \InvalidArgumentException(
+                $message."\n".
+                'Maybe you\'ve forgot to create `features/` folder?'
+            );
         }
 
         $features = $loader->load($resource);
