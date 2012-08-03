@@ -1,3 +1,9 @@
+2.2.3 / 2012-08-03
+==================
+
+  * Fixed minor loader bug with empty base path
+  * Synced Gherkin i18n
+
 2.2.2 / 2012-07-01
 ==================
 
