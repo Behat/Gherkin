@@ -73,15 +73,14 @@ class GherkinFileLoader extends AbstractFileLoader
         if ($this->cache) {
              if ($this->cache->isFresh($path, filemtime($path))) {
                  $feature = $this->cache->read($path);
-             } else {
-                 $feature = $this->parseFeature($path);
+             } elseif (null !== $feature = $this->parseFeature($path)) {
                  $this->cache->write($path, $feature);
              }
         } else {
             $feature = $this->parseFeature($path);
         }
 
-        return array($feature);
+        return null !== $feature ? array($feature) : array();
     }
 
     /**
