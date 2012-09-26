@@ -1,3 +1,9 @@
+2.2.5 / 2012-09-26
+==================
+
+  * Fixed issue with loading empty features
+  * Synced Gherkin i18n
+
 2.2.4 / 2012-08-03
 ==================
 

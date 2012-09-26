@@ -1,12 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
-
-use Symfony\Component\Yaml\Yaml;
-
-$yaml  = file_get_contents('https://raw.github.com/cucumber/gherkin/master/lib/gherkin/i18n.yml');
-$array = Yaml::parse($yaml);
+$json  = file_get_contents('https://raw.github.com/cucumber/gherkin/master/lib/gherkin/i18n.json');
+$array = json_decode($json, true);
 
 foreach ($array as $lang => $keywords) {
     foreach (array('given', 'when', 'then', 'and', 'but') as $type) {
