@@ -61,7 +61,7 @@ class ArrayLoader implements LoaderInterface
      * @param array   $hash Feature hash
      * @param integer $line Feature definition line
      *
-     * @return FeatureNode
+     * @return Node\FeatureNode
      */
     protected function loadFeatureHash(array $hash, $line = 0)
     {
@@ -102,7 +102,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param array $hash Background hash
      *
-     * @return BackgroundNode
+     * @return Node\BackgroundNode
      */
     protected function loadBackgroundHash(array $hash)
     {
@@ -128,7 +128,7 @@ class ArrayLoader implements LoaderInterface
      * @param array   $hash Scenario hash
      * @param integer $line Scenario definition line
      *
-     * @return ScenarioNode
+     * @return Node\ScenarioNode
      */
     protected function loadScenarioHash(array $hash, $line = 0)
     {
@@ -157,7 +157,7 @@ class ArrayLoader implements LoaderInterface
      * @param array   $hash Outline hash
      * @param integer $line Outline definition line
      *
-     * @return OutlineNode
+     * @return Node\OutlineNode
      */
     protected function loadOutlineHash(array $hash, $line = 0)
     {
@@ -197,7 +197,7 @@ class ArrayLoader implements LoaderInterface
      * @param array   $hash Step hash
      * @param integer $line Step definition line
      *
-     * @return StepNode
+     * @return Node\StepNode
      */
     protected function loadStepHash(array $hash, $line = 0)
     {
@@ -223,7 +223,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param array $hash Table hash
      *
-     * @return TableNode
+     * @return Node\TableNode
      */
     protected function loadTableHash(array $hash)
     {
@@ -241,7 +241,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param array $hash PyString hash
      *
-     * @return PyStringNode
+     * @return Node\PyStringNode
      */
     protected function loadPyStringHash(array $hash)
     {

@@ -105,7 +105,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Returns Given keywords (splitted by "|").
      *
-     * @return string
+     * @return void
      */
     public function getGivenKeywords()
     {
@@ -114,7 +114,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Returns When keywords (splitted by "|").
      *
-     * @return string
+     * @return void
      */
     public function getWhenKeywords()
     {
@@ -123,7 +123,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Returns Then keywords (splitted by "|").
      *
-     * @return string
+     * @return void
      */
     public function getThenKeywords()
     {
@@ -132,7 +132,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Returns And keywords (splitted by "|").
      *
-     * @return string
+     * @return void
      */
     public function getAndKeywords()
     {
@@ -141,7 +141,7 @@ class SymfonyTranslationKeywords implements KeywordsInterface
     /**
      * Returns But keywords (splitted by "|").
      *
-     * @return string
+     * @return void
      */
     public function getButKeywords()
     {

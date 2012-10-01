@@ -41,7 +41,8 @@ interface FilterInterface
     /**
      * Filters feature according to the filter.
      *
-     * @param FeatureNode $feature
+     * @param  FeatureNode $feature
+     * @return void
      */
     public function filterFeature(FeatureNode $feature);
 }

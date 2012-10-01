@@ -25,9 +25,9 @@ class StepNode extends AbstractNode
     /**
      * Initizalizes step.
      *
-     * @param string  $type Step type
-     * @param string  $text Step text
-     * @param integer $line Definition line
+     * @param string      $type Step type
+     * @param string|null $text Step text
+     * @param integer     $line Definition line
      */
     public function __construct($type, $text = null, $line = 0)
     {
@@ -42,7 +42,8 @@ class StepNode extends AbstractNode
      *
      * @return ExampleStepNode
      *
-     * @throws \LogicException if feature is frozen
+     * @throws \LogicException      if feature is frozen
+     * @param  array<string,string> $tokens
      */
     public function createExampleRowStep(array $tokens)
     {
@@ -98,7 +99,7 @@ class StepNode extends AbstractNode
     /**
      * Returns step text.
      *
-     * @return string
+     * @return string|null
      */
     public function getText()
     {
@@ -152,7 +153,7 @@ class StepNode extends AbstractNode
     /**
      * Returns step arguments.
      *
-     * @return array
+     * @return array<StepArgumentNodeInterface>
      */
     public function getArguments()
     {

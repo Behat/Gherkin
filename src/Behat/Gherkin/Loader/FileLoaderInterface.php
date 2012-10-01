@@ -20,7 +20,8 @@ interface FileLoaderInterface extends LoaderInterface
     /**
      * Sets base features path.
      *
-     * @param string $path Base loader path
+     * @param  string $path Base loader path
+     * @return void
      */
     public function setBasePath($path);
 }

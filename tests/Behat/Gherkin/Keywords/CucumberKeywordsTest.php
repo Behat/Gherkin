@@ -17,7 +17,7 @@ class CucumberKeywordsTest extends KeywordsTest
     /**
      * Returns Keywords instance.
      *
-     * @return KeywordsInterface
+     * @return CucumberKeywords
      */
     protected function getKeywords()
     {
@@ -37,12 +37,12 @@ class CucumberKeywordsTest extends KeywordsTest
     /**
      * Adds steps to the scenario/background/outline.
      *
-     * @param   Node\AbstractScenarioNode $scenario
-     * @param   string                    $keywords
-     * @param   string                    $text
-     * @param   integer                   $line
+     * @param Node\AbstractScenarioNode $scenario
+     * @param string                    $keywords
+     * @param string                    $text
+     * @param integer                   $line
      *
-     * @return  integer
+     * @return integer
      */
     protected function addSteps(Node\AbstractScenarioNode $scenario, $keywords, $text, $line)
     {

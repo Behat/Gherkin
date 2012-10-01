@@ -22,7 +22,7 @@ class PyStringNode implements StepArgumentNodeInterface
     /**
      * Initializes PyString.
      *
-     * @param string $string Initial string
+     * @param string|null $string Initial string
      */
     public function __construct($string = null)
     {

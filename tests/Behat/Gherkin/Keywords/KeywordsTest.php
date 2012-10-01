@@ -136,9 +136,9 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param   string  $language   language name
-     * @param   array   $etalon     etalon features (to test against)
-     * @param   array   $features   array of parsed feature(s)
+     * @param string $language language name
+     * @param array  $etalon   etalon features (to test against)
+     * @param array  $features array of parsed feature(s)
      */
     public function testTranslation($language, array $etalon, array $features)
     {
