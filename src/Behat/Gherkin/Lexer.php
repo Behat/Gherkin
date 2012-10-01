@@ -126,8 +126,8 @@ class Lexer
     /**
      * Constructs token with specified parameters.
      *
-     * @param string $type  Token type
-     * @param string $value Token value
+     * @param string      $type  Token type
+     * @param string|null $value Token value
      *
      * @return stdClass
      */
@@ -160,7 +160,7 @@ class Lexer
     /**
      * Returns stashed token or false if hasn't.
      *
-     * @return stdClass|Boolean
+     * @return mixed
      */
     protected function getStashedToken()
     {
@@ -170,7 +170,7 @@ class Lexer
     /**
      * Returns deferred token or false if hasn't.
      *
-     * @return stdClass|Boolean
+     * @return mixed
      */
     protected function getDeferredToken()
     {

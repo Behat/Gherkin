@@ -24,9 +24,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $resource Resource to load
      *
      * @return Boolean
+     * @param  string  $path
      */
     public function supports($path)
     {
@@ -38,9 +38,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $resource Resource to load
      *
      * @return array
+     * @param  string $path
      */
     public function load($path)
     {
@@ -88,7 +88,7 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
      *
      * @param string $path Relative path
      *
-     * @return string
+     * @return string|false
      */
     protected function findAbsolutePath($path)
     {

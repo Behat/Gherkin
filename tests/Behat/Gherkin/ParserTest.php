@@ -36,9 +36,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider parserTestDataProvider
      *
-     * @param   string                          $fixtureName    name of the fixture
-     * @param   Behat\Gherkin\Node\FeatureNode  $etalon         etalon feature (to test against)
-     * @param   array                           $features       array of parsed feature(s)
+     * @param string                         $fixtureName name of the fixture
+     * @param Behat\Gherkin\Node\FeatureNode $etalon      etalon feature (to test against)
+     * @param array                          $features    array of parsed feature(s)
      */
     public function testParser($fixtureName, $etalon, array $features)
     {
@@ -105,12 +105,19 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return $this->yaml;
     }
 
+    /**
+     * @param string $fixture
+     */
     protected function parseFixture($fixture)
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
+
         return array($this->getGherkinParser()->parse(file_get_contents($file), $file));
     }
 
+    /**
+     * @param string $etalon
+     */
     protected function parseEtalon($etalon)
     {
         $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);

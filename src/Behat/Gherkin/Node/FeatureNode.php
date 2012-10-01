@@ -29,10 +29,10 @@ class FeatureNode extends AbstractNode
     /**
      * Initializes feature.
      *
-     * @param string  $title       Feature title
-     * @param string  $description Feature description (3-liner)
-     * @param string  $file        Feature filename
-     * @param integer $line        Definition line
+     * @param string|null $title       Feature title
+     * @param string|null $description Feature description (3-liner)
+     * @param string|null $file        Feature filename
+     * @param integer     $line        Definition line
      */
     public function __construct($title = null, $description = null, $file = null, $line = 0)
     {
@@ -62,7 +62,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature title.
      *
-     * @return string
+     * @return string|null
      */
     public function getTitle()
     {
@@ -88,7 +88,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature description (narrative).
      *
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -308,7 +308,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature filename.
      *
-     * @return string
+     * @return string|null
      */
     public function getFile()
     {

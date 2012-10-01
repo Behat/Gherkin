@@ -24,8 +24,8 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Initializes scenario.
      *
-     * @param string  $title Scenario title
-     * @param integer $line  Definition line
+     * @param string|null $title Scenario title
+     * @param integer     $line  Definition line
      */
     public function __construct($title = null, $line = 0)
     {
@@ -53,7 +53,7 @@ abstract class AbstractScenarioNode extends AbstractNode
     /**
      * Returns scenario title.
      *
-     * @return string
+     * @return string|null
      */
     public function getTitle()
     {

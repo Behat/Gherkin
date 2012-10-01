@@ -2,8 +2,6 @@
 
 namespace Tests\Behat\Gherkin;
 
-use Symfony\Component\Finder\Finder;
-
 use Behat\Gherkin\Lexer,
     Behat\Gherkin\Parser,
     Behat\Gherkin\Keywords\ArrayKeywords;

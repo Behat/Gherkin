@@ -1,5 +1,5 @@
 <?php return array (
-  'en' => 
+  'en' =>
   array (
     'name' => 'English',
     'native' => 'English',
@@ -14,7 +14,7 @@
     'and' => 'And',
     'but' => 'But',
   ),
-  'ar' => 
+  'ar' =>
   array (
     'name' => 'Arabic',
     'native' => 'العربية',
@@ -29,7 +29,7 @@
     'and' => 'و',
     'but' => 'لكن',
   ),
-  'bm' => 
+  'bm' =>
   array (
     'name' => 'Malay',
     'native' => 'Bahasa Melayu',
@@ -44,7 +44,7 @@
     'and' => 'Dan',
     'but' => 'Tetapi',
   ),
-  'bg' => 
+  'bg' =>
   array (
     'name' => 'Bulgarian',
     'native' => 'български',
@@ -59,7 +59,7 @@
     'and' => 'И',
     'but' => 'Но',
   ),
-  'ca' => 
+  'ca' =>
   array (
     'name' => 'Catalan',
     'native' => 'català',
@@ -74,7 +74,7 @@
     'and' => 'I',
     'but' => 'Però',
   ),
-  'cy-GB' => 
+  'cy-GB' =>
   array (
     'name' => 'Welsh',
     'native' => 'Cymraeg',
@@ -89,7 +89,7 @@
     'and' => 'A',
     'but' => 'Ond',
   ),
-  'cs' => 
+  'cs' =>
   array (
     'name' => 'Czech',
     'native' => 'Česky',
@@ -104,7 +104,7 @@
     'and' => 'A také|A',
     'but' => 'Ale',
   ),
-  'da' => 
+  'da' =>
   array (
     'name' => 'Danish',
     'native' => 'dansk',
@@ -119,7 +119,7 @@
     'and' => 'Og',
     'but' => 'Men',
   ),
-  'de' => 
+  'de' =>
   array (
     'name' => 'German',
     'native' => 'Deutsch',
@@ -134,7 +134,7 @@
     'and' => 'Und',
     'but' => 'Aber',
   ),
-  'en-au' => 
+  'en-au' =>
   array (
     'name' => 'Australian',
     'native' => 'Australian',
@@ -149,7 +149,7 @@
     'and' => 'N',
     'but' => 'Cept',
   ),
-  'en-lol' => 
+  'en-lol' =>
   array (
     'name' => 'LOLCAT',
     'native' => 'LOLCAT',
@@ -164,7 +164,7 @@
     'and' => 'AN',
     'but' => 'BUT',
   ),
-  'en-pirate' => 
+  'en-pirate' =>
   array (
     'name' => 'Pirate',
     'native' => 'Pirate',
@@ -179,7 +179,7 @@
     'and' => 'Aye',
     'but' => 'Avast!',
   ),
-  'en-Scouse' => 
+  'en-Scouse' =>
   array (
     'name' => 'Scouse',
     'native' => 'Scouse',
@@ -194,7 +194,7 @@
     'and' => 'An',
     'but' => 'Buh',
   ),
-  'en-tx' => 
+  'en-tx' =>
   array (
     'name' => 'Texan',
     'native' => 'Texan',
@@ -209,7 +209,7 @@
     'and' => 'And y\'all',
     'but' => 'But y\'all',
   ),
-  'eo' => 
+  'eo' =>
   array (
     'name' => 'Esperanto',
     'native' => 'Esperanto',
@@ -224,7 +224,7 @@
     'and' => 'Kaj',
     'but' => 'Sed',
   ),
-  'es' => 
+  'es' =>
   array (
     'name' => 'Spanish',
     'native' => 'español',
@@ -239,7 +239,7 @@
     'and' => 'Y',
     'but' => 'Pero',
   ),
-  'et' => 
+  'et' =>
   array (
     'name' => 'Estonian',
     'native' => 'eesti keel',
@@ -254,7 +254,7 @@
     'and' => 'Ja',
     'but' => 'Kuid',
   ),
-  'fi' => 
+  'fi' =>
   array (
     'name' => 'Finnish',
     'native' => 'suomi',
@@ -269,7 +269,7 @@
     'and' => 'Ja',
     'but' => 'Mutta',
   ),
-  'fr' => 
+  'fr' =>
   array (
     'name' => 'French',
     'native' => 'français',
@@ -284,7 +284,7 @@
     'and' => 'Et',
     'but' => 'Mais',
   ),
-  'he' => 
+  'he' =>
   array (
     'name' => 'Hebrew',
     'native' => 'עברית',
@@ -299,7 +299,7 @@
     'and' => 'וגם',
     'but' => 'אבל',
   ),
-  'hr' => 
+  'hr' =>
   array (
     'name' => 'Croatian',
     'native' => 'hrvatski',
@@ -314,7 +314,7 @@
     'and' => 'I',
     'but' => 'Ali',
   ),
-  'hu' => 
+  'hu' =>
   array (
     'name' => 'Hungarian',
     'native' => 'magyar',
@@ -329,7 +329,7 @@
     'and' => 'És',
     'but' => 'De',
   ),
-  'id' => 
+  'id' =>
   array (
     'name' => 'Indonesian',
     'native' => 'Bahasa Indonesia',
@@ -344,7 +344,7 @@
     'and' => 'Dan',
     'but' => 'Tapi',
   ),
-  'is' => 
+  'is' =>
   array (
     'name' => 'Icelandic',
     'native' => 'Íslenska',
@@ -359,7 +359,7 @@
     'and' => 'Og',
     'but' => 'En',
   ),
-  'it' => 
+  'it' =>
   array (
     'name' => 'Italian',
     'native' => 'italiano',
@@ -374,7 +374,7 @@
     'and' => 'E',
     'but' => 'Ma',
   ),
-  'ja' => 
+  'ja' =>
   array (
     'name' => 'Japanese',
     'native' => '日本語',
@@ -389,7 +389,7 @@
     'and' => 'かつ<',
     'but' => 'しかし<|但し<|ただし<',
   ),
-  'ko' => 
+  'ko' =>
   array (
     'name' => 'Korean',
     'native' => '한국어',
@@ -404,7 +404,7 @@
     'and' => '그리고<',
     'but' => '하지만<|단<',
   ),
-  'lt' => 
+  'lt' =>
   array (
     'name' => 'Lithuanian',
     'native' => 'lietuvių kalba',
@@ -419,7 +419,7 @@
     'and' => 'Ir',
     'but' => 'Bet',
   ),
-  'lu' => 
+  'lu' =>
   array (
     'name' => 'Luxemburgish',
     'native' => 'Lëtzebuergesch',
@@ -434,7 +434,7 @@
     'and' => 'an|a',
     'but' => 'awer|mä',
   ),
-  'lv' => 
+  'lv' =>
   array (
     'name' => 'Latvian',
     'native' => 'latviešu',
@@ -449,7 +449,7 @@
     'and' => 'Un',
     'but' => 'Bet',
   ),
-  'nl' => 
+  'nl' =>
   array (
     'name' => 'Dutch',
     'native' => 'Nederlands',
@@ -464,7 +464,7 @@
     'and' => 'En',
     'but' => 'Maar',
   ),
-  'no' => 
+  'no' =>
   array (
     'name' => 'Norwegian',
     'native' => 'norsk',
@@ -479,7 +479,7 @@
     'and' => 'Og',
     'but' => 'Men',
   ),
-  'pl' => 
+  'pl' =>
   array (
     'name' => 'Polish',
     'native' => 'polski',
@@ -494,7 +494,7 @@
     'and' => 'Oraz|I',
     'but' => 'Ale',
   ),
-  'pt' => 
+  'pt' =>
   array (
     'name' => 'Portuguese',
     'native' => 'português',
@@ -509,7 +509,7 @@
     'and' => 'E',
     'but' => 'Mas',
   ),
-  'ro' => 
+  'ro' =>
   array (
     'name' => 'Romanian',
     'native' => 'română',
@@ -524,7 +524,7 @@
     'and' => 'Si|Și|Şi',
     'but' => 'Dar',
   ),
-  'ru' => 
+  'ru' =>
   array (
     'name' => 'Russian',
     'native' => 'русский',
@@ -539,7 +539,7 @@
     'and' => 'И|К тому же|Также',
     'but' => 'Но|А',
   ),
-  'sv' => 
+  'sv' =>
   array (
     'name' => 'Swedish',
     'native' => 'Svenska',
@@ -554,7 +554,7 @@
     'and' => 'Och',
     'but' => 'Men',
   ),
-  'sk' => 
+  'sk' =>
   array (
     'name' => 'Slovak',
     'native' => 'Slovensky',
@@ -569,7 +569,7 @@
     'and' => 'A',
     'but' => 'Ale',
   ),
-  'sr-Latn' => 
+  'sr-Latn' =>
   array (
     'name' => 'Serbian (Latin)',
     'native' => 'Srpski (Latinica)',
@@ -584,7 +584,7 @@
     'and' => 'I',
     'but' => 'Ali',
   ),
-  'sr-Cyrl' => 
+  'sr-Cyrl' =>
   array (
     'name' => 'Serbian',
     'native' => 'Српски',
@@ -599,7 +599,7 @@
     'and' => 'И',
     'but' => 'Али',
   ),
-  'tr' => 
+  'tr' =>
   array (
     'name' => 'Turkish',
     'native' => 'Türkçe',
@@ -614,7 +614,7 @@
     'and' => 'Ve',
     'but' => 'Fakat|Ama',
   ),
-  'uk' => 
+  'uk' =>
   array (
     'name' => 'Ukrainian',
     'native' => 'Українська',
@@ -629,7 +629,7 @@
     'and' => 'І|А також|Та',
     'but' => 'Але',
   ),
-  'uz' => 
+  'uz' =>
   array (
     'name' => 'Uzbek',
     'native' => 'Узбекча',
@@ -644,7 +644,7 @@
     'and' => 'Ва',
     'but' => 'Лекин|Бирок|Аммо',
   ),
-  'vi' => 
+  'vi' =>
   array (
     'name' => 'Vietnamese',
     'native' => 'Tiếng Việt',
@@ -659,7 +659,7 @@
     'and' => 'Và',
     'but' => 'Nhưng',
   ),
-  'zh-CN' => 
+  'zh-CN' =>
   array (
     'name' => 'Chinese simplified',
     'native' => '简体中文',
@@ -674,7 +674,7 @@
     'and' => '而且<|并且<|同时<',
     'but' => '但是<',
   ),
-  'zh-TW' => 
+  'zh-TW' =>
   array (
     'name' => 'Chinese traditional',
     'native' => '繁體中文',

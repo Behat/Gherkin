@@ -50,7 +50,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @param string $path Relative path
      *
-     * @return string
+     * @return string|false
      */
     protected function findAbsolutePath($path)
     {

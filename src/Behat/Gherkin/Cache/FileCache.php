@@ -60,7 +60,7 @@ class FileCache implements CacheInterface
      *
      * @param string $path Feature path
      *
-     * @return FeatureNode
+     * @return mixed
      */
     public function read($path)
     {

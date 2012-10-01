@@ -53,7 +53,7 @@ class LineRangeFilterTest extends FilterTest
         $outline = new Node\OutlineNode(null, 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
-        $this->assertEquals($expectedNumberOfMatches, intval($filter->isScenarioMatch($scenario)) 
+        $this->assertEquals($expectedNumberOfMatches, intval($filter->isScenarioMatch($scenario))
             + intval($filter->isScenarioMatch($outline)));
     }
 

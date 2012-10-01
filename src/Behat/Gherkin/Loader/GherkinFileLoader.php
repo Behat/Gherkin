@@ -26,8 +26,8 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Initializes loader.
      *
-     * @param Parser         $parser Parser
-     * @param CacheInterface $cache  Cache layer
+     * @param Parser              $parser Parser
+     * @param null|CacheInterface $cache  Cache layer
      */
     public function __construct(Parser $parser, CacheInterface $cache = null)
     {
@@ -48,9 +48,9 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $resource Resource to load
      *
      * @return Boolean
+     * @param  string  $path
      */
     public function supports($path)
     {
@@ -62,9 +62,9 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $resource Resource to load
      *
      * @return array
+     * @param  string $path
      */
     public function load($path)
     {

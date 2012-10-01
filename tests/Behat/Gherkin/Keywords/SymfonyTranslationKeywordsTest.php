@@ -123,9 +123,9 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param   string  $language   language name
-     * @param   array   $etalon     etalon features (to test against)
-     * @param   array   $features   array of parsed feature(s)
+     * @param string $language language name
+     * @param array  $etalon   etalon features (to test against)
+     * @param array  $features array of parsed feature(s)
      */
     public function testTranslation($language, array $etalon, array $features)
     {
@@ -153,11 +153,18 @@ class SymfonyTranslationKeywordsTest extends \PHPUnit_Framework_TestCase
         return $this->translator;
     }
 
+    /**
+     * @param string $keyword
+     * @param string $language
+     */
     protected function getTranslatedKeywords($keyword, $language)
     {
         return explode('|', $this->translate($keyword, $language));
     }
 
+    /**
+     * @return string
+     */
     protected function translate($keyword, $language)
     {
         return $this->getTranslator()->trans($keyword, array(), 'gherkin', $language);

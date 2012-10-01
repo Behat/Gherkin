@@ -24,7 +24,7 @@ class TableNode implements StepArgumentNodeInterface
     /**
      * Initializes table.
      *
-     * @param string $table Initial table string
+     * @param string|null $table Initial table string
      */
     public function __construct($table = null)
     {
@@ -41,6 +41,7 @@ class TableNode implements StepArgumentNodeInterface
      * Returns new node with replaced outline example row tokens.
      *
      * @returns ExampleTableNode
+     * @param array<string,string> $tokens
      */
     public function createExampleRowStepArgument(array $tokens)
     {

@@ -41,7 +41,8 @@ class Parser
     /**
      * Parses input & returns features array.
      *
-     * @param string $input Gherkin string document
+     * @param string      $input Gherkin string document
+     * @param string|null $file
      *
      * @return array
      *
@@ -101,7 +102,8 @@ class Parser
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param string $types Token type
+     * @param string               $type Token type
+     * @param string|array<string> $type
      *
      * @return stdClass
      *
@@ -185,7 +187,7 @@ class Parser
     /**
      * Parses feature token & returns it's node.
      *
-     * @return FeatureNode
+     * @return Node\FeatureNode
      */
     protected function parseFeature()
     {
@@ -219,7 +221,7 @@ class Parser
     /**
      * Parses background token & returns it's node.
      *
-     * @return BackgroundNode
+     * @return Node\BackgroundNode
      */
     protected function parseBackground()
     {
@@ -243,7 +245,7 @@ class Parser
     /**
      * Parses scenario outline token & returns it's node.
      *
-     * @return OutlineNode
+     * @return Node\OutlineNode
      */
     protected function parseOutline()
     {
@@ -278,7 +280,7 @@ class Parser
     /**
      * Parses scenario token & returns it's node.
      *
-     * @return ScenarioNode
+     * @return Node\ScenarioNode
      */
     protected function parseScenario()
     {
@@ -304,7 +306,7 @@ class Parser
     /**
      * Parses step token & returns it's node.
      *
-     * @return StepNode
+     * @return Node\StepNode
      */
     protected function parseStep()
     {
@@ -329,7 +331,7 @@ class Parser
     /**
      * Parses table token & returns it's node.
      *
-     * @return TableNode
+     * @return Node\TableNode
      */
     protected function parseTable()
     {
@@ -350,7 +352,7 @@ class Parser
     /**
      * Parses PyString token & returns it's node.
      *
-     * @return PyStringNode
+     * @return Node\PyStringNode
      */
     protected function parsePyString()
     {
@@ -400,7 +402,7 @@ class Parser
     /**
      * Parse tags for the feature/scenario/outline node.
      *
-     * @param AbstractNode $node Node with tags
+     * @param Node\AbstractNode $node Node with tags
      */
     private function parseNodeTags(Node\AbstractNode $node)
     {
@@ -415,8 +417,8 @@ class Parser
     /**
      * Parse description/title for feature/background/scenario/outline node.
      *
-     * @param AbstractNode $node        Node with description
-     * @param integer      $indentation Indentation
+     * @param Node\AbstractNode $node        Node with description
+     * @param integer           $indentation Indentation
      */
     private function parseNodeDescription(Node\AbstractNode $node, $indentation)
     {
@@ -455,7 +457,6 @@ class Parser
     /**
      * Skips newlines & comments in input.
      *
-     * @param Boolean $skipNL Skip newline?
      */
     private function skipExtraChars()
     {
