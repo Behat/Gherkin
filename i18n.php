@@ -563,7 +563,7 @@
     'scenario' => 'Scenár',
     'scenario_outline' => 'Náčrt Scenáru|Náčrt Scenára|Osnova Scenára|Koncept',
     'examples' => 'Príklady',
-    'given' => 'Pokiaľ',
+    'given' => 'Pokiaľ|Za predpokladu',
     'when' => 'Keď|Ak',
     'then' => 'Tak|Potom',
     'and' => 'A tiež|A zároveň|A',
