@@ -16,5 +16,5 @@ Feature: A scenario outline
 #comment
     Examples:
       | a   | b   | c |
-      | 1   | \|2 | 3 |
+      | 1   | \|2 | 3 | #comment
       | 2   | 3   | 4 |
