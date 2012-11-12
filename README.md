@@ -70,7 +70,7 @@ Running tests
 phpunit
 ```
 
-Contributing to Gherkin Transaltions
+Contributing to Gherkin Translations
 ------------------------------------
 
 Gherkin supports &rarr;40 different languages and you could add more! You might notice
