@@ -30,5 +30,10 @@
         "psr-0": {
             "Behat\\Gherkin":   "src/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "2.2-dev"
+        }
     }
 }
