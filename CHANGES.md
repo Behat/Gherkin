@@ -1,3 +1,9 @@
+2.2.7 / 2013-01-27
+==================
+
+  * Fixed bug in i18n syncing script
+  * Resynced Gherkin i18n
+
 2.2.6 / 2013-01-26
 ==================
 
