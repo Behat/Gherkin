@@ -528,10 +528,10 @@
   array (
     'name' => 'Portuguese',
     'native' => 'português',
-    'background' => 'Contexto|Cenário de Fundo|Cenario de Fundo|Fundo',
+    'background' => 'Contexto',
     'feature' => 'Funcionalidade|Característica|Caracteristica',
     'scenario' => 'Cenário|Cenario',
-    'scenario_outline' => 'Esquema do Cenário|Esquema do Cenario|Delineação do Cenário|Delineacao do Cenario',
+    'scenario_outline' => 'Esquema do Cenário|Esquema do Cenario|Delinar o Cenário|Delinear o Cenario',
     'examples' => 'Exemplos|Cenários|Cenarios',
     'given' => 'Dados|Dadas|Dada|Dado',
     'when' => 'Quando',
