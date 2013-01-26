@@ -130,9 +130,8 @@ class GherkinDumper
      */
     public function dumpKeyword($keyword, $text, $indent = 0)
     {
-        if (preg_match('!(^.*)\|!', $keyword, $matches)) {
-            $keyword = $matches[1];
-        }
+        $keywords = explode('|', $keyword);
+        $keyword = reset($keywords);
 
         return $this->dumpIndent($indent) . $keyword . ':'
             . ((strlen($text) > 0) ? ' ' . ltrim($this->dumpText($text, $indent + 1)) : '')

@@ -32,23 +32,22 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
             ->with($resource)
             ->will($this->returnValue(array($feature)));
 
-        $filterFeature = clone $feature;
         $nameFilter
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($filterFeature);
+            ->with($this->identicalTo($feature));
         $tagFilter
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($filterFeature);
+            ->with($this->identicalTo($feature));
         $customFilter1
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($filterFeature);
+            ->with($this->identicalTo($feature));
         $customFilter2
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($filterFeature);
+            ->with($this->identicalTo($feature));
 
         $features = $gherkin->load($resource, array($customFilter1, $customFilter2));
         $this->assertEquals(1, count($features));

@@ -24,7 +24,7 @@ class GherkinDumperTest extends \PHPUnit_Framework_TestCase
         $this->keywords = new ArrayKeywords(
             array(
                 'en' => array(
-                    'feature' => 'Feature',
+                    'feature' => 'Feature|Business Need|Ability',
                     'background' => 'Background',
                     'scenario' => 'Scenario',
                     'scenario_outline' => 'Scenario Outline|Scenario Template',
