@@ -24,7 +24,7 @@
     'scenario_outline' => 'سيناريو مخطط',
     'examples' => 'امثلة',
     'given' => 'بفرض',
-    'when' => 'متى|عندما',
+    'when' => 'عندما|متى',
     'then' => 'اذاً|ثم',
     'and' => 'و',
     'but' => 'لكن',
@@ -293,7 +293,7 @@
     'scenario' => 'Scénario',
     'scenario_outline' => 'Plan du scénario|Plan du Scénario',
     'examples' => 'Exemples',
-    'given' => 'Soit|Étant données|Etant données|Étant donnés|Étant donnée|Etant donnée|Etant donnés|Étant donné|Etant donné',
+    'given' => 'Soit|Etant données|Étant données|Étant donnés|Etant donnée|Etant donnés|Étant donnée|Etant donné|Étant donné',
     'when' => 'Lorsqu\'<|Lorsque|Quand',
     'then' => 'Alors',
     'and' => 'Et',
@@ -323,7 +323,7 @@
     'scenario' => 'परिदृश्य',
     'scenario_outline' => 'परिदृश्य रूपरेखा',
     'examples' => 'उदाहरण',
-    'given' => 'अगर|यदि|चूंकि',
+    'given' => 'चूंकि|यदि|अगर',
     'when' => 'जब',
     'then' => 'तब',
     'and' => 'तथा|और',
@@ -417,7 +417,7 @@
     'when' => 'もし<',
     'then' => 'ならば<',
     'and' => 'かつ<',
-    'but' => '但し<|ただし<|しかし<',
+    'but' => 'しかし<|ただし<|但し<',
   ),
   'ko' => 
   array (
@@ -432,7 +432,7 @@
     'when' => '만일<|만약<',
     'then' => '그러면<',
     'and' => '그리고<',
-    'but' => '단<|하지만<',
+    'but' => '하지만<|단<',
   ),
   'lt' => 
   array (
@@ -548,10 +548,10 @@
     'scenario' => 'Scenariu',
     'scenario_outline' => 'Structura scenariu|Structură scenariu',
     'examples' => 'Exemple',
-    'given' => 'Dat fiind|Dați fiind|Daţi fiind|Dati fiind|Date fiind',
-    'when' => 'Când|Cand',
+    'given' => 'Dat fiind|Date fiind|Dati fiind|Dați fiind|Daţi fiind',
+    'when' => 'Cand|Când',
     'then' => 'Atunci',
-    'and' => 'Și|Şi|Si',
+    'and' => 'Si|Și|Şi',
     'but' => 'Dar',
   ),
   'ru' => 
@@ -563,10 +563,10 @@
     'scenario' => 'Сценарий',
     'scenario_outline' => 'Структура сценария',
     'examples' => 'Примеры',
-    'given' => 'Дано|Допустим|Пусть',
-    'when' => 'Если|Когда',
-    'then' => 'То|Тогда',
-    'and' => 'И|К тому же|Также',
+    'given' => 'Допустим|Пусть|Дано',
+    'when' => 'Когда|Если',
+    'then' => 'Тогда|То',
+    'and' => 'К тому же|Также|И',
     'but' => 'Но|А',
   ),
   'sv' => 
@@ -596,7 +596,7 @@
     'given' => 'Pokiaľ|Za predpokladu',
     'when' => 'Keď|Ak',
     'then' => 'Potom|Tak',
-    'and' => 'A tiež|A zároveň|A taktiež|A',
+    'and' => 'A taktiež|A zároveň|A tiež|A',
     'but' => 'Ale',
   ),
   'sr-Latn' => 
@@ -672,7 +672,7 @@
     'when' => 'Әгәр',
     'then' => 'Нәтиҗәдә',
     'and' => 'Һәм|Вә',
-    'but' => 'Әмма|Ләкин',
+    'but' => 'Ләкин|Әмма',
   ),
   'uk' => 
   array (
@@ -683,10 +683,10 @@
     'scenario' => 'Сценарій',
     'scenario_outline' => 'Структура сценарію',
     'examples' => 'Приклади',
-    'given' => 'Дано|Припустимо, що|Припустимо|Нехай',
+    'given' => 'Нехай|Дано|Припустимо, що|Припустимо',
     'when' => 'Якщо|Коли',
     'then' => 'Тоді|То',
-    'and' => 'Та|І|А також',
+    'and' => 'А також|Та|І',
     'but' => 'Але',
   ),
   'uz' => 
@@ -702,7 +702,7 @@
     'when' => 'Агар',
     'then' => 'Унда',
     'and' => 'Ва',
-    'but' => 'Аммо|Бирок|Лекин',
+    'but' => 'Лекин|Бирок|Аммо',
   ),
   'vi' => 
   array (
