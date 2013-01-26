@@ -12,6 +12,6 @@ env:
 before_script:
   - curl http://getcomposer.org/installer | php
   - php composer.phar require --no-update symfony/symfony=$SYMFONY_VERSION
-  - php composer.phar install --dev --prefer-dist
+  - php composer.phar install --dev
 
 script: phpunit
