@@ -1,3 +1,9 @@
+2.2.6 / 2013-01-26
+==================
+
+  * Support long row hashes in tables ([see](https://github.com/Behat/Gherkin/issues/40))
+  * Synced Gherkin i18n
+
 2.2.5 / 2012-09-26
 ==================
 
