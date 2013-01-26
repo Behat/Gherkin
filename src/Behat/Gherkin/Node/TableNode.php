@@ -146,7 +146,7 @@ class TableNode implements StepArgumentNodeInterface
         $hash = array();
 
         foreach ($this->getRows() as $row) {
-            $hash[$row[0]] = $row[1];
+            $hash[array_shift($row)] = (1 == count($row)) ? $row[0] : $row;
         }
 
         return $hash;

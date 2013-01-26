@@ -53,6 +53,22 @@ TABLE
         $this->assertEquals(array('username' => 'everzet', 'password' => 'qwerty', 'uid' => '35'), $table->getRowsHash());
     }
 
+    public function testLongRowsHashTable()
+    {
+        $table = new TableNode(<<<TABLE
+| username | everzet  | marcello |
+| password | qwerty   | 12345    |
+| uid      | 35       | 22       |
+TABLE
+        );
+
+        $this->assertEquals(array(
+            'username' => array('everzet', 'marcello'),
+            'password' => array('qwerty', '12345'),
+            'uid'      => array('35', '22')
+        ), $table->getRowsHash());
+    }
+
     public function testTableFromArrayCreation()
     {
         $table1 = new TableNode();
