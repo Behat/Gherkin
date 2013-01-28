@@ -434,7 +434,7 @@ class Lexer
             return;
         }
 
-        $line = trim($this->line);
+        $line = trim(preg_replace('/#([^\|]+)$/', '', trim($this->line)));
 
         if (isset($line[0]) && '|' === $line[0]) {
             $token = $this->takeToken('TableRow');
