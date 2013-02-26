@@ -234,8 +234,10 @@ class TableNode implements StepArgumentNodeInterface
         $max = 0;
 
         foreach ($this->getRows() as $row) {
-            if (($tmp = mb_strlen($row[$columnNum])) > $max) {
-                $max = $tmp;
+            if(isset($row[$columnNum])){
+                if (($tmp = mb_strlen($row[$columnNum])) > $max) {
+                    $max = $tmp;
+                }
             }
         }
 
