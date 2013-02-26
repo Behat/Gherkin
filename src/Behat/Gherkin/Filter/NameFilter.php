@@ -82,9 +82,9 @@ class NameFilter extends SimpleFilter
                    
                 }
                  
+            }else{
+                return true;
             }
-           
-            return false;
         }
       
        
