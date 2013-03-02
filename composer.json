@@ -17,9 +17,9 @@
         "symfony/finder":  ">=2.0,<2.3-dev"
     },
     "require-dev": {
-        "symfony/yaml":         ">=2.0,<2.3-dev",
-        "symfony/translation":  ">=2.0,<2.3-dev",
-        "symfony/config":       ">=2.0,<2.3-dev"
+        "symfony/yaml":         ">=2.0,<2.4-dev",
+        "symfony/translation":  ">=2.0,<2.4-dev",
+        "symfony/config":       ">=2.0,<2.4-dev"
     },
     "suggest": {
         "symfony/yaml":         "If you want to parse features, represented in YAML files",
