@@ -49,7 +49,9 @@ class LineRangeFilter implements FilterInterface
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return true;
+        return $this->filterMinLine <= $feature->getLine()
+            && $this->filterMaxLine >= $feature->getLine()
+        ;
     }
 
     /**

@@ -10,23 +10,23 @@ class LineRangeFilterTest extends FilterTest
     public function featureLineRangeProvider()
     {
         return array(
-            array('1', '1'),
-            array('1', '2'),
-            array('1', '*'),
-            array('2', '2'),
-            array('2', '*')
+            array('1', '1', true),
+            array('1', '2', true),
+            array('1', '*', true),
+            array('2', '2', false),
+            array('2', '*', false)
         );
     }
 
     /**
      * @dataProvider featureLineRangeProvider
      */
-    public function testIsFeatureMatchFilter($filterMinLine, $filterMaxLine)
+    public function testIsFeatureMatchFilter($filterMinLine, $filterMaxLine, $expected)
     {
         $feature = new Node\FeatureNode(null, null, null, 1);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+        $this->assertSame($expected, $filter->isFeatureMatch($feature));
     }
 
     public function scenarioLineRangeProvider()
@@ -53,7 +53,7 @@ class LineRangeFilterTest extends FilterTest
         $outline = new Node\OutlineNode(null, 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
-        $this->assertEquals($expectedNumberOfMatches, intval($filter->isScenarioMatch($scenario)) 
+        $this->assertEquals($expectedNumberOfMatches, intval($filter->isScenarioMatch($scenario))
             + intval($filter->isScenarioMatch($outline)));
     }
 

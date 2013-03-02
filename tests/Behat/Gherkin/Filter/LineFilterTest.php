@@ -15,10 +15,10 @@ class LineFilterTest extends FilterTest
         $this->assertTrue($filter->isFeatureMatch($feature));
 
         $filter = new LineFilter(2);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+        $this->assertFalse($filter->isFeatureMatch($feature));
 
         $filter = new LineFilter(3);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+        $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
     public function testIsScenarioMatchFilter()
