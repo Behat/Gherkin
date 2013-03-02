@@ -1,3 +1,10 @@
+2.2.8 / 2013-03-02
+==================
+
+  * Features filtering behavior change. Now emptified (by filtering) features
+    that do not match filter themselves are removed from resultset.
+  * Small potential bug fix in TableNode
+
 2.2.7 / 2013-01-27
 ==================
 
