@@ -107,9 +107,14 @@ class Gherkin
         }
 
         $features = $loader->load($resource);
-        foreach ($features as $feature) {
+        foreach ($features as $i => $feature) {
             foreach ($filters as $filter) {
                 $filter->filterFeature($feature);
+
+                if (!$feature->hasScenarios() && !$filter->isFeatureMatch($feature)) {
+                    unset($features[$i]);
+                    continue;
+                }
             }
 
             if ($this->freeze) {
@@ -117,7 +122,7 @@ class Gherkin
             }
         }
 
-        return $features;
+        return array_values($features);
     }
 
     /**

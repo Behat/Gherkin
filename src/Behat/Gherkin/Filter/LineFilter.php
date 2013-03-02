@@ -42,7 +42,7 @@ class LineFilter implements FilterInterface
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return true;
+        return $this->filterLine === $feature->getLine();
     }
 
     /**
