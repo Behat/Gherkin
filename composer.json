@@ -12,25 +12,30 @@
             "homepage":  "http://everzet.com"
         }
     ],
+
     "require": {
         "php":             ">=5.3.1",
-        "symfony/finder":  ">=2.0,<2.4-dev"
+        "symfony/finder":  "~2.0"
     },
+
     "require-dev": {
-        "symfony/yaml":         ">=2.0,<2.4-dev",
-        "symfony/translation":  ">=2.0,<2.4-dev",
-        "symfony/config":       ">=2.0,<2.4-dev"
+        "symfony/yaml":         "~2.0",
+        "symfony/translation":  "~2.0",
+        "symfony/config":       "~2.0"
     },
+
     "suggest": {
         "symfony/yaml":         "If you want to parse features, represented in YAML files",
         "symfony/translation":  "If you want to use Symfony2 translations adapter",
         "symfony/config":       "If you want to use Config component to manage resources"
     },
+
     "autoload": {
         "psr-0": {
             "Behat\\Gherkin":   "src/"
         }
     },
+
     "extra": {
         "branch-alias": {
             "dev-develop": "2.2-dev"
