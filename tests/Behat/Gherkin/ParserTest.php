@@ -24,10 +24,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         foreach ($files as $file) {
             $testname = basename($file, '.yml');
 
-            $etalonFeature      = $this->parseEtalon($testname . '.yml');
-            $fixtureFeatures    = $this->parseFixture($testname . '.feature');
-
-            $data[] = array($testname, $etalonFeature, $fixtureFeatures);
+            $data[] = array($testname);
         }
 
         return $data;
@@ -36,12 +33,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider parserTestDataProvider
      *
-     * @param   string                          $fixtureName    name of the fixture
-     * @param   Behat\Gherkin\Node\FeatureNode  $etalon         etalon feature (to test against)
-     * @param   array                           $features       array of parsed feature(s)
+     * @param string $fixtureName name of the fixture
      */
-    public function testParser($fixtureName, $etalon, array $features)
+    public function testParser($fixtureName)
     {
+        $etalon = $this->parseEtalon($fixtureName . '.yml');
+        $features = $this->parseFixture($fixtureName . '.feature');
+
         $this->assertInternalType('array', $features);
         $this->assertEquals(1, count($features));
         $fixture = $features[0];
