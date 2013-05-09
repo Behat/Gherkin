@@ -37,8 +37,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParser($fixtureName)
     {
+        $parserLang = ('ru_default_parserlang' == $fixtureName) ? 'ru' : 'en';
         $etalon = $this->parseEtalon($fixtureName . '.yml');
-        $features = $this->parseFixture($fixtureName . '.feature');
+        $features = $this->parseFixture($fixtureName . '.feature', $parserLang);
 
         $this->assertInternalType('array', $features);
         $this->assertEquals(1, count($features));
@@ -103,10 +104,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return $this->yaml;
     }
 
-    protected function parseFixture($fixture)
+    protected function parseFixture($fixture, $parserLang)
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
-        return array($this->getGherkinParser()->parse(file_get_contents($file), $file));
+        $parser = $this->getGherkinParser();
+        $parser->setDefaultLanguage($parserLang);
+        return array($parser->parse(file_get_contents($file), $file));
     }
 
     protected function parseEtalon($etalon)
