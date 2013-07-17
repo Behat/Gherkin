@@ -57,6 +57,26 @@ class Gherkin
     }
 
     /**
+     * Set filter list.
+     *
+     * @param array $filterList
+     */
+    public function setFilters($filterList)
+    {
+        $this->filters = $filterList;
+    }
+
+    /**
+     * Returns filter list.
+     *
+     * @return array
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
      * Sets base features path.
      *
      * @param string $path Loaders base path
