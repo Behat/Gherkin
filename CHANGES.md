@@ -1,3 +1,10 @@
+2.3.0 / 2013-08-04
+==================
+
+  * Add RoleFilter
+  * Add PathsFilter
+  * Add MemoryCache
+
 2.2.9 / 2013-03-02
 ==================
 
