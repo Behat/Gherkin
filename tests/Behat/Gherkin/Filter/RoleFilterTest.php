@@ -39,6 +39,38 @@ NAR
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
+    public function testFeatureRolePrefixedWithAn()
+    {
+        $feature = new Node\FeatureNode(null, <<<NAR
+In order to be able to read news in my own language
+As an american user
+I need to be able to switch website language to french
+NAR
+        , null, 1);
+
+        $filter = new RoleFilter('american user');
+        $this->assertTrue($filter->isFeatureMatch($feature));
+
+        $filter = new RoleFilter('american *');
+        $this->assertTrue($filter->isFeatureMatch($feature));
+
+        $filter = new RoleFilter('american');
+        $this->assertFalse($filter->isFeatureMatch($feature));
+
+        $filter = new RoleFilter('user');
+        $this->assertFalse($filter->isFeatureMatch($feature));
+
+        $filter = new RoleFilter('*user');
+        $this->assertTrue($filter->isFeatureMatch($feature));
+
+        $filter = new RoleFilter('American User');
+        $this->assertTrue($filter->isFeatureMatch($feature));
+
+        $feature = new Node\FeatureNode(null, null, null, 1);
+        $filter = new RoleFilter('American User');
+        $this->assertFalse($filter->isFeatureMatch($feature));
+    }
+
     public function testIsScenarioMatchFilter()
     {
         $feature = new Node\FeatureNode(null, <<<NAR

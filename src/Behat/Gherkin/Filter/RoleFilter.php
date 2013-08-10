@@ -30,7 +30,7 @@ class RoleFilter extends SimpleFilter
      */
     public function __construct($role)
     {
-        $this->pattern = '/as a '.strtr(preg_quote($role, '/'), array(
+        $this->pattern = '/as an? '.strtr(preg_quote($role, '/'), array(
             '\*' => '.*',
             '\?' => '.',
             '\[' => '[',
