@@ -90,8 +90,8 @@ class CucumberKeywords extends ArrayKeywords
      */
     private function prepareStepString($keywordsString)
     {
-        if (0 === mb_strpos($keywordsString, '*|', 0, 'utf8')) {
-            $keywordsString = mb_substr($keywordsString, 2, null, 'utf8');
+        if (0 === mb_strpos($keywordsString, '*|', 0, 'UTF-8')) {
+            $keywordsString = mb_substr($keywordsString, 2, mb_strlen($keywordsString, 'utf8') - 2, 'utf8');
         }
 
         return $keywordsString;

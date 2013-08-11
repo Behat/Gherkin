@@ -462,7 +462,7 @@ class Lexer
 
         if (isset($line[0]) && '@' === $line[0]) {
             $token = $this->takeToken('Tag');
-            $tags = explode('@', mb_substr($line, 1, null, 'utf8'));
+            $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
             $tags = array_map('trim', $tags);
             $token->tags = $tags;
 
