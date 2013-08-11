@@ -238,7 +238,7 @@ class Lexer
         if (preg_match('/^(\s*)('.$keywords.'):\s*(.*)/u', $this->line, $matches)) {
             $token = $this->takeToken($type, $matches[3]);
             $token->keyword = $matches[2];
-            $token->indent  = mb_strlen($matches[1]);
+            $token->indent  = mb_strlen($matches[1], 'utf8');
 
             $this->consumeLine();
 
@@ -293,8 +293,8 @@ class Lexer
             if ('Step' === $type) {
                 $paded = array();
                 foreach (explode('|', $keywords) as $keyword) {
-                    $paded[] = false !== mb_strpos($keyword, '<')
-                        ? mb_substr($keyword, 0, -1).'\s*'
+                    $paded[] = false !== mb_strpos($keyword, '<', 0, 'utf8')
+                        ? mb_substr($keyword, 0, -1, 'utf8').'\s*'
                         : $keyword.'\s+';
                 }
 
@@ -395,7 +395,7 @@ class Lexer
 
         $matches = array();
 
-        if (false !== ($pos = mb_strpos($this->line, '"""'))) {
+        if (false !== ($pos = mb_strpos($this->line, '"""', 0, 'utf8'))) {
             $this->inPyString =! $this->inPyString;
             $token = $this->takeToken('PyStringOperator');
             $this->pyStringSwallow = $pos;
@@ -439,7 +439,7 @@ class Lexer
         if (isset($line[0]) && '|' === $line[0]) {
             $token = $this->takeToken('TableRow');
 
-            $line = mb_substr($line, 1, mb_strlen($line) - 2);
+            $line = mb_substr($line, 1, mb_strlen($line, 'utf8') - 2, 'utf8');
             $columns = array_map(function($column) {
                 return trim(str_replace('\\|', '|', $column));
             }, preg_split('/(?<!\\\)\|/', $line));
@@ -462,7 +462,7 @@ class Lexer
 
         if (isset($line[0]) && '@' === $line[0]) {
             $token = $this->takeToken('Tag');
-            $tags = explode('@', mb_substr($line, 1));
+            $tags = explode('@', mb_substr($line, 1, null, 'utf8'));
             $tags = array_map('trim', $tags);
             $token->tags = $tags;
 
@@ -484,7 +484,7 @@ class Lexer
         }
 
         if (!$this->inPyString) {
-            if (0 === mb_strpos(ltrim($this->line), '#') && false !== mb_strpos($this->line, 'language')) {
+            if (0 === mb_strpos(ltrim($this->line), '#', 0, 'utf8') && false !== mb_strpos($this->line, 'language', 0, 'utf8')) {
                 return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
             }
         }
@@ -498,7 +498,7 @@ class Lexer
     protected function scanComment()
     {
         if (!$this->inPyString) {
-            if (0 === mb_strpos(ltrim($this->line), '#')) {
+            if (0 === mb_strpos(ltrim($this->line), '#', 0, 'utf8')) {
                 $token = $this->takeToken('Comment', $this->line);
 
                 $this->consumeLine();
@@ -516,7 +516,7 @@ class Lexer
     protected function scanNewline()
     {
         if ('' === trim($this->line)) {
-            $token = $this->takeToken('Newline', mb_strlen($this->line));
+            $token = $this->takeToken('Newline', mb_strlen($this->line, 'utf8'));
 
             $this->consumeLine();
 

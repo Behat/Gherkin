@@ -75,7 +75,7 @@ class TagFilter extends SimpleFilter
                 $tag = str_replace('@', '', trim($tag));
 
                 if ('~' === $tag[0]) {
-                    $tag = mb_substr($tag, 1);
+                    $tag = mb_substr($tag, 1, null, 'utf8');
                     $satisfiesComma = !$node->hasTag($tag) || $satisfiesComma;
                 } else {
                     $satisfiesComma = $node->hasTag($tag) || $satisfiesComma;

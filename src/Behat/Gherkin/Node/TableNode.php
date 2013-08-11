@@ -235,7 +235,7 @@ class TableNode implements StepArgumentNodeInterface
 
         foreach ($this->getRows() as $row) {
             if(isset($row[$columnNum])){
-                if (($tmp = mb_strlen($row[$columnNum])) > $max) {
+                if (($tmp = mb_strlen($row[$columnNum], 'utf8')) > $max) {
                     $max = $tmp;
                 }
             }
@@ -254,7 +254,7 @@ class TableNode implements StepArgumentNodeInterface
      */
     protected function padRight($text, $length)
     {
-        while ($length > mb_strlen($text)) {
+        while ($length > mb_strlen($text, 'utf8')) {
             $text = $text . ' ';
         }
 

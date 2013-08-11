@@ -306,8 +306,8 @@ GHERKIN;
         } else {
             foreach ($keywords as $keyword) {
                 $indent = ' ';
-                if (false !== mb_strpos($keyword, '<')) {
-                    $keyword = mb_substr($keyword, 0, -1);
+                if (false !== mb_strpos($keyword, '<', 0, 'utf8')) {
+                    $keyword = mb_substr($keyword, 0, -1, 'utf8');
                     $indent  = '';
                 }
                 $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
