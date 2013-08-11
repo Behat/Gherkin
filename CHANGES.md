@@ -1,3 +1,9 @@
+2.3.3 / 2013-08-11
+==================
+
+  * Fix encoding bug introduced with previous release
+  * Sync i18n with cucumber
+
 2.3.2 / 2013-08-11
 ==================
 
