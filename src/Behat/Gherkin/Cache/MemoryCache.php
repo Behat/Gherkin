@@ -49,7 +49,7 @@ class MemoryCache implements CacheInterface
      */
     public function read($path)
     {
-        return clone $this->features[$path];
+        return unserialize($this->features[$path]);
     }
 
     /**
@@ -60,7 +60,7 @@ class MemoryCache implements CacheInterface
      */
     public function write($path, FeatureNode $feature)
     {
-        $this->features[$path]   = clone $feature;
+        $this->features[$path]   = serialize($feature);
         $this->timestamps[$path] = time();
     }
 }
