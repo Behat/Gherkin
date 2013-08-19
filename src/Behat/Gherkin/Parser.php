@@ -27,6 +27,7 @@ class Parser
 {
     private $file;
     private $lexer;
+    private $defaultLanguage = 'en';
 
     /**
      * Initializes parser.
@@ -59,7 +60,7 @@ class Parser
             );
         }
 
-        $this->lexer->setLanguage($language = 'en');
+        $this->lexer->setLanguage($language = $this->defaultLanguage);
         $languageSpecifierLine = null;
 
         $feature = null;
@@ -468,5 +469,15 @@ class Parser
     private function skipComments()
     {
         while ($this->acceptTokenType('Comment'));
+    }
+
+    /**
+     * Set the default language used for features
+     *
+     * @param string $defaultLanguage The language code as defined in the i18n file
+     */
+    public function setDefaultLanguage($defaultLanguage)
+    {
+        $this->defaultLanguage = (string) $defaultLanguage;
     }
 }
