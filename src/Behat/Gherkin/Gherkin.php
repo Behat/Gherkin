@@ -61,7 +61,7 @@ class Gherkin
      *
      * @param array $filterList
      */
-    public function setFilters($filterList)
+    public function setFilters(array $filterList)
     {
         $this->filters = $filterList;
     }
