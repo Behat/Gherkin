@@ -4,7 +4,7 @@ namespace Behat\Gherkin\Keywords;
 
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -45,6 +45,7 @@ namespace Behat\Gherkin\Keywords;
 class ArrayKeywords implements KeywordsInterface
 {
     private $keywords = array();
+    private $keywordString = array();
     private $language;
 
     /**
@@ -178,12 +179,22 @@ class ArrayKeywords implements KeywordsInterface
      */
     public function getStepKeywords()
     {
-        return implode('|', array(
-            $this->getGivenKeywords(),
-            $this->getWhenKeywords(),
-            $this->getThenKeywords(),
-            $this->getAndKeywords(),
-            $this->getButKeywords()
-        ));
+        if (!isset($this->keywordString[$this->language])) {
+            $keywords = array_merge(
+                explode('|', $this->getGivenKeywords()),
+                explode('|', $this->getWhenKeywords()),
+                explode('|', $this->getThenKeywords()),
+                explode('|', $this->getAndKeywords()),
+                explode('|', $this->getButKeywords())
+            );
+
+            usort($keywords, function ($keyword1, $keyword2) {
+                return mb_strlen($keyword2, 'utf8') - mb_strlen($keyword1, 'utf8');
+            });
+
+            $this->keywordString[$this->language] = implode('|', $keywords);
+        }
+
+        return $this->keywordString[$this->language];
     }
 }

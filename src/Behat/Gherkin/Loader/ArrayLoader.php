@@ -2,15 +2,21 @@
 
 namespace Behat\Gherkin\Loader;
 
-use Behat\Gherkin\Node;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\BackgroundNode;
+use Behat\Gherkin\Node\ExampleTableNode;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Node\StepNode;
+use Behat\Gherkin\Node\TableNode;
 
 /**
  * From-array loader.
@@ -36,7 +42,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return array
+     * @return FeatureNode[]
      */
     public function load($resource)
     {
@@ -44,11 +50,11 @@ class ArrayLoader implements LoaderInterface
 
         if (isset($resource['features'])) {
             foreach ($resource['features'] as $iterator => $hash) {
-                $feature    = $this->loadFeatureHash($hash, $iterator);
+                $feature = $this->loadFeatureHash($hash, $iterator);
                 $features[] = $feature;
             }
         } elseif (isset($resource['feature'])) {
-            $feature    = $this->loadFeatureHash($resource['feature'], 0);
+            $feature = $this->loadFeatureHash($resource['feature']);
             $features[] = $feature;
         }
 
@@ -59,42 +65,32 @@ class ArrayLoader implements LoaderInterface
      * Loads feature from provided feature hash.
      *
      * @param array   $hash Feature hash
-     * @param integer $line Feature definition line
+     * @param integer $line
      *
      * @return FeatureNode
      */
     protected function loadFeatureHash(array $hash, $line = 0)
     {
-        $feature = new Node\FeatureNode(null, null, null, isset($hash['line']) ? $hash['line'] : $line);
+        $title = isset($hash['title']) ? $hash['title'] : null;
+        $description = isset($hash['description']) ? $hash['description'] : null;
+        $tags = isset($hash['tags']) ? $hash['tags'] : array();
+        $keyword = isset($hash['keyword']) ? $hash['keyword'] : 'Feature';
+        $language = isset($hash['language']) ? $hash['language'] : 'en';
+        $line = isset($hash['line']) ? $hash['line'] : $line;
+        $background = isset($hash['background']) ? $this->loadBackgroundHash($hash['background']) : null;
 
-        $feature->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Feature');
-
-        if (isset($hash['title'])) {
-            $feature->setTitle($hash['title']);
-        }
-        if (isset($hash['description'])) {
-            $feature->setDescription($hash['description']);
-        }
-        if (isset($hash['tags'])) {
-            $feature->setTags($hash['tags']);
-        }
-        if (isset($hash['language'])) {
-            $feature->setLanguage($hash['language']);
-        }
-        if (isset($hash['background'])) {
-            $feature->setBackground($this->loadBackgroundHash($hash['background']));
-        }
+        $scenarios = array();
         if (isset($hash['scenarios'])) {
             foreach ($hash['scenarios'] as $scenarioIterator => $scenarioHash) {
                 if (isset($scenarioHash['type']) && 'outline' === $scenarioHash['type']) {
-                    $feature->addScenario($this->loadOutlineHash($scenarioHash, $scenarioIterator));
+                    $scenarios[] = $this->loadOutlineHash($scenarioHash, $scenarioIterator);
                 } else {
-                    $feature->addScenario($this->loadScenarioHash($scenarioHash, $scenarioIterator));
+                    $scenarios[] = $this->loadScenarioHash($scenarioHash, $scenarioIterator);
                 }
             }
         }
 
-        return $feature;
+        return new FeatureNode($title, $description, $tags, $background, $scenarios, $keyword, $language, null, $line);
     }
 
     /**
@@ -106,20 +102,18 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadBackgroundHash(array $hash)
     {
-        $background = new Node\BackgroundNode(null, isset($hash['line']) ? $hash['line'] : 0);
+        $title = isset($hash['title']) ? $hash['title'] : null;
+        $keyword = isset($hash['keyword']) ? $hash['keyword'] : 'Background';
+        $line = isset($hash['line']) ? $hash['line'] : 0;
 
-        $background->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Background');
-
-        if (isset($hash['title'])) {
-            $background->setTitle($hash['title']);
-        }
+        $steps = array();
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {
-                $background->addStep($this->loadStepHash($stepHash, $stepIterator));
+                $steps[] = $this->loadStepHash($stepHash, $stepIterator);
             }
         }
 
-        return $background;
+        return new BackgroundNode($title, $steps, $keyword, $line);
     }
 
     /**
@@ -132,23 +126,19 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadScenarioHash(array $hash, $line = 0)
     {
-        $scenario = new Node\ScenarioNode(null, isset($hash['line']) ? $hash['line'] : $line);
+        $title = isset($hash['title']) ? $hash['title'] : null;
+        $keyword = isset($hash['keyword']) ? $hash['keyword'] : 'Scenario';
+        $tags = isset($hash['tags']) ? $hash['tags'] : array();
+        $line = isset($hash['line']) ? $hash['line'] : $line;
 
-        $scenario->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Scenario');
-
-        if (isset($hash['title'])) {
-            $scenario->setTitle($hash['title']);
-        }
-        if (isset($hash['tags'])) {
-            $scenario->setTags($hash['tags']);
-        }
+        $steps = array();
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {
-                $scenario->addStep($this->loadStepHash($stepHash, $stepIterator));
+                $steps[] = $this->loadStepHash($stepHash, $stepIterator);
             }
         }
 
-        return $scenario;
+        return new ScenarioNode($title, $tags, $steps, $keyword, $line);
     }
 
     /**
@@ -161,34 +151,31 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadOutlineHash(array $hash, $line = 0)
     {
-        $outline = new Node\OutlineNode(null, isset($hash['line']) ? $hash['line'] : $line);
+        $title = isset($hash['title']) ? $hash['title'] : null;
+        $tags = isset($hash['tags']) ? $hash['tags'] : array();
+        $keyword = isset($hash['keyword']) ? $hash['keyword'] : 'Scenario Outline';
+        $line = isset($hash['line']) ? $hash['line'] : $line;
 
-        $outline->setKeyword(isset($hash['keyword']) ? $hash['keyword'] : 'Scenario Outline');
-
-        if (isset($hash['title'])) {
-            $outline->setTitle($hash['title']);
-        }
-        if (isset($hash['tags'])) {
-            $outline->setTags($hash['tags']);
-        }
-        if (isset($hash['examples'])) {
-            if (isset($hash['examples']['keyword'])) {
-                $keyword = $hash['examples']['keyword'];
-                unset($hash['examples']['keyword']);
-            } else {
-                $keyword = 'Examples';
-            }
-            $table = $this->loadTableHash($hash['examples']);
-            $table->setKeyword($keyword);
-            $outline->setExamples($table);
-        }
+        $steps = array();
         if (isset($hash['steps'])) {
             foreach ($hash['steps'] as $stepIterator => $stepHash) {
-                $outline->addStep($this->loadStepHash($stepHash, $stepIterator));
+                $steps[] = $this->loadStepHash($stepHash, $stepIterator);
             }
         }
 
-        return $outline;
+        $examples = null;
+        if (isset($hash['examples'])) {
+            if (isset($hash['examples']['keyword'])) {
+                $examplesKeyword = $hash['examples']['keyword'];
+                unset($hash['examples']['keyword']);
+            } else {
+                $examplesKeyword = 'Examples';
+            }
+
+            $examples = new ExampleTableNode($hash['examples'], $examplesKeyword);
+        }
+
+        return new OutlineNode($title, $tags, $steps, $examples, $keyword, $line);
     }
 
     /**
@@ -201,21 +188,22 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadStepHash(array $hash, $line = 0)
     {
-        $step = new Node\StepNode(
-            $hash['type'], isset($hash['text']) ? $hash['text'] : null, isset($hash['line']) ? $hash['line'] : $line
-        );
+        $type = isset($hash['type']) ? $hash['type'] : 'Given';
+        $text = $hash['text'];
+        $line = isset($hash['line']) ? $hash['line'] : $line;
 
+        $arguments = array();
         if (isset($hash['arguments'])) {
             foreach ($hash['arguments'] as $argumentHash) {
                 if ('table' === $argumentHash['type']) {
-                    $step->addArgument($this->loadTableHash($argumentHash['rows']));
+                    $arguments[] = $this->loadTableHash($argumentHash['rows']);
                 } elseif ('pystring' === $argumentHash['type']) {
-                    $step->addArgument($this->loadPyStringHash($argumentHash));
+                    $arguments[] = $this->loadPyStringHash($argumentHash, $line + 1);
                 }
             }
         }
 
-        return $step;
+        return new StepNode($type, $text, $arguments, $line);
     }
 
     /**
@@ -227,26 +215,26 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadTableHash(array $hash)
     {
-        $table = new Node\TableNode();
-
-        foreach ($hash as $line => $row) {
-            $table->addRow($row, $line);
-        }
-
-        return $table;
+        return new TableNode($hash);
     }
 
     /**
      * Loads PyString from provided hash.
      *
-     * @param array $hash PyString hash
+     * @param array   $hash PyString hash
+     * @param integer $line
      *
      * @return PyStringNode
      */
-    protected function loadPyStringHash(array $hash)
+    protected function loadPyStringHash(array $hash, $line = 0)
     {
-        $string = new Node\PyStringNode($hash['text']);
+        $line = isset($hash['line']) ? $hash['line'] : $line;
 
-        return $string;
+        $strings = array();
+        foreach (explode("\n", $hash['text']) as $string) {
+            $strings[] = $string;
+        }
+
+        return new PyStringNode($strings, $line);
     }
 }

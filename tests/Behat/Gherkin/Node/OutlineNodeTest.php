@@ -2,95 +2,67 @@
 
 namespace Tests\Behat\Gherkin\Node;
 
-use Behat\Gherkin\Node\OutlineNode,
-    Behat\Gherkin\Node\StepNode,
-    Behat\Gherkin\Node\TableNode,
-    Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ExampleTableNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\StepNode;
 
 class OutlineNodeTest extends \PHPUnit_Framework_TestCase
 {
-    public function testTitle()
+    public function testCreatesExamplesForExampleTable()
     {
-        $outline = new OutlineNode();
-        $this->assertNull($outline->getTitle());
+        $steps = array(
+            new StepNode('Given', 'I am <name>', array(), null),
+            new StepNode('And', 'my email is <email>', array(), null),
+            new StepNode('When', 'I open homepage', array(), null),
+            new StepNode('Then', 'website should recognise me', array(), null),
+        );
 
-        $outline->setTitle('test title 1');
-        $this->assertEquals('test title 1', $outline->getTitle());
+        $table = new ExampleTableNode(array(
+            array('name', 'email'),
+            array('everzet', 'ever.zet@gmail.com'),
+            array('example', 'example@example.com')
+        ), 'Examples');
 
-        $outline = new OutlineNode('test title 2');
-        $this->assertEquals('test title 2', $outline->getTitle());
+        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
+
+        $this->assertCount(2, $examples = $outline->getExamples());
+        $this->assertEquals(1, $examples[0]->getLine());
+        $this->assertEquals(2, $examples[1]->getLine());
+        $this->assertEquals(array('name' => 'everzet', 'email' => 'ever.zet@gmail.com'), $examples[0]->getTokens());
+        $this->assertEquals(array('name'  => 'example', 'email' => 'example@example.com'), $examples[1]->getTokens());
     }
 
-    public function testLine()
+    public function testCreatesEmptyExamplesForEmptyExampleTable()
     {
-        $outline = new OutlineNode();
-        $this->assertEquals(0, $outline->getLine());
+        $steps = array(
+            new StepNode('Given', 'I am <name>', array(), null),
+            new StepNode('And', 'my email is <email>', array(), null),
+            new StepNode('When', 'I open homepage', array(), null),
+            new StepNode('Then', 'website should recognise me', array(), null),
+        );
 
-        $outline = new OutlineNode(null, 23);
-        $this->assertEquals(23, $outline->getLine());
+        $table = new ExampleTableNode(array(
+            array('name', 'email')
+        ), 'Examples');
+
+        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
+
+        $this->assertCount(0, $examples = $outline->getExamples());
     }
 
-    public function testExamples()
+    public function testCreatesEmptyExamplesForNoExampleTable()
     {
-        $outline = new OutlineNode();
-        $this->assertNull($outline->getExamples());
-        $this->assertFalse($outline->hasExamples());
+        $steps = array(
+            new StepNode('Given', 'I am <name>', array(), null),
+            new StepNode('And', 'my email is <email>', array(), null),
+            new StepNode('When', 'I open homepage', array(), null),
+            new StepNode('Then', 'website should recognise me', array(), null),
+        );
 
-        $outline->setExamples($table = new TableNode());
-        $this->assertSame($table, $outline->getExamples());
-        $this->assertTrue($outline->hasExamples());
-    }
+        $table = new ExampleTableNode(array(), 'Examples');
 
-    public function testSteps()
-    {
-        $outline = new OutlineNode();
-        $this->assertEquals(0, count($outline->getSteps()));
-        $this->assertFalse($outline->hasSteps());
+        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
 
-        $outline->addStep(new StepNode('Given', 'Something'));
-        $this->assertEquals(1, count($outline->getSteps()));
-        $this->assertTrue($outline->hasSteps());
-
-        $outline->addStep(new StepNode('Then', 'Do'));
-        $this->assertEquals(2, count($outline->getSteps()));
-        $this->assertTrue($outline->hasSteps());
-
-        $steps = $outline->getSteps();
-        $this->assertInstanceOf('Behat\Gherkin\Node\StepNode', $steps[0]);
-
-        $this->assertEquals('Given', $steps[0]->getType());
-        $this->assertEquals('Something', $steps[0]->getText());
-        $this->assertSame($outline, $steps[0]->getParent());
-
-        $this->assertEquals('Then', $steps[1]->getType());
-        $this->assertEquals('Do', $steps[1]->getText());
-        $this->assertSame($outline, $steps[1]->getParent());
-    }
-
-    public function testFeature()
-    {
-        $outline = new OutlineNode();
-        $this->assertNull($outline->getFeature());
-
-        $outline->setFeature($feature = new FeatureNode());
-        $this->assertSame($feature, $outline->getFeature());
-    }
-
-    public function testTags()
-    {
-        $outline = new OutlineNode();
-        $this->assertFalse($outline->hasTags());
-        $this->assertInternalType('array', $outline->getTags());
-        $this->assertEquals(0, count($outline->getTags()));
-
-        $outline->setTags($tags = array('tag1', 'tag2'));
-        $this->assertEquals($tags, $outline->getTags());
-
-        $outline->addTag('tag3');
-        $this->assertEquals(array('tag1', 'tag2', 'tag3'), $outline->getTags());
-
-        $this->assertFalse($outline->hasTag('tag4'));
-        $this->assertTrue($outline->hasTag('tag2'));
-        $this->assertTrue($outline->hasTag('tag3'));
+        $this->assertCount(0, $examples = $outline->getExamples());
     }
 }

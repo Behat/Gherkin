@@ -4,52 +4,54 @@ namespace Behat\Gherkin\Node;
 
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * Table Argument Gherkin AST node.
+ * Represents Gherkin Outline Example Table.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 class ExampleTableNode extends TableNode
 {
-    private $cleanRows = array();
+    /**
+     * @var string
+     */
+    private $keyword;
 
     /**
-     * Initializes table.
+     * Initializes example table.
      *
-     * @param TableNode $cleanTable
-     * @param array     $tokens
-     *
-     * @internal param string $table Initial table string
+     * @param array  $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @param string $keyword
      */
-    public function __construct(TableNode $cleanTable, array $tokens)
+    public function __construct(array $table, $keyword)
     {
-        $this->cleanRows = $rows = $cleanTable->getRows();
+        $this->keyword = $keyword;
 
-        foreach ($tokens as $key => $value) {
-            foreach (array_keys($rows) as $row) {
-                foreach (array_keys($rows[$row]) as $col) {
-                    $rows[$row][$col] = str_replace('<'.$key.'>', $value, $rows[$row][$col]);
-                }
-            }
-        }
-
-        $this->setKeyword($cleanTable->getKeyword());
-        $this->setRows($rows);
+        parent::__construct($table);
     }
 
     /**
-     * Returns rows without tokens being replaced.
+     * Returns node type string
      *
-     * @return array
+     * @return string
      */
-    public function getCleanRows()
+    public function getNodeType()
     {
-        return $this->cleanRows();
+        return 'ExampleTable';
+    }
+
+    /**
+     * Returns example table keyword.
+     *
+     * @return string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
     }
 }

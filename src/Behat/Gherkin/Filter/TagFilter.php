@@ -2,17 +2,16 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\AbstractNode,
-    Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
+use Behat\Gherkin\Node\TaggedNodeInterface;
 
 /**
  * Filters scenarios by feature/scenario tag.
@@ -48,11 +47,11 @@ class TagFilter extends SimpleFilter
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param ScenarioNode $scenario Scenario or Outline node instance
+     * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioNode $scenario)
+    public function isScenarioMatch(ScenarioInterface $scenario)
     {
         return $this->matchesCondition($scenario);
     }
@@ -60,11 +59,11 @@ class TagFilter extends SimpleFilter
     /**
      * Checks that node matches condition.
      *
-     * @param AbstractNode $node Node to check
+     * @param TaggedNodeInterface $node Node to check
      *
      * @return Boolean
      */
-    protected function matchesCondition(AbstractNode $node)
+    protected function matchesCondition(TaggedNodeInterface $node)
     {
         $satisfies = true;
 

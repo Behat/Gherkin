@@ -2,18 +2,13 @@
 
 namespace Tests\Behat\Gherkin\Cache;
 
-use Behat\Gherkin\Cache\MemoryCache,
-    Behat\Gherkin\Node\ScenarioNode,
-    Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Cache\MemoryCache;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 class MemoryCacheTest extends \PHPUnit_Framework_TestCase
 {
     private $cache;
-
-    protected function setUp()
-    {
-        $this->cache = new MemoryCache();
-    }
 
     public function testIsFreshWhenThereIsNoFile()
     {
@@ -22,7 +17,7 @@ class MemoryCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testIsFreshOnFreshFile()
     {
-        $feature = new FeatureNode();
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
 
         $this->cache->write('some_path', $feature);
 
@@ -31,7 +26,7 @@ class MemoryCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testIsFreshOnOutdated()
     {
-        $feature = new FeatureNode();
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
 
         $this->cache->write('some_path', $feature);
 
@@ -40,12 +35,17 @@ class MemoryCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testCacheAndRead()
     {
-        $feature = new FeatureNode('Some feature', 'some description');
-        $feature->addScenario(new ScenarioNode('Some scenario'));
+        $scenarios = array(new ScenarioNode('Some scenario', array(), array(), null, null));
+        $feature = new FeatureNode('Some feature', 'some description', array(), null, $scenarios, null, null, null, null);
 
         $this->cache->write('some_feature', $feature);
         $featureRead = $this->cache->read('some_feature');
 
         $this->assertEquals($feature, $featureRead);
+    }
+
+    protected function setUp()
+    {
+        $this->cache = new MemoryCache();
     }
 }

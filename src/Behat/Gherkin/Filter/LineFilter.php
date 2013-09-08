@@ -2,17 +2,17 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode,
-    Behat\Gherkin\Node\OutlineNode;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\ExampleTableNode;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Filters scenarios by definition line number.
@@ -48,11 +48,11 @@ class LineFilter implements FilterInterface
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param ScenarioNode $scenario Scenario or Outline node instance
+     * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioNode $scenario)
+    public function isScenarioMatch(ScenarioInterface $scenario)
     {
         if ($this->filterLine === $scenario->getLine()) {
             return true;
@@ -60,41 +60,62 @@ class LineFilter implements FilterInterface
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
             return $this->filterLine === $scenario->getLine()
-                || in_array($this->filterLine, $scenario->getExamples()->getRowLines());
+                || in_array($this->filterLine, $scenario->getExampleTable()->getLines());
         }
 
         return false;
     }
 
     /**
-     * Filters feature according to the filter.
+     * Filters feature according to the filter and returns new one.
      *
      * @param FeatureNode $feature
+     *
+     * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = $feature->getScenarios();
-        foreach ($scenarios as $i => $scenario) {
+        $scenarios = array();
+        foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($scenario)) {
-                unset($scenarios[$i]);
                 continue;
             }
 
             if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $lines = $scenario->getExamples()->getRowLines();
-                $rows  = $scenario->getExamples()->getNumeratedRows();
+                $table = $scenario->getExampleTable()->getTable();
+                $lines = array_keys($table);
 
-                if (current($lines) <= $this->filterLine && end($lines) >= $this->filterLine) {
-                    $scenario->getExamples()->setRows(array());
-                    $scenario->getExamples()->addRow($rows[$lines[0]], $lines[0]);
+                if (in_array($this->filterLine, $lines)) {
+                    $filteredTable = array($lines[0] => $table[$lines[0]]);
 
                     if ($lines[0] !== $this->filterLine) {
-                        $scenario->getExamples()->addRow($rows[$this->filterLine], $this->filterLine);
+                        $filteredTable[$this->filterLine] = $table[$this->filterLine];
                     }
+
+                    $scenario = new OutlineNode(
+                        $scenario->getTitle(),
+                        $scenario->getOwnTags(),
+                        $scenario->getSteps(),
+                        new ExampleTableNode($filteredTable, $scenario->getExampleTable()->getKeyword()),
+                        $scenario->getKeyword(),
+                        $scenario->getLine()
+                    );
                 }
             }
+
+            $scenarios[] = $scenario;
         }
 
-        $feature->setScenarios($scenarios);
+        return new FeatureNode(
+            $feature->getTitle(),
+            $feature->getDescription(),
+            $feature->getTags(),
+            $feature->getBackground(),
+            $scenarios,
+            $feature->getKeyword(),
+            $feature->getLanguage(),
+            $feature->getFile(),
+            $feature->getLine()
+        );
     }
 }

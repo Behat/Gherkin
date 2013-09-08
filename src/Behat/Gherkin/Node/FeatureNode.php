@@ -4,65 +4,114 @@ namespace Behat\Gherkin\Node;
 
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 /**
- * Feature Gherkin AST node.
+ * Represents Gherkin Feature.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class FeatureNode extends AbstractNode
+class FeatureNode implements TaggedNodeInterface
 {
+    /**
+     * @var null|string
+     */
     private $title;
+    /**
+     * @var null|string
+     */
     private $description;
-    private $file;
+    /**
+     * @var array
+     */
+    private $tags = array();
+    /**
+     * @var null|BackgroundNode
+     */
     private $background;
-    private $language   = 'en';
-    private $scenarios  = array();
-    private $tags       = array();
-    private $frozen     = false;
+    /**
+     * @var ScenarioInterface[]
+     */
+    private $scenarios = array();
+    /**
+     * @var string
+     */
+    private $keyword;
+    /**
+     * @var string
+     */
+    private $language;
+    /**
+     * @var null|string
+     */
+    private $file;
+    /**
+     * @var integer
+     */
+    private $line;
 
     /**
      * Initializes feature.
      *
-     * @param string  $title       Feature title
-     * @param string  $description Feature description (3-liner)
-     * @param string  $file        Feature filename
-     * @param integer $line        Definition line
+     * @param null|string         $title
+     * @param null|string         $description
+     * @param array               $tags
+     * @param null|BackgroundNode $background
+     * @param ScenarioInterface[] $scenarios
+     * @param string              $keyword
+     * @param string              $language
+     * @param null|string         $file
+     * @param integer             $line
      */
-    public function __construct($title = null, $description = null, $file = null, $line = 0)
+    public function __construct(
+        $title,
+        $description,
+        array $tags,
+        BackgroundNode $background = null,
+        array $scenarios,
+        $keyword,
+        $language,
+        $file,
+        $line
+    )
     {
-        parent::__construct($line);
+        $this->title = $title;
+        $this->description = $description;
+        $this->tags = $tags;
+        $this->background = $background;
+        $this->scenarios = $scenarios;
+        $this->keyword = $keyword;
+        $this->language = $language;
+        $this->file = $file;
+        $this->line = $line;
 
-        $this->title        = $title;
-        $this->description  = $description;
-        $this->file         = $file;
+        if ($background) {
+            $background->setFeature($this);
+        }
+
+        foreach ($this->scenarios as $scenario) {
+            $scenario->setFeature($this);
+        }
     }
 
     /**
-     * Sets feature title.
+     * Returns node type string
      *
-     * @param string $title Feature title
-     *
-     * @throws \LogicException if feature is frozen
+     * @return string
      */
-    public function setTitle($title)
+    public function getNodeType()
     {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature title.');
-        }
-
-        $this->title = $title;
+        return 'Feature';
     }
 
     /**
      * Returns feature title.
      *
-     * @return string
+     * @return null|string
      */
     public function getTitle()
     {
@@ -70,25 +119,19 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Sets feature description (narrative).
+     * Checks if feature has a description.
      *
-     * @param string $description Feature description
-     *
-     * @throws \LogicException if feature is frozen
+     * @return Boolean
      */
-    public function setDescription($description)
+    public function hasDescription()
     {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature description.');
-        }
-
-        $this->description = $description;
+        return $this->description;
     }
 
     /**
-     * Returns feature description (narrative).
+     * Returns feature description.
      *
-     * @return string
+     * @return null|string
      */
     public function getDescription()
     {
@@ -96,46 +139,35 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Sets language of the feature.
+     * Checks if feature is tagged with tag.
      *
-     * @param string $language Langauge name
+     * @param string $tag
      *
-     * @throws \LogicException if feature is frozen
+     * @return Boolean
      */
-    public function setLanguage($language)
+    public function hasTag($tag)
     {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature language.');
-        }
-
-        $this->language = $language;
+        return in_array($tag, $this->tags);
     }
 
     /**
-     * Returns language of the feature.
+     * Checks if feature has tags.
      *
-     * @return string
+     * @return Boolean
      */
-    public function getLanguage()
+    public function hasTags()
     {
-        return $this->language;
+        return 0 < count($this->tags);
     }
 
     /**
-     * Sets feature background.
+     * Returns feature tags.
      *
-     * @param BackgroundNode $background Background instance
-     *
-     * @throws \LogicException if feature is frozen
+     * @return array
      */
-    public function setBackground(BackgroundNode $background)
+    public function getTags()
     {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature background.');
-        }
-
-        $background->setFeature($this);
-        $this->background = $background;
+        return $this->tags;
     }
 
     /**
@@ -151,7 +183,7 @@ class FeatureNode extends AbstractNode
     /**
      * Returns feature background.
      *
-     * @return BackgroundNode
+     * @return null|BackgroundNode
      */
     public function getBackground()
     {
@@ -159,56 +191,19 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Adds scenario or outline to the feature.
-     *
-     * @param ScenarioNode $scenario Scenario instance
-     *
-     * @throws \LogicException if feature is frozen
-     */
-    public function addScenario(ScenarioNode $scenario)
-    {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature scenarios.');
-        }
-
-        $scenario->setFeature($this);
-        $this->scenarios[] = $scenario;
-    }
-
-    /**
-     * Sets scenarios & outlines to the feature.
-     *
-     * @param array $scenarios Array of ScenariosNode's or OutlineNode's
-     *
-     * @throws \LogicException if feature is frozen
-     */
-    public function setScenarios(array $scenarios)
-    {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature scenarios.');
-        }
-
-        $this->scenarios = array();
-
-        foreach ($scenarios as $scenario) {
-            $this->addScenario($scenario);
-        }
-    }
-
-    /**
-     * Checks that feature has scenarios.
+     * Checks if feature has scenarios.
      *
      * @return Boolean
      */
     public function hasScenarios()
     {
-        return count($this->scenarios) > 0;
+        return 0 < count($this->scenarios);
     }
 
     /**
-     * Returns feature scenarios & outlines.
+     * Returns feature scenarios.
      *
-     * @return array
+     * @return ScenarioInterface[]
      */
     public function getScenarios()
     {
@@ -216,99 +211,29 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Sets feature tags.
-     *
-     * @param array $tags Array of tags
-     *
-     * @throws \LogicException if feature is frozen
-     */
-    public function setTags(array $tags)
-    {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature tags.');
-        }
-
-        $this->tags = $tags;
-    }
-
-    /**
-     * Adds tag to the feature.
-     *
-     * @param string $tag Tag name
-     *
-     * @throws \LogicException if feature is frozen
-     */
-    public function addTag($tag)
-    {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature tags.');
-        }
-
-        $this->tags[] = $tag;
-    }
-
-    /**
-     * Checks if the feature has tags.
-     *
-     * @return Boolean
-     */
-    public function hasTags()
-    {
-        return count($this->getTags()) > 0;
-    }
-
-    /**
-     * Checks if the feature has tag.
-     *
-     * @param string $tag Tag name
-     *
-     * @return Boolean
-     */
-    public function hasTag($tag)
-    {
-        return in_array($tag, $this->getTags());
-    }
-
-    /**
-     * Returns feature tags.
-     *
-     * @return array
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * Returns only own tags (without inherited ones).
-     *
-     * @return array
-     */
-    public function getOwnTags()
-    {
-        return $this->tags;
-    }
-
-    /**
-     * Sets feature filename.
-     *
-     * @param string $path Sets feature file
-     *
-     * @throws \LogicException if feature is frozen
-     */
-    public function setFile($path)
-    {
-        if ($this->isFrozen()) {
-            throw new \LogicException('Impossible to change frozen feature.');
-        }
-
-        $this->file = $path;
-    }
-
-    /**
-     * Returns feature filename.
+     * Returns feature keyword.
      *
      * @return string
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    /**
+     * Returns feature language.
+     *
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * Returns feature file.
+     *
+     * @return null|string
      */
     public function getFile()
     {
@@ -316,21 +241,12 @@ class FeatureNode extends AbstractNode
     }
 
     /**
-     * Freeze feature to changes.
-     * Prevents feature modification in future
-     */
-    public function freeze()
-    {
-        $this->frozen = true;
-    }
-
-    /**
-     * Checks whether feature has been frozen.
+     * Returns feature declaration line number.
      *
-     * @return Boolean
+     * @return integer
      */
-    public function isFrozen()
+    public function getLine()
     {
-        return $this->frozen;
+        return $this->line;
     }
 }

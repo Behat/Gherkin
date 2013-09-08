@@ -1,7 +1,7 @@
 {
     "name":         "behat/gherkin",
     "description":  "Gherkin DSL parser for PHP 5.3",
-    "keywords":     ["BDD", "parser", "DSL", "Behat", "Symfony2"],
+    "keywords":     ["BDD", "parser", "DSL", "Behat", "Gherkin", "Cucumber"],
     "homepage":     "http://behat.org/",
     "type":         "library",
     "license":      "MIT",
@@ -19,15 +19,13 @@
     },
 
     "require-dev": {
-        "symfony/yaml":         "~2.0",
-        "symfony/translation":  "~2.0",
-        "symfony/config":       "~2.0"
+        "symfony/yaml":   "~2.1",
+        "symfony/config": "~2.1"
     },
 
     "suggest": {
-        "symfony/yaml":         "If you want to parse features, represented in YAML files",
-        "symfony/translation":  "If you want to use Symfony2 translations adapter",
-        "symfony/config":       "If you want to use Config component to manage resources"
+        "symfony/yaml":   "If you want to parse features, represented in YAML files",
+        "symfony/config": "If you want to use Config component to manage resources"
     },
 
     "autoload": {
@@ -38,7 +36,7 @@
 
     "extra": {
         "branch-alias": {
-            "dev-develop": "2.2-dev"
+            "dev-develop": "3.0-dev"
         }
     }
 }

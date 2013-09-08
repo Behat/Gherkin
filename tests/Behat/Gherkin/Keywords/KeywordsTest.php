@@ -2,20 +2,27 @@
 
 namespace Tests\Behat\Gherkin\Keywords;
 
-use Behat\Gherkin\Lexer,
-    Behat\Gherkin\Parser,
-    Behat\Gherkin\Node,
-    Behat\Gherkin\Keywords\KeywordsDumper,
-    Behat\Gherkin\Keywords\CucumberKeywords;
+use Behat\Gherkin\Keywords\KeywordsDumper;
+use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Node\BackgroundNode;
+use Behat\Gherkin\Node\ExampleTableNode;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Parser;
 
 abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
 {
+    abstract protected function getKeywords();
+    abstract protected function getKeywordsArray();
+    abstract protected function getSteps($keywords, $text, &$line);
+
     public function translationTestDataProvider()
     {
         $keywords = $this->getKeywords();
-        $lexer    = new Lexer($keywords);
-        $parser   = new Parser($lexer);
-        $dumper   = new KeywordsDumper($keywords);
+        $lexer = new Lexer($keywords);
+        $parser = new Parser($lexer);
+        $dumper = new KeywordsDumper($keywords);
 
         $data = array();
         foreach ($this->getKeywordsArray() as $lang => $i18nKeywords) {
@@ -26,104 +33,88 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
                     $line = 2;
                 }
 
-                $feature = new Node\FeatureNode(
+                $featureLine = $line;
+                $line += 5;
+
+                $keywords = explode('|', $i18nKeywords['background']);
+                $backgroundLine = $line;
+                $line += 1;
+                $background = new BackgroundNode(null, array_merge(
+                    $this->getSteps($i18nKeywords['given'], 'there is agent A', $line),
+                    $this->getSteps($i18nKeywords['and'], 'there is agent B', $line)
+                ), $keywords[0], $backgroundLine);
+
+                $line += 1;
+
+                $scenarios = array();
+
+                foreach (explode('|', $i18nKeywords['scenario']) as $scenarioKeyword) {
+                    $scenarioLine = $line;
+                    $line += 1;
+
+                    $steps = array_merge(
+                        $this->getSteps($i18nKeywords['given'], 'there is agent J', $line),
+                        $this->getSteps($i18nKeywords['and'], 'there is agent K', $line),
+                        $this->getSteps($i18nKeywords['when'], 'I erase agent K\'s memory', $line),
+                        $this->getSteps($i18nKeywords['then'], 'there should be agent J', $line),
+                        $this->getSteps($i18nKeywords['but'], 'there should not be agent K', $line)
+                    );
+
+                    $scenarios[] = new ScenarioNode('Erasing agent memory', array(), $steps, $scenarioKeyword, $scenarioLine);
+                    $line += 1;
+                }
+                foreach (explode('|', $i18nKeywords['scenario_outline']) as $outlineKeyword) {
+                    $outlineLine = $line;
+                    $line += 1;
+
+                    $steps = array_merge(
+                        $this->getSteps($i18nKeywords['given'], 'there is agent <agent1>', $line),
+                        $this->getSteps($i18nKeywords['and'], 'there is agent <agent2>', $line),
+                        $this->getSteps($i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line),
+                        $this->getSteps($i18nKeywords['then'], 'there should be agent <agent1>', $line),
+                        $this->getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line)
+                    );
+                    $line += 1;
+
+                    $keywords = explode('|', $i18nKeywords['examples']);
+                    $examplesLine = $line;
+                    $table = new ExampleTableNode(array(
+                        ++$line => array('agent1', 'agent2'),
+                        ++$line => array('D', 'M')
+                    ), $keywords[0], $examplesLine);
+                    $line += 1;
+
+                    $scenarios[] = new OutlineNode('Erasing other agents\' memory', array(), $steps, $table, $outlineKeyword, $outlineLine);
+                    $line += 1;
+                }
+
+                $features[] = new FeatureNode(
                     'Internal operations',
                     <<<DESC
 In order to stay secret
 As a secret organization
 We need to be able to erase past agents' memory
 DESC
-                    , $lang.'_'.($transNum+1).'.feature',
-                    $line
-                );
-                $feature->setLanguage($lang);
-                $feature->setKeyword($featureKeyword);
-                $line += 5;
-
-                $background = new Node\BackgroundNode(null, $line);
-                $keywords = explode('|', $i18nKeywords['background']);
-                $background->setKeyword($keywords[0]);
-                $line += 1;
-
-                $line = $this->addSteps(
-                    $background, $i18nKeywords['given'], 'there is agent A', $line
-                );
-                $line = $this->addSteps(
-                    $background, $i18nKeywords['and'], 'there is agent B', $line
-                );
-                $feature->setBackground($background);
-                $line += 1;
-
-                foreach (explode('|', $i18nKeywords['scenario']) as $scenarioKeyword) {
-                    $scenario = new Node\ScenarioNode('Erasing agent memory', $line);
-                    $scenario->setKeyword($scenarioKeyword);
-                    $line += 1;
-
-                    $line = $this->addSteps(
-                        $scenario, $i18nKeywords['given'], 'there is agent J', $line
-                    );
-                    $line = $this->addSteps(
-                        $scenario, $i18nKeywords['and'], 'there is agent K', $line
-                    );
-                    $line = $this->addSteps(
-                        $scenario, $i18nKeywords['when'], 'I erase agent K\'s memory', $line
-                    );
-                    $line = $this->addSteps(
-                        $scenario, $i18nKeywords['then'], 'there should be agent J', $line
-                    );
-                    $line = $this->addSteps(
-                        $scenario, $i18nKeywords['but'], 'there should not be agent K', $line
-                    );
-                    $feature->addScenario($scenario);
-                    $line += 1;
-                }
-
-                foreach (explode('|', $i18nKeywords['scenario_outline']) as $outlineKeyword) {
-                    $outline = new Node\OutlineNode('Erasing other agents\' memory', $line);
-                    $outline->setKeyword($outlineKeyword);
-                    $line += 1;
-
-                    $line = $this->addSteps(
-                        $outline, $i18nKeywords['given'], 'there is agent <agent1>', $line
-                    );
-                    $line = $this->addSteps(
-                        $outline, $i18nKeywords['and'], 'there is agent <agent2>', $line
-                    );
-                    $line = $this->addSteps(
-                        $outline, $i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line
-                    );
-                    $line = $this->addSteps(
-                        $outline, $i18nKeywords['then'], 'there should be agent <agent1>', $line
-                    );
-                    $line = $this->addSteps(
-                        $outline, $i18nKeywords['but'], 'there should not be agent <agent2>', $line
-                    );
-                    $line += 1;
-
-                    $examples = new Node\TableNode();
-                    $examples->addRow('                      | agent1 | agent2 |', ++$line);
-                    $examples->addRow('                      | D      | M      |', ++$line);
-                    $outline->setExamples($examples);
-                    $keywords = explode('|', $i18nKeywords['examples']);
-                    $examples->setKeyword($keywords[0]);
-                    $line += 1;
-
-                    $feature->addScenario($outline);
-                    $line += 1;
-                }
-
-                $features[] = $feature;
+                    ,
+                    array(),
+                    $background,
+                    $scenarios,
+                    $featureKeyword,
+                    $lang,
+                    $lang . '_' . ($transNum + 1) . '.feature',
+                    $featureLine
+                );;
             }
 
             $dumped = $dumper->dump($lang, false);
             $parsed = array();
             try {
                 foreach ($dumped as $num => $dumpedFeature) {
-                    $parsed[] = $parser->parse($dumpedFeature, $lang.'_'.($num+1).'.feature');
+                    $parsed[] = $parser->parse($dumpedFeature, $lang . '_' . ($num + 1) . '.feature');
                 }
             } catch (\Exception $e) {
                 throw new \Exception(
-                    $e->getMessage().":\n".$dumped, 0, $e
+                    $e->getMessage() . ":\n" . $dumped, 0, $e
                 );
             }
 
@@ -136,9 +127,9 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param   string  $language   language name
-     * @param   array   $etalon     etalon features (to test against)
-     * @param   array   $features   array of parsed feature(s)
+     * @param   string $language   language name
+     * @param   array  $etalon     etalon features (to test against)
+     * @param   array  $features   array of parsed feature(s)
      */
     public function testTranslation($language, array $etalon, array $features)
     {

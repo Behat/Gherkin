@@ -18,8 +18,8 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
         $gherkin->addFilter($tagFilter = $this->getTagFilterMock());
 
-        $feature = new FeatureNode();
-        $feature->addScenario($scenario = new ScenarioNode());
+        $scenario = new ScenarioNode(null, array(), array(), null, null);
+        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -35,23 +35,26 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $nameFilter
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($this->identicalTo($feature));
+            ->with($this->identicalTo($feature))
+            ->will($this->returnValue($feature));
         $tagFilter
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($this->identicalTo($feature));
+            ->with($this->identicalTo($feature))
+            ->will($this->returnValue($feature));
         $customFilter1
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($this->identicalTo($feature));
+            ->with($this->identicalTo($feature))
+            ->will($this->returnValue($feature));
         $customFilter2
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($this->identicalTo($feature));
+            ->with($this->identicalTo($feature))
+            ->will($this->returnValue($feature));
 
         $features = $gherkin->load($resource, array($customFilter1, $customFilter2));
         $this->assertEquals(1, count($features));
-        $this->assertTrue($feature->isFrozen());
 
         $scenarios = $features[0]->getScenarios();
         $this->assertEquals(1, count($scenarios));
@@ -64,7 +67,7 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
 
-        $feature = new FeatureNode();
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -80,7 +83,8 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $nameFilter
             ->expects($this->once())
             ->method('filterFeature')
-            ->with($this->identicalTo($feature));
+            ->with($this->identicalTo($feature))
+            ->will($this->returnValue($feature));
         $nameFilter
             ->expects($this->once())
             ->method('isFeatureMatch')

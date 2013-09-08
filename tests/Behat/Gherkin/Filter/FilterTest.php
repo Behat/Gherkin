@@ -2,9 +2,9 @@
 
 namespace Tests\Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Keywords\ArrayKeywords,
-    Behat\Gherkin\Lexer,
-    Behat\Gherkin\Parser;
+use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Parser;
 
 abstract class FilterTest extends \PHPUnit_Framework_TestCase
 {

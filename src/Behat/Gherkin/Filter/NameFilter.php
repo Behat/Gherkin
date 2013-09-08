@@ -2,16 +2,15 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Filters scenarios by feature/scenario name.
@@ -42,7 +41,7 @@ class NameFilter extends SimpleFilter
     public function isFeatureMatch(FeatureNode $feature)
     {
         if ('/' === $this->filterString[0]) {
-            return (bool) preg_match($this->filterString, $feature->getTitle());
+            return 1 === preg_match($this->filterString, $feature->getTitle());
         }
 
         return false !== mb_strpos($feature->getTitle(), $this->filterString, 0, 'utf8');
@@ -51,11 +50,11 @@ class NameFilter extends SimpleFilter
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param ScenarioNode $scenario Scenario or Outline node instance
+     * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioNode $scenario)
+    public function isScenarioMatch(ScenarioInterface $scenario)
     {
         if ('/' === $this->filterString[0] && 1 === preg_match($this->filterString, $scenario->getTitle())) {
             return true;

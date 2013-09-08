@@ -2,6 +2,7 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Node\FeatureNode;
 use Symfony\Component\Finder\Finder;
 
 use Behat\Gherkin\Lexer,
@@ -113,8 +114,17 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
         $feature  = $features[0];
-        $feature->setFile(__DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature');
 
-        return $feature;
+        return new FeatureNode(
+            $feature->getTitle(),
+            $feature->getDescription(),
+            $feature->getTags(),
+            $feature->getBackground(),
+            $feature->getScenarios(),
+            $feature->getKeyword(),
+            $feature->getLanguage(),
+            __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
+            $feature->getLine()
+        );
     }
 }

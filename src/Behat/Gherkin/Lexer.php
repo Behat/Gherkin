@@ -2,16 +2,15 @@
 
 namespace Behat\Gherkin;
 
-use Behat\Gherkin\Exception\LexerException,
-    Behat\Gherkin\Keywords\KeywordsInterface;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\LexerException;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 
 /**
  * Gherkin lexer.
@@ -20,19 +19,24 @@ use Behat\Gherkin\Exception\LexerException,
  */
 class Lexer
 {
+    private $language;
     private $lines;
+    private $linesCount;
     private $line;
+    private $trimmedLine;
     private $lineNumber;
     private $eos;
     private $keywords;
-    private $keywordsCache   = array();
+    private $keywordsCache = array();
     private $deferredObjects = array();
-    private $stash           = array();
-    private $inPyString      = false;
+    private $deferredObjectsCount = 0;
+    private $stash = array();
+    private $stashCount = 0;
+    private $inPyString = false;
     private $pyStringSwallow = 0;
-    private $featureStarted          = false;
+    private $featureStarted = false;
     private $allowMultilineArguments = false;
-    private $allowSteps              = false;
+    private $allowSteps = false;
 
     /**
      * Initializes lexer.
@@ -47,9 +51,12 @@ class Lexer
     /**
      * Sets lexer input.
      *
-     * @param string $input Input string
+     * @param string $input    Input string
+     * @param string $language Language name
+     *
+     * @throws Exception\LexerException
      */
-    public function setInput($input)
+    public function analyse($input, $language = 'en')
     {
         // try to detect unsupported encoding
         if ('UTF-8' !== mb_detect_encoding($input, 'UTF-8', true)) {
@@ -58,51 +65,58 @@ class Lexer
 
         $input = strtr($input, array("\r\n" => "\n", "\r" => "\n"));
 
-        $this->lines      = explode("\n", $input);
-        $this->line       = array_shift($this->lines);
+        $this->lines = explode("\n", $input);
+        $this->linesCount = count($this->lines);
+        $this->line = $this->lines[0];
         $this->lineNumber = 1;
-        $this->eos        = false;
+        $this->trimmedLine = null;
+        $this->eos = false;
 
-        $this->deferredObjects  = array();
-        $this->stash            = array();
-        $this->inPyString       = false;
-        $this->pyStringSwallow  = 0;
+        $this->deferredObjects = array();
+        $this->deferredObjectsCount = 0;
+        $this->stash = array();
+        $this->stashCount = 0;
+        $this->inPyString = false;
+        $this->pyStringSwallow = 0;
 
-        $this->featureStarted          = false;
+        $this->featureStarted = false;
         $this->allowMultilineArguments = false;
-        $this->allowSteps              = false;
+        $this->allowSteps = false;
+
+        $this->keywords->setLanguage($this->language = $language);
+        $this->keywordsCache = array();
     }
 
     /**
-     * Sets keywords language.
+     * Returns current lexer language.
      *
-     * @param string $language Language name
+     * @return string
      */
-    public function setLanguage($language)
+    public function getLanguage()
     {
-        $this->keywords->setLanguage($language);
-        $this->keywordsCache = array();
+        return $this->language;
     }
 
     /**
      * Returns next token or previously stashed one.
      *
-     * @return stdClass
+     * @return array
      */
     public function getAdvancedToken()
     {
-        return $this->getStashedToken() ?: $this->getNextToken();
+        return $this->getStashedToken() ? : $this->getNextToken();
     }
 
     /**
      * Defers token.
      *
-     * @param stdClass $token Token to defer
+     * @param array $token Token to defer
      */
-    public function deferToken(\stdClass $token)
+    public function deferToken(array $token)
     {
-        $token->defered = true;
+        $token['deferred'] = true;
         $this->deferredObjects[] = $token;
+        ++$this->deferredObjectsCount;
     }
 
     /**
@@ -110,14 +124,15 @@ class Lexer
      *
      * @param integer $number Number of tokens to predict
      *
-     * @return stdClass
+     * @return array
      */
     public function predictToken($number = 1)
     {
-        $fetch = $number - count($this->stash);
+        $fetch = $number - $this->stashCount;
 
         while ($fetch-- > 0) {
             $this->stash[] = $this->getNextToken();
+            ++$this->stashCount;
         }
 
         return $this->stash[--$number];
@@ -129,15 +144,15 @@ class Lexer
      * @param string $type  Token type
      * @param string $value Token value
      *
-     * @return stdClass
+     * @return array
      */
     public function takeToken($type, $value = null)
     {
-        return (Object) array(
-            'type'      => $type,
-            'line'      => $this->lineNumber,
-            'value'     => $value ?: null,
-            'defered'   => false
+        return array(
+            'type'     => $type,
+            'line'     => $this->lineNumber,
+            'value'    => $value ? : null,
+            'deferred' => false
         );
     }
 
@@ -148,39 +163,62 @@ class Lexer
     {
         ++$this->lineNumber;
 
-        if (!count($this->lines)) {
+        if (($this->lineNumber - 1) === $this->linesCount) {
             $this->eos = true;
 
-            return false;
+            return;
         }
 
-        $this->line = array_shift($this->lines);
+        $this->line = $this->lines[$this->lineNumber - 1];
+        $this->trimmedLine = null;
+    }
+
+    /**
+     * Returns trimmed version of line.
+     *
+     * @return string
+     */
+    protected function getTrimmedLine()
+    {
+        return null !== $this->trimmedLine ? $this->trimmedLine : $this->trimmedLine = ltrim($this->line);
     }
 
     /**
      * Returns stashed token or false if hasn't.
      *
-     * @return stdClass|Boolean
+     * @return array|Boolean
      */
     protected function getStashedToken()
     {
-        return count($this->stash) ? array_shift($this->stash) : null;
+        if (!$this->stashCount) {
+            return null;
+        }
+
+        --$this->stashCount;
+
+        return array_shift($this->stash);
     }
 
     /**
      * Returns deferred token or false if hasn't.
      *
-     * @return stdClass|Boolean
+     * @return array|Boolean
      */
     protected function getDeferredToken()
     {
-        return count($this->deferredObjects) ? array_shift($this->deferredObjects) : null;
+        if (!$this->deferredObjectsCount) {
+            return null;
+        }
+
+        --$this->deferredObjectsCount;
+
+        return array_shift($this->deferredObjects);
     }
 
     /**
      * Returns next token from input.
      *
-     * @return stdClass
+     * @return array
      */
     protected function getNextToken()
     {
@@ -188,7 +226,7 @@ class Lexer
             ?: $this->scanEOS()
             ?: $this->scanLanguage()
             ?: $this->scanComment()
-            ?: $this->scanPyStringOperator()
+            ?: $this->scanPyStringOp()
             ?: $this->scanPyStringContent()
             ?: $this->scanStep()
             ?: $this->scanScenario()
@@ -208,19 +246,18 @@ class Lexer
      * @param string $regex Regular expression
      * @param string $type  Expected token type
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanInput($regex, $type)
     {
-        $matches = array();
-
-        if (preg_match($regex, $this->line, $matches)) {
-            $token = $this->takeToken($type, $matches[1]);
-
-            $this->consumeLine();
-
-            return $token;
+        if (!preg_match($regex, $this->line, $matches)) {
+            return null;
         }
+
+        $token = $this->takeToken($type, $matches[1]);
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
@@ -229,49 +266,49 @@ class Lexer
      * @param string $keywords Keywords (splitted with |)
      * @param string $type     Expected token type
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanInputForKeywords($keywords, $type)
     {
-        $matches = array();
-
-        if (preg_match('/^(\s*)('.$keywords.'):\s*(.*)/u', $this->line, $matches)) {
-            $token = $this->takeToken($type, $matches[3]);
-            $token->keyword = $matches[2];
-            $token->indent  = mb_strlen($matches[1], 'utf8');
-
-            $this->consumeLine();
-
-            // turn off language searching
-            if ('Feature' === $type) {
-                $this->featureStarted = true;
-            }
-
-            // turn off PyString and Table searching
-            if (in_array($type, array('Feature', 'Scenario', 'Outline'))) {
-                $this->allowMultilineArguments = false;
-            } elseif ('Examples' === $type) {
-                $this->allowMultilineArguments = true;
-            }
-
-            // turn on steps searching
-            if (in_array($type, array('Scenario', 'Background', 'Outline'))) {
-                $this->allowSteps = true;
-            }
-
-            return $token;
+        if (!preg_match('/^(\s*)(' . $keywords . '):\s*(.*)/u', $this->line, $matches)) {
+            return null;
         }
+
+        $token = $this->takeToken($type, $matches[3]);
+        $token['keyword'] = $matches[2];
+        $token['indent'] = mb_strlen($matches[1], 'utf8');
+
+        $this->consumeLine();
+
+        // turn off language searching
+        if ('Feature' === $type) {
+            $this->featureStarted = true;
+        }
+
+        // turn off PyString and Table searching
+        if ('Feature' === $type || 'Scenario' === $type || 'Outline' === $type) {
+            $this->allowMultilineArguments = false;
+        } elseif ('Examples' === $type) {
+            $this->allowMultilineArguments = true;
+        }
+
+        // turn on steps searching
+        if ('Scenario' === $type || 'Background' === $type || 'Outline' === $type) {
+            $this->allowSteps = true;
+        }
+
+        return $token;
     }
 
     /**
      * Scans EOS from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanEOS()
     {
         if (!$this->eos) {
-            return;
+            return null;
         }
 
         return $this->takeToken('EOS');
@@ -287,18 +324,18 @@ class Lexer
     protected function getKeywords($type)
     {
         if (!isset($this->keywordsCache[$type])) {
-            $getter   = 'get' . $type . 'Keywords';
+            $getter = 'get' . $type . 'Keywords';
             $keywords = $this->keywords->$getter();
 
             if ('Step' === $type) {
-                $paded = array();
+                $padded = array();
                 foreach (explode('|', $keywords) as $keyword) {
-                    $paded[] = false !== mb_strpos($keyword, '<', 0, 'utf8')
-                        ? mb_substr($keyword, 0, -1, 'utf8').'\s*'
-                        : $keyword.'\s+';
+                    $padded[] = false !== mb_strpos($keyword, '<', 0, 'utf8')
+                        ? mb_substr($keyword, 0, -1, 'utf8') . '\s*'
+                        : $keyword . '\s+';
                 }
 
-                $keywords = implode('|', $paded);
+                $keywords = implode('|', $padded);
             }
 
             $this->keywordsCache[$type] = $keywords;
@@ -310,7 +347,7 @@ class Lexer
     /**
      * Scans Feature from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanFeature()
     {
@@ -320,7 +357,7 @@ class Lexer
     /**
      * Scans Background from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanBackground()
     {
@@ -330,7 +367,7 @@ class Lexer
     /**
      * Scans Scenario from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanScenario()
     {
@@ -340,7 +377,7 @@ class Lexer
     /**
      * Scans Scenario Outline from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanOutline()
     {
@@ -350,7 +387,7 @@ class Lexer
     /**
      * Scans Scenario Outline Examples from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanExamples()
     {
@@ -360,174 +397,185 @@ class Lexer
     /**
      * Scans Step from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanStep()
     {
         if (!$this->allowSteps) {
-            return;
+            return null;
         }
-
-        $matches = array();
 
         $keywords = $this->getKeywords('Step');
-        if (preg_match('/^\s*('.$keywords.')([^\s].+)/u', $this->line, $matches)) {
-            $token = $this->takeToken('Step', trim($matches[1]));
-            $token->text = $matches[2];
-
-            $this->consumeLine();
-            $this->allowMultilineArguments = true;
-
-            return $token;
+        if (!preg_match('/^\s*(' . $keywords . ')([^\s].+)/u', $this->line, $matches)) {
+            return null;
         }
+
+        $token = $this->takeToken('Step', trim($matches[1]));
+        $token['text'] = $matches[2];
+
+        $this->consumeLine();
+        $this->allowMultilineArguments = true;
+
+        return $token;
     }
 
     /**
      * Scans PyString from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
-    protected function scanPyStringOperator()
+    protected function scanPyStringOp()
     {
         if (!$this->allowMultilineArguments) {
-            return;
+            return null;
         }
 
-        $matches = array();
-
-        if (false !== ($pos = mb_strpos($this->line, '"""', 0, 'utf8'))) {
-            $this->inPyString =! $this->inPyString;
-            $token = $this->takeToken('PyStringOperator');
-            $this->pyStringSwallow = $pos;
-
-            $this->consumeLine();
-
-            return $token;
+        if (false === ($pos = mb_strpos($this->line, '"""', 0, 'utf8'))) {
+            return null;
         }
+
+        $this->inPyString = !$this->inPyString;
+        $token = $this->takeToken('PyStringOp');
+        $this->pyStringSwallow = $pos;
+
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
      * Scans PyString content.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanPyStringContent()
     {
-        if ($this->inPyString) {
-            $token = $this->scanText();
-
-            // swallow trailing spaces
-            $token->value = preg_replace('/^\s{0,'.$this->pyStringSwallow.'}/', '', $token->value);
-
-            return $token;
+        if (!$this->inPyString) {
+            return null;
         }
+
+        $token = $this->scanText();
+        // swallow trailing spaces
+        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value']);
+
+        return $token;
     }
 
     /**
      * Scans Table Row from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanTableRow()
     {
         if (!$this->allowMultilineArguments) {
-            return;
+            return null;
         }
 
-        $line = trim($this->line);
-
-        if (isset($line[0]) && '|' === $line[0]) {
-            $token = $this->takeToken('TableRow');
-
-            $line = mb_substr($line, 1, mb_strlen($line, 'utf8') - 2, 'utf8');
-            $columns = array_map(function($column) {
-                return trim(str_replace('\\|', '|', $column));
-            }, preg_split('/(?<!\\\)\|/', $line));
-            $token->columns = $columns;
-
-            $this->consumeLine();
-
-            return $token;
+        $line = $this->getTrimmedLine();
+        if (!isset($line[0]) || '|' !== $line[0]) {
+            return null;
         }
+
+        $token = $this->takeToken('TableRow');
+        $line = mb_substr($line, 1, mb_strlen($line, 'utf8') - 2, 'utf8');
+        $columns = array_map(function ($column) {
+            return trim(str_replace('\\|', '|', $column));
+        }, preg_split('/(?<!\\\)\|/u', $line));
+        $token['columns'] = $columns;
+
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
      * Scans Tags from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanTags()
     {
-        $line = trim($this->line);
-
-        if (isset($line[0]) && '@' === $line[0]) {
-            $token = $this->takeToken('Tag');
-            $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
-            $tags = array_map('trim', $tags);
-            $token->tags = $tags;
-
-            $this->consumeLine();
-
-            return $token;
+        $line = $this->getTrimmedLine();
+        if (!isset($line[0]) || '@' !== $line[0]) {
+            return null;
         }
+
+        $token = $this->takeToken('Tag');
+        $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
+        $tags = array_map('trim', $tags);
+        $token['tags'] = $tags;
+
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
      * Scans Language specifier from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanLanguage()
     {
         if ($this->featureStarted) {
-            return;
+            return null;
         }
 
-        if (!$this->inPyString) {
-            if (0 === mb_strpos(ltrim($this->line), '#', 0, 'utf8') && false !== mb_strpos($this->line, 'language', 0, 'utf8')) {
-                return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
-            }
+        if ($this->inPyString) {
+            return null;
         }
+
+        if (0 !== mb_strpos(ltrim($this->line), '#', 0, 'utf8')) {
+            return null;
+        }
+
+        return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
     }
 
     /**
      * Scans Comment from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanComment()
     {
-        if (!$this->inPyString) {
-            if (0 === mb_strpos(ltrim($this->line), '#', 0, 'utf8')) {
-                $token = $this->takeToken('Comment', $this->line);
-
-                $this->consumeLine();
-
-                return $token;
-            }
+        if ($this->inPyString) {
+            return null;
         }
+
+        $line = $this->getTrimmedLine();
+        if (0 !== mb_strpos($line, '#', 0, 'utf8')) {
+            return null;
+        }
+
+        $token = $this->takeToken('Comment', $line);
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
      * Scans Newline from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanNewline()
     {
-        if ('' === trim($this->line)) {
-            $token = $this->takeToken('Newline', mb_strlen($this->line, 'utf8'));
-
-            $this->consumeLine();
-
-            return $token;
+        if ('' !== $this->getTrimmedLine()) {
+            return null;
         }
+
+        $token = $this->takeToken('Newline', mb_strlen($this->line, 'utf8'));
+        $this->consumeLine();
+
+        return $token;
     }
 
     /**
      * Scans text from input & returns it if found.
      *
-     * @return stdClass|null
+     * @return null|array
      */
     protected function scanText()
     {

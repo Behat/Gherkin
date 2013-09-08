@@ -2,16 +2,15 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Filter interface.
@@ -32,16 +31,18 @@ interface FilterInterface
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param ScenarioNode $scenario Scenario or Outline node instance
+     * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioNode $scenario);
+    public function isScenarioMatch(ScenarioInterface $scenario);
 
     /**
-     * Filters feature according to the filter.
+     * Filters feature according to the filter and returns new one.
      *
      * @param FeatureNode $feature
+     *
+     * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature);
 }

@@ -13,10 +13,10 @@ foreach ($array as $lang => $keywords) {
         }
 
         usort($stepTypes, function($type1, $type2) {
-            return mb_strlen($type1, 'utf8') - mb_strlen($type2, 'utf8');
+            return mb_strlen($type2, 'utf8') - mb_strlen($type1, 'utf8');
         });
 
-        $array[$lang][$type] = implode('|', array_reverse($stepTypes));
+        $array[$lang][$type] = implode('|', $stepTypes);
     }
 }
 

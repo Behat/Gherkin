@@ -2,17 +2,17 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode,
-    Behat\Gherkin\Node\OutlineNode;
-
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Node\ExampleTableNode;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Filters scenarios by definition line number range.
@@ -50,27 +50,25 @@ class LineRangeFilter implements FilterInterface
     public function isFeatureMatch(FeatureNode $feature)
     {
         return $this->filterMinLine <= $feature->getLine()
-            && $this->filterMaxLine >= $feature->getLine()
-        ;
+            && $this->filterMaxLine >= $feature->getLine();
     }
 
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param ScenarioNode $scenario Scenario or Outline node instance
+     * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioNode $scenario)
+    public function isScenarioMatch(ScenarioInterface $scenario)
     {
-        if ($this->filterMinLine <= $scenario->getLine()
-         && $this->filterMaxLine >= $scenario->getLine()) {
+        if ($this->filterMinLine <= $scenario->getLine() && $this->filterMaxLine >= $scenario->getLine()) {
             return true;
         }
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-            foreach ($scenario->getExamples()->getRowLines() as $line) {
-                if ($line >= $this->filterMinLine && $line <= $this->filterMaxLine) {
+            foreach ($scenario->getExampleTable()->getLines() as $line) {
+                if ($this->filterMinLine <= $line && $this->filterMaxLine >= $line) {
                     return true;
                 }
             }
@@ -83,32 +81,53 @@ class LineRangeFilter implements FilterInterface
      * Filters feature according to the filter.
      *
      * @param FeatureNode $feature
+     *
+     * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = $feature->getScenarios();
-        foreach ($scenarios as $i => $scenario) {
+        $scenarios = array();
+        foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($scenario)) {
-                unset($scenarios[$i]);
                 continue;
             }
 
             if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $lines = $scenario->getExamples()->getRowLines();
-                $rows  = $scenario->getExamples()->getNumeratedRows();
+                $table = $scenario->getExampleTable()->getTable();
+                $lines = array_keys($table);
 
-                $scenario->getExamples()->setRows(array());
-                $scenario->getExamples()->addRow($rows[$lines[0]], $lines[0]);
-                unset($rows[$lines[0]]);
+                $filteredTable = array($lines[0] => $table[$lines[0]]);
+                unset($table[$lines[0]]);
 
-                foreach ($rows as $line => $row) {
+                foreach ($table as $line => $row) {
                     if ($this->filterMinLine <= $line && $this->filterMaxLine >= $line) {
-                        $scenario->getExamples()->addRow($row, $line);
+                        $filteredTable[$line] = $row;
                     }
                 }
+
+                $scenario = new OutlineNode(
+                    $scenario->getTitle(),
+                    $scenario->getOwnTags(),
+                    $scenario->getSteps(),
+                    new ExampleTableNode($filteredTable, $scenario->getExampleTable()->getKeyword()),
+                    $scenario->getKeyword(),
+                    $scenario->getLine()
+                );
             }
+
+            $scenarios[] = $scenario;
         }
 
-        $feature->setScenarios($scenarios);
+        return new FeatureNode(
+            $feature->getTitle(),
+            $feature->getDescription(),
+            $feature->getTags(),
+            $feature->getBackground(),
+            $scenarios,
+            $feature->getKeyword(),
+            $feature->getLanguage(),
+            $feature->getFile(),
+            $feature->getLine()
+        );
     }
 }

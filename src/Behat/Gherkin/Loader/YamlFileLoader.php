@@ -2,11 +2,12 @@
 
 namespace Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Node\FeatureNode;
 use Symfony\Component\Yaml\Yaml;
 
 /*
  * This file is part of the Behat Gherkin.
- * (c) 2011 Konstantin Kudryashov <ever.zet@gmail.com>
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -24,7 +25,7 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @param mixed $path Resource to load
      *
      * @return Boolean
      */
@@ -38,9 +39,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @param mixed $path Resource to load
      *
-     * @return array
+     * @return FeatureNode[]
      */
     public function load($path)
     {
@@ -50,11 +51,19 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
         $features = parent::load($hash);
         $filename = $this->findRelativePath($path);
 
-        foreach ($features as $feature) {
-            $feature->setFile($filename);
-        }
-
-        return $features;
+        return array_map(function(FeatureNode $feature) use($filename) {
+            return new FeatureNode(
+                $feature->getTitle(),
+                $feature->getDescription(),
+                $feature->getTags(),
+                $feature->getBackground(),
+                $feature->getScenarios(),
+                $feature->getKeyword(),
+                $feature->getLanguage(),
+                $filename,
+                $feature->getLine()
+            );
+        }, $features);
     }
 
     /**

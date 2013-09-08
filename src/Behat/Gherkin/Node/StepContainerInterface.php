@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\Gherkin\Loader;
+namespace Behat\Gherkin\Node;
 
 /*
  * This file is part of the Behat Gherkin.
@@ -11,16 +11,23 @@ namespace Behat\Gherkin\Loader;
  */
 
 /**
- * File Loader interface.
+ * Gherkin step container interface.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-interface FileLoaderInterface extends LoaderInterface
+interface StepContainerInterface extends NodeInterface
 {
     /**
-     * Sets base features path.
+     * Checks if container has steps.
      *
-     * @param string $path Base loader path
+     * @return Boolean
      */
-    public function setBasePath($path);
+    public function hasSteps();
+
+    /**
+     * Returns container steps.
+     *
+     * @return StepNode[]
+     */
+    public function getSteps();
 }

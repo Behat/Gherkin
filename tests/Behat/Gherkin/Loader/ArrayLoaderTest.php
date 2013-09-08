@@ -178,7 +178,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(array('user' => 'ever', 'pass' => 'sdsd'), array('user' => 'anto', 'pass' => 'fdfd')),
-            $scenario->getExamples()->getHash()
+            $scenario->getExampleTable()->getHash()
         );
     }
 
