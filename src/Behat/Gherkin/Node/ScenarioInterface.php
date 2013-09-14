@@ -41,7 +41,7 @@ interface ScenarioInterface extends StepContainerInterface, TaggedNodeInterface
     /**
      * Sets scenario feature.
      *
-     * @param FeatureNode $feature
+     * @return FeatureNode
      */
     public function getFeature();
 }
