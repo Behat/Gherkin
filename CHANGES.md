@@ -1,3 +1,10 @@
+3.0.2 / 2013-09-14
+==================
+
+  * Extract `KeywordNodeInterface` and `ScenarioLikeInterface`
+  * Add `getIndex()` methods to scenarios, outlines, steps and examples
+  * Throw proper exception for fractured node tree
+
 3.0.1 / 2013-09-14
 ==================
 
