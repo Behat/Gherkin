@@ -228,6 +228,16 @@ class OutlineNode implements ScenarioInterface
     }
 
     /**
+     * Returns scenario index (scenario ordinal number in feature).
+     *
+     * @return integer
+     */
+    public function getIndex()
+    {
+        return array_search($this, $this->feature->getScenarios());
+    }
+
+    /**
      * Returns feature language.
      *
      * @return string

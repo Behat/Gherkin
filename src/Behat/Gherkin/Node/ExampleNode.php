@@ -99,6 +99,16 @@ class ExampleNode implements StepContainerInterface
     }
 
     /**
+     * Returns example index (example ordinal number in outline).
+     *
+     * @return integer
+     */
+    public function getIndex()
+    {
+        return array_search($this, $this->outline->getExamples());
+    }
+
+    /**
      * Returns outline language.
      *
      * @return string

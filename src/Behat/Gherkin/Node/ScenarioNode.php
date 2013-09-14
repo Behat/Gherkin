@@ -167,6 +167,16 @@ class ScenarioNode implements ScenarioInterface
     }
 
     /**
+     * Returns scenario index (scenario ordinal number in feature).
+     *
+     * @return integer
+     */
+    public function getIndex()
+    {
+        return array_search($this, $this->feature->getScenarios());
+    }
+
+    /**
      * Returns scenario keyword.
      *
      * @return string

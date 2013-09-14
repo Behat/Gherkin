@@ -129,6 +129,16 @@ class StepNode implements NodeInterface
     }
 
     /**
+     * Returns step index (step ordinal number in container).
+     *
+     * @return integer
+     */
+    public function getIndex()
+    {
+        return array_search($this, $this->container->getSteps());
+    }
+
+    /**
      * Returns feature language.
      *
      * @return string

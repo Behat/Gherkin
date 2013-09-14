@@ -23,4 +23,11 @@ interface ScenarioInterface extends ScenarioLikeInterface, TaggedNodeInterface
      * @return array
      */
     public function getOwnTags();
+
+    /**
+     * Returns scenario index (scenario ordinal number).
+     *
+     * @return integer
+     */
+    public function getIndex();
 }
