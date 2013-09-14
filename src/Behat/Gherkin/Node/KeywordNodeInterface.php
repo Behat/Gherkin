@@ -11,16 +11,23 @@ namespace Behat\Gherkin\Node;
  */
 
 /**
- * Gherkin scenario interface.
+ * Gherkin keyword node interface.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-interface ScenarioInterface extends ScenarioLikeInterface, TaggedNodeInterface
+interface KeywordNodeInterface extends NodeInterface
 {
     /**
-     * Returns scenario own tags (excluding ones inherited from feature).
+     * Returns node keyword.
      *
-     * @return array
+     * @return string
      */
-    public function getOwnTags();
+    public function getKeyword();
+
+    /**
+     * Returns node title.
+     *
+     * @return null|string
+     */
+    public function getTitle();
 }

@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class FeatureNode implements TaggedNodeInterface
+class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
 {
     /**
      * @var null|string

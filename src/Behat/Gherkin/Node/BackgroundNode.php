@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class BackgroundNode implements StepContainerInterface
+class BackgroundNode implements ScenarioLikeInterface
 {
     /**
      * @var string
