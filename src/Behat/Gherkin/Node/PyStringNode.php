@@ -9,6 +9,7 @@ namespace Behat\Gherkin\Node;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\NodeException;
 
 /**
  * Represents Gherkin PyString argument.
@@ -106,9 +107,15 @@ class PyStringNode implements ArgumentInterface
      * Returns feature language.
      *
      * @return string
+     *
+     * @throws NodeException If subject is not set
      */
     public function getLanguage()
     {
+        if (null === $this->subject) {
+            throw new NodeException('Can not identify language of argument that is not bound to subject.');
+        }
+
         return $this->subject->getLanguage();
     }
 
@@ -116,9 +123,15 @@ class PyStringNode implements ArgumentInterface
      * Returns feature file
      *
      * @return string
+     *
+     * @throws NodeException If subject is not set
      */
     public function getFile()
     {
+        if (null === $this->subject) {
+            throw new NodeException('Can not identify file of argument that is not bound to subject.');
+        }
+
         return $this->subject->getFile();
     }
 

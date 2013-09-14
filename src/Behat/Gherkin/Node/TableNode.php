@@ -9,6 +9,7 @@ namespace Behat\Gherkin\Node;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\NodeException;
 
 /**
  * Represents Gherkin Table argument.
@@ -138,29 +139,41 @@ class TableNode implements ArgumentInterface
     /**
      * Returns specific row in a table.
      *
-     * @param integer $rowNum Row number
+     * @param integer $index Row number
      *
      * @return array
+     *
+     * @throws NodeException If row with specified index does not exist
      */
-    public function getRow($rowNum)
+    public function getRow($index)
     {
         $rows = $this->getRows();
 
-        return $rows[$rowNum];
+        if (!isset($rows[$index])) {
+            throw new NodeException(sprintf('Rows #%d does not exist in table.', $index));
+        }
+
+        return $rows[$index];
     }
 
     /**
      * Returns line number at which specific row was defined.
      *
-     * @param integer $rowNum
+     * @param integer $index
      *
      * @return integer
+     *
+     * @throws NodeException If row with specified index does not exist
      */
-    public function getRowLine($rowNum)
+    public function getRowLine($index)
     {
         $lines = array_keys($this->table);
 
-        return $lines[$rowNum];
+        if (!isset($lines[$index])) {
+            throw new NodeException(sprintf('Rows #%d does not exist in table.', $index));
+        }
+
+        return $lines[$index];
     }
 
     /**
@@ -219,9 +232,15 @@ class TableNode implements ArgumentInterface
      * Returns feature language.
      *
      * @return string
+     *
+     * @throws NodeException If subject is not set
      */
     public function getLanguage()
     {
+        if (null === $this->subject) {
+            throw new NodeException('Can not identify language of argument that is not bound to subject.');
+        }
+
         return $this->subject->getLanguage();
     }
 
@@ -229,9 +248,15 @@ class TableNode implements ArgumentInterface
      * Returns feature file
      *
      * @return string
+     *
+     * @throws NodeException If subject is not set
      */
     public function getFile()
     {
+        if (null === $this->subject) {
+            throw new NodeException('Can not identify file of argument that is not bound to subject.');
+        }
+
         return $this->subject->getFile();
     }
 

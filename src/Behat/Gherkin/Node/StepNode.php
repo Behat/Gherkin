@@ -9,6 +9,7 @@ namespace Behat\Gherkin\Node;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\NodeException;
 
 /**
  * Represents Gherkin Step.
@@ -132,9 +133,15 @@ class StepNode implements NodeInterface
      * Returns step index (step ordinal number in container).
      *
      * @return integer
+     *
+     * @throws NodeException If container is not set
      */
     public function getIndex()
     {
+        if (null === $this->container) {
+            throw new NodeException('Can not identify index of step that is not bound to container.');
+        }
+
         return array_search($this, $this->container->getSteps());
     }
 
@@ -142,9 +149,15 @@ class StepNode implements NodeInterface
      * Returns feature language.
      *
      * @return string
+     *
+     * @throws NodeException If container is not set
      */
     public function getLanguage()
     {
+        if (null === $this->container) {
+            throw new NodeException('Can not identify language of step that is not bound to container.');
+        }
+
         return $this->container->getLanguage();
     }
 
@@ -152,9 +165,15 @@ class StepNode implements NodeInterface
      * Returns feature file.
      *
      * @return null|string
+     *
+     * @throws NodeException If container is not set
      */
     public function getFile()
     {
+        if (null === $this->container) {
+            throw new NodeException('Can not identify file of step that is not bound to container.');
+        }
+
         return $this->container->getFile();
     }
 

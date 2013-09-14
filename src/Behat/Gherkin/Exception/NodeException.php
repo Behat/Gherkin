@@ -10,6 +10,6 @@ namespace Behat\Gherkin\Exception;
  * file that was distributed with this source code.
  */
 
-class Exception extends \Exception
+class NodeException extends Exception
 {
 }

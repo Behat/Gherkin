@@ -163,7 +163,7 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        $examples = null;
+        $examples = new ExampleTableNode(array(), 'Examples');
         if (isset($hash['examples'])) {
             if (isset($hash['examples']['keyword'])) {
                 $examplesKeyword = $hash['examples']['keyword'];

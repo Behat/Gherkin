@@ -9,6 +9,7 @@ namespace Behat\Gherkin\Node;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\NodeException;
 
 /**
  * Represents Gherkin Scenario.
@@ -110,9 +111,15 @@ class ScenarioNode implements ScenarioInterface
      * Returns scenario tags (including inherited from feature).
      *
      * @return array
+     *
+     * @throws NodeException If feature is not set
      */
     public function getTags()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify tags of scenario that is not bound to feature.');
+        }
+
         return array_merge($this->feature->getTags(), $this->tags);
     }
 
@@ -170,9 +177,15 @@ class ScenarioNode implements ScenarioInterface
      * Returns scenario index (scenario ordinal number in feature).
      *
      * @return integer
+     *
+     * @throws NodeException If feature is not set
      */
     public function getIndex()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify index of scenario that is not bound to feature.');
+        }
+
         return array_search($this, $this->feature->getScenarios());
     }
 
@@ -190,9 +203,15 @@ class ScenarioNode implements ScenarioInterface
      * Returns feature language.
      *
      * @return string
+     *
+     * @throws NodeException If feature is not set
      */
     public function getLanguage()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify language of scenario that is not bound to feature.');
+        }
+
         return $this->feature->getLanguage();
     }
 
@@ -200,9 +219,15 @@ class ScenarioNode implements ScenarioInterface
      * Returns feature file.
      *
      * @return null|string
+     *
+     * @throws NodeException If feature is not set
      */
     public function getFile()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify file of scenario that is not bound to feature.');
+        }
+
         return $this->feature->getFile();
     }
 

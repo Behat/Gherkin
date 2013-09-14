@@ -11,4 +11,5 @@ namespace Behat\Gherkin\Exception;
  */
 
 class LexerException extends Exception
-{}
+{
+}

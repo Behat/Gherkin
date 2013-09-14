@@ -9,6 +9,7 @@ namespace Behat\Gherkin\Node;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+use Behat\Gherkin\Exception\NodeException;
 
 /**
  * Represents Gherkin Background.
@@ -132,9 +133,15 @@ class BackgroundNode implements ScenarioLikeInterface
      * Returns feature language.
      *
      * @return string
+     *
+     * @throws NodeException If feature is not set
      */
     public function getLanguage()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify language of background that is not bound to feature.');
+        }
+
         return $this->feature->getLanguage();
     }
 
@@ -142,9 +149,15 @@ class BackgroundNode implements ScenarioLikeInterface
      * Returns feature file.
      *
      * @return null|string
+     *
+     * @throws NodeException If feature is not set
      */
     public function getFile()
     {
+        if (null === $this->feature) {
+            throw new NodeException('Can not identify file of background that is not bound to feature.');
+        }
+
         return $this->feature->getFile();
     }
 
