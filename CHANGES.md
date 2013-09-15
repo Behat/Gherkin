@@ -1,3 +1,8 @@
+3.0.3 / 2013-09-15
+==================
+
+  * Extend ExampleNode with additional methods
+
 3.0.2 / 2013-09-14
 ==================
 
