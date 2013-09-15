@@ -59,6 +59,16 @@ class ExampleNode implements StepContainerInterface
     }
 
     /**
+     * Returns example title.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->outline->getExampleTable()->getRowAsString($this->getIndex() + 1);
+    }
+
+    /**
      * Checks if outline has steps.
      *
      * @return Boolean
@@ -75,7 +85,7 @@ class ExampleNode implements StepContainerInterface
      */
     public function getSteps()
     {
-        return $this->steps = $this->steps ?: $this->createExampleSteps();
+        return $this->steps = $this->steps ? : $this->createExampleSteps();
     }
 
     /**

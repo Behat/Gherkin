@@ -186,8 +186,28 @@ class TableNode implements ArgumentInterface
     public function getRowAsString($rowNum)
     {
         $values = array();
-        foreach ($this->getRow($rowNum) as $column => $string) {
-            $values[] = $this->padRight(' ' . $string . ' ', $this->maxLineLength[$column] + 2);
+        foreach ($this->getRow($rowNum) as $column => $value) {
+            $values[] = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+        }
+
+        return sprintf('|%s|', implode('|', $values));
+    }
+
+    /**
+     * Converts row into delimited string.
+     *
+     * @param integer  $rowNum  Row number
+     * @param callable $wrapper Wrapper function
+     *
+     * @return string
+     */
+    public function getRowAsStringWithWrappedValues($rowNum, $wrapper)
+    {
+        $values = array();
+        foreach ($this->getRow($rowNum) as $column => $value) {
+            $value = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+
+            $values[] = call_user_func($wrapper, $value, $column);
         }
 
         return sprintf('|%s|', implode('|', $values));
@@ -209,16 +229,6 @@ class TableNode implements ArgumentInterface
     }
 
     /**
-     * Sets table subject node.
-     *
-     * @param NodeInterface $subject
-     */
-    public function setSubject(NodeInterface $subject)
-    {
-        $this->subject = $subject;
-    }
-
-    /**
      * Returns table subject.
      *
      * @return NodeInterface
@@ -226,6 +236,16 @@ class TableNode implements ArgumentInterface
     public function getSubject()
     {
         return $this->subject;
+    }
+
+    /**
+     * Sets table subject node.
+     *
+     * @param NodeInterface $subject
+     */
+    public function setSubject(NodeInterface $subject)
+    {
+        $this->subject = $subject;
     }
 
     /**

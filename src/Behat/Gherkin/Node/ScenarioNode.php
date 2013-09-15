@@ -124,6 +124,16 @@ class ScenarioNode implements ScenarioInterface
     }
 
     /**
+     * Checks if scenario has own tags (excluding ones inherited from feature).
+     *
+     * @return Boolean
+     */
+    public function hasOwnTags()
+    {
+        return 0 < count($this->tags);
+    }
+
+    /**
      * Returns scenario own tags (excluding ones inherited from feature).
      *
      * @return array
