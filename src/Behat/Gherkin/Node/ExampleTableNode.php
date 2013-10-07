@@ -50,6 +50,6 @@ class ExampleTableNode extends TableNode
      */
     public function getCleanRows()
     {
-        return $this->cleanRows();
+        return $this->cleanRows;
     }
 }
