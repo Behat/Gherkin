@@ -8,8 +8,8 @@ env:
   - SYMFONY_VERSION='2.3.*'
 
 before_script:
-  - curl http://getcomposer.org/installer | php
-  - php composer.phar require --no-update symfony/symfony=$SYMFONY_VERSION
-  - php composer.phar install --dev --prefer-source
+  - composer self-update
+  - composer require --no-update symfony/symfony=$SYMFONY_VERSION
+  - composer install --dev --prefer-source
 
 script: phpunit
