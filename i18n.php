@@ -464,6 +464,21 @@
     'and' => 'かつ<',
     'but' => 'しかし<|ただし<|但し<',
   ),
+  'kn' => 
+  array (
+    'name' => 'Kannada',
+    'native' => 'ಕನ್ನಡ',
+    'background' => 'ಹಿನ್ನೆಲೆ',
+    'feature' => 'ಹೆಚ್ಚಳ',
+    'scenario' => 'ಕಥಾಸಾರಾಂಶ',
+    'scenario_outline' => 'ವಿವರಣೆ',
+    'examples' => 'ಉದಾಹರಣೆಗಳು',
+    'given' => 'ನೀಡಿದ',
+    'when' => 'ಸ್ಥಿತಿಯನ್ನು',
+    'then' => 'ನಂತರ',
+    'and' => 'ಮತ್ತು',
+    'but' => 'ಆದರೆ',
+  ),
   'ko' => 
   array (
     'name' => 'Korean',
