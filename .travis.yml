@@ -12,4 +12,4 @@ before_script:
   - php composer.phar require --no-update symfony/symfony=$SYMFONY_VERSION
   - php composer.phar install --dev --prefer-source
 
-script: phpunit
+script: vendor/bin/phpunit
