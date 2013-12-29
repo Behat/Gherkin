@@ -55,10 +55,10 @@ class PathsFilter extends SimpleFilter
      *
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
-     * @return Boolean
+     * @return false This filter is designed to work only with features
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
-        return $this->isFeatureMatch($scenario->getFeature());
+        return false;
     }
 }

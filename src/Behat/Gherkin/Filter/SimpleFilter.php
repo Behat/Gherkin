@@ -28,6 +28,10 @@ abstract class SimpleFilter implements FilterInterface
      */
     public function filterFeature(FeatureNode $feature)
     {
+        if ($this->isFeatureMatch($feature)) {
+            return $feature;
+        }
+
         $scenarios = array();
         foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($scenario)) {

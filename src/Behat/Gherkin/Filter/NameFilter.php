@@ -63,10 +63,6 @@ class NameFilter extends SimpleFilter
             return true;
         }
 
-        if (null !== $scenario->getFeature()) {
-            return $this->isFeatureMatch($scenario->getFeature());
-        }
-
         return false;
     }
 }

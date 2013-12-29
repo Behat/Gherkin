@@ -29,25 +29,4 @@ class PathsFilterTest extends FilterTest
         $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
-
-    public function testIsScenarioMatchFilter()
-    {
-        $scenario = new ScenarioNode(null, array(), array(), null, 2);
-        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, '/some/path/with/some.feature', 1);
-
-        $filter = new PathsFilter(array('/some'));
-        $this->assertTrue($filter->isScenarioMatch($scenario));
-
-        $filter = new PathsFilter(array('/abc', '/def', '/some'));
-        $this->assertTrue($filter->isScenarioMatch($scenario));
-
-        $filter = new PathsFilter(array('/abc', '/def', '/some/path'));
-        $this->assertTrue($filter->isScenarioMatch($scenario));
-
-        $filter = new PathsFilter(array('/abc', '/some/path', '/def'));
-        $this->assertTrue($filter->isScenarioMatch($scenario));
-
-        $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
-        $this->assertFalse($filter->isScenarioMatch($scenario));
-    }
 }
