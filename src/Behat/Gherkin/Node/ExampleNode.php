@@ -15,16 +15,20 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ExampleNode implements StepContainerInterface
+class ExampleNode implements ScenarioInterface
 {
-    /**
-     * @var StepNode[]
-     */
-    private $outlineSteps;
     /**
      * @var string
      */
     private $title;
+    /**
+     * @var string[]
+     */
+    private $tags;
+    /**
+     * @var StepNode[]
+     */
+    private $outlineSteps;
     /**
      * @var array
      */
@@ -41,15 +45,17 @@ class ExampleNode implements StepContainerInterface
     /**
      * Initializes outline.
      *
-     * @param StepNode[] $outlineSteps
      * @param string     $title
+     * @param string[]   $tags
+     * @param StepNode[] $outlineSteps
      * @param array      $tokens
      * @param integer    $line
      */
-    public function __construct(array $outlineSteps, $title, array $tokens, $line)
+    public function __construct($title, array $tags, $outlineSteps, array $tokens, $line)
     {
-        $this->outlineSteps = $outlineSteps;
         $this->title = $title;
+        $this->tags = $tags;
+        $this->outlineSteps = $outlineSteps;
         $this->tokens = $tokens;
         $this->line = $line;
     }
@@ -65,6 +71,16 @@ class ExampleNode implements StepContainerInterface
     }
 
     /**
+     * Returns node keyword.
+     *
+     * @return string
+     */
+    public function getKeyword()
+    {
+        return $this->getNodeType();
+    }
+
+    /**
      * Returns example title.
      *
      * @return string
@@ -72,6 +88,38 @@ class ExampleNode implements StepContainerInterface
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Checks if outline is tagged with tag.
+     *
+     * @param string $tag
+     *
+     * @return Boolean
+     */
+    public function hasTag($tag)
+    {
+        return in_array($tag, $this->getTags());
+    }
+
+    /**
+     * Checks if outline has tags (both inherited from feature and own).
+     *
+     * @return Boolean
+     */
+    public function hasTags()
+    {
+        return 0 < count($this->getTags());
+    }
+
+    /**
+     * Returns outline tags (including inherited from feature).
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**

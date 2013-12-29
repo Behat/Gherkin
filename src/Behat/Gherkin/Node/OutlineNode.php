@@ -204,8 +204,9 @@ class OutlineNode implements ScenarioInterface
         $examples = array();
         foreach ($this->table->getColumnsHash() as $rowNum => $row) {
             $examples[] = new ExampleNode(
-                $this->getSteps(),
                 $this->table->getRowAsString($rowNum + 1),
+                $this->tags,
+                $this->getSteps(),
                 $row,
                 $this->table->getRowLine($rowNum + 1)
             );
