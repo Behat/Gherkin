@@ -12,6 +12,6 @@ namespace Behat\Gherkin\Exception;
 
 use RuntimeException;
 
-class LexerException extends RuntimeException implements Exception
+class NoLoaderFoundException extends RuntimeException implements Exception
 {
 }

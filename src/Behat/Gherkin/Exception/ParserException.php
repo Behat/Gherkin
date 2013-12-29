@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Exception;
 
-class ParserException extends Exception
+use RuntimeException;
+
+class ParserException extends RuntimeException implements Exception
 {
 }

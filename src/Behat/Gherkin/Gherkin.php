@@ -10,12 +10,12 @@
 
 namespace Behat\Gherkin;
 
+use Behat\Gherkin\Exception\NoLoaderFoundException;
 use Behat\Gherkin\Filter\FilterInterface;
 use Behat\Gherkin\Filter\LineFilter;
 use Behat\Gherkin\Filter\LineRangeFilter;
 use Behat\Gherkin\Loader\FileLoaderInterface;
 use Behat\Gherkin\Loader\LoaderInterface;
-use InvalidArgumentException;
 
 /**
  * Gherkin manager.
@@ -75,7 +75,7 @@ class Gherkin
      *
      * @return array
      *
-     * @throws InvalidArgumentException
+     * @throws NoLoaderFoundException
      */
     public function load($resource, array $filters = array())
     {
@@ -99,7 +99,7 @@ class Gherkin
                 $message = sprintf('Can\'t find applicable feature loader');
             }
 
-            throw new InvalidArgumentException(
+            throw new NoLoaderFoundException(
                 $message . "\n" .
                 'Maybe you\'ve forgot to create `features/` folder?'
             );
