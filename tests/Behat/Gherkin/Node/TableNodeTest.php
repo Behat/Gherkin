@@ -39,6 +39,25 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testIterator()
+    {
+        $table = new TableNode(array(
+            array('username', 'password'),
+            array('', 'qwerty'),
+            array('antono', ''),
+            array('', '')
+        ));
+
+        $this->assertEquals(
+            array(
+                array('username' => '', 'password' => 'qwerty')
+                , array('username' => 'antono', 'password' => '')
+                , array('username' => '', 'password' => '')
+            )
+          , iterator_to_array($table)
+        );
+    }
+
     public function testRowsHashTable()
     {
         $table = new TableNode(array(
