@@ -1,9 +1,5 @@
 <?php
 
-namespace Behat\Gherkin\Keywords;
-
-use Symfony\Component\Yaml\Yaml;
-
 /*
  * This file is part of the Behat Gherkin.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -11,6 +7,10 @@ use Symfony\Component\Yaml\Yaml;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\Gherkin\Keywords;
+
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Cucumber-translations reader.

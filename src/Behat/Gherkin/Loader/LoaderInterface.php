@@ -1,7 +1,5 @@
 <?php
 
-namespace Behat\Gherkin\Loader;
-
 /*
  * This file is part of the Behat Gherkin.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -9,6 +7,9 @@ namespace Behat\Gherkin\Loader;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\Gherkin\Loader;
+
 use Behat\Gherkin\Node\FeatureNode;
 
 /**

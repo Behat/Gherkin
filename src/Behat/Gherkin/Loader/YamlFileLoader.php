@@ -1,10 +1,5 @@
 <?php
 
-namespace Behat\Gherkin\Loader;
-
-use Behat\Gherkin\Node\FeatureNode;
-use Symfony\Component\Yaml\Yaml;
-
 /*
  * This file is part of the Behat Gherkin.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +7,11 @@ use Symfony\Component\Yaml\Yaml;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\Gherkin\Loader;
+
+use Behat\Gherkin\Node\FeatureNode;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Yaml files loader.

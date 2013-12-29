@@ -1,9 +1,5 @@
 <?php
 
-namespace Behat\Gherkin\Keywords;
-
-use Behat\Gherkin\Keywords\KeywordsInterface;
-
 /*
  * This file is part of the Behat Gherkin.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -11,6 +7,8 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+namespace Behat\Gherkin\Keywords;
 
 /**
  * Gherkin keywords dumper.
@@ -56,7 +54,7 @@ class KeywordsDumper
     public function dumpKeywords(array $keywords, $isShort)
     {
         if ($isShort) {
-            return 1 < count($keywords) ? '('.implode('|', $keywords).')' : $keywords[0];
+            return 1 < count($keywords) ? '(' . implode('|', $keywords) . ')' : $keywords[0];
         }
 
         return $keywords[0];
@@ -83,13 +81,13 @@ class KeywordsDumper
         if ($short) {
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
 
-            return trim($languageComment.$this->dumpFeature($keywords, $short));
+            return trim($languageComment . $this->dumpFeature($keywords, $short));
         }
 
         $features = array();
         foreach ($keywords as $keyword) {
-            $keyword    = call_user_func($this->keywordsDumper, array($keyword), $short);
-            $features[] = trim($languageComment.$this->dumpFeature($keyword, $short));
+            $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+            $features[] = trim($languageComment . $this->dumpFeature($keyword, $short));
         }
 
         return $features;
@@ -118,9 +116,9 @@ GHERKIN;
         $keywords = explode('|', $this->keywords->getBackgroundKeywords());
         if ($short) {
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
-            $dump    .= $this->dumpBackground($keywords, $short);
+            $dump .= $this->dumpBackground($keywords, $short);
         } else {
-            $keyword  = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+            $keyword = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
             $dump .= $this->dumpBackground($keyword, $short);
         }
 
@@ -128,11 +126,11 @@ GHERKIN;
         $keywords = explode('|', $this->keywords->getScenarioKeywords());
         if ($short) {
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
-            $dump    .= $this->dumpScenario($keywords, $short);
+            $dump .= $this->dumpScenario($keywords, $short);
         } else {
             foreach ($keywords as $keyword) {
                 $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
-                $dump   .= $this->dumpScenario($keyword, $short);
+                $dump .= $this->dumpScenario($keyword, $short);
             }
         }
 
@@ -140,11 +138,11 @@ GHERKIN;
         $keywords = explode('|', $this->keywords->getOutlineKeywords());
         if ($short) {
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
-            $dump    .= $this->dumpOutline($keywords, $short);
+            $dump .= $this->dumpOutline($keywords, $short);
         } else {
             foreach ($keywords as $keyword) {
                 $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
-                $dump   .= $this->dumpOutline($keyword, $short);
+                $dump .= $this->dumpOutline($keyword, $short);
             }
         }
 
@@ -176,7 +174,7 @@ GHERKIN;
             $this->keywords->getAndKeywords(), 'there is agent B', $short
         );
 
-        return $dump."\n";
+        return $dump . "\n";
     }
 
     /**
@@ -219,7 +217,7 @@ GHERKIN;
             $this->keywords->getButKeywords(), 'there should not be agent K', $short
         );
 
-        return $dump."\n";
+        return $dump . "\n";
     }
 
     /**
@@ -277,7 +275,7 @@ GHERKIN;
 
 GHERKIN;
 
-        return $dump."\n";
+        return $dump . "\n";
     }
 
     /**
@@ -295,11 +293,13 @@ GHERKIN;
 
         $keywords = explode('|', $keywords);
         if ($short) {
-            $keywords = array_map(function($keyword) {
-                return str_replace('<', '', $keyword);
-            }, $keywords);
+            $keywords = array_map(
+                function ($keyword) {
+                    return str_replace('<', '', $keyword);
+                }, $keywords
+            );
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
-            $dump    .= <<<GHERKIN
+            $dump .= <<<GHERKIN
     {$keywords} {$text}
 
 GHERKIN;
@@ -308,10 +308,10 @@ GHERKIN;
                 $indent = ' ';
                 if (false !== mb_strpos($keyword, '<', 0, 'utf8')) {
                     $keyword = mb_substr($keyword, 0, -1, 'utf8');
-                    $indent  = '';
+                    $indent = '';
                 }
                 $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
-                $dump   .= <<<GHERKIN
+                $dump .= <<<GHERKIN
     {$keyword}{$indent}{$text}
 
 GHERKIN;
