@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
-
 /**
  * Represents Gherkin Step.
  *
@@ -35,10 +33,6 @@ class StepNode implements NodeInterface
      * @var integer
      */
     private $line;
-    /**
-     * @var StepContainerInterface
-     */
-    private $container;
 
     /**
      * Initializes step.
@@ -54,10 +48,6 @@ class StepNode implements NodeInterface
         $this->text = $text;
         $this->arguments = $arguments;
         $this->line = $line;
-
-        foreach ($arguments as $argument) {
-            $argument->setSubject($this);
-        }
     }
 
     /**
@@ -108,74 +98,6 @@ class StepNode implements NodeInterface
     public function getArguments()
     {
         return $this->arguments;
-    }
-
-    /**
-     * Returns step parent.
-     *
-     * @return StepContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Sets step parent.
-     *
-     * @param StepContainerInterface $parent
-     */
-    public function setContainer(StepContainerInterface $parent)
-    {
-        $this->container = $parent;
-    }
-
-    /**
-     * Returns step index (step ordinal number in container).
-     *
-     * @return integer
-     *
-     * @throws NodeException If container is not set
-     */
-    public function getIndex()
-    {
-        if (null === $this->container) {
-            throw new NodeException('Can not identify index of step that is not bound to container.');
-        }
-
-        return array_search($this, $this->container->getSteps());
-    }
-
-    /**
-     * Returns feature language.
-     *
-     * @return string
-     *
-     * @throws NodeException If container is not set
-     */
-    public function getLanguage()
-    {
-        if (null === $this->container) {
-            throw new NodeException('Can not identify language of step that is not bound to container.');
-        }
-
-        return $this->container->getLanguage();
-    }
-
-    /**
-     * Returns feature file.
-     *
-     * @return null|string
-     *
-     * @throws NodeException If container is not set
-     */
-    public function getFile()
-    {
-        if (null === $this->container) {
-            throw new NodeException('Can not identify file of step that is not bound to container.');
-        }
-
-        return $this->container->getFile();
     }
 
     /**

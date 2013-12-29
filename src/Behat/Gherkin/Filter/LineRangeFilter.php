@@ -108,7 +108,7 @@ class LineRangeFilter implements FilterInterface
 
                 $scenario = new OutlineNode(
                     $scenario->getTitle(),
-                    $scenario->getOwnTags(),
+                    $scenario->getTags(),
                     $scenario->getSteps(),
                     new ExampleTableNode($filteredTable, $scenario->getExampleTable()->getKeyword()),
                     $scenario->getKeyword(),

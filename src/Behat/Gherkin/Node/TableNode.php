@@ -30,10 +30,6 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * @var integer
      */
     private $maxLineLength = array();
-    /**
-     * @var NodeInterface
-     */
-    private $subject;
 
     /**
      * Initializes table.
@@ -230,58 +226,6 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         }
 
         return implode("\n", $lines);
-    }
-
-    /**
-     * Returns table subject.
-     *
-     * @return NodeInterface
-     */
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    /**
-     * Sets table subject node.
-     *
-     * @param NodeInterface $subject
-     */
-    public function setSubject(NodeInterface $subject)
-    {
-        $this->subject = $subject;
-    }
-
-    /**
-     * Returns feature language.
-     *
-     * @return string
-     *
-     * @throws NodeException If subject is not set
-     */
-    public function getLanguage()
-    {
-        if (null === $this->subject) {
-            throw new NodeException('Can not identify language of argument that is not bound to subject.');
-        }
-
-        return $this->subject->getLanguage();
-    }
-
-    /**
-     * Returns feature file
-     *
-     * @return string
-     *
-     * @throws NodeException If subject is not set
-     */
-    public function getFile()
-    {
-        if (null === $this->subject) {
-            throw new NodeException('Can not identify file of argument that is not bound to subject.');
-        }
-
-        return $this->subject->getFile();
     }
 
     /**

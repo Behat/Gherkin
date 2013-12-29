@@ -18,9 +18,13 @@ namespace Behat\Gherkin\Node;
 class ExampleNode implements StepContainerInterface
 {
     /**
-     * @var OutlineNode
+     * @var StepNode[]
      */
-    private $outline;
+    private $outlineSteps;
+    /**
+     * @var string
+     */
+    private $title;
     /**
      * @var array
      */
@@ -37,13 +41,15 @@ class ExampleNode implements StepContainerInterface
     /**
      * Initializes outline.
      *
-     * @param OutlineNode $outline
-     * @param array       $tokens
-     * @param integer     $line
+     * @param StepNode[] $outlineSteps
+     * @param string     $title
+     * @param array      $tokens
+     * @param integer    $line
      */
-    public function __construct(OutlineNode $outline, array $tokens, $line)
+    public function __construct(array $outlineSteps, $title, array $tokens, $line)
     {
-        $this->outline = $outline;
+        $this->outlineSteps = $outlineSteps;
+        $this->title = $title;
         $this->tokens = $tokens;
         $this->line = $line;
     }
@@ -65,7 +71,7 @@ class ExampleNode implements StepContainerInterface
      */
     public function getTitle()
     {
-        return $this->outline->getExampleTable()->getRowAsString($this->getIndex() + 1);
+        return $this->title;
     }
 
     /**
@@ -75,7 +81,7 @@ class ExampleNode implements StepContainerInterface
      */
     public function hasSteps()
     {
-        return $this->outline->hasSteps();
+        return count($this->outlineSteps);
     }
 
     /**
@@ -99,46 +105,6 @@ class ExampleNode implements StepContainerInterface
     }
 
     /**
-     * Returns example outline.
-     *
-     * @return OutlineNode
-     */
-    public function getOutline()
-    {
-        return $this->outline;
-    }
-
-    /**
-     * Returns example index (example ordinal number in outline).
-     *
-     * @return integer
-     */
-    public function getIndex()
-    {
-        return array_search($this, $this->outline->getExamples());
-    }
-
-    /**
-     * Returns outline language.
-     *
-     * @return string
-     */
-    public function getLanguage()
-    {
-        return $this->outline->getLanguage();
-    }
-
-    /**
-     * Returns outline file.
-     *
-     * @return null|string
-     */
-    public function getFile()
-    {
-        return $this->outline->getFile();
-    }
-
-    /**
      * Returns outline declaration line number.
      *
      * @return integer
@@ -156,16 +122,13 @@ class ExampleNode implements StepContainerInterface
     protected function createExampleSteps()
     {
         $steps = array();
-        foreach ($this->outline->getSteps() as $outlineStep) {
+        foreach ($this->outlineSteps as $outlineStep) {
             $type = $outlineStep->getType();
             $text = $this->replaceTextTokens($outlineStep->getText());
             $args = $this->replaceArgumentsTokens($outlineStep->getArguments());
             $line = $outlineStep->getLine();
 
-            $exampleStep = new StepNode($type, $text, $args, $line);
-            $exampleStep->setContainer($this);
-
-            $steps[] = $exampleStep;
+            $steps[] = new StepNode($type, $text, $args, $line);
         }
 
         return $steps;

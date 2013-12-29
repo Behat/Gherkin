@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
-
 /**
  * Represents Gherkin Background.
  *
@@ -35,10 +33,6 @@ class BackgroundNode implements ScenarioLikeInterface
      * @var integer
      */
     private $line;
-    /**
-     * @var FeatureNode
-     */
-    private $feature;
 
     /**
      * Initializes background.
@@ -54,10 +48,6 @@ class BackgroundNode implements ScenarioLikeInterface
         $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
-
-        foreach ($this->steps as $step) {
-            $step->setContainer($this);
-        }
     }
 
     /**
@@ -101,26 +91,6 @@ class BackgroundNode implements ScenarioLikeInterface
     }
 
     /**
-     * Returns background feature.
-     *
-     * @return FeatureNode
-     */
-    public function getFeature()
-    {
-        return $this->feature;
-    }
-
-    /**
-     * Sets background feature.
-     *
-     * @param FeatureNode $feature
-     */
-    public function setFeature(FeatureNode $feature)
-    {
-        $this->feature = $feature;
-    }
-
-    /**
      * Returns background keyword.
      *
      * @return string
@@ -128,38 +98,6 @@ class BackgroundNode implements ScenarioLikeInterface
     public function getKeyword()
     {
         return $this->keyword;
-    }
-
-    /**
-     * Returns feature language.
-     *
-     * @return string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getLanguage()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify language of background that is not bound to feature.');
-        }
-
-        return $this->feature->getLanguage();
-    }
-
-    /**
-     * Returns feature file.
-     *
-     * @return null|string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getFile()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify file of background that is not bound to feature.');
-        }
-
-        return $this->feature->getFile();
     }
 
     /**

@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
-
 /**
  * Represents Gherkin Scenario.
  *
@@ -39,10 +37,6 @@ class ScenarioNode implements ScenarioInterface
      * @var integer
      */
     private $line;
-    /**
-     * @var FeatureNode
-     */
-    private $feature;
 
     /**
      * Initializes scenario.
@@ -60,10 +54,6 @@ class ScenarioNode implements ScenarioInterface
         $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
-
-        foreach ($this->steps as $step) {
-            $step->setContainer($this);
-        }
     }
 
     /**
@@ -112,34 +102,8 @@ class ScenarioNode implements ScenarioInterface
      * Returns scenario tags (including inherited from feature).
      *
      * @return array
-     *
-     * @throws NodeException If feature is not set
      */
     public function getTags()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify tags of scenario that is not bound to feature.');
-        }
-
-        return array_merge($this->feature->getTags(), $this->tags);
-    }
-
-    /**
-     * Checks if scenario has own tags (excluding ones inherited from feature).
-     *
-     * @return Boolean
-     */
-    public function hasOwnTags()
-    {
-        return 0 < count($this->tags);
-    }
-
-    /**
-     * Returns scenario own tags (excluding ones inherited from feature).
-     *
-     * @return array
-     */
-    public function getOwnTags()
     {
         return $this->tags;
     }
@@ -165,42 +129,6 @@ class ScenarioNode implements ScenarioInterface
     }
 
     /**
-     * Sets scenario feature.
-     *
-     * @param FeatureNode $feature
-     */
-    public function setFeature(FeatureNode $feature)
-    {
-        $this->feature = $feature;
-    }
-
-    /**
-     * Returns scenario feature.
-     *
-     * @return FeatureNode
-     */
-    public function getFeature()
-    {
-        return $this->feature;
-    }
-
-    /**
-     * Returns scenario index (scenario ordinal number in feature).
-     *
-     * @return integer
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getIndex()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify index of scenario that is not bound to feature.');
-        }
-
-        return array_search($this, $this->feature->getScenarios());
-    }
-
-    /**
      * Returns scenario keyword.
      *
      * @return string
@@ -208,38 +136,6 @@ class ScenarioNode implements ScenarioInterface
     public function getKeyword()
     {
         return $this->keyword;
-    }
-
-    /**
-     * Returns feature language.
-     *
-     * @return string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getLanguage()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify language of scenario that is not bound to feature.');
-        }
-
-        return $this->feature->getLanguage();
-    }
-
-    /**
-     * Returns feature file.
-     *
-     * @return null|string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getFile()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify file of scenario that is not bound to feature.');
-        }
-
-        return $this->feature->getFile();
     }
 
     /**

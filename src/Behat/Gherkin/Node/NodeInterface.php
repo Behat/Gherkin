@@ -25,20 +25,6 @@ interface NodeInterface
     public function getNodeType();
 
     /**
-     * Returns feature language.
-     *
-     * @return string
-     */
-    public function getLanguage();
-
-    /**
-     * Returns feature file.
-     *
-     * @return null|string
-     */
-    public function getFile();
-
-    /**
      * Returns feature declaration line number.
      *
      * @return integer

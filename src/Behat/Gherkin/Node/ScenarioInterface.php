@@ -17,24 +17,4 @@ namespace Behat\Gherkin\Node;
  */
 interface ScenarioInterface extends ScenarioLikeInterface, TaggedNodeInterface
 {
-    /**
-     * Checks if scenario has own tags (excluding ones inherited from feature).
-     *
-     * @return Boolean
-     */
-    public function hasOwnTags();
-
-    /**
-     * Returns scenario own tags (excluding ones inherited from feature).
-     *
-     * @return array
-     */
-    public function getOwnTags();
-
-    /**
-     * Returns scenario index (scenario ordinal number).
-     *
-     * @return integer
-     */
-    public function getIndex();
 }

@@ -17,17 +17,4 @@ namespace Behat\Gherkin\Node;
  */
 interface ArgumentInterface extends NodeInterface
 {
-    /**
-     * Sets argument subject node.
-     *
-     * @param NodeInterface $subject
-     */
-    public function setSubject(NodeInterface $subject);
-
-    /**
-     * Returns argument subject.
-     *
-     * @return NodeInterface
-     */
-    public function getSubject();
 }

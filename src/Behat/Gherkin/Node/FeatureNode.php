@@ -88,14 +88,6 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $this->language = $language;
         $this->file = $file;
         $this->line = $line;
-
-        if ($background) {
-            $background->setFeature($this);
-        }
-
-        foreach ($this->scenarios as $scenario) {
-            $scenario->setFeature($this);
-        }
     }
 
     /**

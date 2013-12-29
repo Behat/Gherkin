@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
-
 /**
  * Represents Gherkin Outline.
  *
@@ -44,10 +42,6 @@ class OutlineNode implements ScenarioInterface
      */
     private $line;
     /**
-     * @var FeatureNode
-     */
-    private $feature;
-    /**
      * @var null|ExampleNode[]
      */
     private $examples;
@@ -69,22 +63,13 @@ class OutlineNode implements ScenarioInterface
         ExampleTableNode $table,
         $keyword,
         $line
-    )
-    {
+    ) {
         $this->title = $title;
         $this->tags = $tags;
         $this->steps = $steps;
         $this->table = $table;
         $this->keyword = $keyword;
         $this->line = $line;
-
-        foreach ($this->steps as $step) {
-            $step->setContainer($this);
-        }
-
-        if ($table) {
-            $table->setSubject($this);
-        }
     }
 
     /**
@@ -133,34 +118,8 @@ class OutlineNode implements ScenarioInterface
      * Returns outline tags (including inherited from feature).
      *
      * @return array
-     *
-     * @throws NodeException If feature is not set
      */
     public function getTags()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify tags of outline that is not bound to feature.');
-        }
-
-        return array_merge($this->feature->getTags(), $this->tags);
-    }
-
-    /**
-     * Checks if scenario has own tags (excluding ones inherited from feature).
-     *
-     * @return Boolean
-     */
-    public function hasOwnTags()
-    {
-        return 0 < count($this->tags);
-    }
-
-    /**
-     * Returns outline own tags (excluding ones inherited from feature).
-     *
-     * @return array
-     */
-    public function getOwnTags()
     {
         return $this->tags;
     }
@@ -216,26 +175,6 @@ class OutlineNode implements ScenarioInterface
     }
 
     /**
-     * Returns outline feature.
-     *
-     * @return FeatureNode
-     */
-    public function getFeature()
-    {
-        return $this->feature;
-    }
-
-    /**
-     * Sets outline feature.
-     *
-     * @param FeatureNode $feature
-     */
-    public function setFeature(FeatureNode $feature)
-    {
-        $this->feature = $feature;
-    }
-
-    /**
      * Returns outline keyword.
      *
      * @return string
@@ -243,54 +182,6 @@ class OutlineNode implements ScenarioInterface
     public function getKeyword()
     {
         return $this->keyword;
-    }
-
-    /**
-     * Returns scenario index (scenario ordinal number in feature).
-     *
-     * @return integer
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getIndex()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify index of outline that is not bound to feature.');
-        }
-
-        return array_search($this, $this->feature->getScenarios());
-    }
-
-    /**
-     * Returns feature language.
-     *
-     * @return string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getLanguage()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify language of outline that is not bound to feature.');
-        }
-
-        return $this->feature->getLanguage();
-    }
-
-    /**
-     * Returns feature file.
-     *
-     * @return null|string
-     *
-     * @throws NodeException If feature is not set
-     */
-    public function getFile()
-    {
-        if (null === $this->feature) {
-            throw new NodeException('Can not identify file of outline that is not bound to feature.');
-        }
-
-        return $this->feature->getFile();
     }
 
     /**
@@ -312,7 +203,12 @@ class OutlineNode implements ScenarioInterface
     {
         $examples = array();
         foreach ($this->table->getColumnsHash() as $rowNum => $row) {
-            $examples[] = new ExampleNode($this, $row, $this->table->getRowLine($rowNum + 1));
+            $examples[] = new ExampleNode(
+                $this->getSteps(),
+                $this->table->getRowAsString($rowNum + 1),
+                $row,
+                $this->table->getRowLine($rowNum + 1)
+            );
         }
 
         return $examples;

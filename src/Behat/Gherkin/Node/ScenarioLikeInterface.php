@@ -17,17 +17,4 @@ namespace Behat\Gherkin\Node;
  */
 interface ScenarioLikeInterface extends KeywordNodeInterface, StepContainerInterface
 {
-    /**
-     * Sets scenario feature.
-     *
-     * @param FeatureNode $feature
-     */
-    public function setFeature(FeatureNode $feature);
-
-    /**
-     * Sets scenario feature.
-     *
-     * @return FeatureNode
-     */
-    public function getFeature();
 }
