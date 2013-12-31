@@ -1,3 +1,10 @@
+3.1.0 / 2013-12-31
+==================
+
+  * Example node is a scenario
+  * Nodes do not have uprefs (memory usage fix)
+  * Scenario filters do not depend on feature nodes
+
 3.0.4 / 2013-12-31
 ==================
 
