@@ -1,3 +1,10 @@
+3.0.4 / 2013-12-31
+==================
+
+  * TableNode is now traversable using foreach
+  * All possibly thrown exceptions implement Gherkin\Exception interface
+  * Sync i18n with cucumber
+
 3.0.3 / 2013-09-15
 ==================
 
