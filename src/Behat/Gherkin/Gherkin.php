@@ -11,7 +11,7 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\NoLoaderFoundException;
-use Behat\Gherkin\Filter\FilterInterface;
+use Behat\Gherkin\Filter\FeatureFilterInterface;
 use Behat\Gherkin\Filter\LineFilter;
 use Behat\Gherkin\Filter\LineRangeFilter;
 use Behat\Gherkin\Loader\FileLoaderInterface;
@@ -29,7 +29,7 @@ class Gherkin
      */
     protected $loaders = array();
     /**
-     * @var FilterInterface[]
+     * @var FeatureFilterInterface[]
      */
     protected $filters = array();
 
@@ -46,9 +46,9 @@ class Gherkin
     /**
      * Adds filter to manager.
      *
-     * @param FilterInterface $filter Feature/Scenario filter
+     * @param FeatureFilterInterface $filter Feature filter
      */
-    public function addFilter(FilterInterface $filter)
+    public function addFilter(FeatureFilterInterface $filter)
     {
         $this->filters[] = $filter;
     }
@@ -70,8 +70,8 @@ class Gherkin
     /**
      * Loads & filters resource with added loaders.
      *
-     * @param mixed             $resource Resource to load
-     * @param FilterInterface[] $filters  Additional filters
+     * @param mixed                    $resource Resource to load
+     * @param FeatureFilterInterface[] $filters  Additional filters
      *
      * @return array
      *

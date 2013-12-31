@@ -59,13 +59,14 @@ class TagFilterTest extends \PHPUnit_Framework_TestCase
 
     public function testIsScenarioMatchFilter()
     {
+        $feature = new FeatureNode(null, null, array('feature-tag'), null, array(), null, null, null, 1);
         $scenario = new ScenarioNode(null, array(), array(), null, 2);
 
         $filter = new TagFilter('@wip');
-        $this->assertFalse($filter->isScenarioMatch($scenario));
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('~@done');
-        $this->assertTrue($filter->isScenarioMatch($scenario));
+        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $scenario = new ScenarioNode(null, array(
             'tag1',
@@ -73,7 +74,7 @@ class TagFilterTest extends \PHPUnit_Framework_TestCase
             'tag3'
         ), array(), null, 2);
         $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isScenarioMatch($scenario));
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
         $scenario = new ScenarioNode(null, array(
             'tag1',
@@ -81,29 +82,37 @@ class TagFilterTest extends \PHPUnit_Framework_TestCase
             'tag3',
             'tag5'
         ), array(), null, 2);
-        $this->assertTrue($filter->isScenarioMatch($scenario));
+        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@wip&&@vip');
         $scenario = new ScenarioNode(null, array('wip', 'not-done'), array(), null, 2);
-        $this->assertFalse($filter->isScenarioMatch($scenario));
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
         $scenario = new ScenarioNode(null, array(
             'wip',
             'not-done',
             'vip'
         ), array(), null, 2);
-        $this->assertTrue($filter->isScenarioMatch($scenario));
+        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@wip,@vip&&@user');
         $scenario = new ScenarioNode(null, array(
             'wip'
         ), array(), null, 2);
-        $this->assertFalse($filter->isScenarioMatch($scenario));
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
         $scenario = new ScenarioNode(null, array('vip'), array(), null, 2);
-        $this->assertFalse($filter->isScenarioMatch($scenario));
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
         $scenario = new ScenarioNode(null, array('wip', 'user'), array(), null, 2);
-        $this->assertTrue($filter->isScenarioMatch($scenario));
+        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
+
+        $filter = new TagFilter('@feature-tag&&@user');
+        $scenario = new ScenarioNode(null, array('wip', 'user'), array(), null, 2);
+        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
+
+        $filter = new TagFilter('@feature-tag&&@user');
+        $scenario = new ScenarioNode(null, array('wip'), array(), null, 2);
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
     }
 }

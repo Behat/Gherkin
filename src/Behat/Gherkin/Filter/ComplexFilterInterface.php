@@ -18,14 +18,15 @@ use Behat\Gherkin\Node\ScenarioInterface;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-interface FilterInterface extends FeatureFilterInterface
+interface ComplexFilterInterface extends FeatureFilterInterface
 {
     /**
      * Checks if scenario or outline matches specified filter.
      *
+     * @param FeatureNode       $feature  Feature node instance
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return Boolean
      */
-    public function isScenarioMatch(ScenarioInterface $scenario);
+    public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario);
 }
