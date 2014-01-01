@@ -29,7 +29,7 @@ class PathsFilter extends SimpleFilter
      */
     public function __construct(array $paths)
     {
-        $this->filterPaths = $paths;
+        $this->filterPaths = array_map('realpath', $paths);
     }
 
     /**
@@ -42,6 +42,10 @@ class PathsFilter extends SimpleFilter
     public function isFeatureMatch(FeatureNode $feature)
     {
         foreach ($this->filterPaths as $path) {
+            if (!$path) {
+                continue;
+            }
+
             if (0 === strpos($feature->getFile(), $path)) {
                 return true;
             }

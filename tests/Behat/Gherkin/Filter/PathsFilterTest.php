@@ -12,18 +12,18 @@ class PathsFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, '/some/path/with/some.feature', 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, __FILE__, 1);
 
-        $filter = new PathsFilter(array('/some'));
+        $filter = new PathsFilter(array(__DIR__));
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/def', '/some'));
+        $filter = new PathsFilter(array('/abc', '/def', dirname(__DIR__)));
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/def', '/some/path'));
+        $filter = new PathsFilter(array('/abc', '/def', __DIR__));
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/some/path', '/def'));
+        $filter = new PathsFilter(array('/abc', __DIR__, '/def'));
         $this->assertTrue($filter->isFeatureMatch($feature));
 
         $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
@@ -33,18 +33,18 @@ class PathsFilterTest extends FilterTest
     public function testIsScenarioMatchFilter()
     {
         $scenario = new ScenarioNode(null, array(), array(), null, 2);
-        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, '/some/path/with/some.feature', 1);
+        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, __FILE__, 1);
 
-        $filter = new PathsFilter(array('/some'));
+        $filter = new PathsFilter(array(dirname(__DIR__)));
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
-        $filter = new PathsFilter(array('/abc', '/def', '/some'));
+        $filter = new PathsFilter(array('/abc', '/def', dirname(__DIR__)));
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
-        $filter = new PathsFilter(array('/abc', '/def', '/some/path'));
+        $filter = new PathsFilter(array('/abc', '/def', __DIR__));
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
-        $filter = new PathsFilter(array('/abc', '/some/path', '/def'));
+        $filter = new PathsFilter(array('/abc', __DIR__, '/def'));
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
         $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
