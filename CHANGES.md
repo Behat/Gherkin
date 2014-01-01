@@ -1,3 +1,8 @@
+3.0.5 / 2014-01-01
+==================
+
+  * All paths passed to PathsFilter are converted using realpath
+
 3.0.4 / 2013-12-31
 ==================
 
