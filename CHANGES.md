@@ -1,3 +1,15 @@
+3.1.2 / 2014-01-01
+==================
+
+  * All paths passed to PathsFilter are converted using realpath
+
+3.1.1 / 2013-12-31
+==================
+
+  * Add `ComplexFilterInterace` that has complex behavior for scenarios and requires to pass
+    feature too
+  * `TagFilter` is an instance of a `ComplexFilterInterace` now
+
 3.1.0 / 2013-12-31
 ==================
 
