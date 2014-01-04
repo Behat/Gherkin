@@ -7,7 +7,6 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Node;
 use Behat\Gherkin\Parser;
-use Symfony\Component\Finder\Finder;
 
 class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
 {

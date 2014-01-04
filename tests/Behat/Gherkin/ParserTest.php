@@ -3,7 +3,6 @@
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Node\FeatureNode;
-use Symfony\Component\Finder\Finder;
 
 use Behat\Gherkin\Lexer,
     Behat\Gherkin\Parser,
@@ -19,10 +18,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $data = array();
 
-        $finder = new Finder();
-        $files  = $finder->files()->name('*.yml')->in(__DIR__ . '/Fixtures/etalons');
-
-        foreach ($files as $file) {
+        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
 
             $data[] = array($testname);
