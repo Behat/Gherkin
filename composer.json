@@ -14,8 +14,7 @@
     ],
 
     "require": {
-        "php":             ">=5.3.1",
-        "symfony/finder":  "~2.0"
+        "php": ">=5.3.1"
     },
 
     "require-dev": {

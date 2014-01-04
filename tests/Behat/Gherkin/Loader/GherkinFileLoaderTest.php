@@ -7,7 +7,6 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Node;
 use Behat\Gherkin\Parser;
-use Symfony\Component\Finder\Finder;
 
 class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,7 +44,7 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
 
         $cache->expects($this->once())
             ->method('isFresh')
-            ->with($path = $this->featuresPath . '/pystring.feature', filemtime($path))
+            ->with($path = $this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', filemtime($path))
             ->will($this->returnValue(false));
 
         $cache->expects($this->once())
@@ -62,7 +61,7 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
 
         $cache->expects($this->once())
             ->method('isFresh')
-            ->with($path = $this->featuresPath . '/pystring.feature', filemtime($path))
+            ->with($path = $this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', filemtime($path))
             ->will($this->returnValue(true));
 
         $cache->expects($this->once())
