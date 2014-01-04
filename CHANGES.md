@@ -1,3 +1,9 @@
+3.1.3 / 2014-01-04
+==================
+
+  * Dropped the dependency on the Symfony Finder by using SPL iterators directly
+  * Added testing on HHVM on Travis. HHVM is officially supported (previous release was actually already compatible)
+
 3.1.2 / 2014-01-01
 ==================
 
