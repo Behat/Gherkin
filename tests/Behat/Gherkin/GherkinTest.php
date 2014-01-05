@@ -61,6 +61,13 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($scenario, $scenarios[0]);
     }
 
+    public function testNotFoundLoader()
+    {
+        $gherkin = new Gherkin();
+
+        $this->assertEquals(array(), $gherkin->load('some/feature/resource'));
+    }
+
     public function testLoaderFiltersFeatures()
     {
         $gherkin = new Gherkin();
