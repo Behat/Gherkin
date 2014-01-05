@@ -1,3 +1,9 @@
+4.0.0 / 2014-01-05
+==================
+
+  * Changed the behavior when no loader can be found for the resource. Instead of throwing an exception, the
+    Gherkin class now returns an empty array.
+
 3.1.3 / 2014-01-04
 ==================
 
