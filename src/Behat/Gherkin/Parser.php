@@ -70,6 +70,7 @@ class Parser
         } catch (LexerException $e) {
             throw new ParserException(
                 sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),
+                0,
                 $e
             );
         }
