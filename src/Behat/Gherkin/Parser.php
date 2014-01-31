@@ -78,7 +78,7 @@ class Parser
         while ('EOS' !== ($predicted = $this->predictTokenType())) {
             $node = $this->parseExpression();
 
-            if (null === $node || (is_string($node) && "\n" === $node)) {
+            if (null === $node || "\n" === $node) {
                 continue;
             }
 
@@ -326,7 +326,7 @@ class Parser
                 continue;
             }
 
-            if (is_string($node) && "\n" === $node) {
+            if ("\n" === $node) {
                 continue;
             }
 
@@ -383,7 +383,7 @@ class Parser
                 continue;
             }
 
-            if (is_string($node) && "\n" === $node) {
+            if ("\n" === $node) {
                 continue;
             }
 
@@ -446,7 +446,7 @@ class Parser
                 continue;
             }
 
-            if (is_string($node) && "\n" === $node) {
+            if ("\n" === $node) {
                 continue;
             }
 
