@@ -51,7 +51,7 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
         $features = parent::load($hash);
         $filename = $this->findRelativePath($path);
 
-        return array_map(function(FeatureNode $feature) use($filename) {
+        return array_map(function (FeatureNode $feature) use ($filename) {
             return new FeatureNode(
                 $feature->getTitle(),
                 $feature->getDescription(),

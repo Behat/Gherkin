@@ -69,7 +69,8 @@ class Parser
             $this->lexer->analyse($this->input, 'en');
         } catch (LexerException $e) {
             throw new ParserException(
-                sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file), $e
+                sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),
+                $e
             );
         }
 
@@ -125,15 +126,18 @@ class Parser
      */
     protected function expectTokenType($type)
     {
-        $types = (array)$type;
+        $types = (array) $type;
         if (in_array($this->predictTokenType(), $types)) {
             return $this->lexer->getAdvancedToken();
         }
 
         $token = $this->lexer->predictToken();
 
-        throw new ParserException(sprintf('Expected %s token, but got %s on line: %d%s',
-            implode(' or ', $types), $this->predictTokenType(), $token['line'],
+        throw new ParserException(sprintf(
+            'Expected %s token, but got %s on line: %d%s',
+            implode(' or ', $types),
+            $this->predictTokenType(),
+            $token['line'],
             $this->file ? ' in file: ' . $this->file : ''
         ));
     }
@@ -220,7 +224,7 @@ class Parser
     {
         $token = $this->expectTokenType('Feature');
 
-        $title = trim($token['value']) ? : null;
+        $title = trim($token['value']) ?: null;
         $description = null;
         $tags = $this->popTags();
         $background = null;
@@ -307,7 +311,8 @@ class Parser
 
         // Parse description and steps
         $steps = array();
-        while (in_array($this->predictTokenType(), array('Step', 'Newline', 'Text', 'Comment'))) {
+        $allowedTokenTypes = array('Step', 'Newline', 'Text', 'Comment');
+        while (in_array($this->predictTokenType(), $allowedTokenTypes)) {
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {

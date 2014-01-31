@@ -77,8 +77,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $language,
         $file,
         $line
-    )
-    {
+    ) {
         $this->title = $title;
         $this->description = $description;
         $this->tags = $tags;

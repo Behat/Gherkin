@@ -152,7 +152,7 @@ class Lexer
         return array(
             'type'     => $type,
             'line'     => $this->lineNumber,
-            'value'    => $value ? : null,
+            'value'    => $value ?: null,
             'deferred' => false
         );
     }

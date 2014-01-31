@@ -166,12 +166,16 @@ GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
-            $this->keywords->getGivenKeywords(), 'there is agent A', $short
+            $this->keywords->getGivenKeywords(),
+            'there is agent A',
+            $short
         );
 
         // And
         $dump .= $this->dumpStep(
-            $this->keywords->getAndKeywords(), 'there is agent B', $short
+            $this->keywords->getAndKeywords(),
+            'there is agent B',
+            $short
         );
 
         return $dump . "\n";
@@ -194,27 +198,37 @@ GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
-            $this->keywords->getGivenKeywords(), 'there is agent J', $short
+            $this->keywords->getGivenKeywords(),
+            'there is agent J',
+            $short
         );
 
         // And
         $dump .= $this->dumpStep(
-            $this->keywords->getAndKeywords(), 'there is agent K', $short
+            $this->keywords->getAndKeywords(),
+            'there is agent K',
+            $short
         );
 
         // When
         $dump .= $this->dumpStep(
-            $this->keywords->getWhenKeywords(), 'I erase agent K\'s memory', $short
+            $this->keywords->getWhenKeywords(),
+            'I erase agent K\'s memory',
+            $short
         );
 
         // Then
         $dump .= $this->dumpStep(
-            $this->keywords->getThenKeywords(), 'there should be agent J', $short
+            $this->keywords->getThenKeywords(),
+            'there should be agent J',
+            $short
         );
 
         // But
         $dump .= $this->dumpStep(
-            $this->keywords->getButKeywords(), 'there should not be agent K', $short
+            $this->keywords->getButKeywords(),
+            'there should not be agent K',
+            $short
         );
 
         return $dump . "\n";
@@ -237,27 +251,37 @@ GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
-            $this->keywords->getGivenKeywords(), 'there is agent <agent1>', $short
+            $this->keywords->getGivenKeywords(),
+            'there is agent <agent1>',
+            $short
         );
 
         // And
         $dump .= $this->dumpStep(
-            $this->keywords->getAndKeywords(), 'there is agent <agent2>', $short
+            $this->keywords->getAndKeywords(),
+            'there is agent <agent2>',
+            $short
         );
 
         // When
         $dump .= $this->dumpStep(
-            $this->keywords->getWhenKeywords(), 'I erase agent <agent2>\'s memory', $short
+            $this->keywords->getWhenKeywords(),
+            'I erase agent <agent2>\'s memory',
+            $short
         );
 
         // Then
         $dump .= $this->dumpStep(
-            $this->keywords->getThenKeywords(), 'there should be agent <agent1>', $short
+            $this->keywords->getThenKeywords(),
+            'there should be agent <agent1>',
+            $short
         );
 
         // But
         $dump .= $this->dumpStep(
-            $this->keywords->getButKeywords(), 'there should not be agent <agent2>', $short
+            $this->keywords->getButKeywords(),
+            'there should not be agent <agent2>',
+            $short
         );
 
         $keywords = explode('|', $this->keywords->getExamplesKeywords());
@@ -296,7 +320,8 @@ GHERKIN;
             $keywords = array_map(
                 function ($keyword) {
                     return str_replace('<', '', $keyword);
-                }, $keywords
+                },
+                $keywords
             );
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
             $dump .= <<<GHERKIN

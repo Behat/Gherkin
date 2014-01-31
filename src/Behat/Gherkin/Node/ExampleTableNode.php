@@ -25,7 +25,7 @@ class ExampleTableNode extends TableNode
     /**
      * Initializes example table.
      *
-     * @param array  $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @param array  $table   Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
      * @param string $keyword
      */
     public function __construct(array $table, $keyword)

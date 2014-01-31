@@ -58,14 +58,16 @@ class DirectoryLoader extends AbstractFileLoader
     {
         $path = $this->findAbsolutePath($path);
 
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS));
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
+        );
         $paths = array_map('strval', iterator_to_array($iterator));
         uasort($paths, 'strnatcasecmp');
 
         $features = array();
 
         foreach ($paths as $path) {
-            $path = (string)$path;
+            $path = (string) $path;
             $loader = $this->gherkin->resolveLoader($path);
 
             if (null !== $loader) {
