@@ -9,6 +9,23 @@ use Behat\Gherkin\Node\ScenarioNode;
 
 class NameFilterTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFilterFeature()
+    {
+        $feature = new FeatureNode('feature1', null, array(), null, array(), null, null, null, 1);
+        $filter = new NameFilter('feature1');
+        $this->assertSame($feature, $filter->filterFeature($feature));
+
+        $scenarios = array(
+            new ScenarioNode('scenario1', array(), array(), null, 2),
+            $matchedScenario = new ScenarioNode('scenario2', array(), array(), null, 4)
+        );
+        $feature = new FeatureNode('feature1', null, array(), null, $scenarios, null, null, null, 1);
+        $filter = new NameFilter('scenario2');
+        $filteredFeature = $filter->filterFeature($feature);
+
+        $this->assertSame(array($matchedScenario), $filteredFeature->getScenarios());
+    }
+
     public function testIsFeatureMatchFilter()
     {
         $feature = new FeatureNode('random feature title', null, array(), null, array(), null, null, null, 1);

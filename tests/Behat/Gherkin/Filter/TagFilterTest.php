@@ -8,6 +8,22 @@ use Behat\Gherkin\Node\ScenarioNode;
 
 class TagFilterTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFilterFeature()
+    {
+        $feature = new FeatureNode(null, null, array('wip'), null, array(), null, null, null, 1);
+        $filter = new TagFilter('@wip');
+        $this->assertSame($feature, $filter->filterFeature($feature));
+
+        $scenarios = array(
+            new ScenarioNode(null, array(), array(), null, 2),
+            $matchedScenario = new ScenarioNode(null, array('wip'), array(), null, 4)
+        );
+        $feature = new FeatureNode(null, null, array(), null, $scenarios, null, null, null, 1);
+        $filteredFeature = $filter->filterFeature($feature);
+
+        $this->assertSame(array($matchedScenario), $filteredFeature->getScenarios());
+    }
+
     public function testIsFeatureMatchFilter()
     {
         $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
