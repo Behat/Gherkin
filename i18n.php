@@ -674,6 +674,21 @@
     'and' => 'A zároveň|A taktiež|A tiež|A',
     'but' => 'Ale',
   ),
+  'sl' => 
+  array (
+    'name' => 'Slovenian',
+    'native' => 'Slovenski',
+    'feature' => 'Funkcionalnost|Funkcija|Možnosti|Moznosti|Lastnost|Značilnost',
+    'background' => 'Kontekst|Osnova|Ozadje',
+    'scenario' => 'Scenarij|Primer',
+    'scenario_outline' => 'Struktura scenarija|Skica|Koncept|Oris scenarija|Osnutek',
+    'examples' => 'Primeri|Scenariji',
+    'given' => 'Dano|Podano|Zaradi|Privzeto',
+    'when' => 'Ko|Ce|Če|Kadar',
+    'then' => 'Nato|Potem|Takrat',
+    'and' => 'In|Ter',
+    'but' => 'Toda|Ampak|Vendar',
+  ),
   'sr-Latn' => 
   array (
     'name' => 'Serbian (Latin)',
