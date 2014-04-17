@@ -29,7 +29,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * @var integer
      */
-    private $maxLineLength = array();
+    private $maxLineWidth = array();
 
     /**
      * Initializes table.
@@ -42,11 +42,11 @@ class TableNode implements ArgumentInterface, IteratorAggregate
 
         foreach ($this->getRows() as $row) {
             foreach ($row as $column => $string) {
-                if (!isset($this->maxLineLength[$column])) {
-                    $this->maxLineLength[$column] = 0;
+                if (!isset($this->maxLineWidth[$column])) {
+                    $this->maxLineWidth[$column] = 0;
                 }
 
-                $this->maxLineLength[$column] = max($this->maxLineLength[$column], mb_strlen($string, 'utf8'));
+                $this->maxLineWidth[$column] = max($this->maxLineWidth[$column], mb_strwidth($string, 'utf8'));
             }
         }
     }
@@ -187,7 +187,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     {
         $values = array();
         foreach ($this->getRow($rowNum) as $column => $value) {
-            $values[] = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+            $values[] = $this->padRight(' ' . $value . ' ', $this->maxLineWidth[$column] + 2);
         }
 
         return sprintf('|%s|', implode('|', $values));
@@ -205,7 +205,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     {
         $values = array();
         foreach ($this->getRow($rowNum) as $column => $value) {
-            $value = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+            $value = $this->padRight(' ' . $value . ' ', $this->maxLineWidth[$column] + 2);
 
             $values[] = call_user_func($wrapper, $value, $column);
         }
@@ -268,7 +268,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      */
     protected function padRight($text, $length)
     {
-        while ($length > mb_strlen($text, 'utf8')) {
+        while ($length > mb_strwidth($text, 'utf8')) {
             $text = $text . ' ';
         }
 

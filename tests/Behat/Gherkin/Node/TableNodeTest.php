@@ -174,13 +174,15 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode($a = array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),
-            13 => array('2', 'antono', "pa\$sword")
+            13 => array('2', 'antono', "pa\$sword"),
+            17 => array('21', '太郎', 'あいうえお'),
         ));
 
         $this->assertEquals(<<<TABLE
-| id | username | password |
-| 42 | everzet  | qwerty   |
-| 2  | antono   | pa\$sword |
+| id | username | password   |
+| 42 | everzet  | qwerty     |
+| 2  | antono   | pa\$sword   |
+| 21 | 太郎     | あいうえお |
 TABLE
         , $table->getTableAsString());
     }
