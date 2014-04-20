@@ -1,3 +1,10 @@
+4.1.0 / 2014-04-20
+==================
+
+  * Fixed scenario tag filtering
+  * Do not allow multiple multiline step arguments
+  * Sync 18n with cucumber
+
 4.0.0 / 2014-01-05
 ==================
 
