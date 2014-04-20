@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Node;
 
+use Behat\Gherkin\Exception\NodeException;
+
 /**
  * Represents Gherkin Step.
  *
@@ -44,6 +46,15 @@ class StepNode implements NodeInterface
      */
     public function __construct($type, $text, array $arguments, $line)
     {
+        if (count($arguments) > 1) {
+            throw new NodeException(sprintf(
+                'Steps could have only one argument, but `%s %s` have %d.',
+                $type,
+                $text,
+                count($arguments)
+            ));
+        }
+
         $this->type = $type;
         $this->text = $text;
         $this->arguments = $arguments;
