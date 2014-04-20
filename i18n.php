@@ -14,6 +14,21 @@
     'and' => 'And',
     'but' => 'But',
   ),
+  'af' => 
+  array (
+    'name' => 'Afrikaans',
+    'native' => 'Afrikaans',
+    'feature' => 'Funksie|Besigheid Behoefte|Vermoë',
+    'background' => 'Agtergrond',
+    'scenario' => 'Situasie',
+    'scenario_outline' => 'Situasie Uiteensetting',
+    'examples' => 'Voorbeelde',
+    'given' => 'Gegewe',
+    'when' => 'Wanneer',
+    'then' => 'Dan',
+    'and' => 'En',
+    'but' => 'Maar',
+  ),
   'ar' => 
   array (
     'name' => 'Arabic',
@@ -389,6 +404,21 @@
     'and' => 'I',
     'but' => 'Ali',
   ),
+  'ht' => 
+  array (
+    'name' => 'Creole',
+    'native' => 'kreyòl',
+    'feature' => 'Karakteristik|Mak|Fonksyonalite',
+    'background' => 'Kontèks|Istorik',
+    'scenario' => 'Senaryo',
+    'scenario_outline' => 'Plan senaryo|Plan Senaryo|Senaryo deskripsyon|Senaryo Deskripsyon|Dyagram senaryo|Dyagram Senaryo',
+    'examples' => 'Egzanp',
+    'given' => 'Sipoze Ke|Sipoze ke|Sipoze',
+    'when' => 'Le|Lè',
+    'then' => 'Le sa a|Lè sa a',
+    'and' => 'Epi|Ak|E',
+    'but' => 'Men',
+  ),
   'hu' => 
   array (
     'name' => 'Hungarian',
@@ -463,6 +493,21 @@
     'then' => 'ならば<',
     'and' => 'かつ<',
     'but' => 'しかし<|ただし<|但し<',
+  ),
+  'jv' => 
+  array (
+    'name' => 'Javanese',
+    'native' => 'Basa Jawa',
+    'feature' => 'Fitur',
+    'background' => 'Dasar',
+    'scenario' => 'Skenario',
+    'scenario_outline' => 'Konsep skenario',
+    'examples' => 'Conto|Contone',
+    'given' => 'Nalikaning|Nalika',
+    'when' => 'Menawa|Manawa',
+    'then' => 'Banjur|Njuk',
+    'and' => 'Lan',
+    'but' => 'Ananging|Nanging|Tapi',
   ),
   'kn' => 
   array (
@@ -674,6 +719,21 @@
     'and' => 'A zároveň|A taktiež|A tiež|A',
     'but' => 'Ale',
   ),
+  'sl' => 
+  array (
+    'name' => 'Slovenian',
+    'native' => 'Slovenski',
+    'feature' => 'Funkcionalnost|Funkcija|Možnosti|Moznosti|Lastnost|Značilnost',
+    'background' => 'Kontekst|Osnova|Ozadje',
+    'scenario' => 'Scenarij|Primer',
+    'scenario_outline' => 'Struktura scenarija|Skica|Koncept|Oris scenarija|Osnutek',
+    'examples' => 'Primeri|Scenariji',
+    'given' => 'Privzeto|Zaradi|Podano|Dano',
+    'when' => 'Kadar|Če|Ce|Ko',
+    'then' => 'Takrat|Potem|Nato',
+    'and' => 'Ter|In',
+    'but' => 'Vendar|Ampak|Toda',
+  ),
   'sr-Latn' => 
   array (
     'name' => 'Serbian (Latin)',
@@ -733,6 +793,21 @@
     'then' => 'ดังนั้น',
     'and' => 'และ',
     'but' => 'แต่',
+  ),
+  'tlh' => 
+  array (
+    'name' => 'Klingon',
+    'native' => 'tlhIngan',
+    'feature' => 'Qap|Qu\'meH \'ut|perbogh|poQbogh malja\'|laH',
+    'background' => 'mo\'',
+    'scenario' => 'lut',
+    'scenario_outline' => 'lut chovnatlh',
+    'examples' => 'ghantoH|lutmey',
+    'given' => 'DaH ghu\' bejlu\'|ghu\' noblu\'',
+    'when' => 'qaSDI\'',
+    'then' => 'vaj',
+    'and' => 'latlh|\'ej',
+    'but' => '\'ach|\'a',
   ),
   'tr' => 
   array (
@@ -838,5 +913,20 @@
     'then' => '那麼<',
     'and' => '同時<|並且<|而且<',
     'but' => '但是<',
+  ),
+  'ur' => 
+  array (
+    'name' => 'Urdu',
+    'native' => 'اردو',
+    'feature' => 'صلاحیت|کاروبار کی ضرورت|خصوصیت',
+    'background' => 'پس منظر',
+    'scenario' => 'منظرنامہ',
+    'scenario_outline' => 'منظر نامے کا خاکہ',
+    'examples' => 'مثالیں',
+    'given' => 'فرض کیا|بالفرض|اگر',
+    'when' => 'جب',
+    'then' => 'پھر|تب',
+    'and' => 'اور',
+    'but' => 'لیکن',
   ),
 );
