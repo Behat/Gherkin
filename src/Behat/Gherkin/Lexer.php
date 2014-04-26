@@ -401,7 +401,9 @@ class Lexer
             return null;
         }
 
-        $token = $this->takeToken('Step', trim($matches[1]));
+        $keyword = trim($matches[1]);
+        $token = $this->takeToken('Step', $keyword);
+        $token['keyword_type'] = $this->getStepKeywordType($keyword);
         $token['text'] = $matches[2];
 
         $this->consumeLine();
@@ -574,5 +576,30 @@ class Lexer
         $this->consumeLine();
 
         return $token;
+    }
+
+    /**
+     * Returns step type keyword (Given, When, Then, etc.).
+     *
+     * @param string $native Step keyword in provided language
+     * @return string
+     */
+    protected function getStepKeywordType($native)
+    {
+        $keywordTypes = array(
+            'Given' => explode('|', $this->keywords->getGivenKeywords()),
+            'When' => explode('|', $this->keywords->getWhenKeywords()),
+            'Then' => explode('|', $this->keywords->getThenKeywords()),
+            'And' => explode('|', $this->keywords->getAndKeywords()),
+            'But' => explode('|', $this->keywords->getButKeywords())
+        );
+
+        foreach ($keywordTypes as $type => $keywords) {
+            if (in_array($native, $keywords) || in_array($native . '<', $keywords)) {
+                return $type;
+            }
+        }
+
+        return 'Given';
     }
 }

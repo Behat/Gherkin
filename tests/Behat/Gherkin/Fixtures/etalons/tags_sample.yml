@@ -12,7 +12,7 @@ feature:
       tags:     [sample_two, sample_four]
       line:     5
       steps:
-        - { type: 'Given',  text: 'missing',  line: 6 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'missing',  line: 6 }
 
     -
       type:     outline
@@ -20,7 +20,7 @@ feature:
       tags:     [sample_three]
       line:     9
       steps:
-        - { type: 'Given',  text: '<state>',  line: 10 }
+        - { keyword_type: 'Given', type: 'Given',  text: '<state>',  line: 10 }
 
       examples:
         12: [state]
@@ -32,4 +32,4 @@ feature:
       tags:     [sample_three, sample_four]
       line:     16
       steps:
-        - { type: 'Given',  text: 'missing',  line: 17 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'missing',  line: 17 }

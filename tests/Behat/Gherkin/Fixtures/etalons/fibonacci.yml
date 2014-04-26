@@ -13,8 +13,8 @@ feature:
       title:    Series
       line:     6
       steps:
-        - { type: 'When',  text: 'I ask python to calculate fibonacci up to <n>', line: 7 }
-        - { type: 'Then',  text: 'it should give me <series>',                    line: 8 }
+        - { keyword_type: 'When', type: 'When',  text: 'I ask python to calculate fibonacci up to <n>', line: 7 }
+        - { keyword_type: 'Then', type: 'Then',  text: 'it should give me <series>',                    line: 8 }
 
       examples:
         11: [ n   , series                                   ]

@@ -7,7 +7,7 @@ feature:
   background:
     line:       3
     steps:
-      - { type: Given, text: passing without a table, line: 4 }
+      - { keyword_type: Given, type: Given, text: passing without a table, line: 4 }
 
   scenarios:
     -
@@ -18,7 +18,7 @@ feature:
                 yawn
       line:     6
       steps:
-        - { type: Given, text: passing without a table, line: 9 }
+        - { keyword_type: Given, type: Given, text: passing without a table, line: 9 }
 
     -
       type:     outline
@@ -28,7 +28,7 @@ feature:
                         yawn
       line:     11
       steps:
-        - { type: 'Given',  text: '<state> without a table',  line: 14 }
+        - { keyword_type: Given, type: 'Given',  text: '<state> without a table',  line: 14 }
       examples:
         16: [state]
         17: [passing]
@@ -38,7 +38,7 @@ feature:
       title:    name
       line:     19
       steps:
-        - { type: 'Given',  text: '<state> without a table',  line: 20 }
+        - { keyword_type: Given, type: 'Given',  text: '<state> without a table',  line: 20 }
       examples:
         22: [state]
         23: [passing]

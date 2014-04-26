@@ -213,6 +213,7 @@ class ArrayLoader implements LoaderInterface
     {
         $hash = array_merge(
             array(
+                'keyword_type' => 'Given',
                 'type' => 'Given',
                 'text' => null,
                 'keyword' => 'Scenario',
@@ -231,7 +232,7 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        return new StepNode($hash['type'], $hash['text'], $arguments, $hash['line']);
+        return new StepNode($hash['type'], $hash['text'], $arguments, $hash['line'], $hash['keyword_type']);
     }
 
     /**

@@ -13,6 +13,6 @@ feature:
       title:    A normal feature
       line:     8
       steps:
-        - { type: 'Given',  text: 'I have a pending step',                                line: 9 }
-        - { type: 'When',   text: 'I run this feature with the progress format',          line: 10 }
-        - { type: 'Then',   text: "I should get a no method error for 'backtrace_line'",  line: 11 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'I have a pending step',                                line: 9 }
+        - { keyword_type: 'When',  type: 'When',   text: 'I run this feature with the progress format',          line: 10 }
+        - { keyword_type: 'Then',  type: 'Then',   text: "I should get a no method error for 'backtrace_line'",  line: 11 }
