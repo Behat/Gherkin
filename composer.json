@@ -20,7 +20,7 @@
     "require-dev": {
         "symfony/yaml":    "~2.1",
         "symfony/config":  "~2.1",
-        "phpunit/phpunit": "~3.7.24"
+        "phpunit/phpunit": "~4.0"
     },
 
     "suggest": {
