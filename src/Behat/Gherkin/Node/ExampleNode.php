@@ -187,7 +187,7 @@ class ExampleNode implements ScenarioInterface
      *
      * @param ArgumentInterface[] $arguments
      *
-     * @return array
+     * @return ArgumentInterface[]
      */
     protected function replaceArgumentsTokens(array $arguments)
     {

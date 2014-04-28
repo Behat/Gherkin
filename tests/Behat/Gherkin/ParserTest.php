@@ -3,7 +3,6 @@
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Node\FeatureNode;
-
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use Behat\Gherkin\Keywords\ArrayKeywords;
