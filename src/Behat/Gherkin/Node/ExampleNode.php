@@ -30,7 +30,7 @@ class ExampleNode implements ScenarioInterface
      */
     private $outlineSteps;
     /**
-     * @var array
+     * @var string[]
      */
     private $tokens;
     /**
@@ -48,7 +48,7 @@ class ExampleNode implements ScenarioInterface
      * @param string     $title
      * @param string[]   $tags
      * @param StepNode[] $outlineSteps
-     * @param array      $tokens
+     * @param string[]   $tokens
      * @param integer    $line
      */
     public function __construct($title, array $tags, $outlineSteps, array $tokens, $line)
@@ -115,7 +115,7 @@ class ExampleNode implements ScenarioInterface
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return array
+     * @return string[]
      */
     public function getTags()
     {
@@ -129,7 +129,7 @@ class ExampleNode implements ScenarioInterface
      */
     public function hasSteps()
     {
-        return count($this->outlineSteps);
+        return 0 < count($this->outlineSteps);
     }
 
     /**
@@ -145,7 +145,7 @@ class ExampleNode implements ScenarioInterface
     /**
      * Returns example tokens.
      *
-     * @return array
+     * @return string[]
      */
     public function getTokens()
     {
@@ -185,7 +185,7 @@ class ExampleNode implements ScenarioInterface
     /**
      * Replaces tokens in arguments with row values.
      *
-     * @param array $arguments
+     * @param ArgumentInterface[] $arguments
      *
      * @return array
      */

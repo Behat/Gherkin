@@ -3,7 +3,6 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CucumberKeywords;
-use Behat\Gherkin\Node;
 use Behat\Gherkin\Node\StepNode;
 use Symfony\Component\Yaml\Yaml;
 

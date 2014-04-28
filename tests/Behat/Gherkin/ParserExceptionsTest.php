@@ -2,12 +2,15 @@
 
 namespace Tests\Behat\Gherkin;
 
-use Behat\Gherkin\Lexer,
-    Behat\Gherkin\Parser,
-    Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Parser;
+use Behat\Gherkin\Keywords\ArrayKeywords;
 
 class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Parser
+     */
     private $gherkin;
 
     protected function setUp()
@@ -139,7 +142,7 @@ TEXT
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testAmbigiousLanguage()
     {
@@ -157,7 +160,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testEmptyOutline()
     {
@@ -171,7 +174,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testWrongTagPlacement()
     {
@@ -188,7 +191,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testBackgroundWithTag()
     {
@@ -204,7 +207,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testEndlessPyString()
     {
@@ -221,7 +224,7 @@ GHERKIN;
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testWrongStepType()
     {
@@ -234,11 +237,11 @@ Feature:
         Aaand some step
 GHERKIN;
 
-        $parsed = $this->gherkin->parse($feature);
+        $this->gherkin->parse($feature);
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testMultipleBackgrounds()
     {
@@ -252,11 +255,11 @@ Feature:
         Aaand some step
 GHERKIN;
 
-        $parsed = $this->gherkin->parse($feature);
+        $this->gherkin->parse($feature);
     }
 
     /**
-     * @expectedException Behat\Gherkin\Exception\ParserException
+     * @expectedException \Behat\Gherkin\Exception\ParserException
      */
     public function testMultipleFeatures()
     {
@@ -266,6 +269,6 @@ Feature:
 Feature:
 GHERKIN;
 
-        $parsed = $this->gherkin->parse($feature);
+        $this->gherkin->parse($feature);
     }
 }

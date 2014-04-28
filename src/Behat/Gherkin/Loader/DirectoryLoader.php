@@ -50,7 +50,7 @@ class DirectoryLoader extends AbstractFileLoader
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $path Resource to load
+     * @param string $path Resource to load
      *
      * @return FeatureNode[]
      */

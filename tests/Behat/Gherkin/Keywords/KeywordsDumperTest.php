@@ -2,8 +2,8 @@
 
 namespace Tests\Behat\Gherkin\Keywords;
 
-use Behat\Gherkin\Keywords\ArrayKeywords,
-    Behat\Gherkin\Keywords\KeywordsDumper;
+use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Keywords\KeywordsDumper;
 
 class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
 {
@@ -117,7 +117,7 @@ GHERKIN;
     public function testRuKeywordsCustomKeywordsDumper()
     {
         $dumper = new KeywordsDumper($this->keywords);
-        $dumper->setKeywordsDumperFunction(function($keywords, $short){
+        $dumper->setKeywordsDumperFunction(function($keywords){
             return '<keyword>'.implode(', ', $keywords).'</keyword>';
         });
 

@@ -2,9 +2,9 @@
 
 namespace Tests\Behat\Gherkin;
 
-use Behat\Gherkin\Gherkin,
-    Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Gherkin;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 class GherkinTest extends \PHPUnit_Framework_TestCase
 {

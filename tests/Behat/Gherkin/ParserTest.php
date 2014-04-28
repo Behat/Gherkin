@@ -4,10 +4,10 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Node\FeatureNode;
 
-use Behat\Gherkin\Lexer,
-    Behat\Gherkin\Parser,
-    Behat\Gherkin\Keywords\ArrayKeywords,
-    Behat\Gherkin\Loader\YamlFileLoader;
+use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Parser;
+use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Loader\YamlFileLoader;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {

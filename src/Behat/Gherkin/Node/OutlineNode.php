@@ -22,7 +22,7 @@ class OutlineNode implements ScenarioInterface
      */
     private $title;
     /**
-     * @var array
+     * @var string[]
      */
     private $tags;
     /**
@@ -50,7 +50,7 @@ class OutlineNode implements ScenarioInterface
      * Initializes outline.
      *
      * @param null|string      $title
-     * @param array            $tags
+     * @param string[]         $tags
      * @param StepNode[]       $steps
      * @param ExampleTableNode $table
      * @param string           $keyword
@@ -117,7 +117,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return array
+     * @return string[]
      */
     public function getTags()
     {

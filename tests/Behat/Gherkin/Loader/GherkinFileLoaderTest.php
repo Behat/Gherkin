@@ -5,11 +5,13 @@ namespace Tests\Behat\Gherkin\Loader;
 use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
-use Behat\Gherkin\Node;
 use Behat\Gherkin\Parser;
 
 class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var GherkinFileLoader
+     */
     private $loader;
     private $featuresPath;
 

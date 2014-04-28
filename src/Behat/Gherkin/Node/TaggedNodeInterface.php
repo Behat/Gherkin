@@ -36,7 +36,7 @@ interface TaggedNodeInterface extends NodeInterface
     /**
      * Returns node tags (including inherited from feature).
      *
-     * @return array
+     * @return string[]
      */
     public function getTags();
 }

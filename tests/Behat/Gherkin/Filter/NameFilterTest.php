@@ -3,7 +3,6 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\NameFilter;
-use Behat\Gherkin\Node;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 

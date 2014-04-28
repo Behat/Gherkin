@@ -3,7 +3,6 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\LineRangeFilter;
-use Behat\Gherkin\Node;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
