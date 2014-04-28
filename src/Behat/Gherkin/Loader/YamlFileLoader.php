@@ -51,7 +51,7 @@ class YamlFileLoader extends AbstractFileLoader
     public function load($path)
     {
         $path = $this->findAbsolutePath($path);
-        $hash = Yaml::parse($path);
+        $hash = Yaml::parse(file_get_contents($path));
 
         $features = $this->loader->load($hash);
         $filename = $this->findRelativePath($path);

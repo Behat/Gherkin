@@ -18,7 +18,7 @@ class CucumberKeywordsTest extends KeywordsTest
 
     protected function getKeywordsArray()
     {
-        return Yaml::parse(__DIR__ . '/../Fixtures/i18n.yml');
+        return Yaml::parse(file_get_contents(__DIR__ . '/../Fixtures/i18n.yml'));
     }
 
     protected function getSteps($keywords, $text, &$line)
