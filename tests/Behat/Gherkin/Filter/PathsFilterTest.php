@@ -5,8 +5,6 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\PathsFilter;
 use Behat\Gherkin\Node\FeatureNode;
 
-require_once 'FilterTest.php';
-
 class PathsFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()

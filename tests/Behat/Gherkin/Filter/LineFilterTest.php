@@ -8,8 +8,6 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 
-require_once 'FilterTest.php';
-
 class LineFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()

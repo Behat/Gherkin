@@ -5,8 +5,6 @@ namespace Tests\Behat\Gherkin\Keywords;
 use Behat\Gherkin\Keywords\CachedArrayKeywords;
 use Behat\Gherkin\Node\StepNode;
 
-require_once 'KeywordsTest.php';
-
 class CachedArrayKeywordsTest extends KeywordsTest
 {
     protected function getKeywords()

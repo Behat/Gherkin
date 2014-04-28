@@ -5,8 +5,6 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\RoleFilter;
 use Behat\Gherkin\Node\FeatureNode;
 
-require_once 'FilterTest.php';
-
 class RoleFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()

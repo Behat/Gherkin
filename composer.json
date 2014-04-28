@@ -34,6 +34,12 @@
         }
     },
 
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Behat\\": "tests/Behat/"
+        }
+    },
+
     "extra": {
         "branch-alias": {
             "dev-master": "4.1-dev"
