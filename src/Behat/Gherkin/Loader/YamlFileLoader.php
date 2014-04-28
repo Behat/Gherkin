@@ -18,9 +18,14 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
+class YamlFileLoader extends AbstractFileLoader
 {
-    protected $basePath;
+    private $loader;
+
+    public function __construct()
+    {
+        $this->loader = new ArrayLoader();
+    }
 
     /**
      * Checks if current loader supports provided resource.
@@ -46,9 +51,9 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
     public function load($path)
     {
         $path = $this->findAbsolutePath($path);
-        $hash = Yaml::parse($path);
+        $hash = Yaml::parse(file_get_contents($path));
 
-        $features = parent::load($hash);
+        $features = $this->loader->load($hash);
         $filename = $this->findRelativePath($path);
 
         return array_map(function (FeatureNode $feature) use ($filename) {
@@ -64,50 +69,5 @@ class YamlFileLoader extends ArrayLoader implements FileLoaderInterface
                 $feature->getLine()
             );
         }, $features);
-    }
-
-    /**
-     * Sets base features path.
-     *
-     * @param string $path Base loader path
-     */
-    public function setBasePath($path)
-    {
-        $this->basePath = realpath($path);
-    }
-
-    /**
-     * Finds relative path for provided absolute (relative to base features path).
-     *
-     * @param string $path Absolute path
-     *
-     * @return string
-     */
-    protected function findRelativePath($path)
-    {
-        if (null !== $this->basePath) {
-            return strtr($path, array($this->basePath . DIRECTORY_SEPARATOR => ''));
-        }
-
-        return $path;
-    }
-
-    /**
-     * Finds absolute path for provided relative (relative to base features path).
-     *
-     * @param string $path Relative path
-     *
-     * @return string
-     */
-    protected function findAbsolutePath($path)
-    {
-        if (is_file($path) || is_dir($path)) {
-            return realpath($path);
-        } elseif (is_file($this->basePath . DIRECTORY_SEPARATOR . $path)
-               || is_dir($this->basePath . DIRECTORY_SEPARATOR . $path)) {
-            return realpath($this->basePath . DIRECTORY_SEPARATOR . $path);
-        }
-
-        return false;
     }
 }
