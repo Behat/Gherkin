@@ -56,8 +56,10 @@ class LineRangeFilterTest extends FilterTest
         $outline = new OutlineNode(null, array(), array(), new ExampleTableNode(array(), null), null, 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
-        $this->assertEquals($expectedNumberOfMatches, intval($filter->isScenarioMatch($scenario))
-            + intval($filter->isScenarioMatch($outline)));
+        $this->assertEquals(
+            $expectedNumberOfMatches,
+            intval($filter->isScenarioMatch($scenario)) + intval($filter->isScenarioMatch($outline))
+        );
     }
 
     public function testFilterFeatureScenario()

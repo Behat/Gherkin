@@ -117,7 +117,7 @@ GHERKIN;
     public function testRuKeywordsCustomKeywordsDumper()
     {
         $dumper = new KeywordsDumper($this->keywords);
-        $dumper->setKeywordsDumperFunction(function($keywords){
+        $dumper->setKeywordsDumperFunction(function ($keywords) {
             return '<keyword>'.implode(', ', $keywords).'</keyword>';
         });
 
@@ -161,7 +161,7 @@ GHERKIN;
 
         $dumped = $dumper->dump('ru', false);
         $etalon = array(
-<<<GHERKIN
+            <<<GHERKIN
 # language: ru
 Функционал: Internal operations
   In order to stay secret
@@ -212,7 +212,7 @@ GHERKIN;
       | agent1 | agent2 |
       | D      | M      |
 GHERKIN
-, <<<GHERKIN
+            , <<<GHERKIN
 # language: ru
 Фича: Internal operations
   In order to stay secret

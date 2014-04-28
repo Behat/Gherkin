@@ -32,12 +32,12 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
         $this->assertEquals('en', $features[0]->getLanguage());
-        $this->assertEquals(<<<EOS
+        $expectedDescription = <<<EOS
 In order to avoid silly mistakes
 As a math idiot
 I want to be told the sum of two numbers
-EOS
-        , $features[0]->getDescription());
+EOS;
+        $this->assertEquals($expectedDescription, $features[0]->getDescription());
 
         $scenarios = $features[0]->getScenarios();
 

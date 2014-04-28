@@ -9,12 +9,12 @@ class RoleFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, <<<NAR
+        $description = <<<NAR
 In order to be able to read news in my own language
 As a french user
 I need to be able to switch website language to french
-NAR
-            , array(), null, array(), null, null, null, 1);
+NAR;
+        $feature = new FeatureNode(null, $description, array(), null, array(), null, null, null, 1);
 
         $filter = new RoleFilter('french user');
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -41,12 +41,12 @@ NAR
 
     public function testFeatureRolePrefixedWithAn()
     {
-        $feature = new FeatureNode(null, <<<NAR
+        $description = <<<NAR
 In order to be able to read news in my own language
 As an american user
 I need to be able to switch website language to french
-NAR
-            , array(), null, array(), null, null, null, 1);
+NAR;
+        $feature = new FeatureNode(null, $description, array(), null, array(), null, null, null, 1);
 
         $filter = new RoleFilter('american user');
         $this->assertTrue($filter->isFeatureMatch($feature));

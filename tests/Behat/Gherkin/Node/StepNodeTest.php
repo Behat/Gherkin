@@ -12,7 +12,7 @@ class StepNodeTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Behat\Gherkin\Exception\NodeException');
 
-        $step = new StepNode('Given', 'I am on the page:', array(
+        new StepNode('Given', 'I am on the page:', array(
             new PyStringNode(array('one', 'two'), 11),
             new TableNode(array(array('one', 'two'))),
         ), 10);

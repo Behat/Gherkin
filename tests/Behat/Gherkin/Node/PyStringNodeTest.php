@@ -17,11 +17,11 @@ class PyStringNodeTest extends \PHPUnit_Framework_TestCase
     {
         $str = new PyStringNode(array('line1', 'line2', 'line3'), 0);
 
-        $this->assertEquals(<<<STR
+        $expected = <<<STR
 line1
 line2
 line3
-STR
-        , $str->getRaw());
+STR;
+        $this->assertEquals($expected, $str->getRaw());
     }
 }

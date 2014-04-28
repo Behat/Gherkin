@@ -77,11 +77,10 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
                     $line += 1;
 
                     $keywords = explode('|', $i18nKeywords['examples']);
-                    $examplesLine = $line;
                     $table = new ExampleTableNode(array(
                         ++$line => array('agent1', 'agent2'),
                         ++$line => array('D', 'M')
-                    ), $keywords[0], $examplesLine);
+                    ), $keywords[0]);
                     $line += 1;
 
                     $scenarios[] = new OutlineNode('Erasing other agents\' memory', array(), $steps, $table, $outlineKeyword, $outlineLine);
@@ -103,7 +102,7 @@ DESC
                     $lang,
                     $lang . '_' . ($transNum + 1) . '.feature',
                     $featureLine
-                );;
+                );
             }
 
             $dumped = $dumper->dump($lang, false);
@@ -113,9 +112,7 @@ DESC
                     $parsed[] = $parser->parse($dumpedFeature, $lang . '_' . ($num + 1) . '.feature');
                 }
             } catch (\Exception $e) {
-                throw new \Exception(
-                    $e->getMessage() . ":\n" . $dumped, 0, $e
-                );
+                throw new \Exception($e->getMessage() . ":\n" . $dumped, 0, $e);
             }
 
             $data[] = array($lang, $features, $parsed);
@@ -127,9 +124,9 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param string $language   language name
-     * @param array  $etalon     etalon features (to test against)
-     * @param array  $features   array of parsed feature(s)
+     * @param string $language language name
+     * @param array  $etalon   etalon features (to test against)
+     * @param array  $features array of parsed feature(s)
      */
     public function testTranslation($language, array $etalon, array $features)
     {

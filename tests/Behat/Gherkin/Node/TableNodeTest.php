@@ -18,8 +18,8 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
             array(
                 array('username' => 'everzet', 'password' => 'qwerty')
               , array('username' => 'antono', 'password' => 'pa$sword')
-            )
-          , $table->getHash()
+            ),
+            $table->getHash()
         );
 
         $table = new TableNode(array(
@@ -31,11 +31,11 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array(
-                array('username' => '', 'password' => 'qwerty')
-              , array('username' => 'antono', 'password' => '')
-              , array('username' => '', 'password' => '')
-            )
-          , $table->getHash()
+                array('username' => '', 'password' => 'qwerty'),
+                array('username' => 'antono', 'password' => ''),
+                array('username' => '', 'password' => ''),
+            ),
+            $table->getHash()
         );
     }
 
@@ -45,16 +45,16 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
             array('username', 'password'),
             array('', 'qwerty'),
             array('antono', ''),
-            array('', '')
+            array('', ''),
         ));
 
         $this->assertEquals(
             array(
-                array('username' => '', 'password' => 'qwerty')
-                , array('username' => 'antono', 'password' => '')
-                , array('username' => '', 'password' => '')
-            )
-          , iterator_to_array($table)
+                array('username' => '', 'password' => 'qwerty'),
+                array('username' => 'antono', 'password' => ''),
+                array('username' => '', 'password' => ''),
+            ),
+            iterator_to_array($table)
         );
     }
 
@@ -63,10 +63,13 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             array('username', 'everzet'),
             array('password', 'qwerty'),
-            array('uid', '35')
+            array('uid', '35'),
         ));
 
-        $this->assertEquals(array('username' => 'everzet', 'password' => 'qwerty', 'uid' => '35'), $table->getRowsHash());
+        $this->assertEquals(
+            array('username' => 'everzet', 'password' => 'qwerty', 'uid' => '35'),
+            $table->getRowsHash()
+        );
     }
 
     public function testLongRowsHashTable()
@@ -147,7 +150,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRowLine()
     {
-        $table = new TableNode($a = array(
+        $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
             13 => array('antono', "pa\$sword")
@@ -159,7 +162,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRowAsString()
     {
-        $table = new TableNode($a = array(
+        $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
             13 => array('antono', "pa\$sword")
@@ -171,17 +174,17 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
 
     public function testGetTableAsString()
     {
-        $table = new TableNode($a = array(
+        $table = new TableNode(array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),
             13 => array('2', 'antono', "pa\$sword")
         ));
 
-        $this->assertEquals(<<<TABLE
+        $expected = <<<TABLE
 | id | username | password |
 | 42 | everzet  | qwerty   |
 | 2  | antono   | pa\$sword |
-TABLE
-        , $table->getTableAsString());
+TABLE;
+        $this->assertEquals($expected, $table->getTableAsString());
     }
 }

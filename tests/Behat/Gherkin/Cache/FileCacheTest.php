@@ -53,7 +53,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         foreach (glob($this->path . '/*.feature.cache') as $file) {
-            unlink((string)$file);
+            unlink((string) $file);
         }
     }
 }
