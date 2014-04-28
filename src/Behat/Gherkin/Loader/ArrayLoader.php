@@ -117,10 +117,7 @@ class ArrayLoader implements LoaderInterface
             $hash
         );
 
-        $steps = array();
-        foreach ($hash['steps'] as $stepIterator => $stepHash) {
-            $steps[] = $this->loadStepHash($stepHash, $stepIterator);
-        }
+        $steps = $this->loadStepsHash($hash['steps']);
 
         return new BackgroundNode($hash['title'], $steps, $hash['keyword'], $hash['line']);
     }
@@ -146,10 +143,7 @@ class ArrayLoader implements LoaderInterface
             $hash
         );
 
-        $steps = array();
-        foreach ($hash['steps'] as $stepIterator => $stepHash) {
-            $steps[] = $this->loadStepHash($stepHash, $stepIterator);
-        }
+        $steps = $this->loadStepsHash($hash['steps']);
 
         return new ScenarioNode($hash['title'], $hash['tags'], $steps, $hash['keyword'], $hash['line']);
     }
@@ -176,10 +170,7 @@ class ArrayLoader implements LoaderInterface
             $hash
         );
 
-        $steps = array();
-        foreach ($hash['steps'] as $stepIterator => $stepHash) {
-            $steps[] = $this->loadStepHash($stepHash, $stepIterator);
-        }
+        $steps = $this->loadStepsHash($hash['steps']);
 
         if (isset($hash['examples']['keyword'])) {
             $examplesKeyword = $hash['examples']['keyword'];
@@ -191,6 +182,23 @@ class ArrayLoader implements LoaderInterface
         $examples = new ExampleTableNode($hash['examples'], $examplesKeyword);
 
         return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line']);
+    }
+
+    /**
+     * Loads steps from provided hash.
+     *
+     * @param array $hash
+     *
+     * @return StepNode[]
+     */
+    private function loadStepsHash(array $hash)
+    {
+        $steps = array();
+        foreach ($hash as $stepIterator => $stepHash) {
+            $steps[] = $this->loadStepHash($stepHash, $stepIterator);
+        }
+
+        return $steps;
     }
 
     /**
