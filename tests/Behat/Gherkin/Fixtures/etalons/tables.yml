@@ -24,7 +24,7 @@ feature:
                 8: [bar, baz]
         - { keyword_type: Then, type: Then, text: I the result should be <c>, line: 10 }
         -
-          keyword_type: And
+          keyword_type: Then
           type:         And
           text:         the table should be properly escaped:
           line:         12

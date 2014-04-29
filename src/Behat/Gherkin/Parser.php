@@ -315,7 +315,7 @@ class Parser
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
-                $steps[] = $node;
+                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
                 continue;
             }
 
@@ -372,7 +372,7 @@ class Parser
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
-                $steps[] = $node;
+                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
                 continue;
             }
 
@@ -430,7 +430,7 @@ class Parser
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
-                $steps[] = $node;
+                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
                 continue;
             }
 
@@ -665,5 +665,32 @@ class Parser
         }
 
         return $table;
+    }
+
+    /**
+     * Changes step node type for types But, And to type of previous step if it exists else sets to Given
+     *
+     * @param StepNode   $node
+     * @param StepNode[] $steps
+     * @return StepNode
+     */
+    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = array())
+    {
+        if (in_array($node->getKeywordType(), array('And', 'But'))) {
+            if (($prev = end($steps))) {
+                $keywordType = $prev->getKeywordType();
+            } else {
+                $keywordType = 'Given';
+            }
+
+            $node = new StepNode(
+                $node->getKeyword(),
+                $node->getText(),
+                $node->getArguments(),
+                $node->getLine(),
+                $keywordType
+            );
+        }
+        return $node;
     }
 }

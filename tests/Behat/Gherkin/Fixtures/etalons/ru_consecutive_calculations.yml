@@ -21,7 +21,7 @@ feature:
       line:     9
       steps:
         - { keyword_type: Then, type: Если, text: 'я ввожу число 4',                  line: 10 }
-        - { keyword_type: And,  type: И,    text: 'нажимаю "+"',                      line: 11 }
+        - { keyword_type: Then, type: И,    text: 'нажимаю "+"',                      line: 11 }
         - { keyword_type: When, type: То,   text: 'результатом должно быть число 12', line: 12 }
     -
       type:     scenario
@@ -30,5 +30,5 @@ feature:
       line:     14
       steps:
         - { keyword_type: Then, type: Если, text: 'я ввожу число 2',                  line: 15 }
-        - { keyword_type: And,  type: И,    text: 'нажимаю "/"',                      line: 16 }
+        - { keyword_type: Then, type: И,    text: 'нажимаю "/"',                      line: 16 }
         - { keyword_type: When, type: То,   text: 'результатом должно быть число 4',  line: 17 }

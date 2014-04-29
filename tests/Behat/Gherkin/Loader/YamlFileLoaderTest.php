@@ -50,7 +50,7 @@ EOS;
         $this->assertEquals(9, $steps[1]->getLine());
         $this->assertEquals('And', $steps[1]->getType());
         $this->assertEquals('And', $steps[1]->getKeyword());
-        $this->assertEquals('And', $steps[1]->getKeywordType());
+        $this->assertEquals('Given', $steps[1]->getKeywordType());
         $this->assertEquals('I have entered 12 into the calculator', $steps[1]->getText());
 
         $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[1]);

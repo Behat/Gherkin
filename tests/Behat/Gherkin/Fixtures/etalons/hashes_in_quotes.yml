@@ -14,7 +14,7 @@ feature:
       line:     7
       steps:
         - { keyword_type: 'Given', type: 'Given',  text: 'I have entered 11 into the calculator',  line: 8 }
-        - { keyword_type: 'And',   type: 'And',    text: 'I have entered 12 into the calculator',  line: 9 }
+        - { keyword_type: 'Given', type: 'And',    text: 'I have entered 12 into the calculator',  line: 9 }
         - { keyword_type: 'When',  type: 'When',   text: 'I press "#add"',                         line: 10 }
         - { keyword_type: 'Then',  type: 'Then',   text: 'the result should be 23 on the screen',  line: 11 }
 
@@ -24,6 +24,6 @@ feature:
       line:     13
       steps:
         - { keyword_type: 'Given', type: 'Given',  text: 'I have entered 10 into the calculator',  line: 14 }
-        - { keyword_type: 'And',   type: 'And',    text: 'I have entered # 2 into the calculator', line: 15 }
+        - { keyword_type: 'Given', type: 'And',    text: 'I have entered # 2 into the calculator', line: 15 }
         - { keyword_type: 'When',  type: 'When',   text: 'I press div',                            line: 16 }
         - { keyword_type: 'Then',  type: 'Then',   text: 'the result should be 5 on the screen',   line: 17 }

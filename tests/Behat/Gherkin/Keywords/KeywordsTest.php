@@ -41,7 +41,7 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
                 $line += 1;
                 $background = new BackgroundNode(null, array_merge(
                     $this->getSteps($i18nKeywords['given'], 'there is agent A', $line, 'Given'),
-                    $this->getSteps($i18nKeywords['and'], 'there is agent B', $line, 'And')
+                    $this->getSteps($i18nKeywords['and'], 'there is agent B', $line, 'Given')
                 ), $keywords[0], $backgroundLine);
 
                 $line += 1;
@@ -54,10 +54,10 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
 
                     $steps = array_merge(
                         $this->getSteps($i18nKeywords['given'], 'there is agent J', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['and'], 'there is agent K', $line, 'And'),
+                        $this->getSteps($i18nKeywords['and'], 'there is agent K', $line, 'Given'),
                         $this->getSteps($i18nKeywords['when'], 'I erase agent K\'s memory', $line, 'When'),
                         $this->getSteps($i18nKeywords['then'], 'there should be agent J', $line, 'Then'),
-                        $this->getSteps($i18nKeywords['but'], 'there should not be agent K', $line, 'But')
+                        $this->getSteps($i18nKeywords['but'], 'there should not be agent K', $line, 'Then')
                     );
 
                     $scenarios[] = new ScenarioNode('Erasing agent memory', array(), $steps, $scenarioKeyword, $scenarioLine);
@@ -69,10 +69,10 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
 
                     $steps = array_merge(
                         $this->getSteps($i18nKeywords['given'], 'there is agent <agent1>', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['and'], 'there is agent <agent2>', $line, 'And'),
+                        $this->getSteps($i18nKeywords['and'], 'there is agent <agent2>', $line, 'Given'),
                         $this->getSteps($i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line, 'When'),
                         $this->getSteps($i18nKeywords['then'], 'there should be agent <agent1>', $line, 'Then'),
-                        $this->getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line, 'But')
+                        $this->getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line, 'Then')
                     );
                     $line += 1;
 
