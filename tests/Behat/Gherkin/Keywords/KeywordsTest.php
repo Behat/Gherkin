@@ -23,9 +23,13 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
         $lexer = new Lexer($keywords);
         $parser = new Parser($lexer);
         $dumper = new KeywordsDumper($keywords);
+        $keywordsArray = $this->getKeywordsArray();
+
+        // Remove languages with repeated keywords
+        unset($keywordsArray['en-old'], $keywordsArray['uz']);
 
         $data = array();
-        foreach ($this->getKeywordsArray() as $lang => $i18nKeywords) {
+        foreach ($keywordsArray as $lang => $i18nKeywords) {
             $features = array();
             foreach (explode('|', $i18nKeywords['feature']) as $transNum => $featureKeyword) {
                 $line = 1;
