@@ -15,7 +15,7 @@ matrix:
 
 before_script:
   - composer self-update
-  - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/symfony=$SYMFONY_VERSION; fi;'
+  - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require --no-update symfony/yaml=$SYMFONY_VERSION; fi;'
   - composer install --prefer-source
 
 script: vendor/bin/phpunit -v --coverage-clover=coverage.clover

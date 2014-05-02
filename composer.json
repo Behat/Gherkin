@@ -19,13 +19,11 @@
 
     "require-dev": {
         "symfony/yaml":    "~2.1",
-        "symfony/config":  "~2.1",
         "phpunit/phpunit": "~4.0"
     },
 
     "suggest": {
-        "symfony/yaml":   "If you want to parse features, represented in YAML files",
-        "symfony/config": "If you want to use Config component to manage resources"
+        "symfony/yaml":   "If you want to parse features, represented in YAML files"
     },
 
     "autoload": {
