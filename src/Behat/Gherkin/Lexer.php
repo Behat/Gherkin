@@ -123,20 +123,16 @@ class Lexer
     /**
      * Predicts for number of tokens.
      *
-     * @param integer $number Number of tokens to predict
-     *
      * @return array
      */
-    public function predictToken($number = 1)
+    public function predictToken()
     {
-        $fetch = $number - $this->stashCount;
-
-        while ($fetch-- > 0) {
+        if ($this->stashCount < 1) {
             $this->stash[] = $this->getNextToken();
             ++$this->stashCount;
         }
 
-        return $this->stash[--$number];
+        return $this->stash[0];
     }
 
     /**
