@@ -31,8 +31,7 @@ class Lexer
     private $keywordsCache = array();
     private $deferredObjects = array();
     private $deferredObjectsCount = 0;
-    private $stash = array();
-    private $stashCount = 0;
+    private $stashedToken;
     private $inPyString = false;
     private $pyStringSwallow = 0;
     private $featureStarted = false;
@@ -75,8 +74,7 @@ class Lexer
 
         $this->deferredObjects = array();
         $this->deferredObjectsCount = 0;
-        $this->stash = array();
-        $this->stashCount = 0;
+        $this->stashedToken = null;
         $this->inPyString = false;
         $this->pyStringSwallow = 0;
 
@@ -105,7 +103,7 @@ class Lexer
      */
     public function getAdvancedToken()
     {
-        return $this->getStashedToken() ? : $this->getNextToken();
+        return $this->getStashedToken() ?: $this->getNextToken();
     }
 
     /**
@@ -123,20 +121,15 @@ class Lexer
     /**
      * Predicts for number of tokens.
      *
-     * @param integer $number Number of tokens to predict
-     *
      * @return array
      */
-    public function predictToken($number = 1)
+    public function predictToken()
     {
-        $fetch = $number - $this->stashCount;
-
-        while ($fetch-- > 0) {
-            $this->stash[] = $this->getNextToken();
-            ++$this->stashCount;
+        if (null === $this->stashedToken) {
+            $this->stashedToken = $this->getNextToken();
         }
 
-        return $this->stash[--$number];
+        return $this->stashedToken;
     }
 
     /**
@@ -185,25 +178,22 @@ class Lexer
     }
 
     /**
-     * Returns stashed token or false if hasn't.
+     * Returns stashed token or null if hasn't.
      *
-     * @return array|Boolean
+     * @return array|null
      */
     protected function getStashedToken()
     {
-        if (!$this->stashCount) {
-            return null;
-        }
+        $stashedToken = $this->stashedToken;
+        $this->stashedToken = null;
 
-        --$this->stashCount;
-
-        return array_shift($this->stash);
+        return $stashedToken;
     }
 
     /**
-     * Returns deferred token or false if hasn't.
+     * Returns deferred token or null if hasn't.
      *
-     * @return array|Boolean
+     * @return array|null
      */
     protected function getDeferredToken()
     {

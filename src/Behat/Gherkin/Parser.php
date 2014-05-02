@@ -162,13 +162,11 @@ class Parser
     /**
      * Returns next token type without real input reading (prediction).
      *
-     * @param integer $number Number of tokens to predict
-     *
      * @return string
      */
-    protected function predictTokenType($number = 1)
+    protected function predictTokenType()
     {
-        $token = $this->lexer->predictToken($number);
+        $token = $this->lexer->predictToken();
 
         return $token['type'];
     }
