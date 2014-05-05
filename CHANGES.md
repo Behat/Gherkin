@@ -1,3 +1,9 @@
+4.1.1 / 2014-05-05
+==================
+
+  * Fixed the compatibility with PHP 5.6-beta by avoiding to use the broken PHP array function
+  * The YamlFileLoader no longer extend from ArrayLoader but from AbstractFileLoader
+
 4.1.0 / 2014-04-20
 ==================
 
