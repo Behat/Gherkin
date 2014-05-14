@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin\Cache;
 
+use Behat\Gherkin\Exception\CacheException;
 use Behat\Gherkin\Node\FeatureNode;
 
 /**
@@ -61,10 +62,19 @@ class FileCache implements CacheInterface
      * @param string $path Feature path
      *
      * @return FeatureNode
+     *
+     * @throws CacheException
      */
     public function read($path)
     {
-        return unserialize(file_get_contents($this->getCachePathFor($path)));
+        $cachePath = $this->getCachePathFor($path);
+        $feature = unserialize(file_get_contents($cachePath));
+
+        if (!$feature instanceof FeatureNode) {
+            throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath ));
+        }
+
+        return $feature;
     }
 
     /**
