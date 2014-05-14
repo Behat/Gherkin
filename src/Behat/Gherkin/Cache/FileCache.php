@@ -30,7 +30,7 @@ class FileCache implements CacheInterface
      */
     public function __construct($path)
     {
-        $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'31';
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'412';
 
         if (!is_dir($this->path)) {
             mkdir($this->path, 0777, true);

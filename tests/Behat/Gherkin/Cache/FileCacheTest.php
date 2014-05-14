@@ -49,7 +49,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Behat\Gherkin\Exception\CacheException');
 
-        touch($this->path . '/31/' . md5('broken_feature') . '.feature.cache');
+        touch($this->path . '/412/' . md5('broken_feature') . '.feature.cache');
         $this->cache->read('broken_feature');
     }
 
