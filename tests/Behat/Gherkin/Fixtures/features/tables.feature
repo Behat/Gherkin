@@ -11,10 +11,10 @@ Feature: A scenario outline
     # comment
     And the table should be properly escaped:
       | \|a | b   | c   |
-      | 1   | \|2 | 3   |
+      | 1   | \|2 | 3   |  
       | 2   | 3   | \|4 |
 #comment
     Examples:
       | a   | b   | c |
       | 1   | \|2 | 3 |
-      | 2   | 3   | 4 |
+      | 2   | 3   | 4 | 
