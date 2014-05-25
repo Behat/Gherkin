@@ -1,3 +1,8 @@
+4.1.3 / 2014-05-25
+==================
+
+  * Properly handle tables with rows terminating in whitespace
+
 4.1.2 / 2014-05-14
 ==================
 
