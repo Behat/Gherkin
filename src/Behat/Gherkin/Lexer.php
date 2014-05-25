@@ -174,7 +174,7 @@ class Lexer
      */
     protected function getTrimmedLine()
     {
-        return null !== $this->trimmedLine ? $this->trimmedLine : $this->trimmedLine = ltrim($this->line);
+        return null !== $this->trimmedLine ? $this->trimmedLine : $this->trimmedLine = trim($this->line);
     }
 
     /**
