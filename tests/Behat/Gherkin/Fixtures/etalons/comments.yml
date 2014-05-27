@@ -16,6 +16,6 @@ feature:
       title:    "A normal feature #comment in scenario title"
       line:     19
       steps:
-        - { type: 'Given',  text: 'I have a pending step #comment',                       line: 21 }
-        - { type: 'When',   text: 'I run this feature with the progress format #comment', line: 24 }
-        - { type: 'Then',   text: "I should get a no method error for 'backtrace_line'",  line: 31 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'I have a pending step #comment',                       line: 21 }
+        - { keyword_type: 'When',  type: 'When',   text: 'I run this feature with the progress format #comment', line: 24 }
+        - { keyword_type: 'Then',  type: 'Then',   text: "I should get a no method error for 'backtrace_line'",  line: 31 }

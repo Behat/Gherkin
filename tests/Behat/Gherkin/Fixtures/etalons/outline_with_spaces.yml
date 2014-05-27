@@ -13,14 +13,14 @@ feature:
       title:    Failed Login
       line:     7
       steps:
-        - { type: 'Given',  text: 'the user "known_user"',                  line: 8 }
-        - { type: 'When',   text: 'I go to the main page',                  line: 10 }
-        - { type: 'Then',   text: 'I should see the login form',            line: 11 }
-        - { type: 'When',   text: 'I fill in "login" with "<login>"',       line: 13 }
-        - { type: 'And',    text: 'I fill in "password" with "<password>"', line: 14 }
-        - { type: 'And',    text: 'I press "Log In"',                       line: 15 }
-        - { type: 'Then',   text: 'the login request should fail',          line: 16 }
-        - { type: 'And',    text: 'I should see the error message "Login or Password incorrect"',  line: 17 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'the user "known_user"',                  line: 8 }
+        - { keyword_type: 'When',  type: 'When',   text: 'I go to the main page',                  line: 10 }
+        - { keyword_type: 'Then',  type: 'Then',   text: 'I should see the login form',            line: 11 }
+        - { keyword_type: 'When',  type: 'When',   text: 'I fill in "login" with "<login>"',       line: 13 }
+        - { keyword_type: 'When',  type: 'And',    text: 'I fill in "password" with "<password>"', line: 14 }
+        - { keyword_type: 'When',  type: 'And',    text: 'I press "Log In"',                       line: 15 }
+        - { keyword_type: 'Then',  type: 'Then',   text: 'the login request should fail',          line: 16 }
+        - { keyword_type: 'Then',  type: 'And',    text: 'I should see the error message "Login or Password incorrect"',  line: 17 }
       examples:
         20: [login, password]
         21: ['', '']

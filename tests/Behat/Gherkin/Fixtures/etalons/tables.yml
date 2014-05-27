@@ -10,22 +10,24 @@ feature:
       title:    ~
       line:     3
       steps:
-        - { type: Given, text: I add <a> and <b>, line: 4 }
+        - { keyword_type: Given, type: Given, text: I add <a> and <b>, line: 4 }
         -
-          type:   When
-          text:   I pass a table argument
-          line:   6
+          keyword_type: When
+          type:         When
+          text:         I pass a table argument
+          line:         6
           arguments:
             -
               type:   table
               rows:
                 7: [foo, bar]
                 8: [bar, baz]
-        - { type: Then, text: I the result should be <c>, line: 10 }
+        - { keyword_type: Then, type: Then, text: I the result should be <c>, line: 10 }
         -
-          type:   And
-          text:   the table should be properly escaped:
-          line:   12
+          keyword_type: Then
+          type:         And
+          text:         the table should be properly escaped:
+          line:         12
           arguments:
             -
               type:   table

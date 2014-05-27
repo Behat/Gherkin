@@ -11,7 +11,7 @@ feature:
     keyword:    Предыстория
     line:       6
     steps:
-      - { type: Допустим, text: я сложил 3 и 5, line: 7 }
+      - { keyword_type: Given, type: Допустим, text: я сложил 3 и 5, line: 7 }
 
   scenarios:
     -
@@ -20,15 +20,15 @@ feature:
       title:    сложение с результатом последней операций
       line:     9
       steps:
-        - { type: Если, text: 'я ввожу число 4',                  line: 10 }
-        - { type: И,    text: 'нажимаю "+"',                      line: 11 }
-        - { type: То,   text: 'результатом должно быть число 12', line: 12 }
+        - { keyword_type: Then, type: Если, text: 'я ввожу число 4',                  line: 10 }
+        - { keyword_type: Then, type: И,    text: 'нажимаю "+"',                      line: 11 }
+        - { keyword_type: When, type: То,   text: 'результатом должно быть число 12', line: 12 }
     -
       type:     scenario
       keyword:  Сценарий
       title:    деление результата последней операции
       line:     14
       steps:
-        - { type: Если, text: 'я ввожу число 2',                  line: 15 }
-        - { type: И,    text: 'нажимаю "/"',                      line: 16 }
-        - { type: То,   text: 'результатом должно быть число 4',  line: 17 }
+        - { keyword_type: Then, type: Если, text: 'я ввожу число 2',                  line: 15 }
+        - { keyword_type: Then, type: И,    text: 'нажимаю "/"',                      line: 16 }
+        - { keyword_type: When, type: То,   text: 'результатом должно быть число 4',  line: 17 }

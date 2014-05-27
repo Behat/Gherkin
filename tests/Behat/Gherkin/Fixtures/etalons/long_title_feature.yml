@@ -10,4 +10,4 @@ feature:
       title:    See "No Record(s) Found" for Zero Existing
       line:     3
       steps:
-        - { type: Given, text: no public holiday exists in the system, line: 4 }
+        - { keyword_type: Given, type: Given, text: no public holiday exists in the system, line: 4 }

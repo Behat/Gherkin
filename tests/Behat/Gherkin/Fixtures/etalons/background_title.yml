@@ -15,7 +15,7 @@ feature:
        """
        strings
     steps:
-      - { type: Given, text: a passing step, line: 10 }
+      - { keyword_type: Given, type: Given, text: a passing step, line: 10 }
 
   scenarios:
     -
@@ -23,4 +23,4 @@ feature:
       title:    ~
       line:     12
       steps:
-        - { type: Given, text: a failing step, line: 13 }
+        - { keyword_type: Given, type: Given, text: a failing step, line: 13 }

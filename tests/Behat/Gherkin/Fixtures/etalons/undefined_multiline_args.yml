@@ -11,9 +11,10 @@ feature:
       line:     3
       steps:
         -
-          type:   Given
-          text:   a pystring
-          line:   4
+          keyword_type: Given
+          type:         Given
+          text:         a pystring
+          line:         4
           arguments:
             -
               type:     pystring
@@ -25,9 +26,10 @@ feature:
       line:     9
       steps:
         -
-          type:   Given
-          text:   a table
-          line:   10
+          keyword_type: Given
+          type:         Given
+          text:         a table
+          line:         10
           arguments:
             -
               type:     table

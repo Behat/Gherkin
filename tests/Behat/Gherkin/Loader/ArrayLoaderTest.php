@@ -215,24 +215,24 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                 array(
                     'background' => array(
                         'steps' => array(
-                            array('type' => 'Given', 'text' => 'bg step 1', 'line' => 3),
-                            array('type' => 'When', 'text' => 'bg step 2')
+                            array('type' => 'Gangway!', 'keyword_type' => 'Given', 'text' => 'bg step 1', 'line' => 3),
+                            array('type' => 'Blimey!', 'keyword_type' => 'When', 'text' => 'bg step 2')
                         )
                     ),
                     'scenarios' => array(
                         array(
                             'title' => 'Scenario',
                             'steps' => array(
-                                array('type' => 'Given', 'text' => 'sc step 1'),
-                                array('type' => 'When', 'text' => 'sc step 2')
+                                array('type' => 'Gangway!', 'keyword_type' => 'Given', 'text' => 'sc step 1'),
+                                array('type' => 'Blimey!', 'keyword_type' => 'When', 'text' => 'sc step 2')
                             )
                         ),
                         array(
                             'title' => 'Outline',
                             'type'  => 'outline',
                             'steps' => array(
-                                array('type' => 'Given', 'text' => 'out step 1'),
-                                array('type' => 'When', 'text' => 'out step 2')
+                                array('type' => 'Gangway!', 'keyword_type' => 'Given', 'text' => 'out step 1'),
+                                array('type' => 'Blimey!', 'keyword_type' => 'When', 'text' => 'out step 2')
                             )
                         )
                     )
@@ -244,10 +244,14 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($background->hasSteps());
         $this->assertEquals(2, count($background->getSteps()));
         $steps = $background->getSteps();
-        $this->assertEquals('Given', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getKeyword());
+        $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('bg step 1', $steps[0]->getText());
         $this->assertEquals(3, $steps[0]->getLine());
-        $this->assertEquals('When', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getKeyword());
+        $this->assertEquals('When', $steps[1]->getKeywordType());
         $this->assertEquals('bg step 2', $steps[1]->getText());
         $this->assertEquals(1, $steps[1]->getLine());
 
@@ -257,10 +261,14 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($scenario->hasSteps());
         $this->assertEquals(2, count($scenario->getSteps()));
         $steps = $scenario->getSteps();
-        $this->assertEquals('Given', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getKeyword());
+        $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('sc step 1', $steps[0]->getText());
         $this->assertEquals(0, $steps[0]->getLine());
-        $this->assertEquals('When', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getKeyword());
+        $this->assertEquals('When', $steps[1]->getKeywordType());
         $this->assertEquals('sc step 2', $steps[1]->getText());
         $this->assertEquals(1, $steps[1]->getLine());
 
@@ -268,10 +276,14 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($outline->hasSteps());
         $this->assertEquals(2, count($outline->getSteps()));
         $steps = $outline->getSteps();
-        $this->assertEquals('Given', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getKeyword());
+        $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('out step 1', $steps[0]->getText());
         $this->assertEquals(0, $steps[0]->getLine());
-        $this->assertEquals('When', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getKeyword());
+        $this->assertEquals('When', $steps[1]->getKeywordType());
         $this->assertEquals('out step 2', $steps[1]->getText());
         $this->assertEquals(1, $steps[1]->getLine());
     }
@@ -284,7 +296,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                     'background' => array(
                         'steps' => array(
                             array(
-                                'type' => 'Given', 'text' => 'step with table argument',
+                                'type' => 'Gangway!', 'keyword_type' => 'Given', 'text' => 'step with table argument',
                                 'arguments' => array(
                                     array(
                                         'type'  => 'table',
@@ -297,7 +309,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                                 )
                             ),
                             array(
-                                'type' => 'When', 'text' => 'step with pystring argument',
+                                'type' => 'Blimey!', 'keyword_type' => 'When', 'text' => 'step with pystring argument',
                                 'arguments' => array(
                                     array(
                                         'type'      => 'pystring',
@@ -306,7 +318,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                                 )
                             ),
                             array(
-                                'type' => 'Then', 'text' => '2nd step with pystring argument',
+                                'type' => 'Let go and haul', 'keyword_type' => 'Then', 'text' => '2nd step with pystring argument',
                                 'arguments' => array(
                                     array(
                                         'type'      => 'pystring',
@@ -329,19 +341,25 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($steps));
 
         $arguments = $steps[0]->getArguments();
-        $this->assertEquals('Given', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getType());
+        $this->assertEquals('Gangway!', $steps[0]->getKeyword());
+        $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('step with table argument', $steps[0]->getText());
         $this->assertInstanceOf('Behat\Gherkin\Node\TableNode', $arguments[0]);
         $this->assertEquals(array(array('key'=>1, 'val'=>2), array('key'=>3,'val'=>4)), $arguments[0]->getHash());
 
         $arguments = $steps[1]->getArguments();
-        $this->assertEquals('When', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getType());
+        $this->assertEquals('Blimey!', $steps[1]->getKeyword());
+        $this->assertEquals('When', $steps[1]->getKeywordType());
         $this->assertEquals('step with pystring argument', $steps[1]->getText());
         $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
         $this->assertEquals('    some text', (string) $arguments[0]);
 
         $arguments = $steps[2]->getArguments();
-        $this->assertEquals('Then', $steps[2]->getType());
+        $this->assertEquals('Let go and haul', $steps[2]->getType());
+        $this->assertEquals('Let go and haul', $steps[2]->getKeyword());
+        $this->assertEquals('Then', $steps[2]->getKeywordType());
         $this->assertEquals('2nd step with pystring argument', $steps[2]->getText());
         $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
         $this->assertEquals('some text', (string) $arguments[0]);

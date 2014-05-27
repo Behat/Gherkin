@@ -22,7 +22,11 @@ class StepNode implements NodeInterface
     /**
      * @var string
      */
-    private $type;
+    private $keyword;
+    /**
+     * @var string
+     */
+    private $keywordType;
     /**
      * @var string
      */
@@ -39,26 +43,28 @@ class StepNode implements NodeInterface
     /**
      * Initializes step.
      *
-     * @param string              $type
+     * @param string              $keyword
      * @param string              $text
      * @param ArgumentInterface[] $arguments
      * @param integer             $line
+     * @param string              $keywordType
      */
-    public function __construct($type, $text, array $arguments, $line)
+    public function __construct($keyword, $text, array $arguments, $line, $keywordType = null)
     {
         if (count($arguments) > 1) {
             throw new NodeException(sprintf(
                 'Steps could have only one argument, but `%s %s` have %d.',
-                $type,
+                $keyword,
                 $text,
                 count($arguments)
             ));
         }
 
-        $this->type = $type;
+        $this->keyword = $keyword;
         $this->text = $text;
         $this->arguments = $arguments;
         $this->line = $line;
+        $this->keywordType = $keywordType ?: 'Given';
     }
 
     /**
@@ -72,13 +78,36 @@ class StepNode implements NodeInterface
     }
 
     /**
+     * Returns step keyword in provided language (Given, When, Then, etc.).
+     *
+     * @return string
+     *
+     * @deprecated use getKeyword() instead
+     */
+    public function getType()
+    {
+        return $this->getKeyword();
+    }
+
+    /**
+     * Returns step keyword in provided language (Given, When, Then, etc.).
+     *
+     * @return string
+     *
+     */
+    public function getKeyword()
+    {
+        return $this->keyword;
+    }
+
+    /**
      * Returns step type keyword (Given, When, Then, etc.).
      *
      * @return string
      */
-    public function getType()
+    public function getKeywordType()
     {
-        return $this->type;
+        return $this->keywordType;
     }
 
     /**

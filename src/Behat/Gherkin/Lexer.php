@@ -29,6 +29,7 @@ class Lexer
     private $eos;
     private $keywords;
     private $keywordsCache = array();
+    private $stepKeywordTypesCache = array();
     private $deferredObjects = array();
     private $deferredObjectsCount = 0;
     private $stashedToken;
@@ -84,6 +85,7 @@ class Lexer
 
         $this->keywords->setLanguage($this->language = $language);
         $this->keywordsCache = array();
+        $this->stepKeywordTypesCache = array();
     }
 
     /**
@@ -401,7 +403,9 @@ class Lexer
             return null;
         }
 
-        $token = $this->takeToken('Step', trim($matches[1]));
+        $keyword = trim($matches[1]);
+        $token = $this->takeToken('Step', $keyword);
+        $token['keyword_type'] = $this->getStepKeywordType($keyword);
         $token['text'] = $matches[2];
 
         $this->consumeLine();
@@ -574,5 +578,32 @@ class Lexer
         $this->consumeLine();
 
         return $token;
+    }
+
+    /**
+     * Returns step type keyword (Given, When, Then, etc.).
+     *
+     * @param string $native Step keyword in provided language
+     * @return string
+     */
+    private function getStepKeywordType($native)
+    {
+        if (empty($this->stepKeywordTypesCache)) {
+            $this->stepKeywordTypesCache = array(
+                'Given' => explode('|', $this->keywords->getGivenKeywords()),
+                'When' => explode('|', $this->keywords->getWhenKeywords()),
+                'Then' => explode('|', $this->keywords->getThenKeywords()),
+                'And' => explode('|', $this->keywords->getAndKeywords()),
+                'But' => explode('|', $this->keywords->getButKeywords())
+            );
+        }
+
+        foreach ($this->stepKeywordTypesCache as $type => $keywords) {
+            if (in_array($native, $keywords) || in_array($native . '<', $keywords)) {
+                return $type;
+            }
+        }
+
+        return 'Given';
     }
 }
