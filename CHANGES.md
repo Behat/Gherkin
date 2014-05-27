@@ -1,3 +1,9 @@
+4.2.0 / 2014-05-27
+==================
+
+  * Added `getKeyword()` and `getKeywordType()` methods to `StepNode`, deprecated `getType()`.
+    Thanks to @kibao
+
 4.1.3 / 2014-05-25
 ==================
 
