@@ -53,6 +53,17 @@ class Gherkin
     }
 
     /**
+     * Sets filters to the parser.
+     *
+     * @param FeatureFilterInterface[] $filters
+     */
+    public function setFilters(array $filters)
+    {
+        $this->filters = array();
+        array_map(array($this, 'addFilter'), $filters);
+    }
+
+    /**
      * Sets base features path.
      *
      * @param string $path Loaders base path

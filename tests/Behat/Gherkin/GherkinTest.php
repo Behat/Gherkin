@@ -102,6 +102,37 @@ class GherkinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($features));
     }
 
+    public function testSetFiltersOverridesAllFilters()
+    {
+        $gherkin = new Gherkin();
+        $gherkin->addLoader($loader = $this->getLoaderMock());
+        $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
+        $gherkin->setFilters(array());
+
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+
+        $loader
+            ->expects($this->once())
+            ->method('supports')
+            ->with($resource = 'some/feature/resource')
+            ->will($this->returnValue(true));
+        $loader
+            ->expects($this->once())
+            ->method('load')
+            ->with($resource)
+            ->will($this->returnValue(array($feature)));
+
+        $nameFilter
+            ->expects($this->never())
+            ->method('filterFeature');
+        $nameFilter
+            ->expects($this->never())
+            ->method('isFeatureMatch');
+
+        $features = $gherkin->load($resource);
+        $this->assertEquals(1, count($features));
+    }
+
     public function testSetBasePath()
     {
         $gherkin = new Gherkin();
