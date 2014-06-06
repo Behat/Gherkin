@@ -207,6 +207,8 @@ class Parser
                 return $this->parseComment();
             case 'Language':
                 return $this->parseLanguage();
+            case 'EOS':
+                return '';
         }
 
         throw new ParserException(sprintf('Unknown token type: %s', $type));
