@@ -1,3 +1,9 @@
+4.3.0 / 2014-06-06
+==================
+
+  * Added `setFilters(array)` method to `Gherkin` class
+  * Added `NarrativeFilter` for non-english `RoleFilter` lovers
+
 4.2.1 / 2014-06-06
 ==================
 
