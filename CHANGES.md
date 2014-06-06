@@ -1,3 +1,8 @@
+4.2.1 / 2014-06-06
+==================
+
+  * Fix parsing of features without line feed at the end
+
 4.2.0 / 2014-05-27
 ==================
 
