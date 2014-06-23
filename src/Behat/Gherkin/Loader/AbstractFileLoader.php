@@ -58,6 +58,10 @@ abstract class AbstractFileLoader implements FileLoaderInterface
             return realpath($path);
         }
 
+        if (is_link($path)) {
+            return readlink($path);
+        }
+
         if (null === $this->basePath) {
             return false;
         }
@@ -65,6 +69,10 @@ abstract class AbstractFileLoader implements FileLoaderInterface
         if (is_file($this->basePath . DIRECTORY_SEPARATOR . $path)
                || is_dir($this->basePath . DIRECTORY_SEPARATOR . $path)) {
             return realpath($this->basePath . DIRECTORY_SEPARATOR . $path);
+        }
+
+        if (is_link($this->basePath . DIRECTORY_SEPARATOR . $path)) {
+            return readlink($this->basePath . DIRECTORY_SEPARATOR . $path);
         }
 
         return false;
