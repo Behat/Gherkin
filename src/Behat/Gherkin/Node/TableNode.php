@@ -74,6 +74,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table hash, formed by columns.
      *
+     * @throws NodeException
      * @return array
      */
     public function getColumnsHash()
@@ -84,6 +85,10 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $hash = array();
         foreach ($rows as $row) {
             $hash[] = array_combine($keys, $row);
+        }
+
+        if (empty($hash)) {
+            throw new NodeException("Could not get columns hash. It's likely the table is malformed (missing headers)");
         }
 
         return $hash;
