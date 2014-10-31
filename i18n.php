@@ -638,7 +638,7 @@
     'scenario' => 'Scenariusz',
     'scenario_outline' => 'Szablon scenariusza',
     'examples' => 'Przykłady',
-    'given' => 'Zakładając|Mając',
+    'given' => 'Zakładając|Mając|Zakładając że',
     'when' => 'Jeżeli|Kiedy|Jeśli|Gdy',
     'then' => 'Wtedy',
     'and' => 'Oraz|I',
