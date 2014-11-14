@@ -48,7 +48,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
             }
 
             if (count($row) !== $columnCount) {
-                throw new NodeException(sprintf('Table does not have same number of columns in every row.'));
+                throw new NodeException('Table node does not have same number of columns in every row.');
             }
 
             foreach ($row as $column => $string) {
