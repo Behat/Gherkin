@@ -35,12 +35,22 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * Initializes table.
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @throws NodeException If the number of columns is not the same in each row
      */
     public function __construct(array $table)
     {
         $this->table = $table;
+        $columnCount = null;
 
-        foreach ($this->getRows() as $row) {
+        foreach ($this->getRows() as $index => $row) {
+            if($columnCount === null) {
+                $columnCount = count($row);
+            }
+
+            if (count($row) !== $columnCount) {
+                throw new NodeException(sprintf('Table does not have same number of columns in every row.'));
+            }
+
             foreach ($row as $column => $string) {
                 if (!isset($this->maxLineLength[$column])) {
                     $this->maxLineLength[$column] = 0;
