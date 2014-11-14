@@ -11,7 +11,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorExpectsSameNumberOfColumnsInEachRow()
     {
-        $table = new TableNode(array(
+        new TableNode(array(
             array('username', 'password'),
             array('everzet'),
             array('antono', 'pa$sword')
