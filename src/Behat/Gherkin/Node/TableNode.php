@@ -157,6 +157,31 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
+     * Returns specific column in a table.
+     *
+     * @param integer $index Column number
+     *
+     * @return array
+     *
+     * @throws NodeException If column with specified index does not exist
+     */
+    public function getColumn($index)
+    {
+        if ($index >= count($this->getRow(0))) {
+            throw new NodeException(sprintf('Column #%d does not exist in table.', $index));
+        }
+
+        $rows = $this->getRows();
+        $column = array();
+
+        foreach ($rows as $row) {
+            $column[] = $row[$index];
+        }
+
+        return $column;
+    }
+
+    /**
      * Returns line number at which specific row was defined.
      *
      * @param integer $index

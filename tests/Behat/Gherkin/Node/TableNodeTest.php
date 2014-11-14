@@ -11,7 +11,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             array('username', 'password'),
             array('everzet', 'qwerty'),
-            array('antono', "pa\$sword")
+            array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(
@@ -92,13 +92,13 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             array('username', 'password'),
             array('everzet', 'qwerty'),
-            array('antono', "pa\$sword")
+            array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(array(
             array('username', 'password'),
             array('everzet', 'qwerty'),
-            array('antono', "pa\$sword")
+            array('antono', 'pa$sword')
         ), $table->getRows());
     }
 
@@ -107,7 +107,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
-            13 => array('antono', "pa\$sword")
+            13 => array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(array(5, 10, 13), $table->getLines());
@@ -118,11 +118,31 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             array('username', 'password'),
             array('everzet', 'qwerty'),
-            array('antono', "pa\$sword")
+            array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(array('username', 'password'), $table->getRow(0));
-        $this->assertEquals(array('antono', "pa\$sword"), $table->getRow(2));
+        $this->assertEquals(array('antono', 'pa$sword'), $table->getRow(2));
+    }
+
+    public function testGetColumn()
+    {
+        $table = new TableNode(array(
+            array('username', 'password'),
+            array('everzet', 'qwerty'),
+            array('antono', 'pa$sword')
+        ));
+
+        $this->assertEquals(array('username', 'everzet', 'antono'), $table->getColumn(0));
+        $this->assertEquals(array('password', 'qwerty', 'pa$sword'), $table->getColumn(1));
+
+        $table = new TableNode(array(
+            array('username'),
+            array('everzet'),
+            array('antono')
+        ));
+
+        $this->assertEquals(array('username', 'everzet', 'antono'), $table->getColumn(0));
     }
 
     public function testGetRowWithLineNumbers()
@@ -130,11 +150,11 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
-            13 => array('antono', "pa\$sword")
+            13 => array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(array('username', 'password'), $table->getRow(0));
-        $this->assertEquals(array('antono', "pa\$sword"), $table->getRow(2));
+        $this->assertEquals(array('antono', 'pa$sword'), $table->getRow(2));
     }
 
     public function testGetTable()
@@ -142,7 +162,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode($a = array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
-            13 => array('antono', "pa\$sword")
+            13 => array('antono', 'pa$sword')
         ));
 
         $this->assertEquals($a, $table->getTable());
@@ -153,7 +173,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
-            13 => array('antono', "pa\$sword")
+            13 => array('antono', 'pa$sword')
         ));
 
         $this->assertEquals(5, $table->getRowLine(0));
@@ -165,7 +185,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             5  => array('username', 'password'),
             10 => array('everzet', 'qwerty'),
-            13 => array('antono', "pa\$sword")
+            13 => array('antono', 'pa$sword')
         ));
 
         $this->assertEquals('| username | password |', $table->getRowAsString(0));
@@ -177,7 +197,7 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         $table = new TableNode(array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),
-            13 => array('2', 'antono', "pa\$sword")
+            13 => array('2', 'antono', 'pa$sword')
         ));
 
         $expected = <<<TABLE
