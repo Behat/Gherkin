@@ -43,7 +43,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $columnCount = null;
 
         foreach ($this->getRows() as $index => $row) {
-            if($columnCount === null) {
+            if ($columnCount === null) {
                 $columnCount = count($row);
             }
 
