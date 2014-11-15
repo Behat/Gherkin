@@ -35,6 +35,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * Initializes table.
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * 
      * @throws NodeException If the number of columns is not the same in each row
      */
     public function __construct(array $table)
