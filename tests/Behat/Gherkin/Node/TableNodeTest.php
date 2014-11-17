@@ -6,6 +6,18 @@ use Behat\Gherkin\Node\TableNode;
 
 class TableNodeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     */
+    public function testConstructorExpectsSameNumberOfColumnsInEachRow()
+    {
+        new TableNode(array(
+            array('username', 'password'),
+            array('everzet'),
+            array('antono', 'pa$sword')
+        ));
+    }
+
     public function testHashTable()
     {
         $table = new TableNode(array(
