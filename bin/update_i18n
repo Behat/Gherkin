@@ -18,6 +18,15 @@ foreach ($array as $lang => $keywords) {
 
         $array[$lang][$type] = implode('|', $stepTypes);
     }
+
+    // ensure that the order of keys is consistent between updates
+    ksort($array[$lang]);
 }
+
+// ensure that the languages are sorted to avoid useless diffs between updates. We keep the English first though as it is the reference.
+$enData = $array['en'];
+unset($array['en']);
+ksort($array);
+$array = array_merge(array('en' => $enData), $array);
 
 file_put_contents(__DIR__.'/../i18n.php', '<?php return '.var_export($array, true).';');
