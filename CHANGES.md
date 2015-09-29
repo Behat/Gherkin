@@ -1,3 +1,10 @@
+4.4.0 / 2015-09-19
+==================
+
+  * Added validation enforcing that all rows of a `TableNode` have the same number of columns
+  * Added `TableNode::getColumn` to get a column from the table
+  * Sync 18n with cucumber
+
 4.3.0 / 2014-06-06
 ==================
 
