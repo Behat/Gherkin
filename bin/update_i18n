@@ -12,6 +12,9 @@ foreach ($array as $lang => $keywords) {
             array_shift($stepTypes);
         }
 
+        // the lexer does not expect spaces to be part of the keyword, but some locales (ta for instance) have them, causing failures.
+        $stepTypes = array_map('trim', $stepTypes);
+
         usort($stepTypes, function($type1, $type2) {
             return mb_strlen($type2, 'utf8') - mb_strlen($type1, 'utf8');
         });
