@@ -1,3 +1,9 @@
+4.4.1 / 2015-12-30
+==================
+
+  * Ensure keywords are trimmed when syncing translations
+  * Sync 18n with cucumber
+
 4.4.0 / 2015-09-19
 ==================
 
