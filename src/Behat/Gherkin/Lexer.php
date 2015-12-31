@@ -468,7 +468,7 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if (!isset($line[0]) || '|' !== $line[0]) {
+        if (!isset($line[0]) || '|' !== $line[0] || '|' !== substr($line, -1)) {
             return null;
         }
 
