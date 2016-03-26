@@ -30,20 +30,24 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * @var integer
      */
     private $maxLineLength = array();
+    /**
+     * @var array
+     */
+    private $leftPadding = array();
 
     /**
      * Initializes table.
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
-     * 
+     *
      * @throws NodeException If the number of columns is not the same in each row
      */
     public function __construct(array $table)
     {
-        $this->table = $table;
+        $this->table = array_values($table);
         $columnCount = null;
 
-        foreach ($this->getRows() as $row) {
+        foreach ($this->getRows() as $rowLineNumber => $row) {
             if ($columnCount === null) {
                 $columnCount = count($row);
             }
@@ -55,6 +59,12 @@ class TableNode implements ArgumentInterface, IteratorAggregate
             foreach ($row as $column => $string) {
                 if (!isset($this->maxLineLength[$column])) {
                     $this->maxLineLength[$column] = 0;
+                }
+
+                $leftPadding = strlen($string) - strlen(ltrim($string));
+                if ($leftPadding > 0) {
+                    $this->leftPadding[$rowLineNumber][$column] = $leftPadding;
+                    $this->table[$rowLineNumber][$column] = ltrim($string);
                 }
 
                 $this->maxLineLength[$column] = max($this->maxLineLength[$column], mb_strlen($string, 'utf8'));
@@ -223,7 +233,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     {
         $values = array();
         foreach ($this->getRow($rowNum) as $column => $value) {
-            $values[] = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+            $value = $this->padLeft($value, $rowNum, $column);
+            $value = $this->padRight($value . ' ', $this->maxLineLength[$column] + 2);
+            $values[] = $value;
         }
 
         return sprintf('|%s|', implode('|', $values));
@@ -241,7 +253,8 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     {
         $values = array();
         foreach ($this->getRow($rowNum) as $column => $value) {
-            $value = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
+            $value = $this->padLeft($value, $rowNum, $column);
+            $value = $this->padRight($value . ' ', $this->maxLineLength[$column] + 2);
 
             $values[] = call_user_func($wrapper, $value, $column);
         }
@@ -292,6 +305,23 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->getHash());
+    }
+
+    /**
+     * Pads string left.
+     *
+     * @param string  $text     Text to pad
+     * @param string  $rowNum   Current row num
+     * @param string  $column   Current column num
+     *
+     * @return string
+     */
+    protected function padLeft($text, $rowNum, $column)
+    {
+        $length = (int) @$this->leftPadding[$rowNum][$column];
+        $padding = str_repeat(' ', $length + 1);
+
+        return $padding . $text;
     }
 
     /**
