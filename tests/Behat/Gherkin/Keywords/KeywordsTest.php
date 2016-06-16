@@ -116,7 +116,7 @@ DESC
                     $parsed[] = $parser->parse($dumpedFeature, $lang . '_' . ($num + 1) . '.feature');
                 }
             } catch (\Exception $e) {
-                throw new \Exception($e->getMessage() . ":\n" . $dumped, 0, $e);
+                throw new \Exception($e->getMessage() . ":\n" . json_encode($dumped), 0, $e);
             }
 
             $data[] = array($lang, $features, $parsed);
