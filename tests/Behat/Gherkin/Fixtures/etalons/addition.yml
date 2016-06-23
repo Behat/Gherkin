@@ -13,7 +13,7 @@ feature:
       title:    Add two numbers
       line:     7
       steps:
-        - { keyword_type: 'Given', type: 'Given',  text: 'I have entered 11 into the calculator',  line: 8 }
+        - { keyword_type: 'Given', type: '*',  text: 'I have entered 11 into the calculator',  line: 8 }
         - { keyword_type: 'Given', type: 'And',    text: 'I have entered 12 into the calculator',  line: 9 }
         - { keyword_type: 'When',  type: 'When',   text: 'I press add',                            line: 10 }
         - { keyword_type: 'Then',  type: 'Then',   text: 'the result should be 23 on the screen',  line: 11 }

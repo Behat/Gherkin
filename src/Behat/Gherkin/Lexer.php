@@ -325,7 +325,7 @@ class Lexer
                 foreach (explode('|', $keywords) as $keyword) {
                     $padded[] = false !== mb_strpos($keyword, '<', 0, 'utf8')
                         ? mb_substr($keyword, 0, -1, 'utf8') . '\s*'
-                        : $keyword . '\s+';
+                        : preg_quote($keyword) . '\s+';
                 }
 
                 $keywords = implode('|', $padded);
