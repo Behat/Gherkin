@@ -53,7 +53,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     'scenario'         => 'Scenario',
                     'scenario_outline' => 'Scenario Outline',
                     'examples'         => 'Examples',
-                    'given'            => 'Given',
+                    'given'            => '*|Given',
                     'when'             => 'When',
                     'then'             => 'Then',
                     'and'              => 'And',

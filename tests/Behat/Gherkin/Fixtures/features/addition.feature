@@ -5,7 +5,7 @@ Feature: Addition
   I want to be told the sum of two numbers
 
   Scenario: Add two numbers
-    Given I have entered 11 into the calculator
+    * I have entered 11 into the calculator
     And I have entered 12 into the calculator
     When I press add
     Then the result should be 23 on the screen
