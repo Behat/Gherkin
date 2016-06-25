@@ -109,7 +109,7 @@ DESC
                 );
             }
 
-            $dumped = $dumper->dump($lang, false);
+            $dumped = $dumper->dump($lang, false, true);
             $parsed = array();
             try {
                 foreach ($dumped as $num => $dumpedFeature) {
