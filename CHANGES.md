@@ -1,3 +1,8 @@
+4.4.4 / 2016-09-18
+==================
+
+  * Provide clearer exception for non-writeable cache directories
+
 4.4.3 / 2016-09-18
 ==================
 
