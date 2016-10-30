@@ -26,4 +26,23 @@ class PathsFilterTest extends FilterTest
         $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
+
+    public function testItDoesNotMatchPartialPaths()
+    {
+        $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
+
+        $feature = new FeatureNode(null, null, array(), null, array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+
+        $filter = new PathsFilter(array($fixtures . 'full'));
+        $this->assertFalse($filter->isFeatureMatch($feature));
+
+        $filter = new PathsFilter(array($fixtures . 'full' . DIRECTORY_SEPARATOR));
+        $this->assertFalse($filter->isFeatureMatch($feature));
+
+        $filter = new PathsFilter(array($fixtures . 'full_path' . DIRECTORY_SEPARATOR));
+        $this->assertTrue($filter->isFeatureMatch($feature));
+
+        $filter = new PathsFilter(array($fixtures . 'full_path'));
+        $this->assertTrue($filter->isFeatureMatch($feature));
+    }
 }
