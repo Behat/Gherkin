@@ -295,6 +295,30 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
+     * Obtains and adds rows from another table to the current table.
+     * The second table should have the same structure as the current one.
+     * @param TableNode $node
+     *
+     * @deprecated remove together with OutlineNode::getExampleTable
+     */
+    public function mergeRowsFromTable(TableNode $node)
+    {
+        // check structure
+        if ($this->getRow(0) !== $node->getRow(0)) {
+            throw new NodeException("Tables have different structure. Cannot merge one into another");
+        }
+
+        $firstLine = $node->getLine();
+        foreach ($node->getTable() as $line => $value) {
+            if ($line === $firstLine) {
+                continue;
+            }
+
+            $this->table[$line] = $value;
+        }
+    }
+
+    /**
      * Pads string right.
      *
      * @param string  $text   Text to pad

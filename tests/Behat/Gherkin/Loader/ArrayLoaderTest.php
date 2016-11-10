@@ -3,9 +3,11 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\ArrayLoader;
+use Behat\Gherkin\Node\OutlineNode;
 
 class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var ArrayLoader  */
     private $loader;
 
     protected function setUp()
@@ -157,9 +159,9 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                             'title'     => 'First outline',
                             'line'      => 2,
                             'examples'  => array(
-                                array('user', 'pass'),
-                                array('ever', 'sdsd'),
-                                array('anto', 'fdfd')
+                                11 => array('user', 'pass'),
+                                12 => array('ever', 'sdsd'),
+                                13 => array('anto', 'fdfd')
                             )
                         ),
                         array(
@@ -173,6 +175,7 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($features));
 
+        /** @var OutlineNode[] $scenarios */
         $scenarios = $features[0]->getScenarios();
         $scenario  = $scenarios[0];
 

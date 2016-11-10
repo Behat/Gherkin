@@ -179,7 +179,43 @@ class ArrayLoader implements LoaderInterface
             $examplesKeyword = 'Examples';
         }
 
-        $examples = new ExampleTableNode($hash['examples'], $examplesKeyword);
+        $exHash = $hash['examples'];
+        $examples = array();
+
+        // there are 3 cases
+        // first is examples as a single table - we create an array with the only one element
+        // examples
+        //   11: abc
+        //   12: cde
+        //
+        // second is array of arrays
+        // examples
+        //   -
+        //     11: abc
+        //     12: cde
+        //
+        // and the 3rd is array of objects
+        // examples
+        //   -
+        //     tags: []
+        //     table:
+        //       11: abc
+        //       12: cde
+
+        if (isset($exHash[0])) {
+            // cases #2 & 3
+            for ($i = 0; $i < count($exHash); $i++) {
+                if (isset($exHash[$i]['table'])) {
+                    // we have examples as objects
+                    $exHashTags = isset($exHash[$i]['tags']) ? $exHash[$i]['tags'] : array();
+                    $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
+                } else {
+                    $examples[] = new ExampleTableNode($exHash[$i], $examplesKeyword);
+                }
+            }
+        } else {
+            $examples[] = new ExampleTableNode($exHash, $examplesKeyword);;
+        }
 
         return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line']);
     }
