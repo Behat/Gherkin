@@ -268,6 +268,53 @@ TABLE;
         ));
         $this->assertEquals($expected, $table);
     }
+    public function testMergeRowsFromTablePassSeveralTablesShouldBeMerged()
+    {
+        $table = new TableNode(array(
+            5  => array('id', 'username', 'password'),
+            10 => array('42', 'everzet', 'qwerty'),
+            13 => array('2', 'antono', 'pa$sword')
+        ));
+
+        $new = new TableNode(array(
+            25  => array('id', 'username', 'password'),
+            210 => array('242', '2everzet', '2qwerty'),
+            213 => array('22', '2antono', '2pa$sword')
+        ));
+
+        $new2 = new TableNode(array(
+            35  => array('id', 'username', 'password'),
+            310 => array('342', '3everzet', '3qwerty'),
+            313 => array('32', '3antono', '3pa$sword')
+        ));
+
+        $table->mergeRowsFromTable($new);
+        $table->mergeRowsFromTable($new2);
+
+        $this->assertEquals(array('id', 'username', 'password'), $table->getRow(0));
+        $this->assertEquals(array('2', 'antono', 'pa$sword'), $table->getRow(2));
+        $this->assertEquals(array('242', '2everzet', '2qwerty'), $table->getRow(3));
+        $this->assertEquals(array('32', '3antono', '3pa$sword'), $table->getRow(6));
+    }
+
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     */
+    public function testMergeRowsFromTableWrongHeaderNameExceptionThrown()
+    {
+        $table = new TableNode(array(
+            5  => array('id', 'username', 'password'),
+            10 => array('42', 'everzet', 'qwerty'),
+            13 => array('2', 'antono', 'pa$sword')
+        ));
+
+        $new = new TableNode(array(
+            25  => array('id', 'QWE', 'password'),
+            210 => array('242', '2everzet', '2qwerty')
+        ));
+
+        $table->mergeRowsFromTable($new);
+    }
 
     /**
      * @expectedException \Behat\Gherkin\Exception\NodeException
@@ -280,4 +327,41 @@ TABLE;
         ));
     }
 
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     */
+    public function testMergeRowsFromTableWrongHeaderOrderExceptionThrown()
+    {
+        $table = new TableNode(array(
+            5  => array('id', 'username', 'password'),
+            10 => array('42', 'everzet', 'qwerty'),
+            13 => array('2', 'antono', 'pa$sword')
+        ));
+
+        $new = new TableNode(array(
+            25  => array('id', 'password', 'username'),
+            210 => array('242', '2everzet', '2qwerty')
+        ));
+
+        $table->mergeRowsFromTable($new);
+    }
+
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     */
+    public function testMergeRowsFromTableWrongHeaderSizeExceptionThrown()
+    {
+        $table = new TableNode(array(
+            5  => array('id', 'username', 'password'),
+            10 => array('42', 'everzet', 'qwerty'),
+            13 => array('2', 'antono', 'pa$sword')
+        ));
+
+        $new = new TableNode(array(
+            25  => array('id', 'username'),
+            210 => array('242', '2everzet')
+        ));
+
+        $table->mergeRowsFromTable($new);
+    }
 }

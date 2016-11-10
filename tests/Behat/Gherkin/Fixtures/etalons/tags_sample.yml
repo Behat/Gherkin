@@ -23,13 +23,41 @@ feature:
         - { keyword_type: 'Given', type: 'Given',  text: '<state>',  line: 10 }
 
       examples:
-        12: [state]
-        13: [missing]
+        -
+          tags:     [examples_tag, examples_tag2]
+          table:
+            13: [state]
+            14: [missing]
 
     -
       type:     scenario
       title:    Skipped
       tags:     [sample_three, sample_four]
-      line:     16
+      line:     17
       steps:
-        - { keyword_type: 'Given', type: 'Given',  text: 'missing',  line: 17 }
+        - { keyword_type: 'Given', type: 'Given',  text: 'missing',  line: 18 }
+
+    -
+      type:     outline
+      title:    passing
+      tags:     [sample_5]
+      line:     22
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: '<state>',  line: 23 }
+      examples:
+        25: [state]
+        26: [missing]
+
+    -
+      type:     outline
+      title:    passing
+      tags:     [sample_6, sample_7]
+      line:     29
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: '<state>',  line: 30 }
+      examples:
+        -
+          tags:     [examples_tag3, examples_tag4]
+          table:
+            33: [state]
+            34: [missing]
