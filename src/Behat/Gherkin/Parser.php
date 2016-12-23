@@ -39,7 +39,7 @@ class Parser
     private $tags = array();
     private $languageSpecifierLine;
 
-    private $stack = array();
+    private $passedNodesStack = array();
 
     /**
      * Initializes parser.
@@ -238,7 +238,7 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
-        array_push($this->stack, 'Feature');
+        array_push($this->passedNodesStack, 'Feature');
 
         // Parse description, background, scenarios & outlines
         while ('EOS' !== $this->predictTokenType()) {
@@ -373,7 +373,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        array_push($this->stack, 'Scenario');
+        array_push($this->passedNodesStack, 'Scenario');
 
         // Parse description and steps
         $steps = array();
@@ -413,7 +413,7 @@ class Parser
             }
         }
 
-        array_pop($this->stack);
+        array_pop($this->passedNodesStack);
 
         return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
     }
@@ -440,7 +440,7 @@ class Parser
         // Parse description, steps and examples
         $steps = array();
 
-        array_push($this->stack, 'Outline');
+        array_push($this->passedNodesStack, 'Outline');
 
         while (in_array($this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'))) {
             $node = $this->parseExpression();
@@ -510,7 +510,7 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        array_push($this->stack, 'Step');
+        array_push($this->passedNodesStack, 'Step');
 
         $arguments = array();
         while (in_array($predicted = $this->predictTokenType(), array('PyStringOp', 'TableRow', 'Newline', 'Comment'))) {
@@ -526,7 +526,7 @@ class Parser
             }
         }
 
-        array_pop($this->stack);
+        array_pop($this->passedNodesStack);
 
         return new StepNode($keyword, $text, $arguments, $line, $keywordType);
     }
@@ -599,9 +599,10 @@ class Parser
 
         $currentType = '-1';
         // check if that is ok to go inside:
-        if (!empty($this->stack)) {
-            $currentType = $this->stack[count($this->stack) - 1];
+        if (!empty($this->passedNodesStack)) {
+            $currentType = $this->passedNodesStack[count($this->passedNodesStack) - 1];
         }
+
         $nextType = $this->predictTokenType();
         if (!isset($possibleTransitions[$currentType]) || in_array($nextType, $possibleTransitions[$currentType])) {
             return $this->parseExpression();
