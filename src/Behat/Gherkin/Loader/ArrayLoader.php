@@ -182,38 +182,10 @@ class ArrayLoader implements LoaderInterface
         $exHash = $hash['examples'];
         $examples = array();
 
-        // there are 3 cases
-        // first is examples as a single table - we create an array with the only one element
-        // examples
-        //   11: abc
-        //   12: cde
-        //
-        // second is array of arrays
-        // examples
-        //   -
-        //     11: abc
-        //     12: cde
-        //
-        // and the 3rd is array of objects
-        // examples
-        //   -
-        //     tags: []
-        //     table:
-        //       11: abc
-        //       12: cde
-
-        if (isset($exHash[0])) {
-            // cases #2 & 3
-            for ($i = 0; $i < count($exHash); $i++) {
-                if (isset($exHash[$i]['table'])) {
-                    // we have examples as objects
-                    $exHashTags = isset($exHash[$i]['tags']) ? $exHash[$i]['tags'] : array();
-                    $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
-                } else {
-                    $examples[] = new ExampleTableNode($exHash[$i], $examplesKeyword);
-                }
-            }
+        if ($this->examplesAreInArray($exHash)) {
+            $examples = $this->processExamplesArray($exHash, $examplesKeyword, $examples);
         } else {
+            // examples as a single table - we create an array with the only one element
             $examples[] = new ExampleTableNode($exHash, $examplesKeyword);;
         }
 
@@ -301,5 +273,40 @@ class ArrayLoader implements LoaderInterface
         }
 
         return new PyStringNode($strings, $line);
+    }
+
+    /**
+     * Checks if examples node is an array
+     * @param $exHash object hash
+     * @return bool
+     */
+    private function examplesAreInArray($exHash)
+    {
+        return isset($exHash[0]);
+    }
+
+    /**
+     * Processes cases when examples are in the form of array of arrays
+     * OR in the form of array of objects
+     *
+     * @param $exHash array hash
+     * @param $examplesKeyword string
+     * @param $examples array
+     * @return array
+     */
+    private function processExamplesArray($exHash, $examplesKeyword, $examples)
+    {
+        for ($i = 0; $i < count($exHash); $i++) {
+            if (isset($exHash[$i]['table'])) {
+                // we have examples as objects, hence there could be tags
+                $exHashTags = isset($exHash[$i]['tags']) ? $exHash[$i]['tags'] : array();
+                $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
+            } else {
+                // we have examples as arrays
+                $examples[] = new ExampleTableNode($exHash[$i], $examplesKeyword);
+            }
+        }
+
+        return $examples;
     }
 }
