@@ -53,7 +53,7 @@ class LineRangeFilterTest extends FilterTest
     public function testIsScenarioMatchFilter($filterMinLine, $filterMaxLine, $expectedNumberOfMatches)
     {
         $scenario = new ScenarioNode(null, array(), array(), null, 2);
-        $outline = new OutlineNode(null, array(), array(), new ExampleTableNode(array(), null), null, 3);
+        $outline = new OutlineNode(null, array(), array(), array(new ExampleTableNode(array(), null)), null, 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertEquals(
@@ -83,19 +83,59 @@ class LineRangeFilterTest extends FilterTest
     {
         $filter = new LineRangeFilter(12, 14);
         $feature = $filter->filterFeature($this->getParsedFeature());
+        /** @var OutlineNode[] $scenarios */
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertCount(1, $scenarios[0]->getExampleTable()->getRows());
+        $this->assertFalse($scenarios[0]->hasExamples());
 
-        $filter = new LineRangeFilter(15, 20);
+        $filter = new LineRangeFilter(16, 21);
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertCount(3, $scenarios[0]->getExampleTable()->getRows());
+        $exampleTableNodes = $scenarios[0]->getExampleTables();
+        $this->assertEquals(1, count($exampleTableNodes));
+        $this->assertCount(3, $exampleTableNodes[0]->getRows());
         $this->assertSame(array(
             array('action', 'outcome'),
             array('act#1', 'out#1'),
             array('act#2', 'out#2'),
-        ), $scenarios[0]->getExampleTable()->getRows());
+        ), $exampleTableNodes[0]->getRows());
+        $this->assertEquals(array('etag1'), $exampleTableNodes[0]->getTags());
+
+        $filter = new LineRangeFilter(16, 26);
+        $feature = $filter->filterFeature($this->getParsedFeature());
+        $this->assertCount(1, $scenarios = $feature->getScenarios());
+        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $exampleTableNodes = $scenarios[0]->getExampleTables();
+        $this->assertEquals(2, count($exampleTableNodes));
+
+        $this->assertCount(3, $exampleTableNodes[0]->getRows());
+        $this->assertSame(array(
+            array('action', 'outcome'),
+            array('act#1', 'out#1'),
+            array('act#2', 'out#2'),
+        ), $exampleTableNodes[0]->getRows());
+        $this->assertEquals(array('etag1'), $exampleTableNodes[0]->getTags());
+
+        $this->assertCount(2, $exampleTableNodes[1]->getRows());
+        $this->assertSame(array(
+            array('action', 'outcome'),
+            array('act#3', 'out#3')
+        ), $exampleTableNodes[1]->getRows());
+
+        $this->assertEquals(array('etag2'), $exampleTableNodes[1]->getTags());
+
+        $filter = new LineRangeFilter(25, 26);
+        $feature = $filter->filterFeature($this->getParsedFeature());
+        $this->assertCount(1, $scenarios = $feature->getScenarios());
+        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $exampleTableNodes = $scenarios[0]->getExampleTables();
+        $this->assertEquals(1, count($exampleTableNodes));
+        $this->assertCount(2, $exampleTableNodes[0]->getRows());
+        $this->assertSame(array(
+            array('action', 'outcome'),
+            array('act#3', 'out#3'),
+        ), $exampleTableNodes[0]->getRows());
+        $this->assertEquals(array('etag2'), $exampleTableNodes[0]->getTags());
     }
 }

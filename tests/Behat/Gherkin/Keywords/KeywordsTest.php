@@ -87,7 +87,7 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
                     ), $keywords[0]);
                     $line += 1;
 
-                    $scenarios[] = new OutlineNode('Erasing other agents\' memory', array(), $steps, $table, $outlineKeyword, $outlineLine);
+                    $scenarios[] = new OutlineNode('Erasing other agents\' memory', array(), $steps, array($table), $outlineKeyword, $outlineLine);
                     $line += 1;
                 }
 

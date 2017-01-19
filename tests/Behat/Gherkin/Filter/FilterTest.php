@@ -49,11 +49,17 @@ Feature: Long feature with outline
     When <action> occurs
     Then <outcome> should be visible
 
+    @etag1
     Examples:
       | action | outcome |
       | act#1  | out#1   |
       | act#2  | out#2   |
+      
+    @etag2
+    Examples:
+      | action | outcome |
       | act#3  | out#3   |
+
 GHERKIN;
     }
 

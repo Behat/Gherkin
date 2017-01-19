@@ -39,6 +39,8 @@ class Parser
     private $tags = array();
     private $languageSpecifierLine;
 
+    private $passedNodesStack = array();
+
     /**
      * Initializes parser.
      *
@@ -236,6 +238,8 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
+        array_push($this->passedNodesStack, 'Feature');
+
         // Parse description, background, scenarios & outlines
         while ('EOS' !== $this->predictTokenType()) {
             $node = $this->parseExpression();
@@ -369,6 +373,8 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
+        array_push($this->passedNodesStack, 'Scenario');
+
         // Parse description and steps
         $steps = array();
         while (in_array($this->predictTokenType(), array('Step', 'Newline', 'Text', 'Comment'))) {
@@ -407,6 +413,8 @@ class Parser
             }
         }
 
+        array_pop($this->passedNodesStack);
+
         return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
     }
 
@@ -424,12 +432,17 @@ class Parser
         $title = trim($token['value']);
         $tags = $this->popTags();
         $keyword = $token['keyword'];
-        $examples = null;
+
+        /** @var ExampleTableNode $examples */
+        $examples = array();
         $line = $token['line'];
 
         // Parse description, steps and examples
         $steps = array();
-        while (in_array($this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment'))) {
+
+        array_push($this->passedNodesStack, 'Outline');
+
+        while (in_array($this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'))) {
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
@@ -438,7 +451,8 @@ class Parser
             }
 
             if ($node instanceof ExampleTableNode) {
-                $examples = $node;
+                $examples[] = $node;
+
                 continue;
             }
 
@@ -470,7 +484,7 @@ class Parser
             }
         }
 
-        if (null === $examples) {
+        if (empty($examples)) {
             throw new ParserException(sprintf(
                 'Outline should have examples table, but got none for outline "%s" on line: %d%s',
                 rtrim($title),
@@ -496,6 +510,8 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
+        array_push($this->passedNodesStack, 'Step');
+
         $arguments = array();
         while (in_array($predicted = $this->predictTokenType(), array('PyStringOp', 'TableRow', 'Newline', 'Comment'))) {
             if ('Comment' === $predicted || 'Newline' === $predicted) {
@@ -509,6 +525,8 @@ class Parser
                 $arguments[] = $node;
             }
         }
+
+        array_pop($this->passedNodesStack);
 
         return new StepNode($keyword, $text, $arguments, $line, $keywordType);
     }
@@ -524,7 +542,9 @@ class Parser
 
         $keyword = $token['keyword'];
 
-        return new ExampleTableNode($this->parseTableRows(), $keyword);
+        $tags = empty($this->tags) ? array() : $this->popTags();
+
+        return new ExampleTableNode($this->parseTableRows(), $keyword, $tags);
     }
 
     /**
@@ -570,7 +590,25 @@ class Parser
         $token = $this->expectTokenType('Tag');
         $this->tags = array_merge($this->tags, $token['tags']);
 
-        return $this->parseExpression();
+        $possibleTransitions = array(
+            'Outline' => array(
+                'Examples',
+                'Step'
+            )
+        );
+
+        $currentType = '-1';
+        // check if that is ok to go inside:
+        if (!empty($this->passedNodesStack)) {
+            $currentType = $this->passedNodesStack[count($this->passedNodesStack) - 1];
+        }
+
+        $nextType = $this->predictTokenType();
+        if (!isset($possibleTransitions[$currentType]) || in_array($nextType, $possibleTransitions[$currentType])) {
+            return $this->parseExpression();
+        }
+
+        return "\n";
     }
 
     /**
