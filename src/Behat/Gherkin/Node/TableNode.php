@@ -35,8 +35,8 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * Initializes table.
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
-     * 
-     * @throws NodeException If the number of columns is not the same in each row
+     *
+     * @throws NodeException If the given table is invalid
      */
     public function __construct(array $table)
     {
@@ -52,9 +52,17 @@ class TableNode implements ArgumentInterface, IteratorAggregate
                 throw new NodeException('Table does not have same number of columns in every row.');
             }
 
+            if (!is_array($row)) {
+                throw new NodeException('Table is not two-dimensional.');
+            }
+
             foreach ($row as $column => $string) {
                 if (!isset($this->maxLineLength[$column])) {
                     $this->maxLineLength[$column] = 0;
+                }
+
+                if (!is_scalar($string)) {
+                    throw new NodeException('Table is not two-dimensional.');
                 }
 
                 $this->maxLineLength[$column] = max($this->maxLineLength[$column], mb_strlen($string, 'utf8'));
