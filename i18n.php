@@ -775,6 +775,21 @@ return array (
     'then' => 'Entao|Então|*',
     'when' => 'Quando|*',
   ),
+  'pt-BR' =>
+  array (
+    'name' => 'Português Brasil',
+    'native' => 'português',
+    'background' => 'Contexto|Cenário de Fundo|Cenario de Fundo|Fundo',
+    'feature' => 'Funcionalidade|Característica|Caracteristica',
+    'scenario' => 'Cenário|Cenario',
+    'scenario_outline' => 'Esquema do Cenário|Esquema do Cenario|Delineação do Cenário|Delineacao do Cenario',
+    'examples' => 'Exemplos',
+    'given' => 'Dados|Dado',
+    'when' => 'Quando',
+    'then' => 'Então|Entao',
+    'and' => 'E',
+    'but' => 'Mas',
+  ),
   'ro' => 
   array (
     'and' => 'Și|Si|Şi|*',
