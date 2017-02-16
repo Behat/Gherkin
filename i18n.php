@@ -100,6 +100,21 @@ return array (
     'then' => 'O halda|*',
     'when' => 'Nə vaxt ki|Əgər|*',
   ),
+  'ba' => 
+  array (
+    'and' => 'I',
+    'background' => 'Kontekst|Osnova|Pozadina',
+    'but' => 'Ali',
+    'examples' => 'Primjeri|Scenariji',
+    'feature' => 'Funkcionalnost|Mogućnost|Mogucnost|Osobina',
+    'given' => 'Zadano|Zadani|Zadan|Zadato|Zadati|Zadat|Dato|Dat|Data',
+    'name' => 'Bosnian (Latin)',
+    'native' => 'Bosanski (Latinica)',
+    'scenario' => 'Scenario',
+    'scenario_outline' => 'Struktura scenarija|Skica|Koncept',
+    'then' => 'Onda',
+    'when' => 'Kada|Kad',
+  ),
   'bg' => 
   array (
     'and' => '*|И',
