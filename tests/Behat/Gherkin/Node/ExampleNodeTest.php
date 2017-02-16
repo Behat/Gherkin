@@ -89,4 +89,28 @@ class ExampleNodeTest extends \PHPUnit_Framework_TestCase
         $args = $steps[3]->getArguments();
         $this->assertEquals('| page | homepage |', $args[0]->getTableAsString());
     }
+
+    public function testExamplesIncludesTheOutlineNode()
+    {
+        $steps = array(
+            $step1 = new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
+            $step2 = new StepNode('Aye!', 'my email is <email>', array(), null, 'And'),
+            $step3 = new StepNode('Blimey!', 'I open homepage', array(), null, 'When'),
+            $step4 = new StepNode('Let go and haul', 'website should recognise me', array(), null, 'Then'),
+        );
+
+        $table = new ExampleTableNode(array(
+            array('name', 'email'),
+            array('user1', 'user1@example.com'),
+            array('user2', 'user2@example.com'),
+        ), 'Examples');
+
+        $outline = new OutlineNode('outline test title', array(), $steps, $table, null, null);
+        $examples = $outline->getExamples();
+
+        for($i = 0; $i < count($examples); $i++) {
+            $this->assertTrue($examples[$i]->getOutline() instanceof OutlineNode);
+            $this->assertEquals('outline test title', $examples[$i]->getOutline()->getTitle());
+        }
+    }
 }

@@ -41,23 +41,29 @@ class ExampleNode implements ScenarioInterface
      * @var null|StepNode[]
      */
     private $steps;
+    /**
+     * @var OutlineNode
+     */
+    private $outline;
 
     /**
      * Initializes outline.
      *
-     * @param string     $title
-     * @param string[]   $tags
-     * @param StepNode[] $outlineSteps
-     * @param string[]   $tokens
-     * @param integer    $line
+     * @param string      $title
+     * @param string[]    $tags
+     * @param StepNode[]  $outlineSteps
+     * @param string[]    $tokens
+     * @param integer     $line
+     * @param OutlineNode $outline
      */
-    public function __construct($title, array $tags, $outlineSteps, array $tokens, $line)
+    public function __construct($title, array $tags, $outlineSteps, array $tokens, $line, $outline)
     {
         $this->title = $title;
         $this->tags = $tags;
         $this->outlineSteps = $outlineSteps;
         $this->tokens = $tokens;
         $this->line = $line;
+        $this->outline = $outline;
     }
 
     /**
@@ -160,6 +166,16 @@ class ExampleNode implements ScenarioInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Returns the OutlineNode
+     *
+     * @return OutlineNode
+     */
+    public function getOutline()
+    {
+        return $this->outline;
     }
 
     /**
