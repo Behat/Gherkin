@@ -42,12 +42,13 @@ class OutlineNodeTest extends \PHPUnit_Framework_TestCase
         );
 
         $table = new ExampleTableNode(array(
-            array('name', 'email')
+            array('name', 'email'),
+            array('Joe', 'Bloggs')
         ), 'Examples');
 
         $outline = new OutlineNode(null, array(), $steps, $table, null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(1, $examples = $outline->getExamples());
     }
 
     public function testCreatesEmptyExamplesForNoExampleTable()
@@ -59,10 +60,13 @@ class OutlineNodeTest extends \PHPUnit_Framework_TestCase
             new StepNode('Let go and haul',  'website should recognise me', array(), null, 'Then'),
         );
 
-        $table = new ExampleTableNode(array(), 'Examples');
+        $table = new ExampleTableNode(array(
+            array('name', 'email'),
+            array('Joe', 'Bloggs')
+        ), 'Examples');
 
         $outline = new OutlineNode(null, array(), $steps, $table, null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(1, $examples = $outline->getExamples());
     }
 }

@@ -35,13 +35,13 @@ class LineRangeFilterTest extends FilterTest
     public function scenarioLineRangeProvider()
     {
         return array(
-            array('1', '2', 1),
+            array('1', '2', 2),
             array('1', '*', 2),
             array('2', '2', 1),
             array('2', '*', 2),
             array('3', '3', 1),
             array('3', '*', 1),
-            array('1', '1', 0),
+            array('1', '1', 1),
             array('4', '4', 0),
             array('4', '*', 0)
         );
@@ -53,7 +53,7 @@ class LineRangeFilterTest extends FilterTest
     public function testIsScenarioMatchFilter($filterMinLine, $filterMaxLine, $expectedNumberOfMatches)
     {
         $scenario = new ScenarioNode(null, array(), array(), null, 2);
-        $outline = new OutlineNode(null, array(), array(), new ExampleTableNode(array(), null), null, 3);
+        $outline = new OutlineNode(null, array(), array(), new ExampleTableNode(array(array('foo', 'bar'), array('biz', 'bang')), null), null, 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertEquals(

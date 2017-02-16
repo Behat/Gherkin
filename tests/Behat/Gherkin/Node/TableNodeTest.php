@@ -49,6 +49,14 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
             ),
             $table->getHash()
         );
+
+        $this->setExpectedException('Behat\Gherkin\Exception\NodeException');
+
+        $table = new TableNode(array(
+            array('foo', 'bar', 'biz', 'bang')
+        ));
+
+        $this->assertNotEmpty($table->getHash());
     }
 
     public function testIterator()
