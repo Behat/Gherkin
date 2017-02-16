@@ -100,6 +100,21 @@ return array (
     'then' => 'O halda|*',
     'when' => 'Nə vaxt ki|Əgər|*',
   ),
+  'az' => 
+  array (
+    'and' => 'Və/Həm',
+    'background' => 'Keçmiş|Kontekst',
+    'but' => 'Amma',
+    'examples' => 'Nümunələr',
+    'feature' => 'Özəllik',
+    'given' => 'Verilir|Tutaq ki',
+    'name' => 'Azerbaijani',
+    'native' => 'Azərbaycanca',
+    'scenario' => 'ssenari',
+    'scenario_outline' => 'Ssenarinin strukturası',
+    'then' => 'O halda',
+    'when' => 'Nə vaxt ki|Əgər',
+  ),
   'bg' => 
   array (
     'and' => '*|И',
