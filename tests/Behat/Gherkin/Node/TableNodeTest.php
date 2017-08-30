@@ -18,6 +18,27 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function constructorTestDataProvider() {
+        return array(
+            'One-dimensional array' => array(
+                array('everzet', 'antono')
+            ),
+            'Three-dimensional array' => array(
+                array(array(array('everzet', 'antono')))
+            )
+        );
+    }
+
+    /**
+     * @dataProvider constructorTestDataProvider
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     * @expectedExceptionMessage Table is not two-dimensional.
+     */
+    public function testConstructorExpectsTwoDimensionalArrays($table)
+    {
+        new TableNode($table);
+    }
+
     public function testHashTable()
     {
         $table = new TableNode(array(
