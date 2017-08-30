@@ -15,7 +15,7 @@ feature:
       title:    '2つの数の加算について'
       line:     7
       steps:
-        - { keyword_type: 'Given', type: '前提',  type: '前提',   text: '50 を入力',         line: 8 }
-        - { keyword_type: 'Given', type: 'かつ',  type: 'かつ',   text: '70 を入力',         line: 9 }
-        - { keyword_type: 'When',  type: 'もし',  type: 'もし',   text: 'add ボタンを押した',  line: 10 }
-        - { keyword_type: 'Then',  type: 'ならば', type: 'ならば',  text: '結果は 120 を表示',  line: 11 }
+        - { keyword_type: 'Given',  type: '前提',   text: '50 を入力',         line: 8 }
+        - { keyword_type: 'Given',  type: 'かつ',   text: '70 を入力',         line: 9 }
+        - { keyword_type: 'When',  type: 'もし',   text: 'add ボタンを押した',  line: 10 }
+        - { keyword_type: 'Then', type: 'ならば',  text: '結果は 120 を表示',  line: 11 }
