@@ -1,3 +1,14 @@
+4.5.0 / 2017-08-30
+==================
+
+  * Sync i18n with Cucumber Gherkin
+  * Drop support for HHVM tests on Travis
+  * Add `TableNode::fromList()` method (thanks @TravisCarden)
+  * Add `ExampleNode::getOutlineTitle()` method (thanks @duxet)
+  * Use realpath, so the feature receives the cwd prefixed (thanks @glennunipro)
+  * Explicitly handle non-two-dimensional arrays in TableNode (thanks @TravisCarden)
+  * Fix to line/linefilter scenario runs which take relative paths to files (thanks @generalconsensus)
+
 4.4.5 / 2016-10-30
 ==================
 
