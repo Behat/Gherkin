@@ -219,4 +219,30 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
 TABLE;
         $this->assertEquals($expected, $table->getTableAsString());
     }
+
+    public function testFromList()
+    {
+        $table = TableNode::fromList(array(
+            'everzet',
+            'antono'
+        ));
+
+        $expected = new TableNode(array(
+            array('everzet'),
+            array('antono'),
+        ));
+        $this->assertEquals($expected, $table);
+    }
+
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     */
+    public function testGetTableFromListWithMultidimensionalArrayArgument()
+    {
+        TableNode::fromList(array(
+            array(1, 2, 3),
+            array(4, 5, 6)
+        ));
+    }
+
 }

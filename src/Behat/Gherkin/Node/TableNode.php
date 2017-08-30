@@ -63,6 +63,27 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
+     * Creates a table from a given list.
+     *
+     * @param array $list One-dimensional array
+     *
+     * @return TableNode
+     *
+     * @throws NodeException If the given list is not a one-dimensional array
+     */
+    public static function fromList(array $list)
+    {
+        if (count($list) !== count($list, COUNT_RECURSIVE)) {
+            throw new NodeException('List is not a one-dimensional array.');
+        }
+
+        array_walk($list, function (&$item) {
+            $item = array($item);
+        });
+        return new self($list);
+    }
+
+    /**
      * Returns node type.
      *
      * @return string
