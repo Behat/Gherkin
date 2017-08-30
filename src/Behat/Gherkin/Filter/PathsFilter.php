@@ -53,6 +53,9 @@ class PathsFilter extends SimpleFilter
             if (0 === strpos(realpath($feature->getFile()), $path)) {
                 return true;
             }
+            if (is_file($path . basename($feature->getFile()))) {
+                return true;
+            }
         }
 
         return false;
