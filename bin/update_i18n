@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$gherkinUrl = 'https://raw.github.com/cucumber/gherkin/master/gherkin-languages.json';
+$gherkinUrl = 'https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json';
 $json  = file_get_contents($gherkinUrl);
 $array = array();
 
