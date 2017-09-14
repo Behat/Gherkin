@@ -104,7 +104,7 @@ DESC
                     $scenarios,
                     $featureKeyword,
                     $lang,
-                    $lang . '_' . ($transNum + 1) . '.feature',
+                    __DIR__ . DIRECTORY_SEPARATOR . $lang . '_' . ($transNum + 1) . '.feature',
                     $featureLine
                 );
             }
@@ -113,7 +113,7 @@ DESC
             $parsed = array();
             try {
                 foreach ($dumped as $num => $dumpedFeature) {
-                    $parsed[] = $parser->parse($dumpedFeature, $lang . '_' . ($num + 1) . '.feature');
+                    $parsed[] = $parser->parse($dumpedFeature, __DIR__ . DIRECTORY_SEPARATOR . $lang . '_' . ($num + 1) . '.feature');
                 }
             } catch (\Exception $e) {
                 throw new \Exception($e->getMessage() . ":\n" . json_encode($dumped), 0, $e);

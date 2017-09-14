@@ -54,9 +54,8 @@ class YamlFileLoader extends AbstractFileLoader
         $hash = Yaml::parse(file_get_contents($path));
 
         $features = $this->loader->load($hash);
-        $filename = $this->findRelativePath($path);
 
-        return array_map(function (FeatureNode $feature) use ($filename) {
+        return array_map(function (FeatureNode $feature) use ($path) {
             return new FeatureNode(
                 $feature->getTitle(),
                 $feature->getDescription(),
@@ -65,7 +64,7 @@ class YamlFileLoader extends AbstractFileLoader
                 $feature->getScenarios(),
                 $feature->getKeyword(),
                 $feature->getLanguage(),
-                $filename,
+                $path,
                 $feature->getLine()
             );
         }, $features);

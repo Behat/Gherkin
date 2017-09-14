@@ -91,13 +91,13 @@ class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
         $features = $this->loader->load('features/pystring.feature');
         $this->assertEquals(1, count($features));
         $this->assertEquals('A py string feature', $features[0]->getTitle());
-        $this->assertEquals('features' . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
+        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature'), $features[0]->getFile());
 
         $this->loader->setBasePath($this->featuresPath);
         $features = $this->loader->load('multiline_name.feature');
         $this->assertEquals(1, count($features));
         $this->assertEquals('multiline', $features[0]->getTitle());
-        $this->assertEquals('multiline_name.feature', $features[0]->getFile());
+        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
     }
 
     protected function setUp()

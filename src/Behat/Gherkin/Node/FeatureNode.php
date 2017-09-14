@@ -79,7 +79,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $line
     ) {
         // Verify that the feature file is an absolute path.
-        if (realpath($file) === FALSE) {
+        if (!empty($file) && (!is_string($file) || $file[0] !== DIRECTORY_SEPARATOR)) {
             throw new \InvalidArgumentException('The file should be an absolute path.');
         }
         $this->title = $title;
