@@ -64,7 +64,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param ScenarioInterface[] $scenarios
      * @param string              $keyword
      * @param string              $language
-     * @param null|string         $file
+     * @param null|string         $file        The absolute path to the feature file.
      * @param integer             $line
      */
     public function __construct(
@@ -78,6 +78,10 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $file,
         $line
     ) {
+        // Verify that the feature file is an absolute path.
+        if (realpath($file) === FALSE) {
+            throw new \InvalidArgumentException('The file should be an absolute path.');
+        }
         $this->title = $title;
         $this->description = $description;
         $this->tags = $tags;
@@ -222,7 +226,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns feature file.
+     * Returns feature file as an absolute path.
      *
      * @return null|string
      */
