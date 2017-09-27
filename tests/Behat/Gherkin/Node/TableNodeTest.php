@@ -266,4 +266,12 @@ TABLE;
         ));
     }
 
+    public function testTableWithNullValues()
+    {
+        new TableNode(array(
+            array('Foo', 'Bar'),
+            array('foo', null)
+        ));
+    }
 }
+
