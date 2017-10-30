@@ -75,5 +75,8 @@ class NameFilterTest extends \PHPUnit_Framework_TestCase
 
         $filter = new NameFilter('/scen.rio/');
         $this->assertTrue($filter->isScenarioMatch($scenario));
+        
+        $filter = new NameFilter('/sce.rio/');
+        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }
