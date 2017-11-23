@@ -61,7 +61,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
                     $this->maxLineLength[$column] = 0;
                 }
 
-                if (!is_scalar($string)) {
+                if (!is_scalar($string) && $string !== null) {
                     throw new NodeException('Table is not two-dimensional.');
                 }
 
