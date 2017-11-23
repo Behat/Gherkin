@@ -266,4 +266,15 @@ TABLE;
         ));
     }
 
+    public function testNullValues()
+    {
+        $table = new TableNode(array(
+            array('string'),
+            array(1),
+            array(null)
+        ));
+
+        $this->assertEquals(array('string', 1, null), $table->getColumn(0));
+    }
+
 }
