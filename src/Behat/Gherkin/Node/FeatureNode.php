@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Node;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * Represents Gherkin Feature.
  *
@@ -79,7 +81,8 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $line
     ) {
         // Verify that the feature file is an absolute path.
-        if (!empty($file) && (!is_string($file) || $file[0] !== DIRECTORY_SEPARATOR)) {
+        $filesystem = new Filesystem();
+        if (!empty($file) && !$filesystem->isAbsolutePath($file)) {
             throw new \InvalidArgumentException('The file should be an absolute path.');
         }
         $this->title = $title;
