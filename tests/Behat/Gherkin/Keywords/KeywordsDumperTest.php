@@ -29,7 +29,7 @@ class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
                'background'       => 'Предыстория|Бэкграунд',
                'scenario'         => 'Сценарий|История',
                'scenario_outline' => 'Структура сценария|Аутлайн',
-               'examples'         => 'Значения',
+               'examples'         => 'Примеры',
                'given'            => 'Допустим',
                'when'             => 'Если|@',
                'then'             => 'То',
@@ -106,7 +106,7 @@ GHERKIN;
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
-    Значения:
+    Примеры:
       | agent1 | agent2 |
       | D      | M      |
 GHERKIN;
@@ -147,7 +147,7 @@ GHERKIN;
     <keyword>То</keyword> there should be agent <agent1>
     <keyword>Но</keyword> there should not be agent <agent2>
 
-    <keyword>Значения</keyword>:
+    <keyword>Примеры</keyword>:
       | agent1 | agent2 |
       | D      | M      |
 GHERKIN;
@@ -196,7 +196,7 @@ GHERKIN;
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
-    Значения:
+    Примеры:
       | agent1 | agent2 |
       | D      | M      |
 
@@ -208,7 +208,7 @@ GHERKIN;
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
-    Значения:
+    Примеры:
       | agent1 | agent2 |
       | D      | M      |
 GHERKIN
@@ -247,7 +247,7 @@ GHERKIN
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
-    Значения:
+    Примеры:
       | agent1 | agent2 |
       | D      | M      |
 
@@ -259,7 +259,7 @@ GHERKIN
     То there should be agent <agent1>
     Но there should not be agent <agent2>
 
-    Значения:
+    Примеры:
       | agent1 | agent2 |
       | D      | M      |
 GHERKIN
