@@ -117,7 +117,7 @@ return array (
     'name' => 'Azerbaijani',
     'native' => 'Azərbaycanca',
     'rule' => 'Rule',
-    'scenario' => 'Nümunələr|Ssenari',
+    'scenario' => 'Nümunə|Ssenari',
     'scenario_outline' => 'Ssenarinin strukturu',
     'then' => 'O halda|*',
     'when' => 'Nə vaxt ki|Əgər|*',
