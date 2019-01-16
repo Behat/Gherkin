@@ -6,7 +6,7 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-php: [5.6, 7.0, 7.1, 7.2, 7.2]
+php: [5.6, 7.0, 7.1, 7.2, 7.3]
 
 matrix:
   include:
