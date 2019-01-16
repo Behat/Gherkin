@@ -109,7 +109,9 @@ DESC
 
             $dumped = $dumper->dump($lang, false, true);
 
-            $data[] = array($lang, $features, $dumped);
+            foreach ($dumped as $num => $dumpedFeature) {
+                $data[] = array($lang, $num, $features[$num], $dumpedFeature);
+            }
         }
 
         return $data;
@@ -118,23 +120,21 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param string   $language language name
-     * @param array    $etalon   etalon features (to test against)
-     * @param string[] $features gherkin features
+     * @param string      $language language name
+     * @param int         $num      Fixture index for that language
+     * @param FeatureNode $etalon   etalon features (to test against)
+     * @param string      $source   gherkin source
      */
-    public function testTranslation($language, array $etalon, array $features)
+    public function testTranslation($language, $num, FeatureNode $etalon, $source)
     {
         $keywords = $this->getKeywords();
         $lexer = new Lexer($keywords);
         $parser = new Parser($lexer);
 
-        $parsed = array();
         try {
-            foreach ($features as $num => $dumpedFeature) {
-                $parsed[] = $parser->parse($dumpedFeature, $language . '_' . ($num + 1) . '.feature');
-            }
+            $parsed = $parser->parse($source, $language . '_' . ($num + 1) . '.feature');
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage() . ":\n" . json_encode($features), 0, $e);
+            throw new \Exception($e->getMessage() . ":\n" . $source, 0, $e);
         }
 
         $this->assertEquals($etalon, $parsed);
