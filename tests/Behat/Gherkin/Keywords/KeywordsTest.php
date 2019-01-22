@@ -20,8 +20,6 @@ abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
     public function translationTestDataProvider()
     {
         $keywords = $this->getKeywords();
-        $lexer = new Lexer($keywords);
-        $parser = new Parser($lexer);
         $dumper = new KeywordsDumper($keywords);
         $keywordsArray = $this->getKeywordsArray();
 
@@ -110,16 +108,10 @@ DESC
             }
 
             $dumped = $dumper->dump($lang, false, true);
-            $parsed = array();
-            try {
-                foreach ($dumped as $num => $dumpedFeature) {
-                    $parsed[] = $parser->parse($dumpedFeature, $lang . '_' . ($num + 1) . '.feature');
-                }
-            } catch (\Exception $e) {
-                throw new \Exception($e->getMessage() . ":\n" . json_encode($dumped), 0, $e);
-            }
 
-            $data[] = array($lang, $features, $parsed);
+            foreach ($dumped as $num => $dumpedFeature) {
+                $data[] = array($lang, $num, $features[$num], $dumpedFeature);
+            }
         }
 
         return $data;
@@ -128,12 +120,23 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param string $language language name
-     * @param array  $etalon   etalon features (to test against)
-     * @param array  $features array of parsed feature(s)
+     * @param string      $language language name
+     * @param int         $num      Fixture index for that language
+     * @param FeatureNode $etalon   etalon features (to test against)
+     * @param string      $source   gherkin source
      */
-    public function testTranslation($language, array $etalon, array $features)
+    public function testTranslation($language, $num, FeatureNode $etalon, $source)
     {
-        $this->assertEquals($etalon, $features);
+        $keywords = $this->getKeywords();
+        $lexer = new Lexer($keywords);
+        $parser = new Parser($lexer);
+
+        try {
+            $parsed = $parser->parse($source, $language . '_' . ($num + 1) . '.feature');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage() . ":\n" . $source, 0, $e);
+        }
+
+        $this->assertEquals($etalon, $parsed);
     }
 }
