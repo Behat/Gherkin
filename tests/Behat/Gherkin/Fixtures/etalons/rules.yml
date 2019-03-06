@@ -41,5 +41,5 @@ feature:
                         -
                             keyword_type: Given,
                             type: Given,
-                            text: "that it is not yet time to slumber and feast in Valhalla",
+                            text: "that it is not yet time to slumber and feast in Valhalla"
                             line: 21
