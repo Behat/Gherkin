@@ -1,0 +1,45 @@
+feature:
+    title: Highlander
+    language: en
+    line: 1
+    description: ~
+
+    rules:
+        -
+            title: There can be only One
+            line: 3
+            background:
+                line: 4
+                steps:
+                    - { keyword_type: Given, type: Given, text: there are 3 ninjas, line: 5 }
+
+            examples:
+                -
+                    title: Only One -- More than one alive
+                    line: 8
+                    outline_steps:
+                        - { keyword_type: Given, type: Given, text: there are more than one ninjas alive, line: 9 }
+                        - { keyword_type: When, type: When, text: 2 ninjas meet, they will fight, line: 10 }
+                        - { keyword_type: Then, type: Then, text: Then one ninja dies (but not me), line: 11 }
+                        - { keyword_type: Then, type: And, text: And there is one ninja less alive, line: 12 }
+
+                -
+                    title: Only One -- One alive
+                    line: 14
+                    outline_steps:
+                        - { keyword_type: Given, type: Given, text: there is only 1 ninja alive, line: 15}
+                        - { keyword_type: Then, type: Then, text: "he (or she) will live forever ;-)", line: 16}
+
+        -
+            title: There can be Two (in some cases)
+            line: 18
+            examples:
+                -
+                    title: Two -- Dead and Reborn as Phoenix
+                    line: 20
+                    outline_steps:
+                        -
+                            keyword_type: Given,
+                            type: Given,
+                            text: "that it is not yet time to slumber and feast in Valhalla",
+                            line: 21
