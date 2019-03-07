@@ -38,6 +38,10 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $scenarios = array();
     /**
+     * @var RuleNode[]
+     */
+    private $rules = array();
+    /**
      * @var string
      */
     private $keyword;
@@ -66,6 +70,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param string              $language
      * @param null|string         $file
      * @param integer             $line
+     * @param RuleNode[]          $rules
      */
     public function __construct(
         $title,
@@ -76,7 +81,8 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $keyword,
         $language,
         $file,
-        $line
+        $line,
+        array $rules = array()
     ) {
         $this->title = $title;
         $this->description = $description;
@@ -87,6 +93,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $this->language = $language;
         $this->file = $file;
         $this->line = $line;
+        $this->rules = $rules;
     }
 
     /**
@@ -199,6 +206,16 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     public function getScenarios()
     {
         return $this->scenarios;
+    }
+
+    /**
+     * Returns rules
+     *
+     * @return RuleNode[]
+     */
+    public function getRules()
+    {
+        return $this->rules;
     }
 
     /**

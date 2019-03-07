@@ -11,10 +11,12 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Node\BackgroundNode;
+use Behat\Gherkin\Node\ExampleNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
@@ -86,6 +88,12 @@ class ArrayLoader implements LoaderInterface
         );
         $background = isset($hash['background']) ? $this->loadBackgroundHash($hash['background']) : null;
 
+        $rules = array();
+        $givenRules = isset($hash['rules']) ? (array) $hash['rules'] : array();
+        foreach ($givenRules as $ruleIterator => $ruleHash) {
+            $rules[] = $this->loadRuleHash($ruleHash, $ruleIterator);
+        }
+
         $scenarios = array();
         foreach ((array) $hash['scenarios'] as $scenarioIterator => $scenarioHash) {
             if (isset($scenarioHash['type']) && 'outline' === $scenarioHash['type']) {
@@ -95,7 +103,18 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        return new FeatureNode($hash['title'], $hash['description'], $hash['tags'], $background, $scenarios, $hash['keyword'], $hash['language'], null, $hash['line']);
+        return new FeatureNode(
+            $hash['title'],
+            $hash['description'],
+            $hash['tags'],
+            $background,
+            $scenarios,
+            $hash['keyword'],
+            $hash['language'],
+            null,
+            $hash['line'],
+            $rules
+        );
     }
 
     /**
@@ -120,6 +139,58 @@ class ArrayLoader implements LoaderInterface
         $steps = $this->loadStepsHash($hash['steps']);
 
         return new BackgroundNode($hash['title'], $steps, $hash['keyword'], $hash['line']);
+    }
+
+    /**
+     * Loads rule from provided hash.
+     *
+     * @param array $hash Background hash
+     * @param integer $line Background definition line
+     *
+     * @return RuleNode
+     */
+    protected function loadRuleHash(array $hash, $line = 0)
+    {
+        $hash = array_merge(
+            array(
+                'title'         =>  null,
+                'line'          =>  $line,
+                'background'    =>  null,
+                'examples'      =>  array(),
+            ),
+            $hash
+        );
+
+        $background = (
+            is_array($hash['background'])
+            ? $this->loadBackgroundHash($hash['background'])
+            : null
+        );
+        $examples = (
+            is_array($hash['examples'])
+            ? array_map(array($this, 'loadExampleHash'), $hash['examples'], array_keys($hash['examples']))
+            : null
+        );
+
+        return new RuleNode($hash['title'], $hash['line'], $background, $examples);
+    }
+
+    protected function loadExampleHash(array $hash, $line = 0)
+    {
+        $hash = array_merge(
+            array(
+                'title'         =>  null,
+                'tags'          =>  array(),
+                'keyword'       =>  'Example',
+                'line'          =>  $line,
+                'outline_steps' =>  array(),
+            ),
+            $hash
+        );
+
+        $steps = $this->loadStepsHash($hash['outline_steps']);
+
+        return new ExampleNode($hash['title'], $hash['tags'], $steps, array(), $hash['line']);
     }
 
     /**
