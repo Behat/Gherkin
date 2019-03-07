@@ -93,6 +93,16 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
+     * Returns Rule keywords (splitted by "|")
+     *
+     * @return mixed
+     */
+    public function getRuleKeywords()
+    {
+        return $this->keywords[$this->language]['rule'];
+    }
+
+    /**
      * Returns Scenario keywords (splitted by "|").
      *
      * @return string

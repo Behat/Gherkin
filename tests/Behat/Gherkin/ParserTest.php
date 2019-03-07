@@ -71,30 +71,33 @@ FEATURE
                 'en' => array(
                     'feature'          => 'Feature',
                     'background'       => 'Background',
-                    'scenario'         => 'Scenario',
+                    'rule'             => 'Rule',
+                    'scenario'         => 'Scenario|Example',
                     'scenario_outline' => 'Scenario Outline',
                     'examples'         => 'Examples',
                     'given'            => 'Given',
                     'when'             => 'When',
                     'then'             => 'Then',
                     'and'              => 'And',
-                    'but'              => 'But'
+                    'but'              => 'But',
                 ),
                 'ru' => array(
                     'feature'          => 'Функционал',
                     'background'       => 'Предыстория',
-                    'scenario'         => 'Сценарий',
+                    'rule'             => 'Rule',
+                    'scenario'         => 'Сценарий|Пример',
                     'scenario_outline' => 'Структура сценария',
                     'examples'         => 'Примеры',
                     'given'            => 'Допустим',
                     'when'             => 'То',
                     'then'             => 'Если',
                     'and'              => 'И',
-                    'but'              => 'Но'
+                    'but'              => 'Но',
                 ),
                 'ja' => array (
                     'feature'           => 'フィーチャ',
                     'background'        => '背景',
+                    'rule'              => 'Rule',
                     'scenario'          => 'シナリオ',
                     'scenario_outline'  => 'シナリオアウトライン',
                     'examples'          => '例|サンプル',
@@ -102,7 +105,7 @@ FEATURE
                     'when'              => 'もし<',
                     'then'              => 'ならば<',
                     'and'               => 'かつ<',
-                    'but'               => 'しかし<'
+                    'but'               => 'しかし<',
                 )
             ));
             $this->gherkin  = new Parser(new Lexer($keywords));
@@ -141,7 +144,8 @@ FEATURE
             $feature->getKeyword(),
             $feature->getLanguage(),
             __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
-            $feature->getLine()
+            $feature->getLine(),
+            $feature->getRules()
         );
     }
 }

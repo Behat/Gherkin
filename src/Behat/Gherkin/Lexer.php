@@ -221,6 +221,7 @@ class Lexer
             ?: $this->scanComment()
             ?: $this->scanPyStringOp()
             ?: $this->scanPyStringContent()
+            ?: $this->scanRule()
             ?: $this->scanStep()
             ?: $this->scanScenario()
             ?: $this->scanBackground()
@@ -355,6 +356,16 @@ class Lexer
     protected function scanBackground()
     {
         return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
+    }
+
+    /**
+     * Scans Rule from input & returns it if found.
+     *
+     * @return null|array
+     */
+    protected function scanRule()
+    {
+        return $this->scanInputForKeywords($this->getKeywords('Rule'), 'Rule');
     }
 
     /**

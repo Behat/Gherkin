@@ -13,10 +13,12 @@ namespace Behat\Gherkin;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Node\BackgroundNode;
+use Behat\Gherkin\Node\ExampleNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
@@ -186,8 +188,8 @@ class Parser
                 return $this->parseFeature();
             case 'Background':
                 return $this->parseBackground();
-            case 'Scenario':
-                return $this->parseScenario();
+            case 'Rule':
+                return $this->parseRule();
             case 'Outline':
                 return $this->parseOutline();
             case 'Examples':
@@ -196,6 +198,9 @@ class Parser
                 return $this->parseTable();
             case 'PyStringOp':
                 return $this->parsePyString();
+            case 'Example':
+            case 'Scenario':
+                return $this->parseScenario();
             case 'Step':
                 return $this->parseStep();
             case 'Text':
@@ -230,6 +235,7 @@ class Parser
         $description = null;
         $tags = $this->popTags();
         $background = null;
+        $rules = array();
         $scenarios = array();
         $keyword = $token['keyword'];
         $language = $this->lexer->getLanguage();
@@ -248,6 +254,11 @@ class Parser
 
             if (!$background && $node instanceof BackgroundNode) {
                 $background = $node;
+                continue;
+            }
+
+            if ($node instanceof RuleNode) {
+                $rules[] = $node;
                 continue;
             }
 
@@ -284,7 +295,8 @@ class Parser
             $keyword,
             $language,
             $file,
-            $line
+            $line,
+            $rules
         );
     }
 
@@ -351,6 +363,40 @@ class Parser
         }
 
         return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
+    }
+
+    /**
+     * @return RuleNode
+     */
+    protected function parseRule()
+    {
+        $token = $this->expectTokenType('Rule');
+
+        $title = trim($token['value']);
+        $line = $token['line'];
+        $background = null;
+        $examples = array();
+
+        $allowedTokenTypes = array('Background', 'Newline', 'Comment', 'Scenario');
+        while (in_array($this->predictTokenType(), $allowedTokenTypes)) {
+            $node = $this->parseExpression();
+
+            if ($node instanceof BackgroundNode) {
+                $background = $node;
+            }
+
+            if ($node instanceof ScenarioNode) {
+                $examples[] = new ExampleNode(
+                    $node->getTitle(),
+                    $node->getTags(),
+                    $node->getSteps(),
+                    array(),
+                    $node->getLine()
+                );
+            }
+        }
+
+        return new RuleNode($title, $line, $background, $examples);
     }
 
     /**
