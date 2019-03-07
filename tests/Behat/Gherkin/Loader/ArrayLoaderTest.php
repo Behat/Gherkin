@@ -107,6 +107,114 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, $scenarios[2]->getLine());
     }
 
+    public function testLoadRules()
+    {
+        $features = $this->loader->load(array(
+            'features'  =>  array(
+                array(
+                    'title'     =>  'Highlander - the short version',
+                    'language'  =>  'en',
+                    'line'      =>  1,
+                    'rules' =>  array(
+                        array(
+                            'title'         =>  'There can be only One',
+                            'line'          =>  3,
+                            'background'    =>  array(
+                                'line'          =>  4,
+                                'steps'         =>  array(
+                                    array(
+                                        'keyword_type'  => 'Given',
+                                        'type'          => 'Given',
+                                        'text'          => 'there are 3 ninjas, line: 5',
+                                    ),
+                                ),
+                            ),
+                            'examples'       => array(
+                                array(
+                                    'title'         =>  'Only One -- More than one alive',
+                                    'line'          =>  8,
+                                    'outline_steps' =>  array(
+                                        array(
+                                            array(
+                                                'keyword_type'  =>  'Given',
+                                                'type'          =>  'Given',
+                                                'text'          =>  'there are more than one ninjas alive',
+                                                'line'          =>  9
+                                            ),
+                                            array(
+                                                'keyword_type'  =>  'When',
+                                                'type'          =>  'When',
+                                                'text'          =>  '2 ninjas meet, they will fight',
+                                                'line'          =>  10
+                                            ),
+                                            array(
+                                                'keyword_type'  =>  'Then',
+                                                'type'          =>  'Then',
+                                                'text'          =>  'Then one ninja dies (but not me)',
+                                                'line'          =>  11
+                                            ),
+                                            array(
+                                                'keyword_type'  =>  'Then',
+                                                'type'          =>  'And',
+                                                'text'          =>  'And there is one ninja less alive',
+                                                'line'          =>  12
+                                            ),
+                                        )
+                                    ),
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        ));
+
+        $this->assertCount(1, $features);
+
+        $this->assertSame('Highlander - the short version', $features[0]->getTitle());
+        $this->assertSame('en', $features[0]->getLanguage());
+        $this->assertSame(1, $features[0]->getLine());
+
+        $rules = $features[0]->getRules();
+        $this->assertCount(1, $rules);
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\RuleNode', $rules[0]);
+        $this->assertSame('Only One -- More than one alive', $rules[0]->getTitle());
+        $this->assertSame(8, $rules[0]->getLine());
+
+        $examples = $rules[0]->getExamples();
+        $this->assertCount(1, $examples);
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\ExampleNode', $examples[0]);
+
+        $outlineSteps = $examples[0]->getOutlineSteps();
+        $this->assertCount(4, $outlineSteps);
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\StepNode', $outlineSteps[0]);
+        $this->assertSame('Given', $outlineSteps[0]->getKeywordType());
+        $this->assertSame('Given', $outlineSteps[0]->getKeyword());
+        $this->assertSame('there are more than one ninjas alive', $outlineSteps[0]->getText());
+        $this->assertSame(9, $outlineSteps[0]->getLine());
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\StepNode', $outlineSteps[1]);
+        $this->assertSame('When', $outlineSteps[1]->getKeywordType());
+        $this->assertSame('When', $outlineSteps[1]->getKeyword());
+        $this->assertSame('2 ninjas meet, they will fight', $outlineSteps[1]->getText());
+        $this->assertSame(10, $outlineSteps[1]->getLine());
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\StepNode', $outlineSteps[2]);
+        $this->assertSame('Then', $outlineSteps[2]->getKeywordType());
+        $this->assertSame('Then', $outlineSteps[2]->getKeyword());
+        $this->assertSame('Then one ninja dies (but not me)', $outlineSteps[2]->getText());
+        $this->assertSame(11, $outlineSteps[2]->getLine());
+
+        $this->assertInstanceOf('\\Behat\\Gherkin\\Node\\StepNode', $outlineSteps[3]);
+        $this->assertSame('Then', $outlineSteps[3]->getKeywordType());
+        $this->assertSame('And', $outlineSteps[3]->getKeyword());
+        $this->assertSame('And there is one ninja less alive', $outlineSteps[3]->getText());
+        $this->assertSame(12, $outlineSteps[3]->getLine());
+    }
+
     public function testLoadOutline()
     {
         $features = $this->loader->load(array(
