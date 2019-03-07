@@ -66,7 +66,8 @@ class YamlFileLoader extends AbstractFileLoader
                 $feature->getKeyword(),
                 $feature->getLanguage(),
                 $filename,
-                $feature->getLine()
+                $feature->getLine(),
+                $feature->getRules()
             );
         }, $features);
     }
