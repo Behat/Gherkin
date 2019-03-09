@@ -24,7 +24,7 @@ abstract class FilterTest extends \PHPUnit_Framework_TestCase
                         'then'             => 'Then',
                         'and'              => 'And',
                         'but'              => 'But',
-                        'rules'            => 'Rules',
+                        'rule'             => 'Rule',
                     )
                 ))
             )
