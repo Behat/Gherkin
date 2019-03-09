@@ -175,6 +175,14 @@ class ArrayLoader implements LoaderInterface
         return new RuleNode($hash['title'], $hash['line'], $background, $examples);
     }
 
+    /**
+     * Loads example from provided examplehash.
+     *
+     * @param array   $hash Example hash
+     * @param integer $line Example definition line
+     *
+     * @return ExampleNode
+     */
     protected function loadExampleHash(array $hash, $line = 0)
     {
         $hash = array_merge(
