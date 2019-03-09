@@ -26,7 +26,8 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
                 'when'             => 'When',
                 'then'             => 'Then',
                 'and'              => 'And',
-                'but'              => 'But'
+                'but'              => 'But',
+                'rule'             => 'Rule',
             ),
             'ru' => array(
                 'feature'          => 'Функционал',
@@ -38,7 +39,8 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
                 'when'             => 'То',
                 'then'             => 'Если',
                 'and'              => 'И',
-                'but'              => 'Но'
+                'but'              => 'Но',
+                'rule'             => 'Rule',
             )
         ));
         $this->gherkin = new Parser(new Lexer($keywords));
