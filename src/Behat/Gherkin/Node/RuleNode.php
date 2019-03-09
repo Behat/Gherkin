@@ -9,28 +9,26 @@ class RuleNode implements KeywordNodeInterface
      * @var string
      */
     private $title;
-
     /**
      * @var int
      */
     private $line;
-
     /**
      * @var null|BackgroundNode
      */
     private $background;
-
     /**
-     * @var array
+     * @var ExampleNode[]
      */
     private $examples = array();
 
     /**
-     * RuleNode constructor.
-     * @param $title
-     * @param $line
+     * Initializes Rule
+     *
+     * @param string $title
+     * @param integer $line
      * @param BackgroundNode|null $background
-     * @param array $examples
+     * @param ExampleNode[] $examples
      */
     public function __construct($title, $line, BackgroundNode $background = null, array $examples = array())
     {
@@ -87,7 +85,9 @@ class RuleNode implements KeywordNodeInterface
     }
 
     /**
-     * @return BackgroundNode|null
+     * Returns rule background.
+     *
+     * @return null|BackgroundNode
      */
     public function getBackground()
     {
@@ -95,7 +95,9 @@ class RuleNode implements KeywordNodeInterface
     }
 
     /**
-     * @return array
+     * Returns rule examples
+     *
+     * @return ExampleNode[]
      */
     public function getExamples()
     {

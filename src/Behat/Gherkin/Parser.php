@@ -23,6 +23,7 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * Gherkin parser.
@@ -366,7 +367,11 @@ class Parser
     }
 
     /**
+     * Parses Rule token & returns it's node
+     *
      * @return RuleNode
+     *
+     * @throws ParseException
      */
     protected function parseRule()
     {
