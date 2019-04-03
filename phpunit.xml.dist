@@ -14,6 +14,7 @@
     <testsuites>
         <testsuite name="Behat Gherkin test suite">
             <directory>./tests/Behat/Gherkin/</directory>
+            <directory>./tests/Upstream/</directory>
         </testsuite>
     </testsuites>
 
