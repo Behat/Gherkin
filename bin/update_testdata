@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+chdir(__DIR__.'/../');
+shell_exec('rm -rf gherkin_testdata && svn export https://github.com/cucumber/cucumber/trunk/gherkin/testdata gherkin_testdata');
+file_put_contents('gherkin_testdata/README.md', <<<EOF
+# Warning
+
+Do not edit these files! they are synchronised from upstream cucumber using bin/update_testdata
+EOF
+);
