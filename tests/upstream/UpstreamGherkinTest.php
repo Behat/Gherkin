@@ -1,8 +1,8 @@
 <?php
 
-use Behat\Gherkin\Keywords\ArrayKeywords;
+namespace Behat\Gherkin;
 
-final class UpstreamGherkinTest extends PHPUnit_Framework_TestCase
+final class UpstreamGherkinTest extends \PHPUnit_Framework_TestCase
 {
 
     private $notSupported = array(
@@ -18,41 +18,77 @@ final class UpstreamGherkinTest extends PHPUnit_Framework_TestCase
             'several_examples',
             'spaces_in_language',
             'tags'
+        ),
+        'bad' => array(
+            'invalid_language'
         )
     );
 
     /**
-     * @dataProvider goodFeatures
+     * @var \Behat\Gherkin\Parser
      */
-    public function testGoodFeatures($featureFile, $astFile)
+    private $parser;
+
+    public function setUp()
     {
         $arrKeywords = include __DIR__ . '/../../i18n.php';
-        $lexer  = new Behat\Gherkin\Lexer(new ArrayKeywords($arrKeywords));
-        $parser = new Behat\Gherkin\Parser($lexer);
-
-        $feature = $parser->parse(file_get_contents($featureFile));
+        $lexer  = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
+        $this->parser = new Parser($lexer);
     }
 
-    public function goodFeatures() : iterable
+    /**
+     * @dataProvider goodFeatures
+     */
+    public function testGoodFeaturesCanParse($featureFile)
     {
-       foreach (new FilesystemIterator(__DIR__ . '/../../gherkin_testdata/good') as $file) {
+        $this->parser->parse(file_get_contents($featureFile));
+    }
 
-           if (in_array(preg_replace('/^.*\//', '', $file), $this->notSupported['good'])) {
-               continue;
-           }
+    /**
+     * @dataProvider badFeatures
+     */
+    public function testBadFeaturesCanNotParse($featureFile)
+    {
+        $this->expectException(\Exception::class);
+        $this->parser->parse(file_get_contents($featureFile));
+    }
 
-           if (!preg_match('/(?<stem>.*)[.]feature$/', $file, $matches)) {
-               continue;
-           }
+    public function goodFeatures()
+    {
+        return $this->findFeatures('good');
+    }
 
-           if (in_array(preg_replace('/^.*\//', '', $matches['stem']), $this->notSupported['good'])) {
-               continue;
-           }
+    public function badFeatures()
+    {
+        return $this->findFeatures('bad');
+    }
 
-           yield $matches['stem'] => [
-               $matches['stem'] . '.feature',
-               $matches['stem'] . '.ast.ndjson'
-           ];
-       }
+    /**
+     * @param $type
+     * @return array
+     */
+    private function findFeatures($type)
+    {
+        $features = array();
+
+        foreach (new \FilesystemIterator(__DIR__ . '/../../gherkin_testdata/' . $type) as $file) {
+            if (in_array(preg_replace('/^.*\//', '', $file), $this->notSupported[$type])) {
+                continue;
+            }
+
+            if (!preg_match('/(?<stem>.*)[.]feature$/', $file, $matches)) {
+                continue;
+            }
+
+            if (in_array(preg_replace('/^.*\//', '', $matches['stem']), $this->notSupported[$type])) {
+                continue;
+            }
+
+            $features[$matches['stem']] = array(
+                $matches['stem'] . '.feature'
+            );
+        }
+
+        return $features;
     }
 }
