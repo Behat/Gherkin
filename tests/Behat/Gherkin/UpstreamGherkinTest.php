@@ -25,13 +25,13 @@ final class UpstreamGherkinTest extends \PHPUnit_Framework_TestCase
     );
 
     /**
-     * @var \Behat\Gherkin\Parser
+     * @var Parser
      */
     private $parser;
 
     public function setUp()
     {
-        $arrKeywords = include __DIR__ . '/../../i18n.php';
+        $arrKeywords = include __DIR__ . '/../../../i18n.php';
         $lexer  = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
         $this->parser = new Parser($lexer);
     }
@@ -71,7 +71,7 @@ final class UpstreamGherkinTest extends \PHPUnit_Framework_TestCase
     {
         $features = array();
 
-        foreach (new \FilesystemIterator(__DIR__ . '/../../gherkin_testdata/' . $type) as $file) {
+        foreach (new \FilesystemIterator(__DIR__ . '/../../../gherkin_testdata/' . $type) as $file) {
             if (in_array(preg_replace('/^.*\//', '', $file), $this->notSupported[$type])) {
                 continue;
             }
