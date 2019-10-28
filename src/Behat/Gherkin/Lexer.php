@@ -399,7 +399,7 @@ class Lexer
         }
 
         $keywords = $this->getKeywords('Step');
-        if (!preg_match('/^\s*(' . $keywords . ')([^\s].+)/u', $this->line, $matches)) {
+        if (!preg_match('/^\s*(' . $keywords . ')([^\s].*)/u', $this->line, $matches)) {
             return null;
         }
 

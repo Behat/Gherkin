@@ -4,6 +4,7 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Loader\YamlFileLoader;
@@ -62,6 +63,22 @@ FEATURE
         );
 
         $this->assertFalse($feature2->hasTags());
+    }
+
+    public function testSingleCharacterStepSupport()
+    {
+        $feature = $this->getGherkinParser()->parse(<<<FEATURE
+Feature:
+Scenario:
+When x
+FEATURE
+);
+
+        $scenarios = $feature->getScenarios();
+        /** @var ScenarioNode $scenario */
+        $scenario = array_shift($scenarios);
+
+        $this->assertCount(1, $scenario->getSteps());
     }
 
     protected function getGherkinParser()
