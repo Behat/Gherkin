@@ -18,9 +18,9 @@
     },
 
     "require-dev": {
-        "symfony/yaml": "~2.3|~3|~4",
-        "symfony/phpunit-bridge": "~2.7|~3|~4",
-        "phpunit/phpunit": "~4.5|~5"
+        "symfony/yaml": "~2.3|~3|~4|~5",
+        "symfony/phpunit-bridge": "~2.7|~3|~4|~5",
+        "phpunit/phpunit": "~4.5|~5|~6"
     },
 
     "suggest": {
