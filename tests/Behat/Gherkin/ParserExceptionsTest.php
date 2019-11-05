@@ -33,7 +33,7 @@ class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
                 'background'       => 'Предыстория',
                 'scenario'         => 'Сценарий',
                 'scenario_outline' => 'Структура сценария',
-                'examples'         => 'Значения',
+                'examples'         => 'Примеры',
                 'given'            => 'Допустим',
                 'when'             => 'То',
                 'then'             => 'Если',

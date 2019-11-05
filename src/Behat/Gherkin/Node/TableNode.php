@@ -44,6 +44,11 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $columnCount = null;
 
         foreach ($this->getRows() as $row) {
+
+            if (!is_array($row)) {
+                throw new NodeException('Table is not two-dimensional.');
+            }
+
             if ($columnCount === null) {
                 $columnCount = count($row);
             }
