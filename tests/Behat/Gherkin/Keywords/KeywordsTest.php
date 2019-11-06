@@ -132,7 +132,7 @@ DESC
         $parser = new Parser($lexer);
 
         try {
-            $parsed = $parser->parse($source, $language . '_' . ($num + 1) . '.feature');
+            $parsed = $parser->parse($source, __DIR__ . DIRECTORY_SEPARATOR . $language . '_' . ($num + 1) . '.feature');
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage() . ":\n" . $source, 0, $e);
         }
