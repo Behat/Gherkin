@@ -32,7 +32,7 @@ class TagFilter extends ComplexFilter
     {
         $this->filterString = trim($filterString);
     }
-    
+
     /**
      * Filters feature according to the filter.
      *

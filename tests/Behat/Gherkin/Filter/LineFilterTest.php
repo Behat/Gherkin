@@ -37,7 +37,7 @@ class LineFilterTest extends FilterTest
         $filter = new LineFilter(5);
         $this->assertFalse($filter->isScenarioMatch($scenario));
 
-        $outline = new OutlineNode(null, array(), array(), array(new ExampleTableNode(array(), null)), null, 20);
+        $outline = new OutlineNode(null, array(), array(), new ExampleTableNode(array(), null), null, 20);
 
         $filter = new LineFilter(5);
         $this->assertFalse($filter->isScenarioMatch($outline));

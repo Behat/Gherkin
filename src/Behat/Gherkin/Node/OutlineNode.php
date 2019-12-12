@@ -30,7 +30,7 @@ class OutlineNode implements ScenarioInterface
      */
     private $steps;
     /**
-     * @var ExampleTableNode[]
+     * @var ExampleTableNode|ExampleTableNode[]
      */
     private $tables;
     /**
@@ -52,7 +52,7 @@ class OutlineNode implements ScenarioInterface
      * @param null|string      $title
      * @param string[]         $tags
      * @param StepNode[]       $steps
-     * @param ExampleTableNode[] $tables
+     * @param ExampleTableNode|ExampleTableNode[]  $tables
      * @param string           $keyword
      * @param integer          $line
      */
@@ -60,16 +60,20 @@ class OutlineNode implements ScenarioInterface
         $title,
         array $tags,
         array $steps,
-        array $tables,
+        $tables,
         $keyword,
         $line
     ) {
         $this->title = $title;
         $this->tags = $tags;
         $this->steps = $steps;
-        $this->tables = $tables;
         $this->keyword = $keyword;
         $this->line = $line;
+        if (!is_array($tables)) {
+           $this->tables = array($tables);
+        } else {
+            $this->tables = $tables;
+        }
     }
 
     /**
@@ -165,7 +169,6 @@ class OutlineNode implements ScenarioInterface
     public function getExampleTable()
     {
         $table = array();
-
         foreach ($this->tables[0]->getTable() as $k => $v) {
             $table[$k] = $v;
         }
@@ -175,7 +178,6 @@ class OutlineNode implements ScenarioInterface
         for ($i = 1; $i < count($this->tables); $i++) {
             $exampleTableNode->mergeRowsFromTable($this->tables[$i]);
         }
-
         return $exampleTableNode;
     }
 

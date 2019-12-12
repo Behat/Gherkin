@@ -26,7 +26,7 @@ class ExampleNodeTest extends TestCase
             array('example', 'example@example.com')
         ), 'Examples');
 
-        $outline = new OutlineNode(null, array(), $steps, array($table), null, null);
+        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
         $examples = $outline->getExamples();
 
         $this->assertCount(4, $steps = $examples[0]->getSteps());
@@ -79,7 +79,7 @@ class ExampleNodeTest extends TestCase
             array('example', 'example@example.com', 'other page')
         ), 'Examples');
 
-        $outline = new OutlineNode(null, array(), $steps, array($table), null, null);
+        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
         $examples = $outline->getExamples();
 
         $steps = $examples[0]->getSteps();
