@@ -1,0 +1,31 @@
+feature:
+  title:        Feature with background and example
+  language:     en
+  line:         1
+  description:  ~
+
+  background:
+    line:       3
+    steps:
+      - { keyword_type: Given, type: Given, text: a passing step, line: 4 }
+    examples:
+      6: [login, password]
+      7: ['', '']
+      8: [unknown_user, '']
+
+  scenarios:
+    -
+      type:     outline
+      title:    ~
+      line:     10
+      steps:
+        - { keyword_type: 'Given', type: 'Given', text: 'a failing step', line: 11 }
+        - { keyword_type: 'When',  type: 'When',   text: 'I fill in "login" with "<login>"',       line: 12 }
+        - { keyword_type: 'When',  type: 'And',    text: 'I fill in "password" with "<password>"', line: 13 }
+      arguments:
+        -
+          type:   table
+          rows:
+            6: [ login, password ]
+            7: [ '' , '' ]
+            8: [ unknown_user , '' ]

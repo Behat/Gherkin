@@ -17,7 +17,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $data = array();
 
-        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
+        foreach (glob(__DIR__ . '/Fixtures/etalons/testFolder/*.yml') as $file) {
+//        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
 
             $data[] = array($testname);
@@ -40,6 +41,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($features));
         $fixture = $features[0];
 
+        var_dump($fixture);
+        var_dump($etalon);
         $this->assertEquals($etalon, $fixture);
     }
 
@@ -129,7 +132,7 @@ FEATURE
 
     protected function parseEtalon($etalon)
     {
-        $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
+        $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/testFolder/' . $etalon);
         $feature  = $features[0];
 
         return new FeatureNode(

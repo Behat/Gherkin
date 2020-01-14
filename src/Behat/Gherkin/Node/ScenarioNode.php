@@ -147,4 +147,16 @@ class ScenarioNode implements ScenarioInterface
     {
         return $this->line;
     }
+
+    public function getScenarioOutline(ExampleTableNode $example)
+    {
+        return new OutlineNode(
+            $this->title,
+            $this->tags,
+            $this->steps,
+            $example,
+            'Scenario Outline',
+            $this->line
+        );
+    }
 }

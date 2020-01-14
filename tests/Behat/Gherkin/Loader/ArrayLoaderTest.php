@@ -217,7 +217,8 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                         'steps' => array(
                             array('type' => 'Gangway!', 'keyword_type' => 'Given', 'text' => 'bg step 1', 'line' => 3),
                             array('type' => 'Blimey!', 'keyword_type' => 'When', 'text' => 'bg step 2')
-                        )
+                        ),
+                        'examples' => null
                     ),
                     'scenarios' => array(
                         array(
@@ -326,7 +327,8 @@ class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
                                     )
                                 )
                             )
-                        )
+                        ),
+                        'examples' => null
                     )
                 )
             )

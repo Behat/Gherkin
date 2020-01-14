@@ -33,6 +33,10 @@ class BackgroundNode implements ScenarioLikeInterface
      * @var integer
      */
     private $line;
+    /**
+     * @var ExampleTableNode
+     */
+    private $exampleTable;
 
     /**
      * Initializes background.
@@ -41,13 +45,15 @@ class BackgroundNode implements ScenarioLikeInterface
      * @param StepNode[]  $steps
      * @param string      $keyword
      * @param integer     $line
+     * @param ExampleTableNode $exampleTable
      */
-    public function __construct($title, array $steps, $keyword, $line)
+    public function __construct($title, array $steps, $keyword, $line, $exampleTable=null)
     {
         $this->title = $title;
         $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
+        $this->exampleTable = $exampleTable;
     }
 
     /**
@@ -108,5 +114,25 @@ class BackgroundNode implements ScenarioLikeInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Returns if background has ExampleTable
+     *
+     * @return boolean
+     */
+    public function hasExamples()
+    {
+        return $this->exampleTable !== null;
+    }
+
+    /**
+     * Returns if background has ExampleTable
+     *
+     * @return null|ExampleTableNode
+     */
+    public function getExamples()
+    {
+        return $this->exampleTable;
     }
 }

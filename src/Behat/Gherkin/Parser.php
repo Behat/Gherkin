@@ -302,6 +302,7 @@ class Parser
         $title = trim($token['value']);
         $keyword = $token['keyword'];
         $line = $token['line'];
+        $example = null;
 
         if (count($this->popTags())) {
             throw new ParserException(sprintf(
@@ -313,9 +314,14 @@ class Parser
 
         // Parse description and steps
         $steps = array();
-        $allowedTokenTypes = array('Step', 'Newline', 'Text', 'Comment');
+        $allowedTokenTypes = array('Step', 'Newline', 'Text', 'Comment', 'Examples');
         while (in_array($this->predictTokenType(), $allowedTokenTypes)) {
             $node = $this->parseExpression();
+
+            if ($node instanceof ExampleTableNode) {
+                $example = $node;
+                continue;
+            }
 
             if ($node instanceof StepNode) {
                 $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
@@ -350,7 +356,7 @@ class Parser
             }
         }
 
-        return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
+        return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line, $example);
     }
 
     /**

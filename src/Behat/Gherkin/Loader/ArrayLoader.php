@@ -95,6 +95,7 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
+        var_dump($scenarios);
         return new FeatureNode($hash['title'], $hash['description'], $hash['tags'], $background, $scenarios, $hash['keyword'], $hash['language'], null, $hash['line']);
     }
 
@@ -119,7 +120,21 @@ class ArrayLoader implements LoaderInterface
 
         $steps = $this->loadStepsHash($hash['steps']);
 
-        return new BackgroundNode($hash['title'], $steps, $hash['keyword'], $hash['line']);
+        if (isset($hash['examples']['keyword'])) {
+            $examplesKeyword = $hash['examples']['keyword'];
+            unset($hash['examples']['keyword']);
+        } else {
+            $examplesKeyword = 'Examples';
+        }
+        if (isset($hash['examples'])) {
+            $examplesTable = $hash['examples'];
+        } else {
+            $examplesTable = array();
+        }
+
+        $examples = new ExampleTableNode($examplesTable, $examplesKeyword);
+        $bg = new BackgroundNode($hash['title'], $steps, $hash['keyword'], $hash['line'], $examples);
+        return $bg;
     }
 
     /**

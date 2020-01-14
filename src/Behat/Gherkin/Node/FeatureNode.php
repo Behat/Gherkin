@@ -198,7 +198,21 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     public function getScenarios()
     {
-        return $this->scenarios;
+        if (!$this->hasBackground() || !$this->background->hasExamples()) {
+            return $this->scenarios;
+        }
+        $scenarios = array();
+        foreach ($this->scenarios as $scenario) {
+            if ($scenario instanceof OutlineNode) {
+                array_push($scenarios, $scenario);
+                continue;
+            }
+            array_push(
+                $scenarios,
+                $scenario->getScenarioOutline($this->getBackground()->getExamples())
+            );
+        }
+        return $scenarios;
     }
 
     /**
