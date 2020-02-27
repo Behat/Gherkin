@@ -1,3 +1,9 @@
+4.6.1 / 2020-02-27
+==================
+
+ * Fix AZ translations
+ * Correctly filter features, now that the base path is correctly set 
+
 4.6.0 / 2019-01-16
 ==================
 
