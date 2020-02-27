@@ -24,11 +24,12 @@ class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadAddition()
     {
-        $this->loader->setBasePath(__DIR__ . '/../Fixtures');
+        $basePath = __DIR__ . '/../Fixtures';
+        $this->loader->setBasePath($basePath);
         $features = $this->loader->load('etalons/addition.yml');
 
         $this->assertEquals(1, count($features));
-        $this->assertEquals('etalons'.DIRECTORY_SEPARATOR.'addition.yml', $features[0]->getFile());
+        $this->assertEquals(realpath($basePath . DIRECTORY_SEPARATOR . 'etalons' . DIRECTORY_SEPARATOR . 'addition.yml'), $features[0]->getFile());
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
         $this->assertEquals('en', $features[0]->getLanguage());

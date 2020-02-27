@@ -93,9 +93,8 @@ class GherkinFileLoader extends AbstractFileLoader
      */
     protected function parseFeature($path)
     {
-        $filename = $this->findRelativePath($path);
         $content = file_get_contents($path);
-        $feature = $this->parser->parse($content, $filename);
+        $feature = $this->parser->parse($content, $path);
 
         return $feature;
     }

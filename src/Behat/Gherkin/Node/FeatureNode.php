@@ -64,7 +64,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param ScenarioInterface[] $scenarios
      * @param string              $keyword
      * @param string              $language
-     * @param null|string         $file
+     * @param null|string         $file        The absolute path to the feature file.
      * @param integer             $line
      */
     public function __construct(
@@ -78,6 +78,10 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $file,
         $line
     ) {
+        // Verify that the feature file is an absolute path.
+        if (!empty($file) && !$this->isAbsolutePath($file)) {
+            throw new \InvalidArgumentException('The file should be an absolute path.');
+        }
         $this->title = $title;
         $this->description = $description;
         $this->tags = $tags;
@@ -222,7 +226,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns feature file.
+     * Returns feature file as an absolute path.
      *
      * @return null|string
      */
@@ -239,5 +243,29 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Returns whether the file path is an absolute path.
+     *
+     * @param string $file A file path
+     *
+     * @return bool
+     *
+     * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php
+     */
+    protected function isAbsolutePath($file)
+    {
+        if (null === $file) {
+            @trigger_error(sprintf('Calling "%s()" with a null in the $file argument is deprecated since Symfony 4.4.', __METHOD__), E_USER_DEPRECATED);
+        }
+
+        return strspn($file, '/\\', 0, 1)
+            || (\strlen($file) > 3 && ctype_alpha($file[0])
+                && ':' === $file[1]
+                && strspn($file, '/\\', 2, 1)
+            )
+            || null !== parse_url($file, PHP_URL_SCHEME)
+        ;
     }
 }
