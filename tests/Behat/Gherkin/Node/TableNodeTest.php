@@ -18,25 +18,38 @@ class TableNodeTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    public function constructorTestDataProvider() {
-        return array(
-            'One-dimensional array' => array(
-                array('everzet', 'antono')
-            ),
-            'Three-dimensional array' => array(
-                array(array(array('everzet', 'antono')))
-            )
-        );
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     * @expectedExceptionMessage Table row '0' is expected to be array, got string
+     */
+    public function testConstructorExpectsTwoDimensionalArray()
+    {
+        new TableNode(array(
+            'everzet', 'antono'
+        ));
     }
 
     /**
-     * @dataProvider constructorTestDataProvider
      * @expectedException \Behat\Gherkin\Exception\NodeException
-     * @expectedExceptionMessage Table is not two-dimensional.
+     * @expectedExceptionMessage Table cell at row '0', col '0' is expected to be scalar, got array
      */
-    public function testConstructorExpectsTwoDimensionalArrays($table)
+    public function testConstructorExpectsScalarCellValue()
     {
-        new TableNode($table);
+        new TableNode(array(
+            array(array('everzet', 'antono'))
+        ));
+    }
+
+    /**
+     * @expectedException \Behat\Gherkin\Exception\NodeException
+     * @expectedExceptionMessage Table row '1' is expected to have 2 columns, got 1
+     */
+    public function testConstructorExpectsEqualRowLengths()
+    {
+        new TableNode(array(
+            array('everzet', 'antono'),
+            array('everzet'),
+        ));
     }
 
     public function testHashTable()
