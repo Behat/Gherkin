@@ -20,7 +20,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
 
-            $data[] = array($testname);
+            $data[$testname] = array($testname);
         }
 
         return $data;
