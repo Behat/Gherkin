@@ -110,7 +110,7 @@ DESC
             $dumped = $dumper->dump($lang, false, true);
 
             foreach ($dumped as $num => $dumpedFeature) {
-                $data[] = array($lang, $num, $features[$num], $dumpedFeature);
+                $data[$lang . "_" . $num] = array($lang, $num, $features[$num], $dumpedFeature);
             }
         }
 
