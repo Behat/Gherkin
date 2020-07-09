@@ -6,7 +6,7 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-php: [5.6, 7.0, 7.1, 7.2, 7.3]
+php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4]
 
 matrix:
   include:
@@ -18,6 +18,8 @@ matrix:
       env: SYMFONY_VERSION='2.8.*'
     - php: 7.1
       env: SYMFONY_VERSION='3.*'
+    - php: 7.4
+      env: SYMFONY_VERSION='4.*'
 
 before_install:
   - composer self-update
@@ -29,5 +31,5 @@ install:
 script: vendor/bin/phpunit -v --coverage-clover=coverage.clover
 
 after_script:
-  # don't upload coverage on PHP 7 and HHVM as it cannot be generated. We don't want to tell Scrutinizer that the coverage generation failed.
-  - if [[ "7.0" != "$TRAVIS_PHP_VERSION" && "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+  # don't upload coverage on PHP 7 as it cannot be generated. We don't want to tell Scrutinizer that the coverage generation failed.
+  - if [[ "7.0" != "$TRAVIS_PHP_VERSION" ]]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
