@@ -4,7 +4,7 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\ArrayLoader;
 
-class ArrayLoaderTest extends \PHPUnit_Framework_TestCase
+class ArrayLoaderTest extends \PHPUnit\Framework\TestCase
 {
     private $loader;
 

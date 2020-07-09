@@ -4,7 +4,7 @@ namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\TableNode;
 
-class TableNodeTest extends \PHPUnit_Framework_TestCase
+class TableNodeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException \Behat\Gherkin\Exception\NodeException

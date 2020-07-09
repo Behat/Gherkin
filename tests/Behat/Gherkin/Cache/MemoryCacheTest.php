@@ -6,7 +6,7 @@ use Behat\Gherkin\Cache\MemoryCache;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 
-class MemoryCacheTest extends \PHPUnit_Framework_TestCase
+class MemoryCacheTest extends \PHPUnit\Framework\TestCase
 {
     private $cache;
 

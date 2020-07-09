@@ -4,7 +4,7 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\DirectoryLoader;
 
-class DirectoryLoaderTest extends \PHPUnit_Framework_TestCase
+class DirectoryLoaderTest extends \PHPUnit\Framework\TestCase
 {
     private $gherkin;
     private $loader;

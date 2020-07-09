@@ -7,7 +7,7 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
 
-class GherkinFileLoaderTest extends \PHPUnit_Framework_TestCase
+class GherkinFileLoaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var GherkinFileLoader

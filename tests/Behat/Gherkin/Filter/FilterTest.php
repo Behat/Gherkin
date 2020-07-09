@@ -6,7 +6,7 @@ use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 
-abstract class FilterTest extends \PHPUnit_Framework_TestCase
+abstract class FilterTest extends \PHPUnit\Framework\TestCase
 {
     protected function getParser()
     {

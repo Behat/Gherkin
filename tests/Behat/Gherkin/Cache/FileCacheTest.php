@@ -7,7 +7,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Gherkin;
 
-class FileCacheTest extends \PHPUnit_Framework_TestCase
+class FileCacheTest extends \PHPUnit\Framework\TestCase
 {
     private $path;
     private $cache;
@@ -48,7 +48,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testBrokenCacheRead()
     {
-        $this->setExpectedException('Behat\Gherkin\Exception\CacheException');
+        $this->expectException('Behat\Gherkin\Exception\CacheException');
 
         touch($this->path . '/v' . Gherkin::VERSION . '/' . md5('broken_feature') . '.feature.cache');
         $this->cache->read('broken_feature');
@@ -56,7 +56,7 @@ class FileCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testUnwriteableCacheDir()
     {
-        $this->setExpectedException('Behat\Gherkin\Exception\CacheException');
+        $this->expectException('Behat\Gherkin\Exception\CacheException');
 
         new FileCache('/dev/null/gherkin-test');
     }

@@ -6,7 +6,7 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\StepNode;
 
-class OutlineNodeTest extends \PHPUnit_Framework_TestCase
+class OutlineNodeTest extends \PHPUnit\Framework\TestCase
 {
     public function testCreatesExamplesForExampleTable()
     {

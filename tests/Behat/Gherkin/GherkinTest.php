@@ -6,7 +6,7 @@ use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 
-class GherkinTest extends \PHPUnit_Framework_TestCase
+class GherkinTest extends \PHPUnit\Framework\TestCase
 {
     public function testLoader()
     {

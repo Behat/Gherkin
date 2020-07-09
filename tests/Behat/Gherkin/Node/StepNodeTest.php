@@ -6,11 +6,11 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
 
-class StepNodeTest extends \PHPUnit_Framework_TestCase
+class StepNodeTest extends \PHPUnit\Framework\TestCase
 {
     public function testThatStepCanHaveOnlyOneArgument()
     {
-        $this->setExpectedException('Behat\Gherkin\Exception\NodeException');
+        $this->expectException('Behat\Gherkin\Exception\NodeException');
 
         new StepNode('Gangway!', 'I am on the page:', array(
             new PyStringNode(array('one', 'two'), 11),

@@ -5,7 +5,7 @@ namespace Tests\Behat\Gherkin\Keywords;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsDumper;
 
-class KeywordsDumperTest extends \PHPUnit_Framework_TestCase
+class KeywordsDumperTest extends \PHPUnit\Framework\TestCase
 {
     private $keywords;
 

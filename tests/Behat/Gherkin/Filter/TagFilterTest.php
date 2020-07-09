@@ -6,7 +6,7 @@ use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 
-class TagFilterTest extends \PHPUnit_Framework_TestCase
+class TagFilterTest extends \PHPUnit\Framework\TestCase
 {
     public function testFilterFeature()
     {

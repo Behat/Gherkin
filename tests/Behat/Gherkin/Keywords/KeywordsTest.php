@@ -11,7 +11,7 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
 
-abstract class KeywordsTest extends \PHPUnit_Framework_TestCase
+abstract class KeywordsTest extends \PHPUnit\Framework\TestCase
 {
     abstract protected function getKeywords();
     abstract protected function getKeywordsArray();

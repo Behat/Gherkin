@@ -4,7 +4,7 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
 
-class YamlFileLoaderTest extends \PHPUnit_Framework_TestCase
+class YamlFileLoaderTest extends \PHPUnit\Framework\TestCase
 {
     private $loader;
 

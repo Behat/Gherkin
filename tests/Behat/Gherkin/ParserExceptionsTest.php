@@ -6,7 +6,7 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 
-class ParserExceptionsTest extends \PHPUnit_Framework_TestCase
+class ParserExceptionsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Parser
