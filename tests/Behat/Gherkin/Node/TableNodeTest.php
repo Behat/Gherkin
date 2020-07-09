@@ -2,16 +2,15 @@
 
 namespace Tests\Behat\Gherkin\Node;
 
+use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\TestCase;
 
 class TableNodeTest extends TestCase
 {
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     */
     public function testConstructorExpectsSameNumberOfColumnsInEachRow()
     {
+        $this->expectException(NodeException::class);
         new TableNode(array(
             array('username', 'password'),
             array('everzet'),
@@ -19,34 +18,28 @@ class TableNodeTest extends TestCase
         ));
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     * @expectedExceptionMessage Table row '0' is expected to be array, got string
-     */
     public function testConstructorExpectsTwoDimensionalArray()
     {
+        $this->expectException(NodeException::class);
+        $this->expectExceptionMessage("Table row '0' is expected to be array, got string");
         new TableNode(array(
             'everzet', 'antono'
         ));
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     * @expectedExceptionMessage Table cell at row '0', col '0' is expected to be scalar, got array
-     */
     public function testConstructorExpectsScalarCellValue()
     {
+        $this->expectException(NodeException::class);
+        $this->expectExceptionMessage("Table cell at row '0', col '0' is expected to be scalar, got array");
         new TableNode(array(
             array(array('everzet', 'antono'))
         ));
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     * @expectedExceptionMessage Table row '1' is expected to have 2 columns, got 1
-     */
     public function testConstructorExpectsEqualRowLengths()
     {
+        $this->expectException(NodeException::class);
+        $this->expectExceptionMessage("Table row '1' is expected to have 2 columns, got 1");
         new TableNode(array(
             array('everzet', 'antono'),
             array('everzet'),
@@ -297,11 +290,9 @@ TABLE;
         $this->assertEquals(array('32', '3antono', '3pa$sword'), $table->getRow(6));
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     */
     public function testMergeRowsFromTableWrongHeaderNameExceptionThrown()
     {
+        $this->expectException(NodeException::class);
         $table = new TableNode(array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),
@@ -316,22 +307,18 @@ TABLE;
         $table->mergeRowsFromTable($new);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     */
     public function testGetTableFromListWithMultidimensionalArrayArgument()
     {
+        $this->expectException(NodeException::class);
         TableNode::fromList(array(
             array(1, 2, 3),
             array(4, 5, 6)
         ));
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     */
     public function testMergeRowsFromTableWrongHeaderOrderExceptionThrown()
     {
+        $this->expectException(NodeException::class);
         $table = new TableNode(array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),
@@ -346,11 +333,9 @@ TABLE;
         $table->mergeRowsFromTable($new);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\NodeException
-     */
     public function testMergeRowsFromTableWrongHeaderSizeExceptionThrown()
     {
+        $this->expectException(NodeException::class);
         $table = new TableNode(array(
             5  => array('id', 'username', 'password'),
             10 => array('42', 'everzet', 'qwerty'),

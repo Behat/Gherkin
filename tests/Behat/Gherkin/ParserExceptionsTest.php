@@ -147,9 +147,6 @@ TEXT;
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testAmbigiousLanguage()
     {
         $feature = <<<GHERKIN
@@ -162,12 +159,10 @@ Feature: Some feature
     Given something wrong
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testEmptyOutline()
     {
         $feature = <<<GHERKIN
@@ -176,12 +171,10 @@ Feature: Some feature
     Scenario Outline:
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testWrongTagPlacement()
     {
         $feature = <<<GHERKIN
@@ -193,12 +186,10 @@ Feature: Some feature
         Then some additional step
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testBackgroundWithTag()
     {
         $feature = <<<GHERKIN
@@ -209,12 +200,10 @@ Feature: Some feature
         Given some step
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testEndlessPyString()
     {
         $feature = <<<GHERKIN
@@ -226,12 +215,10 @@ Feature:
             some text
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testWrongStepType()
     {
         $feature = <<<GHERKIN
@@ -243,12 +230,10 @@ Feature:
         Aaand some step
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testMultipleBackgrounds()
     {
         $feature = <<<GHERKIN
@@ -261,12 +246,10 @@ Feature:
         Aaand some step
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testMultipleFeatures()
     {
         $feature = <<<GHERKIN
@@ -275,12 +258,10 @@ Feature:
 Feature:
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 
-    /**
-     * @expectedException \Behat\Gherkin\Exception\ParserException
-     */
     public function testTableWithoutRightBorder()
     {
         $feature = <<<GHERKIN
@@ -292,6 +273,7 @@ Feature:
         | 42  | 42
 GHERKIN;
 
+        $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
     }
 }
