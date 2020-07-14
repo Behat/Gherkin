@@ -11,15 +11,16 @@ use function Verraes\Parsica\alphaNumChar;
 use function Verraes\Parsica\atLeastOne;
 use function Verraes\Parsica\blank;
 use function Verraes\Parsica\char;
+use function Verraes\Parsica\choice;
 use function Verraes\Parsica\collect;
 use function Verraes\Parsica\eol;
 use function Verraes\Parsica\keepFirst;
 use function Verraes\Parsica\many;
-use function Verraes\Parsica\optional;
 use function Verraes\Parsica\punctuationChar;
 use function Verraes\Parsica\skipHSpace;
 use function Verraes\Parsica\skipSpace;
 use function Verraes\Parsica\string;
+use function Verraes\Parsica\zeroOrMore;
 
 final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
 {
@@ -85,8 +86,12 @@ final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
 
 function text() : Parser
 {
-    return optional(
-        atLeastOne(alphaNumChar()->or(punctuationChar())->or(blank()))
+    return zeroOrMore(
+        choice(
+            alphaNumChar(),
+            punctuationChar(),
+            blank()
+        )
     );
 }
 
