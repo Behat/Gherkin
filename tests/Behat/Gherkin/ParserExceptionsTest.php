@@ -76,7 +76,12 @@ Feature: Behat bug test
 Scenario: bug user edit date
 GHERKIN;
 
-        $this->gherkin->parse($feature);
+        $feature = $this->gherkin->parse($feature);
+        $background = $feature->getBackground();
+        $this->assertEquals(
+            "remove X to couse bug\nStep is red form is not valid\nasd\nasd\nas\nda\nsd\nas\ndas\nd",
+            $background->getTitle()
+        );
     }
 
     public function testTextInScenario()
