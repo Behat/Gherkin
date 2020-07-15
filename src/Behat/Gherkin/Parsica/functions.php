@@ -49,3 +49,9 @@ function textLine() : Parser
         eol()->or(eof())
     )->map(fn(?string $str) => trim((string)$str));
 }
+
+/** @todo make this parse all of gherkin! */
+function gherkin()
+{
+    return string(' ');
+}
