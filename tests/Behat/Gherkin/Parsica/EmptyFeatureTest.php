@@ -6,35 +6,22 @@ namespace Behat\Gherkin\Parsica;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Verraes\Parsica\Parser;
-use Verraes\Parsica\StringStream;
-use function Verraes\Parsica\alphaNumChar;
-use function Verraes\Parsica\atLeastOne;
-use function Verraes\Parsica\blank;
-use function Verraes\Parsica\char;
-use function Verraes\Parsica\choice;
-use function Verraes\Parsica\collect;
-use function Verraes\Parsica\eol;
-use function Verraes\Parsica\keepFirst;
-use function Verraes\Parsica\many;
-use function Verraes\Parsica\punctuationChar;
-use function Verraes\Parsica\skipHSpace;
-use function Verraes\Parsica\skipSpace;
+use Verraes\Parsica\ParserFailure;
 use function Verraes\Parsica\string;
-use function Verraes\Parsica\zeroOrMore;
+
+require_once('functions.php');
+require_once('Asserts.php');
+
 
 final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
 {
-
-    private function assertParse($expected, Parser $parser, string $input)
-    {
-        $actual = $parser->try(new StringStream("$input\n"))->output();
-
-        $this->assertEquals($expected, $actual);
-    }
-
+    use Asserts;
+    
     /** @test */
     public function it_parses_an_empty_feature()
     {
+        $this->markTestIncomplete('Not implemented yet');
+        
         $input = 'Feature:';
 
         $expected = new FeatureNode('', '',[],null,[], 'Feature','en',null,1);
@@ -46,6 +33,8 @@ final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
     /** @test */
     public function it_parses_a_feature_with_a_title()
     {
+        $this->markTestIncomplete('Not implemented yet');
+        
         $input = 'Feature: This is a really cool feature';
         $expected = new FeatureNode('This is a really cool feature', '',[],null,[], 'Feature','en',null,1);
 
@@ -53,17 +42,33 @@ final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
     }
 
     /** @test */
-    public function it_parses_an_example()
+    public function it_parses_an_example_with_no_title()
     {
-        $input = "Example: This is a really cool example";
-        $expected = new ScenarioNode('This is a really cool example', [], [],'Example', 1);
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = "Example: ";
+        $expected = new ScenarioNode('', [], [],'Example', 1);
 
         $this->assertParse($expected, scenario(), $input);
     }
 
     /** @test */
+    public function it_parses_an_example()
+    {
+
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = "Example: This is a really cool example";
+        $expected = new ScenarioNode('This is a really cool example', [], [],'Example', 1);
+
+        $this->assertParse($expected, scenario(), $input);
+    }
+    
+    /** @test */
     public function it_parses_a_feature_with_examples()
     {
+        $this->markTestIncomplete('Not implemented yet');
+        
         $input = <<<GHERKIN
             Feature: FeatureTitle
             
@@ -82,51 +87,74 @@ final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
 
         $this->assertParse($expected, feature(), $input);
     }
-}
 
-function text() : Parser
-{
-    return zeroOrMore(
-        choice(
-            alphaNumChar(),
-            punctuationChar(),
-            blank()
-        )
-    );
-}
+    /** @test */
+    public function it_parses_a_simple_keyword_followed_by_space()
+    {
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = 'Given ';
+        $expected = 'Given';
 
-/** @todo find a better name for this */
-function oneOrMoreLinesFollowedBySpace(Parser $parser) : Parser
-{
-    return keepFirst($parser, eol()->followedBy(skipSpace()));
-}
+        $this->assertParse($expected, keyword('Given', false), $input);
+    }
 
-function featureKeyword() : Parser
-{
-    return keepFirst(string('Feature'), char(':')->followedBy(skipHSpace()));
-}
+    /** @test */
+    public function it_is_case_sensitive_for_a_simple_keyword()
+    {
+        $this->markTestIncomplete('Not implemented yet');
 
-function feature() : Parser
-{
-    return collect(featureKeyword(), oneOrMoreLinesFollowedBySpace(text()), many(oneOrMoreLinesFollowedBySpace(scenario())))->map(
-        fn(array $outputs) : FeatureNode => new FeatureNode($outputs[1], '', [], null, $outputs[2], $outputs[0], 'en', null, 1)
-    );
-}
+        $this->expectException(ParserFailure::class);
 
-function scenarioKeyword() : Parser
-{
-    return keepFirst(string('Example'), char(':')->followedBy(skipHSpace()));
-}
+        $parser = keyword('Given', false);
+        $input = 'given';
 
-function scenario() : Parser
-{
-    return collect(scenarioKeyword(), text())->map(
-        fn(array $strs) : ScenarioNode => new ScenarioNode($strs[1], [], [], $strs[0], 1)
-    );
+        $parser->tryString($input);
+    }
+
+    /** @test */
+    public function it_parses_keywords_that_need_a_colon()
+    {
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = 'Example:';
+        $expected = 'Example';
+
+        $this->assertParse($expected, keyword('Example', true), $input);
+    }
+
+    /** @test */
+    public function it_does_not_allow_space_before_suffix()
+    {
+
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = 'Example :';
+        $parser = keyword('Example', true);
+
+        $this->expectException(ParserFailure::class);
+
+        $parser->tryString($input);
+    }
+
+    /** @test */
+    public function it_consumes_all_whitespace_after_parser()
+    {
+
+        $this->markTestIncomplete('Not implemented yet');
+        
+        $input = 'Foo    ';
+        $parser = token(string('Foo'));
+        $expected = 'Foo';
+
+        $this->assertParse($expected, $parser, $input);
+    }
 }
 
 /*
 Feature: This thing
+
+   This feature will be super awesome
 
    Example: Example text
     Given I have a cat when it's raining
@@ -136,7 +164,7 @@ Feature: This thing
 FeatureKeyword: FeatureTitle
 
     ScenarioKeyword: ScenarioTitle
-        Step
-        Step
-        Step
+        StepKeyword StepText
+        StepKeyword StepText
+        StepKeyword StepText
  */
