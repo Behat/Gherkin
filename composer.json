@@ -31,7 +31,10 @@
     "autoload": {
         "psr-0": {
             "Behat\\Gherkin":   "src/"
-        }
+        },
+        "files": [
+            "src/Behat/Gherkin/Parsica/functions.php"
+        ]
     },
 
     "autoload-dev": {

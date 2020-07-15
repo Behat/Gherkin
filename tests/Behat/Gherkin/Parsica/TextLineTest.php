@@ -8,10 +8,7 @@ use Behat\Parsica;
 use Verraes\Parsica\StringStream;
 use function Behat\Gherkin\Parsica\textLine;
 
-
-require_once('functions.php');
 require_once('Asserts.php');
-
 
 class TextLineTest extends \PHPUnit_Framework_TestCase
 {

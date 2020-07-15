@@ -9,9 +9,7 @@ use Verraes\Parsica\Parser;
 use Verraes\Parsica\ParserFailure;
 use function Verraes\Parsica\string;
 
-require_once('functions.php');
 require_once('Asserts.php');
-
 
 final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
 {

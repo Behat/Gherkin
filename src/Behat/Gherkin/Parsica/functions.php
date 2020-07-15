@@ -28,7 +28,7 @@ function token(Parser $parser) : Parser
 
 function keyword(string $keyword, bool $withColon) : Parser
 {
-    return \Behat\Gherkin\Parsica\token(keepFirst(string($keyword), char($withColon ? ':' : ' ')));
+    return token(keepFirst(string($keyword), char($withColon ? ':' : ' ')));
 }
 
 /** 
