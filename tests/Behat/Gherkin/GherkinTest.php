@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin;
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\TestCase;
 
-class GherkinTest extends \PHPUnit_Framework_TestCase
+class GherkinTest extends TestCase
 {
     public function testLoader()
     {

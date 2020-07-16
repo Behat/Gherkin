@@ -7,8 +7,9 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\TestCase;
 
-class ExampleNodeTest extends \PHPUnit_Framework_TestCase
+class ExampleNodeTest extends TestCase
 {
     public function testCreateExampleSteps()
     {

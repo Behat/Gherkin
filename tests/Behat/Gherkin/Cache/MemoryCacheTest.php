@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin\Cache;
 use Behat\Gherkin\Cache\MemoryCache;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\TestCase;
 
-class MemoryCacheTest extends \PHPUnit_Framework_TestCase
+class MemoryCacheTest extends TestCase
 {
     private $cache;
 
