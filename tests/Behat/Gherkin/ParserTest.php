@@ -7,8 +7,9 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Loader\YamlFileLoader;
+use PHPUnit\Framework\TestCase;
 
-class ParserTest extends \PHPUnit\Framework\TestCase
+class ParserTest extends TestCase
 {
     private $gherkin;
     private $yaml;

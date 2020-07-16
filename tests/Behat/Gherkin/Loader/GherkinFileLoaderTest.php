@@ -6,8 +6,9 @@ use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
+use PHPUnit\Framework\TestCase;
 
-class GherkinFileLoaderTest extends \PHPUnit\Framework\TestCase
+class GherkinFileLoaderTest extends TestCase
 {
     /**
      * @var GherkinFileLoader

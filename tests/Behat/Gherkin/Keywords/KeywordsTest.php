@@ -10,8 +10,9 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
+use PHPUnit\Framework\TestCase;
 
-abstract class KeywordsTest extends \PHPUnit\Framework\TestCase
+abstract class KeywordsTest extends TestCase
 {
     abstract protected function getKeywords();
     abstract protected function getKeywordsArray();

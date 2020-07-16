@@ -3,8 +3,9 @@
 namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\TestCase;
 
-class TableNodeTest extends \PHPUnit\Framework\TestCase
+class TableNodeTest extends TestCase
 {
     /**
      * @expectedException \Behat\Gherkin\Exception\NodeException

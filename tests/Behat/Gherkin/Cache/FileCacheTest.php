@@ -6,8 +6,9 @@ use Behat\Gherkin\Cache\FileCache;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Gherkin;
+use PHPUnit\Framework\TestCase;
 
-class FileCacheTest extends \PHPUnit\Framework\TestCase
+class FileCacheTest extends TestCase
 {
     private $path;
     private $cache;

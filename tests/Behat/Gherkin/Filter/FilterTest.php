@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
+use PHPUnit\Framework\TestCase;
 
-abstract class FilterTest extends \PHPUnit\Framework\TestCase
+abstract class FilterTest extends TestCase
 {
     protected function getParser()
     {

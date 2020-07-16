@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin\Node;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\TestCase;
 
-class StepNodeTest extends \PHPUnit\Framework\TestCase
+class StepNodeTest extends TestCase
 {
     public function testThatStepCanHaveOnlyOneArgument()
     {

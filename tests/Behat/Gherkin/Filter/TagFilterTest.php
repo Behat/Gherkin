@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\TestCase;
 
-class TagFilterTest extends \PHPUnit\Framework\TestCase
+class TagFilterTest extends TestCase
 {
     public function testFilterFeature()
     {

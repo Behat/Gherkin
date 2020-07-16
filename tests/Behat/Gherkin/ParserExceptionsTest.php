@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use Behat\Gherkin\Keywords\ArrayKeywords;
+use PHPUnit\Framework\TestCase;
 
-class ParserExceptionsTest extends \PHPUnit\Framework\TestCase
+class ParserExceptionsTest extends TestCase
 {
     /**
      * @var Parser

@@ -3,8 +3,9 @@
 namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\PyStringNode;
+use PHPUnit\Framework\TestCase;
 
-class PyStringNodeTest extends \PHPUnit\Framework\TestCase
+class PyStringNodeTest extends TestCase
 {
     public function testGetStrings()
     {

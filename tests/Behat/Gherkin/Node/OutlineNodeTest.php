@@ -5,8 +5,9 @@ namespace Tests\Behat\Gherkin\Node;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\StepNode;
+use PHPUnit\Framework\TestCase;
 
-class OutlineNodeTest extends \PHPUnit\Framework\TestCase
+class OutlineNodeTest extends TestCase
 {
     public function testCreatesExamplesForExampleTable()
     {
