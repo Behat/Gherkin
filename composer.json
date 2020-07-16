@@ -1,6 +1,6 @@
 {
     "name":         "behat/gherkin",
-    "description":  "Gherkin DSL parser for PHP 5.3",
+    "description":  "Gherkin DSL parser for PHP",
     "keywords":     ["BDD", "parser", "DSL", "Behat", "Gherkin", "Cucumber"],
     "homepage":     "http://behat.org/",
     "type":         "library",
