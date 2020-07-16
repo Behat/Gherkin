@@ -11,7 +11,7 @@ class ArrayLoaderTest extends TestCase
     /** @var ArrayLoader  */
     private $loader;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->loader = new ArrayLoader();
     }

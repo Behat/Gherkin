@@ -45,7 +45,7 @@ class MemoryCacheTest extends TestCase
         $this->assertEquals($feature, $featureRead);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cache = new MemoryCache();
     }

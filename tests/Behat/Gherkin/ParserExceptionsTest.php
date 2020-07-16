@@ -14,7 +14,7 @@ class ParserExceptionsTest extends TestCase
      */
     private $gherkin;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $keywords       = new ArrayKeywords(array(
             'en' => array(

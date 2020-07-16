@@ -10,7 +10,7 @@ class KeywordsDumperTest extends TestCase
 {
     private $keywords;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->keywords = new ArrayKeywords(array(
            'en' => array(
