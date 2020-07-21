@@ -5,14 +5,14 @@ namespace Tests\Behat\Parsica;
 
 use Behat\Gherkin\Parsica\Asserts;
 use Behat\Parsica;
+use PHPUnit\Framework\TestCase;
+use Verraes\Parsica\PHPUnit\ParserAssertions;
 use Verraes\Parsica\StringStream;
 use function Behat\Gherkin\Parsica\textLine;
 
-require_once('Asserts.php');
-
-class TextLineTest extends \PHPUnit_Framework_TestCase
+class TextLineTest extends TestCase
 {
-    use Asserts;
+    use ParserAssertions;
     
     /** 
      * @test 

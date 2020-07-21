@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace Behat\Gherkin\Parsica;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
+use PHPUnit\Framework\TestCase;
+use Verraes\Parsica\PHPUnit\ParserAssertions;
 
-require_once('Asserts.php');
-
-/** @group parsica */
-final class AcceptanceTest extends \PHPUnit_Framework_TestCase
+/** @group parsica-acceptance */
+final class AcceptanceTest extends TestCase
 {
-    use Asserts;
+    use ParserAssertions;
     
     /** 
      * @test 

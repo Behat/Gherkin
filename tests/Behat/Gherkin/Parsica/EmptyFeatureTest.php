@@ -5,15 +5,15 @@ namespace Behat\Gherkin\Parsica;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Testcase;
 use Verraes\Parsica\Parser;
 use Verraes\Parsica\ParserFailure;
+use Verraes\Parsica\PHPUnit\ParserAssertions;
 use function Verraes\Parsica\string;
 
-require_once('Asserts.php');
-
-final class EmptyFeatureTest extends \PHPUnit\Framework\Testcase
+final class EmptyFeatureTest extends Testcase
 {
-    use Asserts;
+    use ParserAssertions;
     
     /** @test */
     public function it_parses_an_empty_feature()
