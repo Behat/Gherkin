@@ -7,7 +7,7 @@ use Behat\Gherkin\Loader\YamlFileLoader;
 use PHPUnit\Framework\TestCase;
 use Verraes\Parsica\PHPUnit\ParserAssertions;
 
-/** @group parsica-acceptance */
+/** @group acceptance */
 final class AcceptanceTest extends TestCase
 {
     use ParserAssertions;
@@ -27,15 +27,17 @@ final class AcceptanceTest extends TestCase
     
     static function gherkinFiles()
     {
-        $files = glob(__DIR__ . '/../Fixtures/features/*.feature');
+        $files = glob(__DIR__ . '/../Fixtures/etalons/*.yml');
 
-        return array_map(
+        foreach (array_map(
             fn ($file) => [
-                $file,
-                preg_replace('#features/(.*)\.feature#', 'etalons/\1.yml', $file)
+                preg_replace('#etalons/(.*)\.yml#', 'features/\1.feature', $file),
+                $file
             ],
             $files
-        );
+        ) as $tuple) {
+            yield basename($tuple[0]) => $tuple;
+        }
     }
     
     private static function loadFromEtalon($etalonFile)

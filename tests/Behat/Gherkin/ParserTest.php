@@ -29,7 +29,7 @@ class ParserTest extends TestCase
 
     /**
      * @dataProvider parserTestDataProvider
-     *
+     * @group acceptance
      * @param string $fixtureName name of the fixture
      */
     public function testParser($fixtureName)
