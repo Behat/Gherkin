@@ -24,7 +24,9 @@ final class EmptyFeatureTest extends Testcase
 
         $expected = new FeatureNode('', '',[],null,[], 'Feature','en',null,1);
 
-        $this->assertParse($expected, feature(), $input);
+            $parser = feature();
+
+        $this->assertParses($input, $parser, $expected);
     }
 
 
@@ -32,11 +34,12 @@ final class EmptyFeatureTest extends Testcase
     public function it_parses_a_feature_with_a_title()
     {
         $this->markTestIncomplete('Not implemented yet');
-        
+
         $input = 'Feature: This is a really cool feature';
         $expected = new FeatureNode('This is a really cool feature', '',[],null,[], 'Feature','en',null,1);
 
-        $this->assertParse($expected, feature(), $input);
+        $parser = feature();
+        $this->assertParses($input, $parser, $expected);
     }
 
     /** @test */
@@ -47,7 +50,8 @@ final class EmptyFeatureTest extends Testcase
         $input = "Example: ";
         $expected = new ScenarioNode('', [], [],'Example', 1);
 
-        $this->assertParse($expected, scenario(), $input);
+        $parser = scenario();
+        $this->assertParses($input, $parser, $expected);
     }
 
     /** @test */
@@ -59,7 +63,8 @@ final class EmptyFeatureTest extends Testcase
         $input = "Example: This is a really cool example";
         $expected = new ScenarioNode('This is a really cool example', [], [],'Example', 1);
 
-        $this->assertParse($expected, scenario(), $input);
+        $parser = scenario();
+        $this->assertParses($input, $parser, $expected);
     }
     
     /** @test */
@@ -83,7 +88,8 @@ final class EmptyFeatureTest extends Testcase
         ];
         $expected = new FeatureNode('FeatureTitle', '', [], null, $expectedSteps, 'Feature','en',null,1);
 
-        $this->assertParse($expected, feature(), $input);
+        $parser = feature();
+        $this->assertParses($input, $parser, $expected);
     }
 
     /** @test */
@@ -94,7 +100,8 @@ final class EmptyFeatureTest extends Testcase
         $input = 'Given ';
         $expected = 'Given';
 
-        $this->assertParse($expected, keyword('Given', false), $input);
+        $parser = keyword('Given', false);
+        $this->assertParses($input, $parser, $expected);
     }
 
     /** @test */
@@ -102,11 +109,11 @@ final class EmptyFeatureTest extends Testcase
     {
         $this->markTestIncomplete('Not implemented yet');
 
-        $this->expectException(ParserFailure::class);
 
         $parser = keyword('Given', false);
         $input = 'given';
 
+        $this->expectException(ParserFailure::class);
         $parser->tryString($input);
     }
 
@@ -118,7 +125,8 @@ final class EmptyFeatureTest extends Testcase
         $input = 'Example:';
         $expected = 'Example';
 
-        $this->assertParse($expected, keyword('Example', true), $input);
+        $parser = keyword('Example', true);
+        $this->assertParses($input, $parser, $expected);
     }
 
     /** @test */
@@ -145,7 +153,7 @@ final class EmptyFeatureTest extends Testcase
         $parser = token(string('Foo'));
         $expected = 'Foo';
 
-        $this->assertParse($expected, $parser, $input);
+        $this->assertParses($input, $parser, $expected);
     }
 }
 

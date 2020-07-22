@@ -22,7 +22,7 @@ class TextLineTest extends TestCase
     {
         $parser = textLine();
 
-        $this->assertParse($expected, $parser, $input);
+        $this->assertParses($input, $parser, $expected);
 
         $remainder = (string)$parser->tryString($input)->remainder();
         $this->assertEquals($expectedRemainder, $remainder);
