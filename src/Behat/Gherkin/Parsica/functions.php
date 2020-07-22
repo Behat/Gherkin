@@ -50,8 +50,15 @@ function textLine() : Parser
     )->map(fn(?string $str) => trim((string)$str));
 }
 
-/** @todo make this parse all of gherkin! */
-function gherkin()
+function feature() : Parser
 {
-    return string(' ');
+    return collect(keyword('Feature', true), textLine())->map(
+        fn ($outputs) => new FeatureNode($outputs[1], '', [], null, [], $outputs[0], 'en', null, 1)
+    );
+}
+
+/** @todo make this parse all of gherkin! */
+function gherkin() : Parser
+{
+    return feature();
 }

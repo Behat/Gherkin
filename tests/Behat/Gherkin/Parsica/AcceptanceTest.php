@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Behat\Gherkin\Parsica;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
+use Behat\Gherkin\Node\FeatureNode;
 use PHPUnit\Framework\TestCase;
 use Verraes\Parsica\PHPUnit\ParserAssertions;
 
@@ -22,7 +23,7 @@ final class AcceptanceTest extends TestCase
         
         $actual = $this->parseFeature(file_get_contents($gherkinFile));
         
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
     
     static function gherkinFiles()
@@ -45,8 +46,23 @@ final class AcceptanceTest extends TestCase
         static $yamlFileLoader;
         
         $yamlFileLoader = $yamlFileLoader ? $yamlFileLoader : new YamlFileLoader();
-        
-        return $yamlFileLoader->load($etalonFile);
+
+        $featureNodes = $yamlFileLoader->load($etalonFile);
+        $feature = $featureNodes[0];
+
+        $featureNode = new FeatureNode(
+            $feature->getTitle(),
+            $feature->getDescription(),
+            $feature->getTags(),
+            $feature->getBackground(),
+            $feature->getScenarios(),
+            $feature->getKeyword(),
+            $feature->getLanguage(),
+            null,
+            $feature->getLine()
+        );
+
+        return $featureNode;
     }
     
     private static function parseFeature($feature)

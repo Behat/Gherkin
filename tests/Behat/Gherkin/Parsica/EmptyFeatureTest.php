@@ -14,33 +14,7 @@ use function Verraes\Parsica\string;
 final class EmptyFeatureTest extends Testcase
 {
     use ParserAssertions;
-    
-    /** @test */
-    public function it_parses_an_empty_feature()
-    {
-        $this->markTestIncomplete('Not implemented yet');
-        
-        $input = 'Feature:';
 
-        $expected = new FeatureNode('', '',[],null,[], 'Feature','en',null,1);
-
-            $parser = feature();
-
-        $this->assertParses($input, $parser, $expected);
-    }
-
-
-    /** @test */
-    public function it_parses_a_feature_with_a_title()
-    {
-        $this->markTestIncomplete('Not implemented yet');
-
-        $input = 'Feature: This is a really cool feature';
-        $expected = new FeatureNode('This is a really cool feature', '',[],null,[], 'Feature','en',null,1);
-
-        $parser = feature();
-        $this->assertParses($input, $parser, $expected);
-    }
 
     /** @test */
     public function it_parses_an_example_with_no_title()
