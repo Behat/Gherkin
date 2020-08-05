@@ -1,0 +1,10 @@
+feature:
+  title:        Feature title
+  language:     en
+  line:         1
+
+  scenarios:
+    -
+      type:     scenario
+      title:    Example title
+      line:     2

@@ -7,6 +7,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Verraes\Parsica\Parser;
 use function Verraes\Parsica\alphaNumChar;
+use function Verraes\Parsica\between;
 use function Verraes\Parsica\blank;
 use function Verraes\Parsica\char;
 use function Verraes\Parsica\choice;
@@ -23,7 +24,7 @@ use function Verraes\Parsica\zeroOrMore;
 
 function token(Parser $parser) : Parser
 {
-    return keepFirst($parser, skipHSpace());
+    return between(skipHSpace(), skipHSpace(), $parser);
 }
 
 function keyword(string $keyword, bool $withColon) : Parser
@@ -52,13 +53,24 @@ function textLine() : Parser
 
 function feature() : Parser
 {
-    return collect(keyword('Feature', true), textLine())->map(
-        fn ($outputs) => new FeatureNode($outputs[1], '', [], null, [], $outputs[0], 'en', null, 1)
+    return collect(
+        keyword('Feature', true),
+        textLine(),
+        many(scenario())
+    )->map(
+        fn ($outputs) => new FeatureNode($outputs[1], null, [], null, $outputs[2], $outputs[0], 'en', null, 1)
+    );
+}
+
+function scenario() : Parser
+{
+    return collect(keyword('Scenario', true), textLine())->map(
+        fn($outputs) => new ScenarioNode($outputs[1], [], [], $outputs[0], 1)
     );
 }
 
 /** @todo make this parse all of gherkin! */
 function gherkin() : Parser
 {
-    return feature();
+    return feature()->thenIgnore(eof());
 }
