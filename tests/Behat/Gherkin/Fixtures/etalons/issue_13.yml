@@ -38,7 +38,6 @@ feature:
           text:         the pystring is
           line:         17
           arguments:
-          arguments:
             -
               type: pystring
               text: |-
