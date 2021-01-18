@@ -20,7 +20,8 @@
     "require-dev": {
         "symfony/yaml": "~2.3|~3|~4",
         "symfony/phpunit-bridge": "~2.7|~3|~4",
-        "phpunit/phpunit": "~5.7|~6|~7"
+        "phpunit/phpunit": "~5.7|~6|~7",
+        "cucumber/cucumber": "dev-gherkin-16.0.0"
     },
 
     "suggest": {
@@ -43,5 +44,20 @@
         "branch-alias": {
             "dev-master": "4.4-dev"
         }
-    }
+    },
+
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "cucumber/cucumber",
+                "version": "dev-gherkin-16.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/cucumber/cucumber.git",
+                    "reference": "00f128c8dc2970a564d8a706567836700a7039f0"
+                }
+            }
+        }
+    ]
 }
