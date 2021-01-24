@@ -1,3 +1,10 @@
+4.7.0 / 2021-01-24
+==================
+
+ * Provides better messages for TableNode construct errors
+ * Now allows single character steps 
+ * Supports multiple Example Tables with tags
+
 4.6.2 / 2020-03-17
 ==================
 
