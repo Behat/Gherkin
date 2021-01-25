@@ -59,5 +59,26 @@ feature:
         -
           tags:     [examples_tag3, examples_tag4]
           table:
-            33: [state]
-            34: [missing]
+            34: [state]
+            35: [missing]
+        -
+          tags:     [examples_tag5, examples_tag6]
+          table:
+            39: [state]
+            40: [something]
+
+    -
+      type:     scenario
+      title:    scenario with comment and tag after an outline
+      tags:     [sample_8]
+      line:     44
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: 'the scenario has a comment and a tag and comes after an outline',  line: 45 }
+
+    -
+      type:     scenario
+      title:    scenario with tag and then comment
+      tags:     [sample_9]
+      line:     49
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: 'the scenario has a tag and comment',  line: 50 }
