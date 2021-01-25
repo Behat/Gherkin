@@ -95,3 +95,11 @@ feature:
           table:
             56: [state]
             57: [more]
+
+    -
+      type:     scenario
+      title:    another scenario with tag and then comment
+      tags:     [sample_12]
+      line:     61
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: 'this scenario has a tag and comment',  line: 62 }

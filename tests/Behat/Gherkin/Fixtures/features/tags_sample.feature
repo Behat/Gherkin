@@ -55,3 +55,8 @@ Feature: Tag samples
         Examples:
             | state   |
             | more    |
+
+    @sample_12
+    # comment after tag
+    Scenario: another scenario with tag and then comment
+        Given this scenario has a tag and comment
