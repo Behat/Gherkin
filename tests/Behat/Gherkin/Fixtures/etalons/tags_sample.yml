@@ -82,3 +82,24 @@ feature:
       line:     49
       steps:
         - { keyword_type: 'Given', type: 'Given',  text: 'the scenario has a tag and comment',  line: 50 }
+
+    -
+      type:     outline
+      title:    an outline followed by more scenarios
+      tags:     [sample_10, sample_11]
+      line:     53
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: '<state>',  line: 54 }
+      examples:
+        -
+          table:
+            56: [state]
+            57: [more]
+
+    -
+      type:     scenario
+      title:    another scenario with tag and then comment
+      tags:     [sample_12]
+      line:     61
+      steps:
+        - { keyword_type: 'Given', type: 'Given',  text: 'this scenario has a tag and comment',  line: 62 }

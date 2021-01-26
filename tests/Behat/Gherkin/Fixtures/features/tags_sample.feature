@@ -48,3 +48,15 @@ Feature: Tag samples
     # comment after tag
     Scenario: scenario with tag and then comment
         Given the scenario has a tag and comment
+
+    @sample_10 @sample_11
+    Scenario Outline: an outline followed by more scenarios
+        Given <state>
+        Examples:
+            | state   |
+            | more    |
+
+    @sample_12
+    # comment after tag
+    Scenario: another scenario with tag and then comment
+        Given this scenario has a tag and comment

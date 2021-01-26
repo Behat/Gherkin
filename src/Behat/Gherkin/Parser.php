@@ -442,7 +442,12 @@ class Parser
 
         array_push($this->passedNodesStack, 'Outline');
 
-        while (in_array($this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'))) {
+        while (in_array($nextTokenType = $this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'))) {
+            if ($nextTokenType === 'Comment') {
+                $this->lexer->skipPredictedToken();
+                continue;
+            }
+
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
