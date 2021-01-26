@@ -1,3 +1,8 @@
+4.7.1 / 2021-01-26
+==================
+
+* Issue parsing comments before scenarios when following an Examples table
+
 4.7.0 / 2021-01-24
 ==================
 
