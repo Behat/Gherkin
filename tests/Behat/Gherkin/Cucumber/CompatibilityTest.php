@@ -69,7 +69,7 @@ class CompatibilityTest extends TestCase
     /**
      * @dataProvider goodCucumberFeatures
      */
-    public function testFeaturesParseTheSameAsCucumber($file)
+    public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
     {
 
         if (isset($this->notParsingCorrectly[$file->getFilename()])){
@@ -91,7 +91,7 @@ class CompatibilityTest extends TestCase
     /**
      * @dataProvider badCucumberFeatures
      */
-    public function testBadFeaturesDoNotParse($file)
+    public function testBadFeaturesDoNotParse(\SplFileInfo $file)
     {
         if (isset($this->parsedButShouldNotBe[$file->getFilename()])){
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
