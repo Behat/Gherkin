@@ -2,6 +2,7 @@
 
 namespace Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
@@ -41,6 +42,12 @@ class CompatibilityTest extends TestCase
         'tags.feature' => 'Tags followed by comments not parsed correctly'
     ];
 
+    private $parsedButShouldNotBe = [
+        'inconsistent_cell_count.feature' => 'Inconsistent cells count throws low level exception not ParserException',
+        'invalid_language.feature' => 'Invalid language is silently ignored',
+        'whitespace_in_tags.feature' => 'Whitespace in tags is tolerated',
+    ];
+
     /**
      * @var Parser
      */
@@ -60,9 +67,9 @@ class CompatibilityTest extends TestCase
     }
 
     /**
-     * @dataProvider cucumberFeatures
+     * @dataProvider goodCucumberFeatures
      */
-    public function testFeaturesParseTheSameAsCucumber($file)
+    public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
     {
 
         if (isset($this->notParsingCorrectly[$file->getFilename()])){
@@ -81,17 +88,37 @@ class CompatibilityTest extends TestCase
         );
     }
 
-    public static function cucumberFeatures()
+    /**
+     * @dataProvider badCucumberFeatures
+     */
+    public function testBadFeaturesDoNotParse(\SplFileInfo $file)
     {
-        $files = array();
-
-        foreach(new \FilesystemIterator(self::TESTDATA_PATH . '/good') as $file) {
-            if ($file->isFile() && $file->getExtension() == 'feature') {
-                $files[$file->getFilename()] = array($file);
-            }
+        if (isset($this->parsedButShouldNotBe[$file->getFilename()])){
+            $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
         }
 
-        return $files;
+        $this->expectException(ParserException::class);
+        $gherkinFile = $file->getPathname();
+        $feature = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
+    }
+
+    public static function goodCucumberFeatures()
+    {
+        return self::getCucumberFeatures('/good');
+    }
+
+    public static function badCucumberFeatures()
+    {
+        return self::getCucumberFeatures('/bad');
+    }
+
+    private static function getCucumberFeatures($folder)
+    {
+        foreach (new \FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
+            if ($file->isFile() && $file->getExtension() == 'feature') {
+                yield $file->getFilename() => array($file);
+            }
+        }
     }
 
     /**
