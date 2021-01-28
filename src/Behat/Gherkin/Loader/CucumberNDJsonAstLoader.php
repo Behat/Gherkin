@@ -44,7 +44,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         $featureJson = $json['gherkinDocument']['feature'];
 
         $feature = new FeatureNode(
-            $featureJson['name'],
+            isset($featureJson['name']) ? $featureJson['name'] : null,
             isset($featureJson['description']) ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
@@ -81,7 +81,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
                     if (isset($child['scenario']['examples'])) {
                         return new OutlineNode(
-                            $child['scenario']['name'],
+                            isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
                             self::getTags($child['scenario']),
                             self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
                             self::getTables($child['scenario']['examples']),
@@ -101,7 +101,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
                 },
                 array_filter(
-                    $json['children'] ? $json['children'] : [],
+                    isset($json['children']) ? $json['children'] : [],
                     static function ($child) {
                         return isset($child['scenario']);
                     }
@@ -126,7 +126,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     );
                 },
                 array_filter(
-                    $json['children'] ? $json['children'] : [],
+                    isset($json['children']) ? $json['children'] : [],
                     static function ($child) {
                         return isset($child['background']);
                     }

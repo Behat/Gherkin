@@ -70,10 +70,14 @@ class CompatibilityTest extends TestCase
 
         $gherkinFile = $file->getPathname();
 
-        $actual = $this->normaliseFeature($this->parser->parse(file_get_contents($gherkinFile), $gherkinFile));
-        $expected = $this->normaliseFeature($this->loader->load($gherkinFile . '.ast.ndjson')[0]);
+        $actual = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
+        $cucumberFeatures = $this->loader->load($gherkinFile . '.ast.ndjson');
+        $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals(
+            $this->normaliseFeature($expected),
+            $this->normaliseFeature($actual)
+        );
     }
 
     public static function cucumberFeatures()
