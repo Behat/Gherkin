@@ -24,7 +24,7 @@ class CompatibilityTest extends TestCase
 {
     const TESTDATA_PATH = __DIR__ . '/../../../../vendor/cucumber/cucumber/gherkin/testdata';
 
-    const NOT_COMPATIBLE = [
+    private $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
         'descriptions.feature' => 'Examples table descriptions not supported',
@@ -62,10 +62,11 @@ class CompatibilityTest extends TestCase
     /**
      * @dataProvider cucumberFeatures
      */
-    public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
+    public function testFeaturesParseTheSameAsCucumber($file)
     {
-        if (isset((self::NOT_COMPATIBLE)[$file->getFilename()])){
-            $this->markTestIncomplete((self::NOT_COMPATIBLE)[$file->getFilename()]);
+
+        if (isset($this->notParsingCorrectly[$file->getFilename()])){
+            $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
         }
 
         $gherkinFile = $file->getPathname();
@@ -82,11 +83,15 @@ class CompatibilityTest extends TestCase
 
     public static function cucumberFeatures()
     {
-        foreach (new \FilesystemIterator(self::TESTDATA_PATH . '/good') as $file) {
-           if ($file->isFile() && $file->getExtension() === 'feature') {
-                yield $file->getFilename() => [$file];
+        $files = array();
+
+        foreach(new \FilesystemIterator(self::TESTDATA_PATH . '/good') as $file) {
+            if ($file->isFile() && $file->getExtension() == 'feature') {
+                $files[$file->getFilename()] = array($file);
             }
         }
+
+        return $files;
     }
 
     /**

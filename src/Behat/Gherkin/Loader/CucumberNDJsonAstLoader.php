@@ -35,7 +35,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     /**
      * @return FeatureNode|null
      */
-    private static function getFeature(array $json, string $filePath)
+    private static function getFeature(array $json, $filePath)
     {
         if (!isset($json['gherkinDocument']['feature'])) {
             return null;
