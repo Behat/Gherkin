@@ -3,14 +3,12 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Node\BackgroundNode;
-use Behat\Gherkin\Node\ExampleNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
-use Behat\Gherkin\Node\TableNode;
 
 /**
  * Loads a feature from cucumber's protobuf JSON format
@@ -25,11 +23,12 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     public function load($resource)
     {
-        $json = \json_decode(file_get_contents($resource), true);
-
-        $feature = self::getFeature($json, $resource);
-
-        return $feature ? array($feature) : array();
+        return array_map(
+            static function ($line) use ($resource) {
+                return self::getFeature(json_decode($line, true), $resource);
+            },
+            file($resource)
+        );
     }
 
     /**
