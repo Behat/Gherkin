@@ -114,14 +114,11 @@ class CompatibilityTest extends TestCase
 
     private static function getCucumberFeatures($folder)
     {
-        $files = array();
-
         foreach (new \FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
             if ($file->isFile() && $file->getExtension() == 'feature') {
-                $files[$file->getFilename()] = array($file);
+                yield $file->getFilename() => array($file);
             }
         }
-        return $files;
     }
 
     /**
