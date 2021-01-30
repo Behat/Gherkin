@@ -23,12 +23,12 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     public function load($resource)
     {
-        return array_map(
+        return array_values(array_map(
             static function ($line) use ($resource) {
                 return self::getFeature(json_decode($line, true), $resource);
             },
             file($resource)
-        );
+        ));
     }
 
     /**
