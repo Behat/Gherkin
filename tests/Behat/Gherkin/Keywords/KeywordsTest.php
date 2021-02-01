@@ -25,7 +25,7 @@ abstract class KeywordsTest extends TestCase
         $keywordsArray = $this->getKeywordsArray();
 
         // Remove languages with repeated keywords
-        unset($keywordsArray['en-old'], $keywordsArray['uz']);
+        unset($keywordsArray['en-old'], $keywordsArray['uz'], $keywordsArray['ne']);
 
         $data = array();
         foreach ($keywordsArray as $lang => $i18nKeywords) {
