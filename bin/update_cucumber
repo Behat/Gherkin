@@ -50,3 +50,4 @@ $newJson = str_replace(
 file_put_contents($composerFile, $newJson);
 
 echo "Updated composer config:\n$newJson";
+echo "::set-output name=cucumber_version::$newTag\n";
