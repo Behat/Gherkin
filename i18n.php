@@ -624,11 +624,11 @@ return array (
     'background' => 'Contesto',
     'but' => 'Ma|*',
     'examples' => 'Esempi',
-    'feature' => 'Esigenza di Business|Funzionalità|Abilità',
+    'feature' => 'Funzionalità',
     'given' => 'Dato|Data|Dati|Date|*',
     'name' => 'Italian',
     'native' => 'italiano',
-    'rule' => 'Regola',
+    'rule' => 'Rule',
     'scenario' => 'Scenario|Esempio',
     'scenario_outline' => 'Schema dello scenario',
     'then' => 'Allora|*',
@@ -826,7 +826,7 @@ return array (
     'then' => 'तेव्हा|मग|*',
     'when' => 'जेव्हा|*',
   ),
-  'ne' =>
+  'ne' => 
   array (
     'and' => 'अनी|*|र',
     'background' => 'पृष्ठभूमी',
@@ -1028,7 +1028,7 @@ return array (
     'given' => 'Givet|*',
     'name' => 'Swedish',
     'native' => 'Svenska',
-    'rule' => 'Regel',
+    'rule' => 'Rule',
     'scenario' => 'Scenario',
     'scenario_outline' => 'Abstrakt Scenario|Scenariomall',
     'then' => 'Så|*',
