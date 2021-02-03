@@ -112,4 +112,21 @@ class OutlineNodeTest extends TestCase
 
         $this->assertCount(0, $examples = $outline->getExamples());
     }
+
+    public function testPopulatesExampleWithOutlineTitle()
+    {
+        $steps = array(
+            new StepNode('', 'I am <name>', array(), null, 'Given'),
+        );
+
+        $table = new ExampleTableNode(array(
+            10 => array('name', 'email'),
+            11 => array('Ciaran', 'ciaran@example.com'),
+        ), 'Examples');
+
+        $outline = new OutlineNode('An outline title', array(), $steps, $table, null, null);
+
+        $this->assertCount(1, $examples = $outline->getExamples());
+        $this->assertEquals('An outline title', current($examples)->getOutlineTitle());
+    }
 }

@@ -235,7 +235,8 @@ class OutlineNode implements ScenarioInterface
                     array_merge($this->tags, $exampleTable->getTags()),
                     $this->getSteps(),
                     $row,
-                    $exampleTable->getRowLine($rowNum + 1)
+                    $exampleTable->getRowLine($rowNum + 1),
+                    $this->getTitle()
                 );
             }
         }
