@@ -10,6 +10,10 @@ $composerFile = __DIR__ . '/../composer.json';
 $composerConfig = file_get_contents($composerFile);
 foreach (json_decode($composerConfig, true, 512, JSON_THROW_ON_ERROR)['repositories'] as $repository)
 {
+    if ($repository['type'] !== 'package') {
+        continue;
+    }
+
     if ($repository['package']['name'] == 'cucumber/cucumber') {
         $oldTag = preg_replace('/^dev-gherkin-/', '', $repository['package']['version']);
         $oldHash = $repository['package']['source']['reference'];
