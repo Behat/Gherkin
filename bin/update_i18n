@@ -34,7 +34,7 @@ foreach (json_decode($json, true) as $lang => $keywords) {
         }
 
         usort($words, function($type1, $type2) {
-            return mb_strlen($type2, 'utf8') - mb_strlen($type1, 'utf8');
+            return [mb_strlen($type2, 'utf8'), $type1] <=> [mb_strlen($type1, 'utf8'), $type2];
         });
 
         $langMessages[$type] = implode('|', $words);
