@@ -1,3 +1,9 @@
+4.7.2 / 2021-02-03
+==================
+
+* Issue where Scenario Outline title was not populated into Examples
+* Updated translations from cucumber 16.0.0
+
 4.7.1 / 2021-01-26
 ==================
 
