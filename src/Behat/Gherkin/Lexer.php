@@ -38,7 +38,7 @@ class Lexer
     private $featureStarted = false;
     private $allowMultilineArguments = false;
     private $allowSteps = false;
-    private $pyStringDelimiter = false;
+    private $pyStringDelimiter = null;
 
     /**
      * Initializes lexer.
@@ -436,16 +436,17 @@ class Lexer
             return null;
         }
 
-        if ((false === ($indent = mb_strpos($this->line, $delimiter = '"""', 0, 'utf8')))
-        && (false === ($indent = mb_strpos($this->line, $delimiter ='```', 0, 'utf8')))) {
+        if(!preg_match('/^\s*(?<delimiter>"""|```)/u', $this->line, $matches, PREG_OFFSET_CAPTURE)) {
             return null;
         }
+
+        ['delimiter' => [0 => $delimiter, 1 => $indent]] = $matches;
 
         if ($this->inPyString) {
             if ($this->pyStringDelimiter !== $delimiter) {
                 return null;
             }
-            $this->pyStringDelimiter = false;
+            $this->pyStringDelimiter = null;
         }
         else {
             $this->pyStringDelimiter= $delimiter;
