@@ -1,3 +1,8 @@
+4.7.3 / 2021-02-04
+==================
+
+* Refactored comments parsing to avoid Maximum function nesting level errors
+
 4.7.2 / 2021-02-03
 ==================
 
