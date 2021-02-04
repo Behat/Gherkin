@@ -62,12 +62,12 @@ class FileCacheTest extends TestCase
         new FileCache('/dev/null/gherkin-test');
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cache = new FileCache($this->path = sys_get_temp_dir() . '/gherkin-test');
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach (glob($this->path . '/*.feature.cache') as $file) {
             unlink((string) $file);

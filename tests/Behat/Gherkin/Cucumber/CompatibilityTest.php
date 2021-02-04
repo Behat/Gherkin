@@ -58,7 +58,7 @@ class CompatibilityTest extends TestCase
      */
     private $loader;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $arrKeywords = include __DIR__ . '/../../../../i18n.php';
         $lexer  = new Lexer(new Keywords\ArrayKeywords($arrKeywords));

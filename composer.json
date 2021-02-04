@@ -14,23 +14,23 @@
     ],
 
     "require": {
-        "php": ">=5.6"
+        "php": "~7.2|~8.0"
     },
 
     "require-dev": {
-        "symfony/yaml": "~2.3|~3|~4",
-        "symfony/phpunit-bridge": "~2.7|~3|~4",
-        "phpunit/phpunit": "^5.7.1|~6|~7",
+        "symfony/yaml": "~3|~4|~5",
+        "symfony/phpunit-bridge": "~3|~4|~5",
+        "phpunit/phpunit": "~8|~9",
         "cucumber/cucumber": "dev-gherkin-16.0.0"
     },
 
     "suggest": {
-        "symfony/yaml":   "If you want to parse features, represented in YAML files"
+        "symfony/yaml": "If you want to parse features, represented in YAML files"
     },
 
     "autoload": {
         "psr-0": {
-            "Behat\\Gherkin":   "src/"
+            "Behat\\Gherkin": "src/"
         }
     },
 

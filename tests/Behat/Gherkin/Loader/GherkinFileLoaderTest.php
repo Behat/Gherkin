@@ -101,7 +101,7 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $keywords = new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
         $parser = new Parser(new Lexer($keywords));

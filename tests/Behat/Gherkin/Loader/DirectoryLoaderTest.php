@@ -11,7 +11,7 @@ class DirectoryLoaderTest extends TestCase
     private $loader;
     private $featuresPath;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->gherkin      = $this->createGherkinMock();
         $this->loader       = new DirectoryLoader($this->gherkin);

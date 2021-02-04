@@ -38,7 +38,7 @@ class ParserTest extends TestCase
         $etalon = $this->parseEtalon($fixtureName . '.yml');
         $features = $this->parseFixture($fixtureName . '.feature');
 
-        $this->assertInternalType('array', $features);
+        $this->assertIsArray($features);
         $this->assertEquals(1, count($features));
         $fixture = $features[0];
 
