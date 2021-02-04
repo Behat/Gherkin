@@ -162,4 +162,16 @@ FEATURE
             $feature->getLine()
         );
     }
+
+    public function testParsingManyCommentsShouldPass()
+    {
+        if (! extension_loaded('xdebug')) {
+            $this->markTestSkipped('xdebug extension must be enabled.');
+        }
+        $defaultPHPSetting = 256;
+        $this->iniSet('xdebug.max_nesting_level', $defaultPHPSetting);
+
+        $lineCount = 150; // 119 is the real threshold, higher just in case
+        $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+    }
 }
