@@ -29,12 +29,15 @@ jobs:
 
       - name: Re-install dependencies
         run: composer update
+        if: steps.cucumber.outputs.cucumber_version
 
       - name: Update translations
         run: bin/update_i18n
+        if: steps.cucumber.outputs.cucumber_version
 
       - name: Open a PR
         uses: peter-evans/create-pull-request@v3
+        if: steps.cucumber.outputs.cucumber_version
         with:
           commit-message: Automatic Cucumber tag update to ${{ steps.cucumber.outputs.cucumber_version }}
           branch: cucumber-update-${{ steps.cucumber.outputs.cucumber_version }}
