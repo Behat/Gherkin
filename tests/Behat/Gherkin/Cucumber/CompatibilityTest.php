@@ -29,7 +29,6 @@ class CompatibilityTest extends TestCase
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
         'descriptions.feature' => 'Examples table descriptions not supported',
-        'docstrings.feature' => 'Docstrings with ``` separators not supported',
         'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
         'scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
