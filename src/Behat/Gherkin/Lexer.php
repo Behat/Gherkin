@@ -502,6 +502,7 @@ class Lexer
     protected function scanTags()
     {
         $line = $this->getTrimmedLine();
+        $line = preg_replace('/\s+#.*$/', '', $line);
         if (!isset($line[0]) || '@' !== $line[0]) {
             return null;
         }

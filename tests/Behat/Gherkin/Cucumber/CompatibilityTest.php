@@ -39,7 +39,6 @@ class CompatibilityTest extends TestCase
         'escaped_pipes.feature' => 'Feature description has wrong whitespace captured',
         'incomplete_scenario.feature' => 'Wrong background parsing when there are no steps',
         'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
-        'tags.feature' => 'Tags followed by comments not parsed correctly'
     ];
 
     private $parsedButShouldNotBe = [
