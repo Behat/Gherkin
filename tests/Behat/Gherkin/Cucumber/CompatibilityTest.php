@@ -44,7 +44,6 @@ class CompatibilityTest extends TestCase
     private $parsedButShouldNotBe = [
         'inconsistent_cell_count.feature' => 'Inconsistent cells count throws low level exception not ParserException',
         'invalid_language.feature' => 'Invalid language is silently ignored',
-        'whitespace_in_tags.feature' => 'Whitespace in tags is tolerated',
     ];
 
     /**

@@ -599,6 +599,9 @@ class Parser
     protected function parseTags()
     {
         $token = $this->expectTokenType('Tag');
+
+        $this->guardTags($token['tags']);
+
         $this->tags = array_merge($this->tags, $token['tags']);
 
         $possibleTransitions = array(
@@ -633,6 +636,26 @@ class Parser
         $this->tags = array();
 
         return $tags;
+    }
+
+    /**
+     * Checks the tags fit the required format
+     *
+     * @param string[] $tags
+     */
+    protected function guardTags(array $tags)
+    {
+        foreach ($tags as $tag) {
+            if (preg_match('/\s/', $tag)) {
+                throw new ParserException(
+                    sprintf(
+                        "Invalid tag %s%s",
+                        $tag,
+                        $this->file ? 'in file ' . $this->file : ''
+                    )
+                );
+            }
+        }
     }
 
     /**
