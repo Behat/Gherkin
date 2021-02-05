@@ -11,6 +11,7 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\LexerException;
+use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
@@ -565,7 +566,16 @@ class Parser
      */
     protected function parseTable()
     {
-        return new TableNode($this->parseTableRows());
+        try {
+            return new TableNode($this->parseTableRows());
+        }
+        catch(NodeException $e) {
+            throw new ParserException(
+                $e->getMessage() . $this->file ? ' in file '.$this->file : '',
+                0,
+                $e
+            );
+        }
     }
 
     /**
