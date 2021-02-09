@@ -180,6 +180,15 @@ class Lexer
     }
 
     /**
+     * Consumes first part of line from input without incrementing the line number
+     */
+    protected function consumeLineUntil(int $trimmedOffset)
+    {
+        $this->line = mb_substr(ltrim($this->line), $trimmedOffset, null, 'utf-8');
+        $this->trimmedLine = null;
+    }
+
+    /**
      * Returns trimmed version of line.
      *
      * @return string
@@ -502,9 +511,17 @@ class Lexer
     protected function scanTags()
     {
         $line = $this->getTrimmedLine();
-        $line = preg_replace('/\s+#.*$/', '', $line);
+
         if (!isset($line[0]) || '@' !== $line[0]) {
             return null;
+        }
+
+        if(preg_match('/^(?<line>.*)\s+#.*$/', $line, $matches)) {
+            ['line' => $line] = $matches;
+            $this->consumeLineUntil(mb_strlen($line, 'utf-8'));
+        }
+        else {
+            $this->consumeLine();
         }
 
         $token = $this->takeToken('Tag');
@@ -512,7 +529,6 @@ class Lexer
         $tags = array_map('trim', $tags);
         $token['tags'] = $tags;
 
-        $this->consumeLine();
 
         return $token;
     }
