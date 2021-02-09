@@ -144,7 +144,7 @@ class TagFilter extends ComplexFilter
                 }
             }
 
-            $satisfies = (false !== $satisfiesComma && $satisfies && $satisfiesComma) || false;
+            $satisfies = $satisfiesComma && $satisfies;
         }
 
         return $satisfies;
