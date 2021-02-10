@@ -519,8 +519,7 @@ class Lexer
         if(preg_match('/^(?<line>.*)\s+#.*$/', $line, $matches)) {
             ['line' => $line] = $matches;
             $this->consumeLineUntil(mb_strlen($line, 'utf-8'));
-        }
-        else {
+        } else {
             $this->consumeLine();
         }
 

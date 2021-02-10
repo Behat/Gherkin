@@ -46,6 +46,10 @@ class CompatibilityTest extends TestCase
         'invalid_language.feature' => 'Invalid language is silently ignored',
     ];
 
+    private $deprecatedInsteadOfParseError = [
+        'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
+    ];
+
     /**
      * @var Parser
      */
@@ -95,7 +99,12 @@ class CompatibilityTest extends TestCase
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
         }
 
-        $this->expectException(ParserException::class);
+        if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
+            $this->expectDeprecation();
+            $this->expectDeprecationMessageMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
+        } else {
+            $this->expectException(ParserException::class);
+        }
         $gherkinFile = $file->getPathname();
         $feature = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
     }

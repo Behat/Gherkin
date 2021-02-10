@@ -268,4 +268,16 @@ class TagFilterTest extends TestCase
         /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals(array($exampleTableNode3), $scenarioInterfaces[1]->getExampleTables());
     }
+
+    public function testFilterWithWhitespaceIsDeprecated()
+    {
+        $this->expectDeprecation();
+        $tagFilter = new TagFilter('@tag with space');
+        $scenario = new ScenarioNode(null, ['tag with space'], array(), null, 2);
+        $feature = new FeatureNode(null, null, [], null, [$scenario], null, null, null, 1);
+
+        $scenarios = $tagFilter->filterFeature($feature)->getScenarios();
+
+        $this->assertEquals([$scenario], $scenarios);
+    }
 }

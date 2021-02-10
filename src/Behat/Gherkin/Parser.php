@@ -647,13 +647,7 @@ class Parser
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                throw new ParserException(
-                    sprintf(
-                        "Invalid tag %s%s",
-                        $tag,
-                        $this->file ? 'in file ' . $this->file : ''
-                    )
-                );
+                trigger_error('Whitespace in tags is deprecated, found "$tag"', E_USER_DEPRECATED);
             }
         }
     }
