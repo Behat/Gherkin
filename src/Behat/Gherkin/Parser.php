@@ -568,8 +568,7 @@ class Parser
     {
         try {
             return new TableNode($this->parseTableRows());
-        }
-        catch(NodeException $e) {
+        } catch(NodeException $e) {
             throw new ParserException(
                 $e->getMessage() . $this->file ? ' in file '.$this->file : '',
                 0,
