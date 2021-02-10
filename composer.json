@@ -19,7 +19,6 @@
 
     "require-dev": {
         "symfony/yaml": "~3|~4|~5",
-        "symfony/phpunit-bridge": "~3|~4|~5",
         "phpunit/phpunit": "~8|~9",
         "cucumber/cucumber": "dev-gherkin-17.0.1"
     },
