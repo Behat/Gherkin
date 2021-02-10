@@ -550,13 +550,15 @@ class Parser
      */
     protected function parseExamples()
     {
-        $token = $this->expectTokenType('Examples');
-
-        $keyword = $token['keyword'];
-
+        $keyword = ($this->expectTokenType('Examples'))['keyword'];
         $tags = empty($this->tags) ? array() : $this->popTags();
+        $table = $this->parseTableRows();
 
-        return new ExampleTableNode($this->parseTableRows(), $keyword, $tags);
+        try {
+            return new ExampleTableNode($table, $keyword, $tags);
+        } catch(NodeException $e) {
+            $this->rethrowNodeException($e);
+        }
     }
 
     /**
@@ -571,11 +573,7 @@ class Parser
         try {
             return new TableNode($table);
         } catch(NodeException $e) {
-            throw new ParserException(
-                $e->getMessage() . ($this->file ? ' in file '.$this->file : ''),
-                0,
-                $e
-            );
+            $this->rethrowNodeException($e);
         }
     }
 
@@ -743,5 +741,14 @@ class Parser
             );
         }
         return $node;
+    }
+
+    private function rethrowNodeException(NodeException $e): void
+    {
+        throw new ParserException(
+            $e->getMessage() . ($this->file ? ' in file ' . $this->file : ''),
+            0,
+            $e
+        );
     }
 }
