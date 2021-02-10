@@ -566,11 +566,13 @@ class Parser
      */
     protected function parseTable()
     {
+        $table = $this->parseTableRows();
+
         try {
-            return new TableNode($this->parseTableRows());
+            return new TableNode($table);
         } catch(NodeException $e) {
             throw new ParserException(
-                $e->getMessage() . $this->file ? ' in file '.$this->file : '',
+                $e->getMessage() . ($this->file ? ' in file '.$this->file : ''),
                 0,
                 $e
             );
