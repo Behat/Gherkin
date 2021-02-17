@@ -27,5 +27,7 @@ if (!preg_match('/(?<changes>##\s+\['.preg_quote($version).'\].*?)^##\s/ms', $ch
 
 echo "Found changelog:\n$changes";
 
-$changes = strtr($changes, ["%" => "%25", "\r" => '%0D', "\n" => '%0A', ':' => '%3A', ',' => '%2C']);
-echo "::set-output name=changelog::$changes\n";
+if (getenv('GITHUB_ACTIONS')) {
+    $changes = strtr($changes, ["%" => "%25", "\r" => '%0D', "\n" => '%0A', ':' => '%3A', ',' => '%2C']);
+    echo "::set-output name=changelog::$changes\n";
+}
