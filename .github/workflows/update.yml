@@ -32,6 +32,11 @@ jobs:
         run: bin/update_i18n
         if: steps.cucumber.outputs.cucumber_version
 
+      - name: Find changelog
+        id: changelog
+        run: bin/cucumber_changelog ${{ steps.cucumber.outputs.cucumber_version }}
+        if: steps.cucumber.outputs.cucumber_version
+
       - name: Open a PR
         uses: peter-evans/create-pull-request@v3
         if: steps.cucumber.outputs.cucumber_version
@@ -40,4 +45,5 @@ jobs:
           branch: cucumber-update-${{ steps.cucumber.outputs.cucumber_version }}
           delete-branch: true
           title: Cucumber update ${{ steps.cucumber.outputs.cucumber_version }}
+          body: ${{ steps.changelog.outputs.changelog }}
           base: 'master'
