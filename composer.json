@@ -20,7 +20,7 @@
     "require-dev": {
         "symfony/yaml": "~3|~4|~5",
         "phpunit/phpunit": "~8|~9",
-        "cucumber/cucumber": "dev-gherkin-17.0.2"
+        "cucumber/cucumber": "dev-gherkin-17.0.1"
     },
 
     "suggest": {
@@ -50,17 +50,17 @@
             "type": "package",
             "package": {
                 "name": "cucumber/cucumber",
-                "version": "dev-gherkin-17.0.2",
+                "version": "dev-gherkin-17.0.1",
                 "source": {
                     "type": "git",
                     "url": "https://github.com/cucumber/cucumber.git",
-                    "reference": "8b574b631d215e6d11bd00c91d496664b4f2e7aa"
+                    "reference": "77a00accdf6b0e599097892df2d1c177f19a1b23"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/cucumber/cucumber/zipball/8b574b631d215e6d11bd00c91d496664b4f2e7aa",
+                    "url": "https://api.github.com/repos/cucumber/cucumber/zipball/77a00accdf6b0e599097892df2d1c177f19a1b23",
 
-                    "reference": "8b574b631d215e6d11bd00c91d496664b4f2e7aa"
+                    "reference": "77a00accdf6b0e599097892df2d1c177f19a1b23"
                 },
             }
         }
