@@ -9,6 +9,7 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\ArrayLoader;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
+use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
@@ -17,15 +18,16 @@ use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests the parser against the upstream cucumber/gherkin test data
+ * Tests the Behat and Cucumber parsers against each other
  *
  * @group cucumber-compatibility
  */
 class CompatibilityTest extends TestCase
 {
-    const TESTDATA_PATH = __DIR__ . '/../../../../vendor/cucumber/cucumber/gherkin/testdata';
+    const CUCUMBER_TEST_DATA = __DIR__ . '/../../../../vendor/cucumber/cucumber/gherkin/testdata';
+    const BEHAT_TEST_DATA = __DIR__ . '/../Fixtures/etalons';
 
-    private $notParsingCorrectly = [
+    private $cucumberFeaturesNotParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
         'descriptions.feature' => 'Examples table descriptions not supported',
@@ -41,7 +43,35 @@ class CompatibilityTest extends TestCase
         'tags.feature' => 'Tags followed by comments not parsed correctly'
     ];
 
-    private $parsedButShouldNotBe = [
+    private $behatFeaturesNotParsingCorrectly = [
+        'issue_13.yml' => 'Scenario descriptions are not supported',
+        'complex_descriptions.yml' => 'Scenario descriptions are not supported',
+        'multiline_name_with_newlines.yml' => 'Scenario descriptions are not supported',
+        'multiline_name.yml' => 'Scenario descriptions are not supported',
+        'background_title.yml' => 'Background descriptions are not supported',
+
+        'empty_scenario_without_linefeed.yml' => 'Feature description has wrong whitespace captured',
+        'addition.yml' => 'Feature description has wrong whitespace captured',
+        'test_unit.yml' => 'Feature description has wrong whitespace captured',
+        'ja_addition.yml' => 'Feature description has wrong whitespace captured',
+        'ru_addition.yml' => 'Feature description has wrong whitespace captured',
+        'fibonacci.yml' => 'Feature description has wrong whitespace captured',
+        'ru_commented.yml' => 'Feature description has wrong whitespace captured',
+        'empty_scenario.yml' => 'Feature description has wrong whitespace captured',
+        'start_comments.yml' => 'Feature description has wrong whitespace captured',
+        'empty_scenarios.yml' => 'Feature description has wrong whitespace captured',
+        'commented_out.yml' => 'Feature description has wrong whitespace captured',
+        'ru_division.yml' => 'Feature description has wrong whitespace captured',
+        'hashes_in_quotes.yml' => 'Feature description has wrong whitespace captured',
+        'outline_with_spaces.yml' => 'Feature description has wrong whitespace captured',
+        'ru_consecutive_calculations.yml' => 'Feature description has wrong whitespace captured',
+    ];
+
+    private $behatFeaturesCucumberCannotParseCorrectly = [
+        'comments.yml' => 'see https://github.com/cucumber/cucumber/issues/1413'
+    ];
+
+    private $cucumberFeaturesParsedButShouldNotBe = [
         'invalid_language.feature' => 'Invalid language is silently ignored',
         'whitespace_in_tags.feature' => 'Whitespace in tags is tolerated',
     ];
@@ -54,30 +84,35 @@ class CompatibilityTest extends TestCase
     /**
      * @var LoaderInterface
      */
-    private $loader;
+    private $cucumberLoader;
+
+    /**
+     * @var LoaderInterface
+     */
+    private $yamlLoader;
 
     protected function setUp(): void
     {
         $arrKeywords = include __DIR__ . '/../../../../i18n.php';
         $lexer  = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
         $this->parser = new Parser($lexer);
-        $this->loader = new CucumberNDJsonAstLoader();
+        $this->cucumberLoader = new CucumberNDJsonAstLoader();
+        $this->yamlLoader = new YamlFileLoader();
     }
 
     /**
      * @dataProvider goodCucumberFeatures
      */
-    public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
+    public function testCucumberFeaturesParseTheSame(\SplFileInfo $file)
     {
-
-        if (isset($this->notParsingCorrectly[$file->getFilename()])){
-            $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
+        if (isset($this->cucumberFeaturesNotParsingCorrectly[$file->getFilename()])){
+            $this->markTestIncomplete($this->cucumberFeaturesNotParsingCorrectly[$file->getFilename()]);
         }
 
         $gherkinFile = $file->getPathname();
 
         $actual = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
-        $cucumberFeatures = $this->loader->load($gherkinFile . '.ast.ndjson');
+        $cucumberFeatures = $this->cucumberLoader->load($gherkinFile . '.ast.ndjson');
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
         $this->assertEquals(
@@ -87,12 +122,44 @@ class CompatibilityTest extends TestCase
     }
 
     /**
+     * @dataProvider behatFeatures
+     */
+    public function testBehatFeaturesParseTheSame(\SplFileInfo $ymlFile)
+    {
+        if (isset($this->behatFeaturesNotParsingCorrectly[$ymlFile->getFilename()])){
+            $this->markTestIncomplete($this->behatFeaturesNotParsingCorrectly[$ymlFile->getFilename()]);
+        }
+
+        if (isset($this->behatFeaturesCucumberCannotParseCorrectly[$ymlFile->getFilename()])){
+            $this->markTestIncomplete($this->behatFeaturesCucumberCannotParseCorrectly[$ymlFile->getFilename()]);
+            return;
+        }
+
+        exec('which gherkin', $_, $result);
+        if ($result) {
+            $this->markTestSkipped("No gherkin executable in path");
+        }
+
+        $filename = $ymlFile->getPathname();
+        $expected = current($this->yamlLoader->load($filename));
+
+        $featureFile = preg_replace('/etalons\/(.*).yml$/', 'features/\\1.feature', $filename);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'behat-cucumber');
+        exec("gherkin -format ndjson -no-source -no-pickles $featureFile > $tempFile");
+        $actual = current($this->cucumberLoader->load($tempFile));
+        unlink($tempFile);
+
+        $this->assertEquals($this->normaliseFeature($expected), $this->normaliseFeature($actual));
+    }
+
+    /**
      * @dataProvider badCucumberFeatures
      */
-    public function testBadFeaturesDoNotParse(\SplFileInfo $file)
+    public function testBadCucumberFeaturesDoNotParse(\SplFileInfo $file)
     {
-        if (isset($this->parsedButShouldNotBe[$file->getFilename()])){
-            $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
+        if (isset($this->cucumberFeaturesParsedButShouldNotBe[$file->getFilename()])){
+            $this->markTestIncomplete($this->cucumberFeaturesParsedButShouldNotBe[$file->getFilename()]);
         }
 
         $this->expectException(ParserException::class);
@@ -112,8 +179,17 @@ class CompatibilityTest extends TestCase
 
     private static function getCucumberFeatures($folder)
     {
-        foreach (new \FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
+        foreach (new \FilesystemIterator(self::CUCUMBER_TEST_DATA . $folder) as $file) {
             if ($file->isFile() && $file->getExtension() == 'feature') {
+                yield $file->getFilename() => array($file);
+            }
+        }
+    }
+
+    public static function behatFeatures(): iterable
+    {
+        foreach (new \FilesystemIterator(self::BEHAT_TEST_DATA) as $file) {
+            if ($file->isFile() && $file->getExtension() == 'yml') {
                 yield $file->getFilename() => array($file);
             }
         }
@@ -129,7 +205,7 @@ class CompatibilityTest extends TestCase
             return null;
         }
 
-        $scenarios = array_map(
+        array_map(
             function(ScenarioInterface $scenarioNode) {
                 $steps = array_map(
                     function(StepNode $step) {
@@ -148,6 +224,7 @@ class CompatibilityTest extends TestCase
             $featureNode->getScenarios()
         );
 
+        $this->setPrivateProperty($featureNode, 'file', 'file.feature');
 
         return $featureNode;
     }

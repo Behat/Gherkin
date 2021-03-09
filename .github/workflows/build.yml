@@ -36,12 +36,17 @@ jobs:
             php-version: "${{ matrix.php }}"
             coverage: none
 
-      -   name: Update Symfony version
+      -   name: Update required Symfony version
           if: matrix.symfony-version != ''
           run: composer require --no-update "symfony/symfony:${{ matrix.symfony-version }}"
 
-      -   name: Install dependencies
+      -   name: Install composer dependencies
           run: composer update ${{ matrix.composer-flags }}
+
+      -   name: Install gherkin binary
+          run: wget https://github.com/cucumber/cucumber/releases/download/cucumber-gherkin%2Fv17.0.2/cucumber-gherkin-linux-amd64 -O gherkin && chmod +x gherkin
 
       -   name: Run tests (phpunit)
           run: ./vendor/bin/phpunit
+          env:
+            PATH: $PATH:.
