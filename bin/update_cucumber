@@ -30,7 +30,7 @@ echo "Latest local hash is {$oldHash} (tagged {$oldTag})\n";
 
 if(!preg_match(
     '/^(?<hash>[0-9a-z]+)\s+\S+\\/v(?<tag>[0-9.]+)/',
-    shell_exec('git ls-remote --tags https://github.com/cucumber/cucumber.git | grep cucumber-gherkin | sort --version-sort -k2 | tail -n 1'),
+    shell_exec('git ls-remote --tags https://github.com/cucumber/cucumber.git | grep refs/tags/gherkin | sort --version-sort -k2 | tail -n 1'),
     $matches
 )) {
     echo "ERROR: Could not parse the repository tags\n";
@@ -54,4 +54,8 @@ $newJson = str_replace(
 file_put_contents($composerFile, $newJson);
 
 echo "Updated composer config:\n$newJson";
-echo "::set-output name=cucumber_version::$newTag\n";
+
+
+if (getenv('GITHUB_ACTIONS')) {
+    echo "::set-output name=cucumber_version::$newTag\n";
+}

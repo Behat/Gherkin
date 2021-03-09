@@ -54,13 +54,12 @@
                 "source": {
                     "type": "git",
                     "url": "https://github.com/cucumber/cucumber.git",
-                    "reference": "99706895df020c8d005bc6d32afe2fec691b8493"
+                    "reference": "8b574b631d215e6d11bd00c91d496664b4f2e7aa"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/cucumber/cucumber/zipball/99706895df020c8d005bc6d32afe2fec691b8493",
-                    "reference": "99706895df020c8d005bc6d32afe2fec691b8493",
-                    "shasum": ""
+                    "url": "https://api.github.com/repos/cucumber/cucumber/zipball/8b574b631d215e6d11bd00c91d496664b4f2e7aa",
+                    "reference": "8b574b631d215e6d11bd00c91d496664b4f2e7aa"
                 }
             }
         }
