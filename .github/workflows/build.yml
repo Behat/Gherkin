@@ -47,6 +47,4 @@ jobs:
           run: wget https://github.com/cucumber/cucumber/releases/download/cucumber-gherkin%2Fv17.0.2/cucumber-gherkin-linux-amd64 -O gherkin && chmod +x gherkin
 
       -   name: Run tests (phpunit)
-          run: ./vendor/bin/phpunit
-          env:
-            PATH: $PATH:.
+          run: PATH=$PATH:. ./vendor/bin/phpunit
