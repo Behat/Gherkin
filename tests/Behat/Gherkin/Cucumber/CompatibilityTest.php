@@ -28,6 +28,7 @@ class CompatibilityTest extends TestCase
     private $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
+        'rule_with_tag.feature' => 'Rule keyword not supported',
         'descriptions.feature' => 'Examples table descriptions not supported',
         'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
