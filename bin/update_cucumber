@@ -55,6 +55,12 @@ file_put_contents($composerFile, $newJson);
 
 echo "Updated composer config:\n$newJson";
 
+$githubFile = __DIR__ . '/../.github/workflows/build.yml';
+$githubConfig = file_get_contents($githubFile);
+$newConfig = str_replace($oldTag, $newTag, $githubConfig);
+file_put_contents($githubFile, $newConfig);
+
+echo "Updated github build action:$newConfig\n";
 
 if (getenv('GITHUB_ACTIONS')) {
     echo "::set-output name=cucumber_version::$newTag\n";

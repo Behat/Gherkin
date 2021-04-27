@@ -78,7 +78,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             array_map(
                 static function ($child) {
 
-                    if (isset($child['scenario']['examples'])) {
+                    if (isset($child['scenario']['examples']) && count($child['scenario']['examples'])) {
                         return new OutlineNode(
                             isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
                             self::getTags($child['scenario']),
@@ -90,7 +90,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     }
                     else {
                         return new ScenarioNode(
-                            $child['scenario']['name'],
+                            isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
                             self::getTags($child['scenario']),
                             self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
                             $child['scenario']['keyword'],
@@ -118,7 +118,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             array_map(
                 static function ($child) {
                     return new BackgroundNode(
-                        $child['background']['name'],
+                        isset($child['background']['name']) ? $child['background']['name'] : null,
                         self::getSteps(isset($child['background']['steps']) ? $child['background']['steps'] : []),
                         $child['background']['keyword'],
                         $child['background']['location']['line']
@@ -147,8 +147,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     trim($json['keyword']),
                     $json['text'],
                     [],
-                    $json['location']['line'],
-                    trim($json['keyword'])
+                    $json['location']['line']
                 );
             },
             $json
@@ -167,7 +166,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
                 $table[$tableJson['tableHeader']['location']['line']] = array_map(
                     static function($cell) {
-                        return $cell['value'];
+                        return $cell['value'] ?? '';
                     },
                     $tableJson['tableHeader']['cells']
                 );
@@ -175,7 +174,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 foreach ($tableJson['tableBody'] as $bodyRow) {
                     $table[$bodyRow['location']['line']] = array_map(
                         static function($cell) {
-                            return $cell['value'];
+                            return isset($cell['value']) ? $cell['value'] : '';
                         },
                         $bodyRow['cells']
                     );
