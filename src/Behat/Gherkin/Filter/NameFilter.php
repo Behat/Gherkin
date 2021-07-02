@@ -37,7 +37,7 @@ class NameFilter extends SimpleFilter
      *
      * @param FeatureNode $feature Feature instance
      *
-     * @return Boolean
+     * @return bool
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
@@ -53,7 +53,7 @@ class NameFilter extends SimpleFilter
      *
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
-     * @return Boolean
+     * @return bool
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
