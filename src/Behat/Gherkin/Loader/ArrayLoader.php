@@ -31,7 +31,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return Boolean
+     * @return bool
      */
     public function supports($resource)
     {

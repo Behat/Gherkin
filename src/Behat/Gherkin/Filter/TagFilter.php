@@ -89,7 +89,7 @@ class TagFilter extends ComplexFilter
      *
      * @param FeatureNode $feature Feature instance
      *
-     * @return Boolean
+     * @return bool
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
@@ -102,7 +102,7 @@ class TagFilter extends ComplexFilter
      * @param FeatureNode $feature Feature node instance
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
-     * @return Boolean
+     * @return bool
      */
     public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
     {
@@ -124,7 +124,7 @@ class TagFilter extends ComplexFilter
      *
      * @param string[] $tags
      *
-     * @return Boolean
+     * @return bool
      */
     protected function isTagsMatchCondition($tags)
     {

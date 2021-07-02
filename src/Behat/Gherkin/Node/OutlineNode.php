@@ -101,7 +101,7 @@ class OutlineNode implements ScenarioInterface
      *
      * @param string $tag
      *
-     * @return Boolean
+     * @return bool
      */
     public function hasTag($tag)
     {
@@ -111,7 +111,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Checks if outline has tags (both inherited from feature and own).
      *
-     * @return Boolean
+     * @return bool
      */
     public function hasTags()
     {
@@ -131,7 +131,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Checks if outline has steps.
      *
-     * @return Boolean
+     * @return bool
      */
     public function hasSteps()
     {
@@ -151,7 +151,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Checks if outline has examples.
      *
-     * @return Boolean
+     * @return bool
      */
     public function hasExamples()
     {
