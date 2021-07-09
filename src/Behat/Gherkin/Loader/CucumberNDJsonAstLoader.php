@@ -44,7 +44,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
         $feature = new FeatureNode(
             isset($featureJson['name']) ? $featureJson['name'] : null,
-            isset($featureJson['description']) ? trim($featureJson['description']) : null,
+            $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
             self::getScenarios($featureJson),
@@ -78,7 +78,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             array_map(
                 static function ($child) {
 
-                    if (isset($child['scenario']['examples'])) {
+                    if ($child['scenario']['examples']) {
                         return new OutlineNode(
                             isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
                             self::getTags($child['scenario']),
