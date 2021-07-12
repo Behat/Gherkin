@@ -31,6 +31,13 @@ class TagFilter extends ComplexFilter
     public function __construct($filterString)
     {
         $this->filterString = trim($filterString);
+
+       if(preg_match('/\s/u', $this->filterString)) {
+            trigger_error(
+                "Tags with whitespace are deprecated and may be removed in a future version",
+                E_USER_DEPRECATED
+            );
+       }
     }
 
     /**

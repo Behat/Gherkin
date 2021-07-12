@@ -39,12 +39,14 @@ class CompatibilityTest extends TestCase
         'escaped_pipes.feature' => 'Feature description has wrong whitespace captured',
         'incomplete_scenario.feature' => 'Wrong background parsing when there are no steps',
         'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
-        'tags.feature' => 'Tags followed by comments not parsed correctly'
     ];
 
     private $parsedButShouldNotBe = [
         'invalid_language.feature' => 'Invalid language is silently ignored',
-        'whitespace_in_tags.feature' => 'Whitespace in tags is tolerated',
+    ];
+
+    private $deprecatedInsteadOfParseError = [
+        'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
     ];
 
     /**
@@ -96,7 +98,12 @@ class CompatibilityTest extends TestCase
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
         }
 
-        $this->expectException(ParserException::class);
+        if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
+            $this->expectDeprecation();
+            $this->expectDeprecationMessageMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
+        } else {
+            $this->expectException(ParserException::class);
+        }
         $gherkinFile = $file->getPathname();
         $feature = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
     }
