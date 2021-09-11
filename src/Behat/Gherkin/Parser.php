@@ -235,7 +235,7 @@ class Parser
     {
         $token = $this->expectTokenType('Feature');
 
-        $title = trim($token['value']) ?: null;
+        $title = trim($token['value'] ?? '');
         $description = null;
         $tags = $this->popTags();
         $background = null;
@@ -288,7 +288,7 @@ class Parser
 
         return new FeatureNode(
             rtrim($title) ?: null,
-            rtrim($description) ?: null,
+            rtrim($description ?? '') ?: null,
             $tags,
             $background,
             $scenarios,
@@ -310,7 +310,7 @@ class Parser
     {
         $token = $this->expectTokenType('Background');
 
-        $title = trim($token['value']);
+        $title = trim($token['value'] ?? '');
         $keyword = $token['keyword'];
         $line = $token['line'];
 
@@ -375,7 +375,7 @@ class Parser
     {
         $token = $this->expectTokenType('Scenario');
 
-        $title = trim($token['value']);
+        $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
         $line = $token['line'];
@@ -436,7 +436,7 @@ class Parser
     {
         $token = $this->expectTokenType('Outline');
 
-        $title = trim($token['value']);
+        $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
 
