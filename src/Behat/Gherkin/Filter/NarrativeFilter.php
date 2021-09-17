@@ -44,7 +44,7 @@ class NarrativeFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return 1 === preg_match($this->regex, $feature->getDescription());
+        return 1 === preg_match($this->regex, $feature->getDescription() ?? '');
     }
 
     /**
