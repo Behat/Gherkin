@@ -1,3 +1,18 @@
+4.9.0 / 2021-10-12
+==================
+
+* Simplify the boolean condition for the tag matching by @stof in https://github.com/Behat/Gherkin/pull/219
+* Remove symfony phpunit bridge by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/220
+* Ignore the bin folder in archives by @stof in https://github.com/Behat/Gherkin/pull/226
+* Cast table node exceptions into ParserExceptions when throwing by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/216
+* Cucumber changelog in PRs and using correct hash by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/225
+* Support alternative docstrings format (```) by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/214
+* Fix DocBlocks (Boolean -> bool) by @simonhammes in https://github.com/Behat/Gherkin/pull/237
+* Tag parsing by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/215
+* Remove test - cucumber added an example with Rule which is not supported by @ciaranmcnulty in https://github.com/Behat/Gherkin/pull/239
+* Add PHP 8.1 support by @javer in https://github.com/Behat/Gherkin/pull/242
+* Fix main branch alias version by @mvorisek in https://github.com/Behat/Gherkin/pull/244
+
 4.8.0 / 2021-02-04
 ==================
 
