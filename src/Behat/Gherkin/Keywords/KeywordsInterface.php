@@ -100,4 +100,12 @@ interface KeywordsInterface
      * @return string
      */
     public function getStepKeywords();
+
+
+    /**
+     * Returns all rule keywords (splitted by "|").
+     *
+     * @return string
+     */
+    public function getRuleKeywords();
 }

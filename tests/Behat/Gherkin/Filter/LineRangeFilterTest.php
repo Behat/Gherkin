@@ -26,7 +26,7 @@ class LineRangeFilterTest extends FilterTest
      */
     public function testIsFeatureMatchFilter($filterMinLine, $filterMaxLine, $expected)
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, 1);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertSame($expected, $filter->isFeatureMatch($feature));

@@ -12,7 +12,7 @@ class LineFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, 1);
 
         $filter = new LineFilter(1);
         $this->assertTrue($filter->isFeatureMatch($feature));

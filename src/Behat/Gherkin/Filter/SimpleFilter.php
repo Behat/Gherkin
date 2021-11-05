@@ -46,6 +46,7 @@ abstract class SimpleFilter implements FilterInterface
             $feature->getDescription(),
             $feature->getTags(),
             $feature->getBackground(),
+            $feature->getRules(),
             $scenarios,
             $feature->getKeyword(),
             $feature->getLanguage(),

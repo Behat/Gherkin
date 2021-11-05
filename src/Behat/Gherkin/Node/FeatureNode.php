@@ -53,6 +53,10 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @var integer
      */
     private $line;
+    /**
+     * @var RuleNode[]
+     */
+    private $rules;
 
     /**
      * Initializes feature.
@@ -61,6 +65,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param null|string         $description
      * @param string[]            $tags
      * @param null|BackgroundNode $background
+     * @param RuleNode[] $rules
      * @param ScenarioInterface[] $scenarios
      * @param string              $keyword
      * @param string              $language
@@ -72,6 +77,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $description,
         array $tags,
         BackgroundNode $background = null,
+        array $rules,
         array $scenarios,
         $keyword,
         $language,
@@ -86,6 +92,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $this->description = $description;
         $this->tags = $tags;
         $this->background = $background;
+        $this->rules = $rules;
         $this->scenarios = $scenarios;
         $this->keyword = $keyword;
         $this->language = $language;
@@ -183,6 +190,14 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     public function getBackground()
     {
         return $this->background;
+    }
+
+    /**
+     * @return RuleNode[]
+     */
+    public function getRules(): array
+    {
+        return $this->rules;
     }
 
     /**

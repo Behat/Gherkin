@@ -18,6 +18,7 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
@@ -178,7 +179,7 @@ class Parser
     /**
      * Parses current expression & returns Node.
      *
-     * @return string|FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|TableNode|StepNode
+     * @return string|FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|RuleNode|TableNode|StepNode
      *
      * @throws ParserException
      */
@@ -197,6 +198,8 @@ class Parser
                 return $this->parseFeature();
             case 'Background':
                 return $this->parseBackground();
+            case 'Rule':
+                return $this->parseRule();
             case 'Scenario':
                 return $this->parseScenario();
             case 'Outline':
@@ -239,6 +242,7 @@ class Parser
         $description = null;
         $tags = $this->popTags();
         $background = null;
+        $rules = array();
         $scenarios = array();
         $keyword = $token['keyword'];
         $language = $this->lexer->getLanguage();
@@ -267,6 +271,11 @@ class Parser
                 continue;
             }
 
+            if ($node instanceof RuleNode) {
+                $rules[] = $node;
+                continue;
+            }
+
             if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
                 throw new ParserException(sprintf(
                     'Each Feature could have only one Background, but found multiple on lines %d and %d%s',
@@ -291,6 +300,7 @@ class Parser
             rtrim($description ?? '') ?: null,
             $tags,
             $background,
+            $rules,
             $scenarios,
             $keyword,
             $language,
@@ -362,6 +372,86 @@ class Parser
         }
 
         return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
+    }
+
+    protected function parseRule(): RuleNode
+    {
+        $token = $this->expectTokenType('Rule');
+
+        $title = trim($token['value'] ?? '');
+        $description = null;
+        $tags = $this->popTags();
+        $background = null;
+        $scenarios = array();
+        $keyword = $token['keyword'];
+        $line = $token['line'];
+
+        array_push($this->passedNodesStack, 'Rule');
+
+        while (!in_array($this->predictTokenType(), array('Rule', 'EOS'))) {
+            $type = $this->predictTokenType();
+
+            if ($type === 'Tag') {
+                $token = $this->lexer->predictFirstTokenThat(function (array $token) {
+                    return !in_array($token['type'], ['Tag', 'Newline']);
+                });
+
+                if ($token['type'] === 'Rule') {
+                    break;
+                }
+            }
+
+            $node = $this->parseExpression();
+
+            if ("\n" === $node) {
+                continue;
+            }
+
+            if (is_string($node)) {
+                $description .= (null !== $description ? "\n" : '') . $node;
+                continue;
+            }
+
+            if (!$background && $node instanceof BackgroundNode) {
+                $background = $node;
+                continue;
+            }
+
+            if ($node instanceof ScenarioInterface) {
+                $scenarios[] = $node;
+                continue;
+            }
+
+            if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
+                throw new ParserException(sprintf(
+                    'Each Rule could have only one Background, but found multiple on lines %d and %d%s',
+                    $background->getLine(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
+            }
+
+            if (!$node instanceof ScenarioNode) {
+                throw new ParserException(sprintf(
+                    'Expected Scenario, Outline or Background, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
+            }
+        }
+
+        array_pop($this->passedNodesStack);
+
+        return new RuleNode(
+            $title,
+            $description,
+            $tags,
+            $background,
+            $scenarios,
+            $keyword,
+            $line
+        );
     }
 
     /**
@@ -603,7 +693,7 @@ class Parser
     /**
      * Parses tags.
      *
-     * @return BackgroundNode|FeatureNode|OutlineNode|ScenarioNode|StepNode|TableNode|string
+     * @return BackgroundNode|FeatureNode|OutlineNode|RuleNode|ScenarioNode|StepNode|TableNode|string
      */
     protected function parseTags()
     {

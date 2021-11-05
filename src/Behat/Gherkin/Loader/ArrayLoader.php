@@ -15,6 +15,7 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
@@ -80,11 +81,19 @@ class ArrayLoader implements LoaderInterface
                 'keyword' => 'Feature',
                 'language' => 'en',
                 'line' => $line,
+                'rules' => array(),
                 'scenarios' => array(),
             ),
             $hash
         );
         $background = isset($hash['background']) ? $this->loadBackgroundHash($hash['background']) : null;
+
+        $rules = array();
+        foreach ((array) $hash['rules'] as $i => $rule) {
+            if (isset($rule['type']) && 'rule' === $rule['type']) {
+                $rules[] = $this->loadRuleHash($rule, $i);
+            }
+        }
 
         $scenarios = array();
         foreach ((array) $hash['scenarios'] as $scenarioIterator => $scenarioHash) {
@@ -95,7 +104,7 @@ class ArrayLoader implements LoaderInterface
             }
         }
 
-        return new FeatureNode($hash['title'], $hash['description'], $hash['tags'], $background, $scenarios, $hash['keyword'], $hash['language'], null, $hash['line']);
+        return new FeatureNode($hash['title'], $hash['description'], $hash['tags'], $background, $rules, $scenarios, $hash['keyword'], $hash['language'], null, $hash['line']);
     }
 
     /**
@@ -120,6 +129,54 @@ class ArrayLoader implements LoaderInterface
         $steps = $this->loadStepsHash($hash['steps']);
 
         return new BackgroundNode($hash['title'], $steps, $hash['keyword'], $hash['line']);
+    }
+
+    /**
+     * Loads rule from provided rule hash.
+     *
+     * @param array   $hash Rule hash
+     * @param integer $line Rule definition line
+     *
+     * @return RuleNode
+     */
+    protected function loadRuleHash(array $hash, $line = 0)
+    {
+        $hash = array_merge(
+            array(
+                'title' => null,
+                'description' => null,
+                'background' => null,
+                'tags' => array(),
+                'keyword' => 'Rule',
+                'line' => $line,
+            ),
+            $hash
+        );
+
+        if ($hash['background'] !== null) {
+            $hash['background'] = $this->loadBackgroundHash($hash['background']);
+        }
+
+        $scenarios = [];
+        if ($hash['scenarios'] !== null) {
+            foreach ((array) $hash['scenarios'] as $scenarioIterator => $scenarioHash) {
+                if (isset($scenarioHash['type']) && 'outline' === $scenarioHash['type']) {
+                    $scenarios[] = $this->loadOutlineHash($scenarioHash, $scenarioIterator);
+                } else {
+                    $scenarios[] = $this->loadScenarioHash($scenarioHash, $scenarioIterator);
+                }
+            }
+        }
+
+        return new RuleNode(
+            $hash['title'],
+            $hash['description'],
+            $hash['tags'],
+            $hash['background'],
+            $scenarios,
+            $hash['keyword'],
+            $hash['line']
+        );
     }
 
     /**

@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
@@ -47,6 +48,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
+            self::getRules($featureJson),
             self::getScenarios($featureJson),
             $featureJson['keyword'],
             $featureJson['language'],
@@ -69,16 +71,42 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
+     * @return RuleNode[]
+     */
+    private static function getRules(array $json): array
+    {
+        return array_values(
+            array_map(
+                static function ($child) {
+                    return new RuleNode(
+                        $child['rule']['name'],
+                        $child['rule']['description'],
+                        self::getTags($child['rule']),
+                        self::getBackground($child['rule']),
+                        self::getScenarios($child['rule']),
+                        $child['rule']['keyword'],
+                        $child['rule']['location']['line']
+                    );
+                },
+                array_filter(
+                    isset($json['children']) ? $json['children'] : [],
+                    static function ($child) {
+                        return isset($child['rule']);
+                    }
+                )
+            )
+        );
+    }
+
+    /**
      * @return ScenarioInterface[]
      */
     private static function getScenarios(array $json)
     {
-
         return array_values(
             array_map(
                 static function ($child) {
-
-                    if ($child['scenario']['examples']) {
+                    if (!empty($child['scenario']['examples'])) {
                         return new OutlineNode(
                             isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
                             self::getTags($child['scenario']),
@@ -87,8 +115,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
                         );
-                    }
-                    else {
+                    } else {
                         return new ScenarioNode(
                             $child['scenario']['name'],
                             self::getTags($child['scenario']),

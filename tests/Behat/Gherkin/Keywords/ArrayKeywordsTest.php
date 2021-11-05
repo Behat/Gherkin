@@ -24,6 +24,7 @@ class ArrayKeywordsTest extends KeywordsTest
                 'given' => 'Given',
                 'name' => 'English',
                 'native' => 'English',
+                'rule' => 'Rule',
                 'scenario' => 'Scenario',
                 'scenario_outline' => 'Scenario Outline|Scenario Template',
                 'then' => 'Then',

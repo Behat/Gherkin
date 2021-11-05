@@ -16,6 +16,7 @@ class KeywordsDumperTest extends TestCase
            'en' => array(
                'feature'          => 'Feature',
                'background'       => 'Background',
+               'rule'             => 'Rule',
                'scenario'         => 'Scenario',
                'scenario_outline' => 'Scenario Outline|Scenario Template',
                'examples'         => 'Examples|Scenarios',
@@ -28,6 +29,7 @@ class KeywordsDumperTest extends TestCase
            'ru' => array(
                'feature'          => 'Функционал|Фича',
                'background'       => 'Предыстория|Бэкграунд',
+               'rule'             => 'Правило',
                'scenario'         => 'Сценарий|История',
                'scenario_outline' => 'Структура сценария|Аутлайн',
                'examples'         => 'Примеры',

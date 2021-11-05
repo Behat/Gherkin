@@ -61,6 +61,7 @@ class YamlFileLoader extends AbstractFileLoader
                 $feature->getDescription(),
                 $feature->getTags(),
                 $feature->getBackground(),
+                $feature->getRules(),
                 $feature->getScenarios(),
                 $feature->getKeyword(),
                 $feature->getLanguage(),

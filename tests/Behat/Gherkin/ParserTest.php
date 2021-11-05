@@ -89,6 +89,7 @@ FEATURE
                 'en' => array(
                     'feature'          => 'Feature',
                     'background'       => 'Background',
+                    'rule'             => 'Rule',
                     'scenario'         => 'Scenario',
                     'scenario_outline' => 'Scenario Outline',
                     'examples'         => 'Examples',
@@ -101,6 +102,7 @@ FEATURE
                 'ru' => array(
                     'feature'          => 'Функционал',
                     'background'       => 'Предыстория',
+                    'rule'             => 'Правило',
                     'scenario'         => 'Сценарий',
                     'scenario_outline' => 'Структура сценария',
                     'examples'         => 'Примеры',
@@ -155,6 +157,7 @@ FEATURE
             $feature->getDescription(),
             $feature->getTags(),
             $feature->getBackground(),
+            $feature->getRules(),
             $feature->getScenarios(),
             $feature->getKeyword(),
             $feature->getLanguage(),

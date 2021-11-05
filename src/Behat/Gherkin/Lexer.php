@@ -12,6 +12,7 @@ namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
+use Closure;
 
 /**
  * Gherkin lexer.
@@ -39,6 +40,7 @@ class Lexer
     private $allowMultilineArguments = false;
     private $allowSteps = false;
     private $pyStringDelimiter = null;
+    private $ruleStarted = false;
 
     /**
      * Initializes lexer.
@@ -133,6 +135,20 @@ class Lexer
         }
 
         return $this->stashedToken;
+    }
+
+    /**
+     * @return array
+     */
+    public function predictFirstTokenThat(Closure $cb): array
+    {
+        $lexer = clone $this;
+
+        while (!$cb($lexer->predictToken())) {
+            $lexer->skipPredictedToken();
+        }
+
+        return $lexer->getAdvancedToken();
     }
 
     /**
@@ -243,6 +259,7 @@ class Lexer
             ?: $this->scanPyStringContent()
             ?: $this->scanStep()
             ?: $this->scanScenario()
+            ?: $this->scanRule()
             ?: $this->scanBackground()
             ?: $this->scanOutline()
             ?: $this->scanExamples()
@@ -296,6 +313,10 @@ class Lexer
         // turn off language searching
         if ('Feature' === $type) {
             $this->featureStarted = true;
+        }
+
+        if ('Rule' === $type) {
+            $this->ruleStarted = true;
         }
 
         // turn off PyString and Table searching
@@ -375,6 +396,16 @@ class Lexer
     protected function scanBackground()
     {
         return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
+    }
+
+    /**
+     * Scans Background from input & returns it if found.
+     *
+     * @return null|array
+     */
+    protected function scanRule()
+    {
+        return $this->scanInputForKeywords($this->getKeywords('Rule'), 'Rule');
     }
 
     /**

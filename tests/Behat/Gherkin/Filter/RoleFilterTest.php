@@ -14,7 +14,7 @@ In order to be able to read news in my own language
 As a french user
 I need to be able to switch website language to french
 NAR;
-        $feature = new FeatureNode(null, $description, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, $description, array(), null, array(), array(), null, null, null, 1);
 
         $filter = new RoleFilter('french user');
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -34,7 +34,7 @@ NAR;
         $filter = new RoleFilter('French User');
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, 1);
         $filter = new RoleFilter('French User');
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
@@ -46,7 +46,7 @@ In order to be able to read news in my own language
 As an american user
 I need to be able to switch website language to french
 NAR;
-        $feature = new FeatureNode(null, $description, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, $description, array(), null, array(), array(), null, null, null, 1);
 
         $filter = new RoleFilter('american user');
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -69,7 +69,7 @@ NAR;
         $filter = new RoleFilter('American User');
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, 1);
         $filter = new RoleFilter('American User');
         $this->assertFalse($filter->isFeatureMatch($feature));
     }

@@ -9,7 +9,7 @@ class PathsFilterTest extends FilterTest
 {
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, __FILE__, 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, __FILE__, 1);
 
         $filter = new PathsFilter(array(__DIR__));
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -31,7 +31,7 @@ class PathsFilterTest extends FilterTest
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
         $filter = new PathsFilter(array($fixtures . 'full'));
         $this->assertFalse($filter->isFeatureMatch($feature));
@@ -53,7 +53,7 @@ class PathsFilterTest extends FilterTest
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
         $filter = new PathsFilter(array($fixtures . 'full'));
         $this->assertFalse($filter->isFeatureMatch($feature));

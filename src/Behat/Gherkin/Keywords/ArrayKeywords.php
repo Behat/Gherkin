@@ -197,4 +197,9 @@ class ArrayKeywords implements KeywordsInterface
 
         return $this->keywordString[$this->language];
     }
+
+    public function getRuleKeywords()
+    {
+        return $this->keywords[$this->language]['rule'] ?? 'Rule';
+    }
 }

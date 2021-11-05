@@ -20,7 +20,7 @@ class GherkinTest extends TestCase
         $gherkin->addFilter($tagFilter = $this->getTagFilterMock());
 
         $scenario = new ScenarioNode(null, array(), array(), null, null);
-        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, null, null);
+        $feature = new FeatureNode(null, null, array(), null, array(), array($scenario), null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -75,7 +75,7 @@ class GherkinTest extends TestCase
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -110,7 +110,7 @@ class GherkinTest extends TestCase
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
         $gherkin->setFilters(array());
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, array(), null, array(), array(), null, null, null, null);
 
         $loader
             ->expects($this->once())

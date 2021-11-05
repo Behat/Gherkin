@@ -11,7 +11,7 @@ class NameFilterTest extends TestCase
 {
     public function testFilterFeature()
     {
-        $feature = new FeatureNode('feature1', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('feature1', null, array(), null, array(), array(), null, null, null, 1);
         $filter = new NameFilter('feature1');
         $this->assertSame($feature, $filter->filterFeature($feature));
 
@@ -19,7 +19,7 @@ class NameFilterTest extends TestCase
             new ScenarioNode('scenario1', array(), array(), null, 2),
             $matchedScenario = new ScenarioNode('scenario2', array(), array(), null, 4)
         );
-        $feature = new FeatureNode('feature1', null, array(), null, $scenarios, null, null, null, 1);
+        $feature = new FeatureNode('feature1', null, array(), null, array(), $scenarios, null, null, null, 1);
         $filter = new NameFilter('scenario2');
         $filteredFeature = $filter->filterFeature($feature);
 
@@ -28,30 +28,30 @@ class NameFilterTest extends TestCase
 
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode('random feature title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('random feature title', null, array(), null, array(), array(), null, null, null, 1);
 
         $filter = new NameFilter('feature1');
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('feature1', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('feature1', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('feature1 title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('feature1 title', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('some feature1 title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('some feature1 title', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('some feature title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('some feature title', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
         $filter = new NameFilter('/fea.ure/');
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('some feaSure title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('some feaSure title', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode('some feture title', null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode('some feture title', null, array(), null, array(), array(), null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 

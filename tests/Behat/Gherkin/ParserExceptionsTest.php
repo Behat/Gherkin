@@ -20,6 +20,7 @@ class ParserExceptionsTest extends TestCase
             'en' => array(
                 'feature'          => 'Feature',
                 'background'       => 'Background',
+                'rule'             => 'Rule',
                 'scenario'         => 'Scenario',
                 'scenario_outline' => 'Scenario Outline',
                 'examples'         => 'Examples',
@@ -32,6 +33,7 @@ class ParserExceptionsTest extends TestCase
             'ru' => array(
                 'feature'          => 'Функционал',
                 'background'       => 'Предыстория',
+                'rule'             => 'Правило',
                 'scenario'         => 'Сценарий',
                 'scenario_outline' => 'Структура сценария',
                 'examples'         => 'Примеры',
