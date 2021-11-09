@@ -656,7 +656,7 @@ class Parser
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                trigger_error('Whitespace in tags is deprecated, found "$tag"', E_USER_DEPRECATED);
+                trigger_error(sprintf('Whitespace in tags is deprecated, found "%s"', $tag), E_USER_DEPRECATED);
             }
         }
     }
