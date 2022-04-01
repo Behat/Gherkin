@@ -132,7 +132,7 @@ return array (
     'given' => 'Дадено|*',
     'name' => 'Bulgarian',
     'native' => 'български',
-    'rule' => 'Rule',
+    'rule' => 'Правило',
     'scenario' => 'Сценарий|Пример',
     'scenario_outline' => 'Рамка на сценарий',
     'then' => 'То|*',
