@@ -13,6 +13,7 @@ namespace Behat\Gherkin\Filter;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
+use function mb_strlen;
 
 /**
  * Filters scenarios by feature/scenario tag.
@@ -136,6 +137,10 @@ class TagFilter extends ComplexFilter
     protected function isTagsMatchCondition($tags)
     {
         $satisfies = true;
+
+        if (mb_strlen($this->filterString) === 0) {
+            return $satisfies;
+        }
 
         foreach (explode('&&', $this->filterString) as $andTags) {
             $satisfiesComma = false;
