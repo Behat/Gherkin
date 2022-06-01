@@ -344,7 +344,7 @@ return array (
     'scenario' => 'Swa',
     'scenario_outline' => 'Swa hwaer swa|Swa hwær swa',
     'then' => 'Tha the|Ða ðe|Þa þe|Tha|Ða|Þa|*',
-    'when' => 'Tha|Ða|Þa|*',
+    'when' => 'Bæþsealfa|Bæþsealfe|Bæþsealf|Ciricæwa|Ciricæwe|Ciricæw|*',
   ),
   'en-pirate' => 
   array (
@@ -844,7 +844,7 @@ return array (
   ),
   'ne' => 
   array (
-    'and' => 'अनी|*|र',
+    'and' => 'अनि|*|र',
     'background' => 'पृष्ठभूमी',
     'but' => 'तर|*',
     'examples' => 'उदाहरणहरु|उदाहरण',
@@ -1185,7 +1185,7 @@ return array (
     'but' => 'Бирок|Лекин|Аммо|*',
     'examples' => 'Мисоллар',
     'feature' => 'Функционал',
-    'given' => 'Агар|*',
+    'given' => 'Belgilangan|*',
     'name' => 'Uzbek',
     'native' => 'Узбекча',
     'rule' => 'Rule',
