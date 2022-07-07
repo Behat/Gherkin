@@ -280,4 +280,13 @@ class TagFilterTest extends TestCase
 
         $this->assertEquals([$scenario], $scenarios);
     }
+
+    public function testTagFilterThatIsAllWhitespaceIsIgnored()
+    {
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
+        $tagFilter = new TagFilter('');
+        $result = $tagFilter->isFeatureMatch($feature);
+
+        $this->assertTrue($result);
+    }
 }
