@@ -627,6 +627,7 @@ class Lexer
      */
     private function getStepKeywordType($native)
     {
+
         // Consider "*" as a AND keyword so that it is normalized to the previous step type
         if ('*' === $native) {
             return 'And';
@@ -644,6 +645,7 @@ class Lexer
 
         foreach ($this->stepKeywordTypesCache as $type => $keywords) {
             if (in_array($native, $keywords) || in_array($native . '<', $keywords)) {
+
                 return $type;
             }
         }

@@ -1,7 +1,8 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\PyStringNodeMapper;
 use Cucumber\Messages\DocString;
 use Cucumber\Messages\Location;
 use PHPUnit\Framework\TestCase;

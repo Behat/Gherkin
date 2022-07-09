@@ -1,7 +1,11 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\KeywordTypeMapper;
+use Behat\Gherkin\Cucumber\PyStringNodeMapper;
+use Behat\Gherkin\Cucumber\StepNodeMapper;
+use Behat\Gherkin\Cucumber\TableNodeMapper;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;

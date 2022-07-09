@@ -1,7 +1,14 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\ExampleTableNodeMapper;
+use Behat\Gherkin\Cucumber\KeywordTypeMapper;
+use Behat\Gherkin\Cucumber\PyStringNodeMapper;
+use Behat\Gherkin\Cucumber\ScenarioNodeMapper;
+use Behat\Gherkin\Cucumber\StepNodeMapper;
+use Behat\Gherkin\Cucumber\TableNodeMapper;
+use Behat\Gherkin\Cucumber\TagMapper;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Cucumber\Messages\Examples;
@@ -24,14 +31,17 @@ final class ScenarioNodeMapperTest extends TestCase
 
     public function setUp() : void
     {
+        $tagMapper = new TagMapper();
         $this->mapper = new ScenarioNodeMapper(
-            new TagMapper(),
+            $tagMapper,
             new StepNodeMapper(
                 new KeywordTypeMapper(),
                 new PyStringNodeMapper(),
                 new TableNodeMapper()
             ),
-            new ExampleTableNodeMapper()
+            new ExampleTableNodeMapper(
+                $tagMapper
+            )
         );
     }
 
@@ -70,6 +80,16 @@ final class ScenarioNodeMapperTest extends TestCase
 
         self::assertCount(1, $scenarios);
         self::assertSame("title\nacross\nmany\nlines", $scenarios[0]->getTitle());
+    }
+
+    public function testItTrimsScenarioTitle()
+    {
+        $scenarios = $this->mapper->map([new FeatureChild(null, null,
+            new Scenario(new Location(0,1), [], '', '  title')
+        )]);
+
+        self::assertCount(1, $scenarios);
+        self::assertSame("title", $scenarios[0]->getTitle());
     }
 
     public function testItMapsScenarioKeyword()

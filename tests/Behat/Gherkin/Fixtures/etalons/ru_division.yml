@@ -16,8 +16,8 @@ feature:
       steps:
         - { keyword_type: Given, type: 'Допустим', text: 'я ввожу число <делимое>',                  line: 7 }
         - { keyword_type: Given, type: 'И',        text: 'затем ввожу число <делитель>',             line: 8 }
-        - { keyword_type: Then,  type: 'Если',     text: 'я нажимаю "/"',                            line: 9 }
-        - { keyword_type: When,  type: 'То',       text: 'результатом должно быть число <частное>',  line: 10 }
+        - { keyword_type: When,  type: 'Если',     text: 'я нажимаю "/"',                            line: 9 }
+        - { keyword_type: Then,  type: 'То',       text: 'результатом должно быть число <частное>',  line: 10 }
 
       examples:
         keyword: Примеры

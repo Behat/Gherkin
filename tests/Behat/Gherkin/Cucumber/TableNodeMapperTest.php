@@ -1,7 +1,8 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\TableNodeMapper;
 use Cucumber\Messages\DataTable;
 use Cucumber\Messages\Location;
 use Cucumber\Messages\TableCell;

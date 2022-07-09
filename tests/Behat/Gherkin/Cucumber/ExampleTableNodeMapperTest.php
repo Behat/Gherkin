@@ -1,12 +1,14 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
-use Cucumber\Messages\DataTable;
+use Behat\Gherkin\Cucumber\ExampleTableNodeMapper;
+use Behat\Gherkin\Cucumber\TagMapper;
 use Cucumber\Messages\Examples;
 use Cucumber\Messages\Location;
 use Cucumber\Messages\TableCell;
 use Cucumber\Messages\TableRow;
+use Cucumber\Messages\Tag;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,7 +23,7 @@ final class ExampleTableNodeMapperTest extends TestCase
 
     public function setUp() : void
     {
-        $this->mapper = new ExampleTableNodeMapper();
+        $this->mapper = new ExampleTableNodeMapper(new TagMapper());
     }
 
     public function testItMapsEmptyArrayToEmpty()
@@ -91,4 +93,17 @@ final class ExampleTableNodeMapperTest extends TestCase
         self::assertSame(100, $tables[0]->getLine());
     }
 
+    public function testItMapsTags()
+    {
+
+        $tables = $this->mapper->map([
+            new Examples(new Location(), [
+                new Tag(new Location(), '@foo'),
+                new Tag(new Location(), '@bar')
+            ])
+        ]);
+
+        self::assertCount(1, $tables);
+        self::assertSame(['foo', 'bar'], $tables[0]->getTags());
+    }
 }

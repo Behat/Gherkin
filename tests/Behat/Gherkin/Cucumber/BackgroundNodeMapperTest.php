@@ -1,7 +1,12 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\BackgroundNodeMapper;
+use Behat\Gherkin\Cucumber\KeywordTypeMapper;
+use Behat\Gherkin\Cucumber\PyStringNodeMapper;
+use Behat\Gherkin\Cucumber\StepNodeMapper;
+use Behat\Gherkin\Cucumber\TableNodeMapper;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\StepNode;
 use Cucumber\Messages\Background;
@@ -54,6 +59,15 @@ final class BackgroundNodeMapperTest extends TestCase
         )]);
 
         self::assertSame('Background title', $result->getTitle());
+    }
+
+    public function testItPopulatesTitleFromDescriptionWhenMultiline()
+    {
+        $result = $this->mapper->map([new FeatureChild(null,
+            new Background(new Location(), '', 'title', "across\nmany\nlines")
+        )]);
+
+        self::assertSame("title\nacross\nmany\nlines", $result->getTitle());
     }
 
     public function testItPopulatesKeyword()

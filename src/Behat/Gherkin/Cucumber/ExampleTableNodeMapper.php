@@ -5,10 +5,19 @@ namespace Behat\Gherkin\Cucumber;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Cucumber\Messages\Examples;
 use Cucumber\Messages\TableCell;
-use Cucumber\Messages\TableRow;
 
 final class ExampleTableNodeMapper
 {
+    /**
+     * @var TagMapper
+     */
+    private $tagMapper;
+
+    public function __construct(TagMapper $tagMapper)
+    {
+        $this->tagMapper = $tagMapper;
+    }
+
     /**
      * @param Examples[] $exampleTables
      *
@@ -22,7 +31,7 @@ final class ExampleTableNodeMapper
             $exampleTableNodes[] = new ExampleTableNode(
                 $this->getTableArray($exampleTable),
                 $exampleTable->keyword,
-                []
+                $this->tagMapper->map($exampleTable->tags)
             );
         }
 

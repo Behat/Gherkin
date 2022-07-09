@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Cucumber\Messages\FeatureChild;
+use Cucumber\Messages\Scenario;
 
 final class ScenarioNodeMapper
 {
@@ -25,8 +26,8 @@ final class ScenarioNodeMapper
     private $exampleTableNodeMapper;
 
     public function __construct(
-        TagMapper $tagMapper,
-        StepNodeMapper $stepNodeMapper,
+        TagMapper              $tagMapper,
+        StepNodeMapper         $stepNodeMapper,
         ExampleTableNodeMapper $exampleTableNodeMapper
     )
     {
@@ -40,7 +41,7 @@ final class ScenarioNodeMapper
      *
      * @return ScenarioInterface[]
      */
-    public function map(array $children) : array
+    public function map(array $children): array
     {
         $scenarios = [];
 
@@ -53,7 +54,10 @@ final class ScenarioNodeMapper
                 }
 
                 $scenario = new ScenarioNode (
-                    $title,
+                    MultilineStringFormatter::format(
+                        $title,
+                        $child->scenario->location
+                    ),
                     $this->tagMapper->map($child->scenario->tags),
                     $this->stepNodeMapper->map($child->scenario->steps),
                     $child->scenario->keyword,

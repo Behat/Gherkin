@@ -43,7 +43,9 @@ final class CucumberGherkinLoader extends AbstractFileLoader
             new ScenarioNodeMapper(
                 $tagMapper,
                 $stepNodeMapper,
-                new ExampleTableNodeMapper()
+                new ExampleTableNodeMapper(
+                    $tagMapper
+                )
             )
         );
         

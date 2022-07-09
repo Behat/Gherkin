@@ -1,7 +1,8 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Cucumber\KeywordTypeMapper;
 use Cucumber\Messages\Step\KeywordType;
 use PHPUnit\Framework\TestCase;
 

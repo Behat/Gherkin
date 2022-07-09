@@ -3,6 +3,7 @@
 namespace Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Node\FeatureNode;
+use Cucumber\Messages\Feature;
 use Cucumber\Messages\GherkinDocument;
 
 final class FeatureNodeMapper
@@ -41,7 +42,10 @@ final class FeatureNodeMapper
 
         return new FeatureNode(
             $gherkinDocument->feature->name,
-            $gherkinDocument->feature->description,
+            MultilineStringFormatter::format(
+                $gherkinDocument->feature->description,
+                $gherkinDocument->feature->location
+            ) ?: null, // background has empty = null
             $this->tagMapper->map($gherkinDocument->feature->tags),
             $this->backgroundMapper->map($gherkinDocument->feature->children),
             $this->scenarioMapper->map($gherkinDocument->feature->children),
@@ -51,4 +55,5 @@ final class FeatureNodeMapper
             $gherkinDocument->feature->location->line
         );
     }
+
 }
