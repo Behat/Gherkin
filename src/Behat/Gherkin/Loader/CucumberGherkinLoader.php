@@ -67,6 +67,14 @@ final class CucumberGherkinLoader extends AbstractFileLoader
     }
 
     /**
+     * Whether this Loader is available for use
+     */
+    public static function isAvailable() : bool
+    {
+        return class_exists(GherkinParser::class);
+    }
+
+    /**
      * Loads features from provided resource.
      *
      * @param string $path Resource to load
