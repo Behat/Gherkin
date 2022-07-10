@@ -2,6 +2,7 @@
 
 namespace Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Cache\CacheInterface;
 use Behat\Gherkin\Cucumber\BackgroundNodeMapper;
 use Behat\Gherkin\Cucumber\ExampleTableNodeMapper;
 use Behat\Gherkin\Cucumber\FeatureNodeMapper;
@@ -26,6 +27,11 @@ final class CucumberGherkinLoader extends AbstractFileLoader
      * @var GherkinParser
      */
     private $parser;
+
+    /**
+     * @var ?CacheInterface
+     */
+    protected $cache;
 
     public function __construct()
     {
@@ -75,6 +81,16 @@ final class CucumberGherkinLoader extends AbstractFileLoader
     }
 
     /**
+     * Sets cache layer.
+     *
+     * @param CacheInterface $cache Cache layer
+     */
+    public function setCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
      * Loads features from provided resource.
      *
      * @param string $path Resource to load
@@ -83,18 +99,26 @@ final class CucumberGherkinLoader extends AbstractFileLoader
      */
     public function load($resource)
     {
-        $features = [];
+        $path = $this->findAbsolutePath($resource);
 
-        $envelopes = $this->parser->parseString($this->findAbsolutePath($resource), file_get_contents($resource));
+        if ($this->cache && $this->cache->isFresh($path, filemtime($path))) {
+            return [$this->cache->read($path)];
+        }
+
+        $envelopes = $this->parser->parseString($path, file_get_contents($path));
         foreach ($envelopes as $envelope) {
             if ($envelope->gherkinDocument) {
                 if ($feature = $this->mapper->map($envelope->gherkinDocument)) {
-                    $features[] = $feature;
+                    break;
                 }
             }
         }
 
-        return $features;
+        if ($this->cache) {
+            $this->cache->write($path, $feature);
+        }
+
+        return [$feature];
     }
 
 }
