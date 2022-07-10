@@ -23,6 +23,10 @@
         "cucumber/cucumber": "dev-gherkin-24.0.0"
     },
 
+    "conflict": {
+        "cucumber/messages": "<19.0.0"
+    },
+
     "suggest": {
         "symfony/yaml": "If you want to parse features, represented in YAML files"
     },
