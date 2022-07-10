@@ -9,11 +9,15 @@ use Behat\Gherkin\Cucumber\ScenarioNodeMapper;
 use Behat\Gherkin\Cucumber\StepNodeMapper;
 use Behat\Gherkin\Cucumber\TableNodeMapper;
 use Behat\Gherkin\Cucumber\TagMapper;
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Cucumber\Messages\Background;
 use Cucumber\Messages\Examples;
 use Cucumber\Messages\FeatureChild;
 use Cucumber\Messages\Location;
+use Cucumber\Messages\Rule;
+use Cucumber\Messages\RuleChild;
 use Cucumber\Messages\Scenario;
 use Cucumber\Messages\Step;
 use Cucumber\Messages\Tag;
@@ -156,5 +160,45 @@ final class ScenarioNodeMapperTest extends TestCase
 
         self::assertCount(1, $scenarios);
         self::assertCount(1, $scenarios[0]->getExampleTables());
+    }
+
+    public function testItMapsRuleScenariosIntoFeature()
+    {
+        $scenarios = $this->mapper->map([new FeatureChild(
+            new Rule(new Location(), [], '', '', '', [
+                new RuleChild(null, new Scenario(new Location()))
+            ])
+        )]);
+
+        self::assertCount(1, $scenarios);
+    }
+
+    public function testItThrowsAParserErrorWhenBackgroundInRuleIsFound()
+    {
+        $this->expectException(ParserException::class);
+
+        $scenarios = $this->mapper->map([new FeatureChild(
+            new Rule(new Location(), [], '', '', '', [
+                new RuleChild(new Background(new Location()), null)
+            ])
+        )]);
+    }
+
+    public function testItMapsRuleScenariosWithUnduplicatedMergedTags()
+    {
+        $scenarios = $this->mapper->map([new FeatureChild(
+            new Rule(new Location(), [
+                    new Tag(new Location(), '@foo'),
+                    new Tag(new Location(), '@bar')
+                ], '', '', '', [
+                new RuleChild(null, new Scenario(new Location(), [
+                    new Tag(new Location(), '@bar'),
+                    new Tag(new Location(), '@baz')
+                ]))
+            ])
+        )]);
+
+        self::assertCount(1, $scenarios);
+        self::assertSame(['foo', 'bar', 'baz'], $scenarios[0]->getTags());
     }
 }

@@ -11,7 +11,9 @@ use PHPUnit\Framework\TestCase;
 final class LegacyParserTest extends TestCase
 {
     private $gherkin;
-    protected $etalons_skip = [];
+    protected $etalons_skip = [
+        'rules', # rules are not supported
+    ];
 
     use CompatibilityTestTrait;
 

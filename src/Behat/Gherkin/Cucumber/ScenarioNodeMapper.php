@@ -2,6 +2,7 @@
 
 namespace Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
@@ -48,21 +49,9 @@ final class ScenarioNodeMapper
         foreach ($children as $child) {
             if ($child->scenario) {
 
-                $title = $child->scenario->name;
-                if ($child->scenario->description) {
-                    $title .= "\n" . $child->scenario->description;
-                }
+                $childScenario = $child->scenario;
 
-                $scenario = new ScenarioNode (
-                    MultilineStringFormatter::format(
-                        $title,
-                        $child->scenario->location
-                    ),
-                    $this->tagMapper->map($child->scenario->tags),
-                    $this->stepNodeMapper->map($child->scenario->steps),
-                    $child->scenario->keyword,
-                    $child->scenario->location->line
-                );
+                $scenario = $this->buildScenarioNode($childScenario);
 
                 if ($child->scenario->examples) {
                     $scenario = new OutlineNode(
@@ -78,8 +67,45 @@ final class ScenarioNodeMapper
                 $scenarios[] = $scenario;
             }
 
+            if ($child->rule) {
+
+                $ruleTags = $this->tagMapper->map($child->rule->tags);
+
+                foreach ($child->rule->children as $ruleChild) {
+
+                    // there's no sensible way to merge this up into the feature
+                    if ($ruleChild->background) {
+                        throw new ParserException('Backgrounds in Rules are not currently supported');
+                    }
+
+                    if ($ruleChild->scenario) {
+                        $scenarios[] = $this->buildScenarioNode($ruleChild->scenario, $ruleTags);
+                    }
+                }
+            }
+
         }
 
         return $scenarios;
+    }
+
+    private function buildScenarioNode(?Scenario $scenario, array $extraTags = []): ScenarioNode
+    {
+        $title = $scenario->name;
+        if ($scenario->description) {
+            $title .= "\n" . $scenario->description;
+        }
+
+        return new ScenarioNode (
+            MultilineStringFormatter::format(
+                $title,
+                $scenario->location
+            ),
+
+            array_values(array_unique(array_merge($extraTags, $this->tagMapper->map($scenario->tags)))),
+            $this->stepNodeMapper->map($scenario->steps),
+            $scenario->keyword,
+            $scenario->location->line
+        );
     }
 }
