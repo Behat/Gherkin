@@ -18,9 +18,13 @@
     },
 
     "require-dev": {
-        "symfony/yaml": "~3|~4|~5",
-        "phpunit/phpunit": "~8|~9",
+        "symfony/yaml": "^4.0||^5.0||^6.0",
+        "phpunit/phpunit": "^8.5.19||^9.0",
         "cucumber/cucumber": "dev-gherkin-24.0.0"
+    },
+
+    "conflict": {
+        "cucumber/messages": "<19.0.0"
     },
 
     "suggest": {

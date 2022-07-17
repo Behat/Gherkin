@@ -1,0 +1,14 @@
+feature:
+  title:        ''
+  language:     en
+  line:         1
+  description:  ~
+
+  scenarios:
+    -
+      type:     scenario
+      title:    ''
+      tags:     [rule-tag, scenario-tag]
+      line:     7
+      steps:
+        - { keyword_type: Given, type: Given, text: A, line: 8 }

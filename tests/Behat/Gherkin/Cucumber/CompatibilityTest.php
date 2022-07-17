@@ -1,6 +1,6 @@
 <?php
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Gherkin;

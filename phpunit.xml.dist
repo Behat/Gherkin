@@ -11,6 +11,12 @@
          stopOnFailure="false"
          bootstrap="vendor/autoload.php"
 >
+    <groups>
+        <exclude>
+            <group>cucumber</group>
+        </exclude>
+    </groups>
+
     <testsuites>
         <testsuite name="Behat Gherkin test suite">
             <directory>./tests/Behat/Gherkin/</directory>
