@@ -31,7 +31,7 @@ final class CucumberGherkinLoader extends AbstractFileLoader
     /**
      * @var ?CacheInterface
      */
-    protected $cache;
+    private $cache;
 
     public function __construct()
     {
