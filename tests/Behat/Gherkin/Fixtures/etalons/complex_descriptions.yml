@@ -13,14 +13,9 @@ feature:
 
   scenarios:
     -
-      type:     scenario
-      title:    |-
-        Some
-         | complex |  description     |
-
-        """
-        hell yeah
-        """
-      line:     16
+      type:        scenario
+      title:       Some
+      description: "       | complex |  description     |\n\n\"\"\"\nhell yeah\n\"\"\""
+      line:        16
       steps:
         - { keyword_type: 'Given', type: 'Given',  text: 'one two three',  line: 22 }

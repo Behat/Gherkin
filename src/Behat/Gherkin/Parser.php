@@ -375,7 +375,8 @@ class Parser
     {
         $token = $this->expectTokenType('Scenario');
 
-        $title = trim($token['value'] ?? '');
+        $title = $token['value'] ?? '';
+        $description = $this->parseDescription();
         $tags = $this->popTags();
         $keyword = $token['keyword'];
         $line = $token['line'];
@@ -422,7 +423,7 @@ class Parser
 
         array_pop($this->passedNodesStack);
 
-        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
+        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line, $description);
     }
 
     /**
@@ -437,6 +438,7 @@ class Parser
         $token = $this->expectTokenType('Outline');
 
         $title = trim($token['value'] ?? '');
+        $description = $this->parseDescription();
         $tags = $this->popTags();
         $keyword = $token['keyword'];
 
@@ -505,7 +507,7 @@ class Parser
             ));
         }
 
-        return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line);
+        return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line, $description);
     }
 
     /**
@@ -550,12 +552,15 @@ class Parser
      */
     protected function parseExamples()
     {
-        $keyword = ($this->expectTokenType('Examples'))['keyword'];
+        $token = $this->expectTokenType('Examples');
+        $keyword = $token['keyword'];
+        $name = $token['value'] ?? null;
         $tags = empty($this->tags) ? array() : $this->popTags();
+        $description = $this->parseDescription();
         $table = $this->parseTableRows();
 
         try {
-            return new ExampleTableNode($table, $keyword, $tags);
+            return new ExampleTableNode($table, $keyword, $tags, $name, $description);
         } catch(NodeException $e) {
             $this->rethrowNodeException($e);
         }
@@ -731,6 +736,27 @@ class Parser
         }
 
         return $table;
+    }
+
+    /**
+     * @return string|null
+     */
+    private function parseDescription()
+    {
+        $result = null;
+        while (null !== ($node = $this->acceptTokenType('Newline') ?? $this->acceptTokenType('Text'))) {
+            if ($node['type'] === 'Newline') {
+                $result .= "\n";
+            } else {
+                if ($result === null) {
+                    $result = $node['value'] ?? "\n";
+                } else {
+                    $result .= "\n" . $node['value'] ?? "\n";
+                }
+            }
+        }
+
+        return null !== $result ? trim($result, "\n") : null;
     }
 
     /**

@@ -18,7 +18,7 @@ namespace Behat\Gherkin\Node;
 class OutlineNode implements ScenarioInterface
 {
     /**
-     * @var string
+     * @var null|string
      */
     private $title;
     /**
@@ -45,6 +45,10 @@ class OutlineNode implements ScenarioInterface
      * @var null|ExampleNode[]
      */
     private $examples;
+    /**
+     * @var null|string
+     */
+    private $description;
 
     /**
      * Initializes outline.
@@ -55,6 +59,7 @@ class OutlineNode implements ScenarioInterface
      * @param ExampleTableNode|ExampleTableNode[]  $tables
      * @param string           $keyword
      * @param integer          $line
+     * @param null|string      $description
      */
     public function __construct(
         $title,
@@ -62,7 +67,8 @@ class OutlineNode implements ScenarioInterface
         array $steps,
         $tables,
         $keyword,
-        $line
+        $line,
+        ?string $description = null
     ) {
         $this->title = $title;
         $this->tags = $tags;
@@ -74,6 +80,7 @@ class OutlineNode implements ScenarioInterface
         } else {
             $this->tables = $tables;
         }
+        $this->description = $description;
     }
 
     /**
@@ -217,6 +224,16 @@ class OutlineNode implements ScenarioInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Returns the description.
+     *
+     * @return null|string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

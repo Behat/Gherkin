@@ -139,13 +139,14 @@ class ArrayLoader implements LoaderInterface
                 'keyword' => 'Scenario',
                 'line' => $line,
                 'steps' => array(),
+                'description' => null
             ),
             $hash
         );
 
         $steps = $this->loadStepsHash($hash['steps']);
 
-        return new ScenarioNode($hash['title'], $hash['tags'], $steps, $hash['keyword'], $hash['line']);
+        return new ScenarioNode($hash['title'], $hash['tags'], $steps, $hash['keyword'], $hash['line'], $hash['description']);
     }
 
     /**
@@ -166,6 +167,7 @@ class ArrayLoader implements LoaderInterface
                 'line' => $line,
                 'steps' => array(),
                 'examples' => array(),
+                'description' => null
             ),
             $hash
         );
@@ -189,7 +191,7 @@ class ArrayLoader implements LoaderInterface
             $examples[] = new ExampleTableNode($exHash, $examplesKeyword);;
         }
 
-        return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line']);
+        return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line'], $hash['description']);
     }
 
     /**

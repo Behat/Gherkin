@@ -11,22 +11,18 @@ feature:
 
   scenarios:
     -
-      type:     scenario
-      title:    |-
-        I'm a multiline name
-                which goes on and on and on for three lines
-                yawn
-      line:     6
+      type:        scenario
+      title:       I'm a multiline name
+      description: "            which goes on and on and on for three lines\n            yawn"
+      line:        6
       steps:
         - { keyword_type: Given, type: Given, text: passing without a table, line: 9 }
 
     -
-      type:     outline
-      title:    |-
-        I'm a multiline name
-        which goes on and on and on for three lines
-                        yawn
-      line:     11
+      type:        outline
+      title:       I'm a multiline name
+      description: "    which goes on and on and on for three lines\n                    yawn"
+      line:        11
       steps:
         - { keyword_type: Given, type: 'Given',  text: '<state> without a table',  line: 14 }
       examples:
