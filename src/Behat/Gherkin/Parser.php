@@ -375,7 +375,7 @@ class Parser
     {
         $token = $this->expectTokenType('Scenario');
 
-        $title = $token['value'] ?? '';
+        $title = trim($token['value'] ?? '');
         $description = $this->parseDescription();
         $tags = $this->popTags();
         $keyword = $token['keyword'];
