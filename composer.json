@@ -18,7 +18,7 @@
     },
 
     "require-dev": {
-        "symfony/yaml": "~3|~4|~5",
+        "symfony/yaml": "~3|~4|~5|~6|~7",
         "phpunit/phpunit": "~8|~9",
         "cucumber/cucumber": "dev-gherkin-24.0.0"
     },
