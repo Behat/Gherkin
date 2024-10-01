@@ -71,7 +71,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $title,
         $description,
         array $tags,
-        BackgroundNode $background = null,
+        ?BackgroundNode $background,
         array $scenarios,
         $keyword,
         $language,
