@@ -17,5 +17,5 @@ feature:
       steps:
         - { keyword_type: 'Given', type: 'Допустим', text: 'я ввожу число 50',                   line: 8 }
         - { keyword_type: 'Given', type: 'И',        text: 'затем ввожу число 70',               line: 9 }
-        - { keyword_type: 'Then',  type: 'Если',     text: 'я нажимаю "+"',                      line: 10 }
-        - { keyword_type: 'When',  type: 'То',       text: 'результатом должно быть число 120',  line: 11 }
+        - { keyword_type: 'When',  type: 'Если',     text: 'я нажимаю "+"',                      line: 10 }
+        - { keyword_type: 'Then',  type: 'То',       text: 'результатом должно быть число 120',  line: 11 }
