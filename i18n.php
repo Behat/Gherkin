@@ -1220,7 +1220,7 @@ return array (
     'given' => '假如<|假定<|假设<|*',
     'name' => 'Chinese simplified',
     'native' => '简体中文',
-    'rule' => 'Rule',
+    'rule' => 'Rule|规则',
     'scenario' => '剧本|场景',
     'scenario_outline' => '剧本大纲|场景大纲',
     'then' => '那么<|*',
