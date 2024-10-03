@@ -6,6 +6,9 @@ on:
 
 jobs:
   cucumber-update:
+    # Don't run the cron job on forks.
+    if: ${{ github.event_name != 'schedule' || github.repository == 'Behat/Gherkin' }}
+
     runs-on: ubuntu-latest
     name: Upstream cucumber update
     steps:
