@@ -119,21 +119,23 @@ GHERKIN;
         $feature = $this->gherkin->parse($feature);
 
         $this->assertCount(2, $scenarios = $feature->getScenarios());
-        $firstTitle = <<<TEXT
-remove X to cause bug
-Step is red form is not valid
-asd
-asd
-as
-da
-sd
-as
-das
-d
-TEXT;
+        $firstTitle = 'remove X to cause bug';
         $this->assertEquals($firstTitle, $scenarios[0]->getTitle());
-        $secondTitle = <<<TEXT
-bug user edit date
+        $firstDescription = <<<TEXT
+    Step is red form is not valid
+    asd
+    asd
+    as
+    da
+    sd
+    as
+    das
+    d
+TEXT;
+        $this->assertEquals($firstDescription, $scenarios[0]->getDescription());
+        $secondTitle = 'bug user edit date';
+        $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
+        $secondDescription = <<<TEXT
 Step is red form is not valid
 asd
 asd
@@ -144,7 +146,7 @@ as
 das
 d
 TEXT;
-        $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
+        $this->assertEquals($secondDescription, $scenarios[1]->getDescription());
     }
 
     public function testAmbigiousLanguage()

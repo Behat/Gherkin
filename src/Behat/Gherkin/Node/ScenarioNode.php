@@ -18,7 +18,7 @@ namespace Behat\Gherkin\Node;
 class ScenarioNode implements ScenarioInterface
 {
     /**
-     * @var string
+     * @var null|string
      */
     private $title;
     /**
@@ -37,6 +37,10 @@ class ScenarioNode implements ScenarioInterface
      * @var integer
      */
     private $line;
+    /**
+     * @var null|string
+     */
+    private $description;
 
     /**
      * Initializes scenario.
@@ -46,14 +50,16 @@ class ScenarioNode implements ScenarioInterface
      * @param StepNode[]  $steps
      * @param string      $keyword
      * @param integer     $line
+     * @param null|string $description
      */
-    public function __construct($title, array $tags, array $steps, $keyword, $line)
+    public function __construct($title, array $tags, array $steps, $keyword, $line, ?string $description = null)
     {
         $this->title = $title;
         $this->tags = $tags;
         $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
+        $this->description = $description;
     }
 
     /**
@@ -146,5 +152,15 @@ class ScenarioNode implements ScenarioInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * Returns the description.
+     *
+     * @return null|string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
