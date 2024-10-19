@@ -73,7 +73,6 @@ class CompatibilityTest extends TestCase
      */
     public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
     {
-
         if (isset($this->notParsingCorrectly[$file->getFilename()])){
             $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
         }
@@ -86,7 +85,8 @@ class CompatibilityTest extends TestCase
 
         $this->assertEquals(
             $this->normaliseFeature($expected),
-            $this->normaliseFeature($actual)
+            $this->normaliseFeature($actual),
+            file_get_contents($gherkinFile)
         );
     }
 
