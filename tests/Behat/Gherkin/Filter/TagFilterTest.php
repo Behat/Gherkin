@@ -271,7 +271,8 @@ class TagFilterTest extends TestCase
 
     public function testFilterWithWhitespaceIsDeprecated()
     {
-        $this->expectDeprecation();
+        $this->expectDeprecationError();
+
         $tagFilter = new TagFilter('@tag with space');
         $scenario = new ScenarioNode(null, ['tag with space'], array(), null, 2);
         $feature = new FeatureNode(null, null, [], null, [$scenario], null, null, null, 1);
@@ -288,5 +289,16 @@ class TagFilterTest extends TestCase
         $result = $tagFilter->isFeatureMatch($feature);
 
         $this->assertTrue($result);
+    }
+
+    private function expectDeprecationError() {
+        set_error_handler(
+            static function ($errno, $errstr) {
+                restore_error_handler();
+                throw new \Exception($errstr, $errno);
+            },
+            E_ALL
+        );
+        $this->expectException('Exception');
     }
 }

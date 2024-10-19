@@ -100,13 +100,12 @@ class CompatibilityTest extends TestCase
         }
 
         if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
-            $this->expectDeprecation();
-            $this->expectDeprecationMessageMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
+            $this->expectDeprecationErrorMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
         } else {
             $this->expectException(ParserException::class);
         }
         $gherkinFile = $file->getPathname();
-        $feature = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
+        $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
     }
 
     public static function goodCucumberFeatures()
@@ -169,4 +168,14 @@ class CompatibilityTest extends TestCase
         $property->setValue($object, $value);
     }
 
+    private function expectDeprecationErrorMatches($message) {
+        set_error_handler(
+            static function ($errno, $errstr) {
+                restore_error_handler();
+                throw new \Exception($errstr, $errno);
+            },
+            E_ALL
+        );
+        $this->expectExceptionMessageMatches($message);
+    }
 }
