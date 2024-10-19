@@ -18,7 +18,7 @@ jobs:
           php-version: 7.4
           coverage: none
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: composer update
