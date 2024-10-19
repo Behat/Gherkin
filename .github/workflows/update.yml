@@ -41,7 +41,7 @@ jobs:
         if: steps.cucumber.outputs.cucumber_version
 
       - name: Open a PR
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v7
         if: steps.cucumber.outputs.cucumber_version
         with:
           commit-message: Automatic Cucumber tag update to ${{ steps.cucumber.outputs.cucumber_version }}
