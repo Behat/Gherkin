@@ -1,3 +1,13 @@
+# 4.10.0 / 2024-10-19
+
+- Add support for Symfony 6 and 7 thanks to @tacman
+- Sync with Cucumber 24.1.0
+- Fix exception when filter string is empty thanks to @magikid
+- Fix nullable parameters warning in PHP 8.4 thanks to @heiglandreas and @jrfnl
+- Fix parsing of scenario outline rows with trailing backslashes
+- Fix PHPUnit 10 deprecation messages
+- A lot of great CI work by @heiglandreas and @jrfnl
+
 # 4.9.0 / 2021-10-12
 
 - Simplify the boolean condition for the tag matching by @stof in https://github.com/Behat/Gherkin/pull/219
