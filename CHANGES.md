@@ -1,10 +1,23 @@
 # 4.10.0 / 2024-10-19
 
-- Add support for Symfony 6 and 7 thanks to @tacman
-- Sync with Cucumber 24.1.0
-- Fix exception when filter string is empty thanks to @magikid
-- Fix nullable parameters warning in PHP 8.4 thanks to @heiglandreas and @jrfnl
-- Fix parsing of scenario outline rows with trailing backslashes
+### Changed
+
+- **⚠ Backslashes in feature files must now be escaped**\
+  Gherkin syntax treats `\` as an escape character, which must be escaped (`\\`) to use it as a
+  literal value. Historically, this was not being parsed correctly. This release fixes that bug,
+  but means that if your scenarios currently use unescaped `\` you will need to replace each one
+  with `\\` to achieve the same parsed result.
+  By @everzet in 5a0836d.
+
+### Added
+- Symfony 6 and 7 thanks to @tacman in #257
+- PHP 8.4 support thanks to @heiglandreas in #258 and @jrfnl in #262
+
+### Fixed
+- Fix exception when filter string is empty thanks to @magikid in #251
+
+### Internal
+- Sync teststuite with Cucumber 24.1.0
 - Fix PHPUnit 10 deprecation messages
 - A lot of great CI work by @heiglandreas and @jrfnl
 
