@@ -97,12 +97,11 @@ class ExampleNode implements ScenarioInterface
      *
      * @return string
      *
-     * @deprecated You should normally not depend on the original row text, but if you really do, just switch to {@see self::getExampleText()}.
+     * @deprecated You should normally not depend on the original row text, but if you really do, please switch
+     *             to {@see self::getExampleText()} as this method will be removed in the next major version.
      */
     public function getTitle()
     {
-        @trigger_error('`ExampleNode::getTitle()` calls should be migrated to `ExampleNode::getScenarioTitle()` or `ExampleNode::getExampleText()`.', E_USER_DEPRECATED);
-
         return $this->text;
     }
 
@@ -189,11 +188,11 @@ class ExampleNode implements ScenarioInterface
     }
 
     /**
-     * Returns title for this scenario outline example.
+     * Returns the name of the scenario example.
      *
      * @return string
      */
-    public function getScenarioTitle()
+    public function getName()
     {
         return "{$this->replaceTextTokens($this->outlineTitle)} #{$this->index}";
     }

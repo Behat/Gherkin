@@ -71,21 +71,20 @@ class ScenarioNode implements ScenarioInterface
      *
      * @return null|string
      *
-     * @deprecated You should use {@see self::getScenarioTitle()} instead.
+     * @deprecated You should use {@see self::getScenarioTitle()} instead as this method will be removed in the next
+     *             major version.
      */
     public function getTitle()
     {
-        @trigger_error('`ScenarioNode::getTitle()` calls should be migrated to `ScenarioNode::getScenarioTitle()`.', E_USER_DEPRECATED);
-
         return $this->title;
     }
 
     /**
-     * Returns scenario title.
+     * Returns the name of the scenario.
      *
      * @return null|string
      */
-    public function getScenarioTitle()
+    public function getName()
     {
         return $this->title;
     }
