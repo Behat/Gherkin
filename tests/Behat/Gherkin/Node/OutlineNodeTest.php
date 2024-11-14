@@ -2,6 +2,7 @@
 
 namespace Tests\Behat\Gherkin\Node;
 
+use Behat\Gherkin\Node\ExampleNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\StepNode;
@@ -122,11 +123,37 @@ class OutlineNodeTest extends TestCase
         $table = new ExampleTableNode(array(
             10 => array('name', 'email'),
             11 => array('Ciaran', 'ciaran@example.com'),
+            12 => array('John', 'john@example.com'),
         ), 'Examples');
 
-        $outline = new OutlineNode('An outline title', array(), $steps, $table, null, null);
+        $outline = new OutlineNode('An outline title for <name>', array(), $steps, $table, null, null);
 
-        $this->assertCount(1, $examples = $outline->getExamples());
-        $this->assertEquals('An outline title', current($examples)->getOutlineTitle());
+        $this->assertEquals(
+            [
+                [
+                    'getName' => 'An outline title for Ciaran #1',
+                    'getTitle' => '| Ciaran | ciaran@example.com |',
+                    'getOutlineTitle' => 'An outline title for <name>',
+                    'getExampleText' => '| Ciaran | ciaran@example.com |',
+                ],
+                [
+                    'getName' => 'An outline title for John #2',
+                    'getTitle' => '| John   | john@example.com   |',
+                    'getOutlineTitle' => 'An outline title for <name>',
+                    'getExampleText' => '| John   | john@example.com   |',
+                ],
+            ],
+            array_map(
+                static function (ExampleNode $node) {
+                    return [
+                        'getName' => $node->getName(),
+                        'getTitle' => $node->getTitle(),
+                        'getOutlineTitle' => $node->getOutlineTitle(),
+                        'getExampleText' => $node->getExampleText(),
+                    ];
+                },
+                $outline->getExamples()
+            )
+        );
     }
 }
