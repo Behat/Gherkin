@@ -55,6 +55,9 @@ class FileCacheTest extends TestCase
         $this->cache->read('broken_feature');
     }
 
+    /**
+     * @requires OSFAMILY != Windows
+     */
     public function testUnwriteableCacheDir()
     {
         $this->expectException('Behat\Gherkin\Exception\CacheException');
