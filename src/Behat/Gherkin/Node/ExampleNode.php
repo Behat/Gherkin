@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ExampleNode implements ScenarioInterface
+class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 {
     /**
      * @var string
@@ -187,12 +187,7 @@ class ExampleNode implements ScenarioInterface
         return $this->outlineTitle;
     }
 
-    /**
-     * Returns the name of the scenario example.
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return "{$this->replaceTextTokens($this->outlineTitle)} #{$this->index}";
     }

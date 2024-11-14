@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ScenarioNode implements ScenarioInterface
+class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
 {
     /**
      * @var string
@@ -84,7 +84,7 @@ class ScenarioNode implements ScenarioInterface
      *
      * @return null|string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->title;
     }
