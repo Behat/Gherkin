@@ -79,11 +79,6 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
         return $this->title;
     }
 
-    /**
-     * Returns the name of the scenario.
-     *
-     * @return null|string
-     */
     public function getName(): ?string
     {
         return $this->title;
