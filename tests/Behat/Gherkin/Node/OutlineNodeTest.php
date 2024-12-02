@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class OutlineNodeTest extends TestCase
 {
-    public function testCreatesExamplesForExampleTable()
+    public function testCreatesExamplesForExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -34,7 +34,7 @@ class OutlineNodeTest extends TestCase
         $this->assertEquals(array('name' => 'example', 'email' => 'example@example.com'), $examples[1]->getTokens());
     }
 
-    public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags()
+    public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -80,7 +80,7 @@ class OutlineNodeTest extends TestCase
         }
     }
 
-    public function testCreatesEmptyExamplesForEmptyExampleTable()
+    public function testCreatesEmptyExamplesForEmptyExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -95,10 +95,10 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode(null, array(), $steps, $table, null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(0, $outline->getExamples());
     }
 
-    public function testCreatesEmptyExamplesForNoExampleTable()
+    public function testCreatesEmptyExamplesForNoExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -111,10 +111,10 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode(null, array(), $steps, array($table), null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(0, $outline->getExamples());
     }
 
-    public function testPopulatesExampleWithOutlineTitle()
+    public function testPopulatesExampleWithOutlineTitle(): void
     {
         $steps = array(
             new StepNode('', 'I am <name>', array(), null, 'Given'),
@@ -128,7 +128,7 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode('An outline title for <name>', array(), $steps, $table, null, null);
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
                     'getName' => 'An outline title for Ciaran #1',

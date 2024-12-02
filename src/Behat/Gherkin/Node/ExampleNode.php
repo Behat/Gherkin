@@ -197,11 +197,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      *
      * You should normally not need this, since it is an implementation detail.
      * If you need the individual example values, use {@see self::getTokens()}.
-     * To get the fully-normalised/expanded title, use {@see self::getScenarioTitle()}.
-     *
-     * @return string
+     * To get the fully-normalised/expanded title, use {@see self::getName()}.
      */
-    public function getExampleText()
+    public function getExampleText(): string
     {
         return $this->text;
     }

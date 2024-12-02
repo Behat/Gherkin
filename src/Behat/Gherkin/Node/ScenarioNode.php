@@ -71,7 +71,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
      *
      * @return null|string
      *
-     * @deprecated You should use {@see self::getScenarioTitle()} instead as this method will be removed in the next
+     * @deprecated You should use {@see self::getName()} instead as this method will be removed in the next
      *             major version.
      */
     public function getTitle()
