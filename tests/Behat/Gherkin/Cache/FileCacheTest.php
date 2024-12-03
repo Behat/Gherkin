@@ -3,9 +3,10 @@
 namespace Tests\Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Cache\FileCache;
+use Behat\Gherkin\Exception\CacheException;
+use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
-use Behat\Gherkin\Gherkin;
 use PHPUnit\Framework\TestCase;
 
 class FileCacheTest extends TestCase
@@ -13,12 +14,12 @@ class FileCacheTest extends TestCase
     private $path;
     private $cache;
 
-    public function testIsFreshWhenThereIsNoFile()
+    public function testIsFreshWhenThereIsNoFile(): void
     {
         $this->assertFalse($this->cache->isFresh('unexisting', time() + 100));
     }
 
-    public function testIsFreshOnFreshFile()
+    public function testIsFreshOnFreshFile(): void
     {
         $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
 
@@ -27,7 +28,7 @@ class FileCacheTest extends TestCase
         $this->assertFalse($this->cache->isFresh('some_path', time() + 100));
     }
 
-    public function testIsFreshOnOutdated()
+    public function testIsFreshOnOutdated(): void
     {
         $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
 
@@ -36,7 +37,7 @@ class FileCacheTest extends TestCase
         $this->assertTrue($this->cache->isFresh('some_path', time() - 100));
     }
 
-    public function testCacheAndRead()
+    public function testCacheAndRead(): void
     {
         $scenarios = array(new ScenarioNode('Some scenario', array(), array(), null, null));
         $feature = new FeatureNode('Some feature', 'some description', array(), null, $scenarios, null, null, null, null);
@@ -47,19 +48,23 @@ class FileCacheTest extends TestCase
         $this->assertEquals($feature, $featureRead);
     }
 
-    public function testBrokenCacheRead()
+    public function testBrokenCacheRead(): void
     {
-        $this->expectException('Behat\Gherkin\Exception\CacheException');
+        $this->expectException(CacheException::class);
 
         touch($this->path . '/v' . Gherkin::VERSION . '/' . md5('broken_feature') . '.feature.cache');
         $this->cache->read('broken_feature');
     }
 
-    public function testUnwriteableCacheDir()
+    public function testUnwriteableCacheDir(): void
     {
-        $this->expectException('Behat\Gherkin\Exception\CacheException');
+        $this->expectException(CacheException::class);
 
-        new FileCache('/dev/null/gherkin-test');
+        if (PHP_OS_FAMILY === 'Windows') {
+            new FileCache('C:\\Windows\\System32\\drivers\\etc');
+        } else {
+            new FileCache('/dev/null/gherkin-test');
+        }
     }
 
     protected function setUp(): void

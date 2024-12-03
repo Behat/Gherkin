@@ -15,12 +15,12 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ExampleNode implements ScenarioInterface
+class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 {
     /**
      * @var string
      */
-    private $title;
+    private $text;
     /**
      * @var string[]
      */
@@ -45,25 +45,31 @@ class ExampleNode implements ScenarioInterface
      * @var string
      */
     private $outlineTitle;
+    /**
+     * @var null|int
+     */
+    private $index;
 
     /**
      * Initializes outline.
      *
-     * @param string      $title
+     * @param string      $text         The entire row as a string, e.g. "| 1 | 2 | 3 |"
      * @param string[]    $tags
      * @param StepNode[]  $outlineSteps
      * @param string[]    $tokens
-     * @param integer     $line
-     * @param string|null $outlineTitle
+     * @param integer     $line         Line number within the feature file.
+     * @param string|null $outlineTitle Original title of the scenario outline.
+     * @param null|int    $index        The 1-based index of the row/example within the scenario outline.
      */
-    public function __construct($title, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null)
+    public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
     {
-        $this->title = $title;
+        $this->text = $text;
         $this->tags = $tags;
         $this->outlineSteps = $outlineSteps;
         $this->tokens = $tokens;
         $this->line = $line;
         $this->outlineTitle = $outlineTitle;
+        $this->index = $index;
     }
 
     /**
@@ -87,13 +93,16 @@ class ExampleNode implements ScenarioInterface
     }
 
     /**
-     * Returns example title.
+     * Returns the example row as a single string.
      *
      * @return string
+     *
+     * @deprecated You should normally not depend on the original row text, but if you really do, please switch
+     *             to {@see self::getExampleText()} as this method will be removed in the next major version.
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->text;
     }
 
     /**
@@ -176,6 +185,23 @@ class ExampleNode implements ScenarioInterface
     public function getOutlineTitle()
     {
         return $this->outlineTitle;
+    }
+
+    public function getName(): ?string
+    {
+        return "{$this->replaceTextTokens($this->outlineTitle)} #{$this->index}";
+    }
+
+    /**
+     * Returns the example row as a single string.
+     *
+     * You should normally not need this, since it is an implementation detail.
+     * If you need the individual example values, use {@see self::getTokens()}.
+     * To get the fully-normalised/expanded title, use {@see self::getName()}.
+     */
+    public function getExampleText(): string
+    {
+        return $this->text;
     }
 
     /**

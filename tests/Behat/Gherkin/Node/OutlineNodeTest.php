@@ -2,6 +2,7 @@
 
 namespace Tests\Behat\Gherkin\Node;
 
+use Behat\Gherkin\Node\ExampleNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\StepNode;
@@ -9,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class OutlineNodeTest extends TestCase
 {
-    public function testCreatesExamplesForExampleTable()
+    public function testCreatesExamplesForExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -33,7 +34,7 @@ class OutlineNodeTest extends TestCase
         $this->assertEquals(array('name' => 'example', 'email' => 'example@example.com'), $examples[1]->getTokens());
     }
 
-    public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags()
+    public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -79,7 +80,7 @@ class OutlineNodeTest extends TestCase
         }
     }
 
-    public function testCreatesEmptyExamplesForEmptyExampleTable()
+    public function testCreatesEmptyExamplesForEmptyExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -94,10 +95,10 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode(null, array(), $steps, $table, null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(0, $outline->getExamples());
     }
 
-    public function testCreatesEmptyExamplesForNoExampleTable()
+    public function testCreatesEmptyExamplesForNoExampleTable(): void
     {
         $steps = array(
             new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
@@ -110,10 +111,10 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode(null, array(), $steps, array($table), null, null);
 
-        $this->assertCount(0, $examples = $outline->getExamples());
+        $this->assertCount(0, $outline->getExamples());
     }
 
-    public function testPopulatesExampleWithOutlineTitle()
+    public function testPopulatesExampleWithOutlineTitle(): void
     {
         $steps = array(
             new StepNode('', 'I am <name>', array(), null, 'Given'),
@@ -122,11 +123,37 @@ class OutlineNodeTest extends TestCase
         $table = new ExampleTableNode(array(
             10 => array('name', 'email'),
             11 => array('Ciaran', 'ciaran@example.com'),
+            12 => array('John', 'john@example.com'),
         ), 'Examples');
 
-        $outline = new OutlineNode('An outline title', array(), $steps, $table, null, null);
+        $outline = new OutlineNode('An outline title for <name>', array(), $steps, $table, null, null);
 
-        $this->assertCount(1, $examples = $outline->getExamples());
-        $this->assertEquals('An outline title', current($examples)->getOutlineTitle());
+        $this->assertSame(
+            [
+                [
+                    'getName' => 'An outline title for Ciaran #1',
+                    'getTitle' => '| Ciaran | ciaran@example.com |',
+                    'getOutlineTitle' => 'An outline title for <name>',
+                    'getExampleText' => '| Ciaran | ciaran@example.com |',
+                ],
+                [
+                    'getName' => 'An outline title for John #2',
+                    'getTitle' => '| John   | john@example.com   |',
+                    'getOutlineTitle' => 'An outline title for <name>',
+                    'getExampleText' => '| John   | john@example.com   |',
+                ],
+            ],
+            array_map(
+                static function (ExampleNode $node) {
+                    return [
+                        'getName' => $node->getName(),
+                        'getTitle' => $node->getTitle(),
+                        'getOutlineTitle' => $node->getOutlineTitle(),
+                        'getExampleText' => $node->getExampleText(),
+                    ];
+                },
+                $outline->getExamples()
+            )
+        );
     }
 }

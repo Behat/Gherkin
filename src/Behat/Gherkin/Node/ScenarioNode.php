@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ScenarioNode implements ScenarioInterface
+class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
 {
     /**
      * @var string
@@ -70,8 +70,16 @@ class ScenarioNode implements ScenarioInterface
      * Returns scenario title.
      *
      * @return null|string
+     *
+     * @deprecated You should use {@see self::getName()} instead as this method will be removed in the next
+     *             major version.
      */
     public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function getName(): ?string
     {
         return $this->title;
     }
