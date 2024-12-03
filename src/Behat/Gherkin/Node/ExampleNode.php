@@ -59,7 +59,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      * @param string[]    $tokens
      * @param integer     $line         Line number within the feature file.
      * @param string|null $outlineTitle Original title of the scenario outline.
-     * @param null|int    $index        The 0-based index of the row/example within the scenario outline.
+     * @param null|int    $index        The 1-based index of the row/example within the scenario outline.
      */
     public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
     {
