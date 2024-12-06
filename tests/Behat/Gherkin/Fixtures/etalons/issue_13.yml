@@ -6,11 +6,10 @@ feature:
 
   scenarios:
     -
-      type:     scenario
-      title:    |-
-        testing py string in scenario
-        second line
-      line:     4
+      type:        scenario
+      title:       testing py string in scenario
+      description: second line
+      line:        4
       steps:
         -
           keyword_type: Given
@@ -26,11 +25,10 @@ feature:
                 6000
 
     -
-      type:     outline
-      title:    |-
-        testing py string in scenario outline
-        second line
-      line:     14
+      type:        outline
+      title:       testing py string in scenario outline
+      description: second line
+      line:        14
       steps:
         -
           keyword_type: Given
