@@ -5,4 +5,4 @@
 /.gitignore export-ignore
 /package.xml.tpl export-ignore
 /phpdoc.ini.dist export-ignore
-/phpunit.xml.dist export-ignore
+/phpunit.dist.xml export-ignore

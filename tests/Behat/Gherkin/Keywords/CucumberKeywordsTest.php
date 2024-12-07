@@ -6,7 +6,7 @@ use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Node\StepNode;
 use Symfony\Component\Yaml\Yaml;
 
-class CucumberKeywordsTest extends KeywordsTest
+class CucumberKeywordsTest extends AbstractKeywordsTestBase
 {
     protected function getKeywords()
     {
