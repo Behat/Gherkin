@@ -21,7 +21,11 @@
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/cucumber": "dev-gherkin-24.1.0",
-        "friendsofphp/php-cs-fixer": "^3.65"
+        "friendsofphp/php-cs-fixer": "^3.65",
+        "phpstan/phpstan": "^2",
+        "phpstan/extension-installer": "^1",
+        "phpstan/phpstan-phpunit": "^2",
+        "phpstan/phpstan-strict-rules": "^2"
     },
 
     "suggest": {
@@ -69,11 +73,18 @@
     "scripts": {
         "lint": [
             "Composer\\Config::disableProcessTimeout",
-            "vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots"
+            "vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots",
+            "vendor/bin/phpstan analyse --memory-limit 512M"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpunit ./tests"
         ]
+    },
+
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     }
 }

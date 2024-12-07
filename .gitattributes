@@ -10,4 +10,5 @@
 /phpdoc.ini.dist            export-ignore
 /phpunit.dist.xml           export-ignore
 /.php-cs-fixer.dist.php     export-ignore
+/phpstan.dist.neon          export-ignore
 /README.md                  export-ignore

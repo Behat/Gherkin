@@ -6,3 +6,4 @@ composer.lock
 phpunit.xml
 .php-cs-fixer.php
 .php-cs-fixer.cache
+phpstan.neon
