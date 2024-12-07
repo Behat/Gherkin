@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -32,32 +32,27 @@ class StepNode implements NodeInterface
      */
     private $text;
     /**
-     * @var ArgumentInterface[]
+     * @var list<ArgumentInterface>
      */
-    private $arguments = array();
+    private $arguments = [];
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
     /**
      * Initializes step.
      *
-     * @param string              $keyword
-     * @param string              $text
-     * @param ArgumentInterface[] $arguments
-     * @param integer             $line
-     * @param string              $keywordType
+     * @param string                  $keyword
+     * @param string                  $text
+     * @param list<ArgumentInterface> $arguments
+     * @param int                     $line
+     * @param string                  $keywordType
      */
     public function __construct($keyword, $text, array $arguments, $line, $keywordType = null)
     {
         if (count($arguments) > 1) {
-            throw new NodeException(sprintf(
-                'Steps could have only one argument, but `%s %s` have %d.',
-                $keyword,
-                $text,
-                count($arguments)
-            ));
+            throw new NodeException(sprintf('Steps could have only one argument, but `%s %s` have %d.', $keyword, $text, count($arguments)));
         }
 
         $this->keyword = $keyword;
@@ -68,7 +63,7 @@ class StepNode implements NodeInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -93,7 +88,6 @@ class StepNode implements NodeInterface
      * Returns step keyword in provided language (Given, When, Then, etc.).
      *
      * @return string
-     *
      */
     public function getKeyword()
     {
@@ -133,7 +127,7 @@ class StepNode implements NodeInterface
     /**
      * Returns step arguments.
      *
-     * @return ArgumentInterface[]
+     * @return list<ArgumentInterface>
      */
     public function getArguments()
     {
@@ -143,7 +137,7 @@ class StepNode implements NodeInterface
     /**
      * Returns step declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

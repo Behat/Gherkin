@@ -3,3 +3,6 @@ vendor
 composer.phar
 composer.lock
 .phpunit.result.cache
+phpunit.xml
+.php-cs-fixer.php
+.php-cs-fixer.cache

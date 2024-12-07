@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Cache\MemoryCache;
@@ -18,7 +26,7 @@ class MemoryCacheTest extends TestCase
 
     public function testIsFreshOnFreshFile()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
 
         $this->cache->write('some_path', $feature);
 
@@ -27,7 +35,7 @@ class MemoryCacheTest extends TestCase
 
     public function testIsFreshOnOutdated()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
 
         $this->cache->write('some_path', $feature);
 
@@ -36,8 +44,8 @@ class MemoryCacheTest extends TestCase
 
     public function testCacheAndRead()
     {
-        $scenarios = array(new ScenarioNode('Some scenario', array(), array(), null, null));
-        $feature = new FeatureNode('Some feature', 'some description', array(), null, $scenarios, null, null, null, null);
+        $scenarios = [new ScenarioNode('Some scenario', [], [], null, null)];
+        $feature = new FeatureNode('Some feature', 'some description', [], null, $scenarios, null, null, null, null);
 
         $this->cache->write('some_feature', $feature);
         $featureRead = $this->cache->read('some_feature');

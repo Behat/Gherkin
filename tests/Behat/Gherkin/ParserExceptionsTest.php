@@ -1,10 +1,18 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
-use Behat\Gherkin\Keywords\ArrayKeywords;
 use PHPUnit\Framework\TestCase;
 
 class ParserExceptionsTest extends TestCase
@@ -16,32 +24,32 @@ class ParserExceptionsTest extends TestCase
 
     protected function setUp(): void
     {
-        $keywords       = new ArrayKeywords(array(
-            'en' => array(
-                'feature'          => 'Feature',
-                'background'       => 'Background',
-                'scenario'         => 'Scenario',
+        $keywords = new ArrayKeywords([
+            'en' => [
+                'feature' => 'Feature',
+                'background' => 'Background',
+                'scenario' => 'Scenario',
                 'scenario_outline' => 'Scenario Outline',
-                'examples'         => 'Examples',
-                'given'            => 'Given',
-                'when'             => 'When',
-                'then'             => 'Then',
-                'and'              => 'And',
-                'but'              => 'But'
-            ),
-            'ru' => array(
-                'feature'          => 'Функционал',
-                'background'       => 'Предыстория',
-                'scenario'         => 'Сценарий',
+                'examples' => 'Examples',
+                'given' => 'Given',
+                'when' => 'When',
+                'then' => 'Then',
+                'and' => 'And',
+                'but' => 'But',
+            ],
+            'ru' => [
+                'feature' => 'Функционал',
+                'background' => 'Предыстория',
+                'scenario' => 'Сценарий',
                 'scenario_outline' => 'Структура сценария',
-                'examples'         => 'Примеры',
-                'given'            => 'Допустим',
-                'when'             => 'То',
-                'then'             => 'Если',
-                'and'              => 'И',
-                'but'              => 'Но'
-            )
-        ));
+                'examples' => 'Примеры',
+                'given' => 'Допустим',
+                'when' => 'То',
+                'then' => 'Если',
+                'and' => 'И',
+                'but' => 'Но',
+            ],
+        ]);
         $this->gherkin = new Parser(new Lexer($keywords));
     }
 

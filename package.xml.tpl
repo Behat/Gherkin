@@ -38,7 +38,8 @@
             <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload.php" />
             <file role="php" baseinstalldir="gherkin" name="vendor/.composer/autoload_namespaces.php" />
             <file role="php" baseinstalldir="gherkin" name="phpdoc.ini.dist" />
-            <file role="php" baseinstalldir="gherkin" name="phpunit.xml.dist" />
+            <file role="php" baseinstalldir="gherkin" name="phpunit.dist.xml" />
+            <file role="php" baseinstalldir="gherkin" name=".php-cs-fixer.dist.php" />
             <file role="php" baseinstalldir="gherkin" name="CHANGES.md" />
             <file role="php" baseinstalldir="gherkin" name="LICENSE" />
             <file role="php" baseinstalldir="gherkin" name="README.md" />

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -46,7 +46,7 @@ class YamlFileLoader extends AbstractFileLoader
      *
      * @param string $path Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
     public function load($path)
     {

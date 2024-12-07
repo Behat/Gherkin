@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -28,7 +28,7 @@ class KeywordsDumper
     public function __construct(KeywordsInterface $keywords)
     {
         $this->keywords = $keywords;
-        $this->keywordsDumper = array($this, 'dumpKeywords');
+        $this->keywordsDumper = [$this, 'dumpKeywords'];
     }
 
     /**
@@ -63,11 +63,11 @@ class KeywordsDumper
     /**
      * Dumps keyworded feature into string.
      *
-     * @param string $language Keywords language
-     * @param bool   $short    Dump short version
+     * @param string $language        Keywords language
+     * @param bool   $short           Dump short version
      * @param bool   $excludeAsterisk
      *
-     * @return string|array String for short version and array of features for extended
+     * @return array|string String for short version and array of features for extended
      */
     public function dump($language, $short = true, $excludeAsterisk = false)
     {
@@ -85,9 +85,9 @@ class KeywordsDumper
             return trim($languageComment . $this->dumpFeature($keywords, $short, $excludeAsterisk));
         }
 
-        $features = array();
+        $features = [];
         foreach ($keywords as $keyword) {
-            $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+            $keyword = call_user_func($this->keywordsDumper, [$keyword], $short);
             $features[] = trim($languageComment . $this->dumpFeature($keyword, $short, $excludeAsterisk));
         }
 
@@ -97,8 +97,8 @@ class KeywordsDumper
     /**
      * Dumps feature example.
      *
-     * @param string  $keyword Item keyword
-     * @param bool    $short   Dump short version?
+     * @param string $keyword Item keyword
+     * @param bool   $short   Dump short version?
      *
      * @return string
      */
@@ -119,7 +119,7 @@ GHERKIN;
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
             $dump .= $this->dumpBackground($keywords, $short, $excludeAsterisk);
         } else {
-            $keyword = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+            $keyword = call_user_func($this->keywordsDumper, [$keywords[0]], $short);
             $dump .= $this->dumpBackground($keyword, $short, $excludeAsterisk);
         }
 
@@ -130,7 +130,7 @@ GHERKIN;
             $dump .= $this->dumpScenario($keywords, $short, $excludeAsterisk);
         } else {
             foreach ($keywords as $keyword) {
-                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $keyword = call_user_func($this->keywordsDumper, [$keyword], $short);
                 $dump .= $this->dumpScenario($keyword, $short, $excludeAsterisk);
             }
         }
@@ -142,7 +142,7 @@ GHERKIN;
             $dump .= $this->dumpOutline($keywords, $short, $excludeAsterisk);
         } else {
             foreach ($keywords as $keyword) {
-                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $keyword = call_user_func($this->keywordsDumper, [$keyword], $short);
                 $dump .= $this->dumpOutline($keyword, $short, $excludeAsterisk);
             }
         }
@@ -301,7 +301,7 @@ GHERKIN;
         if ($short) {
             $keyword = call_user_func($this->keywordsDumper, $keywords, $short);
         } else {
-            $keyword = call_user_func($this->keywordsDumper, array($keywords[0]), $short);
+            $keyword = call_user_func($this->keywordsDumper, [$keywords[0]], $short);
         }
 
         $dump .= <<<GHERKIN
@@ -352,7 +352,7 @@ GHERKIN;
                     $keyword = mb_substr($keyword, 0, -1, 'utf8');
                     $indent = '';
                 }
-                $keyword = call_user_func($this->keywordsDumper, array($keyword), $short);
+                $keyword = call_user_func($this->keywordsDumper, [$keyword], $short);
                 $dump .= <<<GHERKIN
     {$keyword}{$indent}{$text}
 
