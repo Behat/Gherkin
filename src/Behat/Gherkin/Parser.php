@@ -688,6 +688,9 @@ class Parser
         return $node;
     }
 
+    /**
+     * @return no-return
+     */
     private function rethrowNodeException(NodeException $e): void
     {
         throw new ParserException($e->getMessage() . ($this->file ? ' in file ' . $this->file : ''), 0, $e);
