@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -22,8 +22,6 @@ abstract class SimpleFilter implements FilterInterface
     /**
      * Filters feature according to the filter.
      *
-     * @param FeatureNode $feature
-     *
      * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature)
@@ -32,7 +30,7 @@ abstract class SimpleFilter implements FilterInterface
             return $feature;
         }
 
-        $scenarios = array();
+        $scenarios = [];
         foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($scenario)) {
                 continue;

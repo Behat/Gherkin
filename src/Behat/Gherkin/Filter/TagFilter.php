@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -32,32 +32,29 @@ class TagFilter extends ComplexFilter
     {
         $this->filterString = trim($filterString);
 
-       if(preg_match('/\s/u', $this->filterString)) {
+        if (preg_match('/\s/u', $this->filterString)) {
             trigger_error(
-                "Tags with whitespace are deprecated and may be removed in a future version",
+                'Tags with whitespace are deprecated and may be removed in a future version',
                 E_USER_DEPRECATED
             );
-       }
+        }
     }
 
     /**
      * Filters feature according to the filter.
      *
-     * @param FeatureNode $feature
-     *
      * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = array();
+        $scenarios = [];
         foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($feature, $scenario)) {
                 continue;
             }
 
             if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-
-                $exampleTables = array();
+                $exampleTables = [];
 
                 foreach ($scenario->getExampleTables() as $exampleTable) {
                     if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $exampleTable->getTags()))) {
@@ -106,7 +103,7 @@ class TagFilter extends ComplexFilter
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param FeatureNode $feature Feature node instance
+     * @param FeatureNode       $feature  Feature node instance
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return bool
