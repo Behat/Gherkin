@@ -19,7 +19,7 @@
 
     "require-dev": {
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^10.5",
         "cucumber/cucumber": "dev-gherkin-24.1.0"
     },
 
