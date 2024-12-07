@@ -43,7 +43,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
     public function load($resource)
     {
@@ -195,7 +195,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads steps from provided hash.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     private function loadStepsHash(array $hash)
     {

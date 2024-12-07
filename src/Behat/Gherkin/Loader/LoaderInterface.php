@@ -33,7 +33,7 @@ interface LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
     public function load($resource);
 }

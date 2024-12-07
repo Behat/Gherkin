@@ -22,5 +22,7 @@ return (new PhpCsFixer\Config())
         'yoda_style' => false,
         'concat_space' => ['spacing' => 'one'],
         'phpdoc_types_order' => ['null_adjustment' => 'always_first'],
+        'phpdoc_array_type' => true,
+        'phpdoc_list_type' => true,
     ])
     ->setFinder($finder);
