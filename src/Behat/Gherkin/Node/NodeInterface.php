@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -18,7 +18,7 @@ namespace Behat\Gherkin\Node;
 interface NodeInterface
 {
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -27,7 +27,7 @@ interface NodeInterface
     /**
      * Returns feature declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine();
 }

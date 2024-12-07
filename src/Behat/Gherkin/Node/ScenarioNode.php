@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -24,17 +24,17 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * @var array
      */
-    private $tags = array();
+    private $tags = [];
     /**
      * @var StepNode[]
      */
-    private $steps = array();
+    private $steps = [];
     /**
      * @var string
      */
     private $keyword;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
@@ -42,10 +42,9 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
      * Initializes scenario.
      *
      * @param null|string $title
-     * @param array       $tags
      * @param StepNode[]  $steps
      * @param string      $keyword
-     * @param integer     $line
+     * @param int         $line
      */
     public function __construct($title, array $tags, array $steps, $keyword, $line)
     {
@@ -57,7 +56,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -71,8 +70,8 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
      *
      * @return null|string
      *
-     * @deprecated You should use {@see self::getName()} instead as this method will be removed in the next
-     *             major version.
+     * @deprecated you should use {@see self::getName()} instead as this method will be removed in the next
+     *             major version
      */
     public function getTitle()
     {
@@ -149,7 +148,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns scenario declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

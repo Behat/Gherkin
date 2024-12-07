@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -28,7 +28,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * @var string[]
      */
-    private $tags = array();
+    private $tags = [];
     /**
      * @var null|BackgroundNode
      */
@@ -36,7 +36,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * @var ScenarioInterface[]
      */
-    private $scenarios = array();
+    private $scenarios = [];
     /**
      * @var string
      */
@@ -50,7 +50,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $file;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
@@ -60,12 +60,11 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param null|string         $title
      * @param null|string         $description
      * @param string[]            $tags
-     * @param null|BackgroundNode $background
      * @param ScenarioInterface[] $scenarios
      * @param string              $keyword
      * @param string              $language
-     * @param null|string         $file        The absolute path to the feature file.
-     * @param integer             $line
+     * @param null|string         $file        the absolute path to the feature file
+     * @param int                 $line
      */
     public function __construct(
         $title,
@@ -76,7 +75,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $keyword,
         $language,
         $file,
-        $line
+        $line,
     ) {
         // Verify that the feature file is an absolute path.
         if (!empty($file) && !$this->isAbsolutePath($file)) {
@@ -94,7 +93,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -238,7 +237,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

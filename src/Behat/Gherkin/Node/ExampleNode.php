@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -34,7 +34,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $tokens;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
     /**
@@ -57,9 +57,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      * @param string[]    $tags
      * @param StepNode[]  $outlineSteps
      * @param string[]    $tokens
-     * @param integer     $line         Line number within the feature file.
-     * @param string|null $outlineTitle Original title of the scenario outline.
-     * @param null|int    $index        The 1-based index of the row/example within the scenario outline.
+     * @param int         $line         line number within the feature file
+     * @param null|string $outlineTitle original title of the scenario outline
+     * @param null|int    $index        the 1-based index of the row/example within the scenario outline
      */
     public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
     {
@@ -73,7 +73,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -97,8 +97,8 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      *
      * @return string
      *
-     * @deprecated You should normally not depend on the original row text, but if you really do, please switch
-     *             to {@see self::getExampleText()} as this method will be removed in the next major version.
+     * @deprecated you should normally not depend on the original row text, but if you really do, please switch
+     *             to {@see self::getExampleText()} as this method will be removed in the next major version
      */
     public function getTitle()
     {
@@ -154,7 +154,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     public function getSteps()
     {
-        return $this->steps = $this->steps ? : $this->createExampleSteps();
+        return $this->steps = $this->steps ?: $this->createExampleSteps();
     }
 
     /**
@@ -170,7 +170,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {
@@ -211,7 +211,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     protected function createExampleSteps()
     {
-        $steps = array();
+        $steps = [];
         foreach ($this->outlineSteps as $outlineStep) {
             $keyword = $outlineStep->getKeyword();
             $keywordType = $outlineStep->getKeywordType();
@@ -249,8 +249,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Replaces tokens in table with row values.
      *
-     * @param TableNode $argument
-     *
      * @return TableNode
      */
     protected function replaceTableArgumentTokens(TableNode $argument)
@@ -267,8 +265,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 
     /**
      * Replaces tokens in PyString with row values.
-     *
-     * @param PyStringNode $argument
      *
      * @return PyStringNode
      */
