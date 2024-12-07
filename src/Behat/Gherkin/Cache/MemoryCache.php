@@ -20,8 +20,14 @@ use Behat\Gherkin\Node\FeatureNode;
  */
 class MemoryCache implements CacheInterface
 {
-    private $features = [];
-    private $timestamps = [];
+    /**
+     * @var array<string, FeatureNode>
+     */
+    private array $features = [];
+    /**
+     * @var array<string, int>
+     */
+    private array $timestamps = [];
 
     /**
      * Checks that cache for feature exists and is fresh.
