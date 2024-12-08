@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,8 +12,6 @@ namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Directory contents loader.
@@ -52,19 +50,19 @@ class DirectoryLoader extends AbstractFileLoader
      *
      * @param string $path Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
     public function load($path)
     {
         $path = $this->findAbsolutePath($path);
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
         $paths = array_map('strval', iterator_to_array($iterator));
         uasort($paths, 'strnatcasecmp');
 
-        $features = array();
+        $features = [];
 
         foreach ($paths as $path) {
             $path = (string) $path;

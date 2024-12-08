@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -70,13 +70,11 @@ class LineFilter implements FilterInterface
     /**
      * Filters feature according to the filter and returns new one.
      *
-     * @param FeatureNode $feature
-     *
      * @return FeatureNode
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = array();
+        $scenarios = [];
         foreach ($feature->getScenarios() as $scenario) {
             if (!$this->isScenarioMatch($scenario)) {
                 continue;
@@ -88,7 +86,7 @@ class LineFilter implements FilterInterface
                     $lines = array_keys($table);
 
                     if (in_array($this->filterLine, $lines)) {
-                        $filteredTable = array($lines[0] => $table[$lines[0]]);
+                        $filteredTable = [$lines[0] => $table[$lines[0]]];
 
                         if ($lines[0] !== $this->filterLine) {
                             $filteredTable[$this->filterLine] = $table[$this->filterLine];
@@ -98,7 +96,7 @@ class LineFilter implements FilterInterface
                             $scenario->getTitle(),
                             $scenario->getTags(),
                             $scenario->getSteps(),
-                            array(new ExampleTableNode($filteredTable, $exampleTable->getKeyword(), $exampleTable->getTags())),
+                            [new ExampleTableNode($filteredTable, $exampleTable->getKeyword(), $exampleTable->getTags())],
                             $scenario->getKeyword(),
                             $scenario->getLine()
                         );

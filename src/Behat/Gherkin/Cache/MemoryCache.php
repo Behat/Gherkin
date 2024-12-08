@@ -1,12 +1,12 @@
 <?php
 
 /*
-* This file is part of the Behat Gherkin.
-* (c) Konstantin Kudryashov <ever.zet@gmail.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Behat\Gherkin\Cache;
 
@@ -20,14 +20,20 @@ use Behat\Gherkin\Node\FeatureNode;
  */
 class MemoryCache implements CacheInterface
 {
-    private $features = array();
-    private $timestamps = array();
+    /**
+     * @var array<string, FeatureNode>
+     */
+    private array $features = [];
+    /**
+     * @var array<string, int>
+     */
+    private array $timestamps = [];
 
     /**
      * Checks that cache for feature exists and is fresh.
      *
-     * @param string  $path      Feature path
-     * @param integer $timestamp The last time feature was updated
+     * @param string $path      Feature path
+     * @param int    $timestamp The last time feature was updated
      *
      * @return bool
      */
@@ -60,7 +66,7 @@ class MemoryCache implements CacheInterface
      */
     public function write($path, FeatureNode $feature)
     {
-        $this->features[$path]   = $feature;
+        $this->features[$path] = $feature;
         $this->timestamps[$path] = time();
     }
 }
