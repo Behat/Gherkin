@@ -7,7 +7,7 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 
-abstract class FilterTest extends TestCase
+abstract class FilterTestCase extends TestCase
 {
     protected function getParser()
     {

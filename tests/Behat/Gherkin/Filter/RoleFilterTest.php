@@ -5,7 +5,7 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\RoleFilter;
 use Behat\Gherkin\Node\FeatureNode;
 
-class RoleFilterTest extends FilterTest
+class RoleFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter()
     {
@@ -62,7 +62,7 @@ NAR;
 
         $filter = new RoleFilter('*user');
         $this->assertTrue($filter->isFeatureMatch($feature));
-        
+
         $filter = new RoleFilter('[\w\s]+user');
         $this->assertFalse($filter->isFeatureMatch($feature));
 

@@ -8,7 +8,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 
-class LineRangeFilterTest extends FilterTest
+class LineRangeFilterTest extends FilterTestCase
 {
     public function featureLineRangeProvider()
     {
