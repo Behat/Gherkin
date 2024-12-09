@@ -5,7 +5,7 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\NarrativeFilter;
 use Behat\Gherkin\Node\FeatureNode;
 
-class NarrativeFilterTest extends FilterTest
+class NarrativeFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter()
     {

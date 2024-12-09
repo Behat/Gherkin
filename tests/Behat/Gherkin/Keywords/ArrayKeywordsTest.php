@@ -5,7 +5,7 @@ namespace Tests\Behat\Gherkin\Keywords;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Node\StepNode;
 
-class ArrayKeywordsTest extends KeywordsTest
+class ArrayKeywordsTest extends KeywordsTestCase
 {
     protected function getKeywords()
     {

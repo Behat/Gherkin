@@ -5,7 +5,7 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\PathsFilter;
 use Behat\Gherkin\Node\FeatureNode;
 
-class PathsFilterTest extends FilterTest
+class PathsFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter()
     {
@@ -44,7 +44,7 @@ class PathsFilterTest extends FilterTest
 
         $filter = new PathsFilter(array($fixtures . 'full_path'));
         $this->assertTrue($filter->isFeatureMatch($feature));
-        
+
         $filter = new PathsFilter(array($fixtures . 'ful._path')); // Don't accept regexp
         $this->assertFalse($filter->isFeatureMatch($feature));
     }

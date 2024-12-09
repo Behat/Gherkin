@@ -12,7 +12,7 @@ use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 
-abstract class KeywordsTest extends TestCase
+abstract class KeywordsTestCase extends TestCase
 {
     abstract protected function getKeywords();
     abstract protected function getKeywordsArray();
