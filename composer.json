@@ -74,6 +74,15 @@
         "test": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpunit ./tests"
+        ],
+        "fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer fix --diff --show-progress=dots"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": false
+        }
     }
 }
