@@ -27,6 +27,14 @@ We use automated tools to ensure that the code has a consistent style and is of 
 composer lint
 ```
 
+## Automated Fixes
+
+Some problems detected by the linting tools can be fixed automatically. Simply run the following:
+
+```shell
+composer fix
+```
+
 ## Contributing to Gherkin Translations
 
 Gherkin supports &rarr;40 different languages and you could add more! You might notice `i18n.php` file in the root of

@@ -20,7 +20,8 @@
     "require-dev": {
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
-        "cucumber/cucumber": "dev-gherkin-24.1.0"
+        "cucumber/cucumber": "dev-gherkin-24.1.0",
+        "friendsofphp/php-cs-fixer": "^3.65"
     },
 
     "suggest": {
@@ -67,11 +68,21 @@
 
     "scripts": {
         "lint": [
-            "Composer\\Config::disableProcessTimeout"
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpunit ./tests"
+        ],
+        "fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/php-cs-fixer fix --diff --show-progress=dots"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": false
+        }
     }
 }
