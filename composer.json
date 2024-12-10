@@ -2,14 +2,14 @@
     "name":         "behat/gherkin",
     "description":  "Gherkin DSL parser for PHP",
     "keywords":     ["BDD", "parser", "DSL", "Behat", "Gherkin", "Cucumber"],
-    "homepage":     "http://behat.org/",
+    "homepage":     "https://behat.org/",
     "type":         "library",
     "license":      "MIT",
     "authors":      [
         {
             "name":      "Konstantin Kudryashov",
             "email":     "ever.zet@gmail.com",
-            "homepage":  "http://everzet.com"
+            "homepage":  "https://everzet.com"
         }
     ],
 
@@ -63,5 +63,15 @@
                 }
             }
         }
-    ]
+    ],
+
+    "scripts": {
+        "lint": [
+            "Composer\\Config::disableProcessTimeout"
+        ],
+        "test": [
+            "Composer\\Config::disableProcessTimeout",
+            "vendor/bin/phpunit ./tests"
+        ]
+    }
 }
