@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Keywords\ArrayKeywords;
@@ -13,20 +21,20 @@ abstract class FilterTestCase extends TestCase
     {
         return new Parser(
             new Lexer(
-                new ArrayKeywords(array(
-                    'en' => array(
-                        'feature'          => 'Feature',
-                        'background'       => 'Background',
-                        'scenario'         => 'Scenario',
+                new ArrayKeywords([
+                    'en' => [
+                        'feature' => 'Feature',
+                        'background' => 'Background',
+                        'scenario' => 'Scenario',
                         'scenario_outline' => 'Scenario Outline|Scenario Template',
-                        'examples'         => 'Examples|Scenarios',
-                        'given'            => 'Given',
-                        'when'             => 'When',
-                        'then'             => 'Then',
-                        'and'              => 'And',
-                        'but'              => 'But'
-                    )
-                ))
+                        'examples' => 'Examples|Scenarios',
+                        'given' => 'Given',
+                        'when' => 'When',
+                        'then' => 'Then',
+                        'and' => 'And',
+                        'but' => 'But',
+                    ],
+                ])
             )
         );
     }

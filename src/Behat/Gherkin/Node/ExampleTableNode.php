@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -34,7 +34,7 @@ class ExampleTableNode extends TableNode
      * @param string $keyword
      * @param string[] $tags
      */
-    public function __construct(array $table, $keyword, array $tags = array())
+    public function __construct(array $table, $keyword, array $tags = [])
     {
         $this->keyword = $keyword;
         $this->tags = $tags;
@@ -43,7 +43,7 @@ class ExampleTableNode extends TableNode
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -53,8 +53,9 @@ class ExampleTableNode extends TableNode
     }
 
     /**
-     * Returns attached tags
-     * @return \string[]
+     * Returns attached tags.
+     *
+     * @return string[]
      */
     public function getTags()
     {

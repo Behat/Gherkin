@@ -1,13 +1,21 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin;
 
-use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Loader\YamlFileLoader;
+use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
-use Behat\Gherkin\Keywords\ArrayKeywords;
-use Behat\Gherkin\Loader\YamlFileLoader;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
@@ -17,12 +25,12 @@ class ParserTest extends TestCase
 
     public function parserTestDataProvider()
     {
-        $data = array();
+        $data = [];
 
         foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
 
-            $data[$testname] = array($testname);
+            $data[$testname] = [$testname];
         }
 
         return $data;
@@ -73,7 +81,7 @@ Feature:
 Scenario:
 When x
 FEATURE
-);
+        );
 
         $scenarios = $feature->getScenarios();
         /** @var ScenarioNode $scenario */
@@ -84,46 +92,46 @@ FEATURE
 
     protected function getGherkinParser()
     {
-        if (null === $this->gherkin) {
-            $keywords       = new ArrayKeywords(array(
-                'en' => array(
-                    'feature'          => 'Feature',
-                    'background'       => 'Background',
-                    'scenario'         => 'Scenario',
+        if ($this->gherkin === null) {
+            $keywords = new ArrayKeywords([
+                'en' => [
+                    'feature' => 'Feature',
+                    'background' => 'Background',
+                    'scenario' => 'Scenario',
                     'scenario_outline' => 'Scenario Outline',
-                    'examples'         => 'Examples',
-                    'given'            => 'Given',
-                    'when'             => 'When',
-                    'then'             => 'Then',
-                    'and'              => 'And',
-                    'but'              => 'But'
-                ),
-                'ru' => array(
-                    'feature'          => 'Функционал',
-                    'background'       => 'Предыстория',
-                    'scenario'         => 'Сценарий',
+                    'examples' => 'Examples',
+                    'given' => 'Given',
+                    'when' => 'When',
+                    'then' => 'Then',
+                    'and' => 'And',
+                    'but' => 'But',
+                ],
+                'ru' => [
+                    'feature' => 'Функционал',
+                    'background' => 'Предыстория',
+                    'scenario' => 'Сценарий',
                     'scenario_outline' => 'Структура сценария',
-                    'examples'         => 'Примеры',
-                    'given'            => 'Допустим',
-                    'when'             => 'То',
-                    'then'             => 'Если',
-                    'and'              => 'И',
-                    'but'              => 'Но'
-                ),
-                'ja' => array (
-                    'feature'           => 'フィーチャ',
-                    'background'        => '背景',
-                    'scenario'          => 'シナリオ',
-                    'scenario_outline'  => 'シナリオアウトライン',
-                    'examples'          => '例|サンプル',
-                    'given'             => '前提<',
-                    'when'              => 'もし<',
-                    'then'              => 'ならば<',
-                    'and'               => 'かつ<',
-                    'but'               => 'しかし<'
-                )
-            ));
-            $this->gherkin  = new Parser(new Lexer($keywords));
+                    'examples' => 'Примеры',
+                    'given' => 'Допустим',
+                    'when' => 'То',
+                    'then' => 'Если',
+                    'and' => 'И',
+                    'but' => 'Но',
+                ],
+                'ja' => [
+                    'feature' => 'フィーチャ',
+                    'background' => '背景',
+                    'scenario' => 'シナリオ',
+                    'scenario_outline' => 'シナリオアウトライン',
+                    'examples' => '例|サンプル',
+                    'given' => '前提<',
+                    'when' => 'もし<',
+                    'then' => 'ならば<',
+                    'and' => 'かつ<',
+                    'but' => 'しかし<',
+                ],
+            ]);
+            $this->gherkin = new Parser(new Lexer($keywords));
         }
 
         return $this->gherkin;
@@ -131,7 +139,7 @@ FEATURE
 
     protected function getYamlParser()
     {
-        if (null === $this->yaml) {
+        if ($this->yaml === null) {
             $this->yaml = new YamlFileLoader();
         }
 
@@ -142,13 +150,13 @@ FEATURE
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
 
-        return array($this->getGherkinParser()->parse(file_get_contents($file), $file));
+        return [$this->getGherkinParser()->parse(file_get_contents($file), $file)];
     }
 
     protected function parseEtalon($etalon)
     {
         $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
-        $feature  = $features[0];
+        $feature = $features[0];
 
         return new FeatureNode(
             $feature->getTitle(),
@@ -165,7 +173,7 @@ FEATURE
 
     public function testParsingManyCommentsShouldPass()
     {
-        if (! extension_loaded('xdebug')) {
+        if (!extension_loaded('xdebug')) {
             $this->markTestSkipped('xdebug extension must be enabled.');
         }
         $defaultPHPSetting = 256;

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -23,7 +23,7 @@ interface ComplexFilterInterface extends FeatureFilterInterface
     /**
      * Checks if scenario or outline matches specified filter.
      *
-     * @param FeatureNode       $feature  Feature node instance
+     * @param FeatureNode $feature Feature node instance
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return bool

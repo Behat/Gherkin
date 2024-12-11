@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CachedArrayKeywords;
@@ -14,22 +22,22 @@ class CachedArrayKeywordsTest extends KeywordsTestCase
 
     protected function getKeywordsArray()
     {
-        return include(__DIR__ . '/../../../../i18n.php');
+        return include __DIR__ . '/../../../../i18n.php';
     }
 
     protected function getSteps($keywords, $text, &$line, $keywordType)
     {
-        $steps = array();
+        $steps = [];
         foreach (explode('|', $keywords) as $keyword) {
-            if ('*' === $keyword) {
+            if ($keyword === '*') {
                 continue;
             }
 
-            if (false !== mb_strpos($keyword, '<')) {
+            if (mb_strpos($keyword, '<') !== false) {
                 $keyword = mb_substr($keyword, 0, -1);
             }
 
-            $steps[] = new StepNode($keyword, $text, array(), $line++, $keywordType);
+            $steps[] = new StepNode($keyword, $text, [], $line++, $keywordType);
         }
 
         return $steps;

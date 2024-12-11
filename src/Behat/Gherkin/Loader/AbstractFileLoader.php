@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -38,8 +38,8 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      */
     protected function findRelativePath($path)
     {
-        if (null !== $this->basePath) {
-            return strtr($path, array($this->basePath . DIRECTORY_SEPARATOR => ''));
+        if ($this->basePath !== null) {
+            return strtr($path, [$this->basePath . DIRECTORY_SEPARATOR => '']);
         }
 
         return $path;
@@ -58,7 +58,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
             return realpath($path);
         }
 
-        if (null === $this->basePath) {
+        if ($this->basePath === null) {
             return false;
         }
 

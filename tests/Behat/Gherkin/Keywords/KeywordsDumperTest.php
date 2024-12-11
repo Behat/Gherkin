@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\ArrayKeywords;
@@ -12,32 +20,32 @@ class KeywordsDumperTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->keywords = new ArrayKeywords(array(
-           'en' => array(
-               'feature'          => 'Feature',
-               'background'       => 'Background',
-               'scenario'         => 'Scenario',
-               'scenario_outline' => 'Scenario Outline|Scenario Template',
-               'examples'         => 'Examples|Scenarios',
-               'given'            => 'Given',
-               'when'             => 'When',
-               'then'             => 'Then',
-               'and'              => 'And',
-               'but'              => 'But'
-           ),
-           'ru' => array(
-               'feature'          => 'Функционал|Фича',
-               'background'       => 'Предыстория|Бэкграунд',
-               'scenario'         => 'Сценарий|История',
-               'scenario_outline' => 'Структура сценария|Аутлайн',
-               'examples'         => 'Примеры',
-               'given'            => 'Допустим',
-               'when'             => 'Если|@',
-               'then'             => 'То',
-               'and'              => 'И',
-               'but'              => 'Но'
-           )
-        ));
+        $this->keywords = new ArrayKeywords([
+            'en' => [
+                'feature' => 'Feature',
+                'background' => 'Background',
+                'scenario' => 'Scenario',
+                'scenario_outline' => 'Scenario Outline|Scenario Template',
+                'examples' => 'Examples|Scenarios',
+                'given' => 'Given',
+                'when' => 'When',
+                'then' => 'Then',
+                'and' => 'And',
+                'but' => 'But',
+            ],
+            'ru' => [
+                'feature' => 'Функционал|Фича',
+                'background' => 'Предыстория|Бэкграунд',
+                'scenario' => 'Сценарий|История',
+                'scenario_outline' => 'Структура сценария|Аутлайн',
+                'examples' => 'Примеры',
+                'given' => 'Допустим',
+                'when' => 'Если|@',
+                'then' => 'То',
+                'and' => 'И',
+                'but' => 'Но',
+            ],
+        ]);
     }
 
     public function testEnKeywordsDumper()
@@ -119,7 +127,7 @@ GHERKIN;
     {
         $dumper = new KeywordsDumper($this->keywords);
         $dumper->setKeywordsDumperFunction(function ($keywords) {
-            return '<keyword>'.implode(', ', $keywords).'</keyword>';
+            return '<keyword>' . implode(', ', $keywords) . '</keyword>';
         });
 
         $dumped = $dumper->dump('ru');
@@ -161,7 +169,7 @@ GHERKIN;
         $dumper = new KeywordsDumper($this->keywords);
 
         $dumped = $dumper->dump('ru', false);
-        $etalon = array(
+        $etalon = [
             <<<GHERKIN
 # language: ru
 Функционал: Internal operations
@@ -263,8 +271,8 @@ GHERKIN
     Примеры:
       | agent1 | agent2 |
       | D      | M      |
-GHERKIN
-        );
+GHERKIN,
+        ];
 
         $this->assertEquals($etalon, $dumped);
     }
