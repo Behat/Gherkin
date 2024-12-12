@@ -155,7 +155,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $hash = [];
 
         foreach ($this->getRows() as $row) {
-            $hash[array_shift($row)] = (count($row) == 1) ? $row[0] : $row;
+            $hash[array_shift($row)] = count($row) === 1 ? $row[0] : $row;
         }
 
         return $hash;
@@ -302,7 +302,8 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     public function getTableAsString()
     {
         $lines = [];
-        for ($i = 0; $i < count($this->getRows()); ++$i) {
+        $rowCount = count($this->getRows());
+        for ($i = 0; $i < $rowCount; ++$i) {
             $lines[] = $this->getRowAsString($i);
         }
 
@@ -374,7 +375,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     protected function padRight($text, $length)
     {
         while ($length > mb_strlen($text, 'utf8')) {
-            $text = $text . ' ';
+            $text .= ' ';
         }
 
         return $text;

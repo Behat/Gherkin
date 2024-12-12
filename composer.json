@@ -69,7 +69,7 @@
     "scripts": {
         "lint": [
             "Composer\\Config::disableProcessTimeout",
-            "vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots"
+            "vendor/bin/php-cs-fixer check --diff --show-progress=dots --verbose"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",

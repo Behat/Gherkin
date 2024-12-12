@@ -176,7 +176,8 @@ class OutlineNode implements ScenarioInterface
 
         /** @var ExampleTableNode $exampleTableNode */
         $exampleTableNode = new ExampleTableNode($table, $this->tables[0]->getKeyword());
-        for ($i = 1; $i < count($this->tables); ++$i) {
+        $tableCount = count($this->tables);
+        for ($i = 1; $i < $tableCount; ++$i) {
             $exampleTableNode->mergeRowsFromTable($this->tables[$i]);
         }
 

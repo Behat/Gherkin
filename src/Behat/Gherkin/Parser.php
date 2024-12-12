@@ -192,36 +192,22 @@ class Parser
             $type = $this->predictTokenType();
         }
 
-        switch ($type) {
-            case 'Feature':
-                return $this->parseFeature();
-            case 'Background':
-                return $this->parseBackground();
-            case 'Scenario':
-                return $this->parseScenario();
-            case 'Outline':
-                return $this->parseOutline();
-            case 'Examples':
-                return $this->parseExamples();
-            case 'TableRow':
-                return $this->parseTable();
-            case 'PyStringOp':
-                return $this->parsePyString();
-            case 'Step':
-                return $this->parseStep();
-            case 'Text':
-                return $this->parseText();
-            case 'Newline':
-                return $this->parseNewline();
-            case 'Tag':
-                return $this->parseTags();
-            case 'Language':
-                return $this->parseLanguage();
-            case 'EOS':
-                return '';
-        }
-
-        throw new ParserException(sprintf('Unknown token type: %s', $type));
+        return match ($type) {
+            'Feature' => $this->parseFeature(),
+            'Background' => $this->parseBackground(),
+            'Scenario' => $this->parseScenario(),
+            'Outline' => $this->parseOutline(),
+            'Examples' => $this->parseExamples(),
+            'TableRow' => $this->parseTable(),
+            'PyStringOp' => $this->parsePyString(),
+            'Step' => $this->parseStep(),
+            'Text' => $this->parseText(),
+            'Newline' => $this->parseNewline(),
+            'Tag' => $this->parseTags(),
+            'Language' => $this->parseLanguage(),
+            'EOS' => '',
+            default => throw new ParserException(sprintf('Unknown token type: %s', $type)),
+        };
     }
 
     /**
@@ -245,7 +231,7 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Feature');
+        $this->passedNodesStack[] = 'Feature';
 
         // Parse description, background, scenarios & outlines
         while ($this->predictTokenType() !== 'EOS') {
@@ -380,7 +366,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Scenario');
+        $this->passedNodesStack[] = 'Scenario';
 
         // Parse description and steps
         $steps = [];
@@ -447,7 +433,7 @@ class Parser
         // Parse description, steps and examples
         $steps = [];
 
-        array_push($this->passedNodesStack, 'Outline');
+        $this->passedNodesStack[] = 'Outline';
 
         while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
             if ($nextTokenType === 'Comment') {
@@ -522,7 +508,7 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Step');
+        $this->passedNodesStack[] = 'Step';
 
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
@@ -656,7 +642,10 @@ class Parser
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                trigger_error(sprintf('Whitespace in tags is deprecated, found "%s"', $tag), E_USER_DEPRECATED);
+                trigger_error(
+                    sprintf('Whitespace in tags is deprecated, found "%s"', $tag),
+                    E_USER_DEPRECATED
+                );
             }
         }
     }

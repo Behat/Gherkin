@@ -38,12 +38,12 @@ class GherkinFileLoaderTest extends TestCase
     public function testLoad()
     {
         $features = $this->loader->load($this->featuresPath . '/pystring.feature');
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());
         $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
 
         $features = $this->loader->load($this->featuresPath . '/multiline_name.feature');
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
         $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
     }
@@ -62,7 +62,7 @@ class GherkinFileLoaderTest extends TestCase
             ->method('write');
 
         $features = $this->loader->load($this->featuresPath . '/pystring.feature');
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
     }
 
     public function testParsingCachedFeature()
@@ -98,13 +98,13 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports('features/tables.feature'));
 
         $features = $this->loader->load('features/pystring.feature');
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());
         $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature'), $features[0]->getFile());
 
         $this->loader->setBasePath($this->featuresPath);
         $features = $this->loader->load('multiline_name.feature');
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
         $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
     }

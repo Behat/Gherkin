@@ -30,7 +30,7 @@ class CucumberKeywordsTest extends KeywordsTestCase
     {
         $steps = [];
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
-            if (mb_strpos($keyword, '<') !== false) {
+            if (str_contains($keyword, '<')) {
                 $keyword = mb_substr($keyword, 0, -1);
             }
 

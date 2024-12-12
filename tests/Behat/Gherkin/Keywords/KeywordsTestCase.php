@@ -18,6 +18,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 abstract class KeywordsTestCase extends TestCase
@@ -144,8 +145,8 @@ abstract class KeywordsTestCase extends TestCase
 
         try {
             $parsed = $parser->parse($source, __DIR__ . DIRECTORY_SEPARATOR . $language . '_' . ($num + 1) . '.feature');
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage() . ":\n" . $source, 0, $e);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage() . ":\n" . $source, 0, $e);
         }
 
         $this->assertEquals($etalon, $parsed);

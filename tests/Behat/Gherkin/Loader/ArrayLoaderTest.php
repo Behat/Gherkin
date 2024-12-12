@@ -56,7 +56,7 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(2, count($features));
+        $this->assertCount(2, $features);
 
         $this->assertEquals(3, $features[0]->getLine());
         $this->assertEquals('First feature', $features[0]->getTitle());
@@ -96,11 +96,11 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
 
         $scenarios = $features[0]->getScenarios();
 
-        $this->assertEquals(3, count($scenarios));
+        $this->assertCount(3, $scenarios);
 
         $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
         $this->assertEquals('First scenario', $scenarios[0]->getTitle());
@@ -139,11 +139,11 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
 
         $outlines = $features[0]->getScenarios();
 
-        $this->assertEquals(2, count($outlines));
+        $this->assertCount(2, $outlines);
 
         $this->assertInstanceOf('Behat\Gherkin\Node\OutlineNode', $outlines[0]);
         $this->assertEquals('First outline', $outlines[0]->getTitle());
@@ -182,7 +182,7 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
 
         /** @var OutlineNode[] $scenarios */
         $scenarios = $features[0]->getScenarios();
@@ -211,7 +211,7 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(3, count($features));
+        $this->assertCount(3, $features);
 
         $this->assertFalse($features[0]->hasBackground());
         $this->assertTrue($features[1]->hasBackground());
@@ -254,7 +254,7 @@ class ArrayLoaderTest extends TestCase
 
         $background = $features[0]->getBackground();
         $this->assertTrue($background->hasSteps());
-        $this->assertEquals(2, count($background->getSteps()));
+        $this->assertCount(2, $background->getSteps());
         $steps = $background->getSteps();
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
@@ -271,7 +271,7 @@ class ArrayLoaderTest extends TestCase
 
         $scenario = $scenarios[0];
         $this->assertTrue($scenario->hasSteps());
-        $this->assertEquals(2, count($scenario->getSteps()));
+        $this->assertCount(2, $scenario->getSteps());
         $steps = $scenario->getSteps();
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
@@ -286,7 +286,7 @@ class ArrayLoaderTest extends TestCase
 
         $outline = $scenarios[1];
         $this->assertTrue($outline->hasSteps());
-        $this->assertEquals(2, count($outline->getSteps()));
+        $this->assertCount(2, $outline->getSteps());
         $steps = $outline->getSteps();
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
@@ -350,7 +350,7 @@ class ArrayLoaderTest extends TestCase
 
         $steps = $background->getSteps();
 
-        $this->assertEquals(3, count($steps));
+        $this->assertCount(3, $steps);
 
         $arguments = $steps[0]->getArguments();
         $this->assertEquals('Gangway!', $steps[0]->getType());
@@ -385,7 +385,7 @@ class ArrayLoaderTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals('Some feature', $features[0]->getTitle());
     }
 }

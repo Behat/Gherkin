@@ -29,12 +29,18 @@ class RoleFilter extends SimpleFilter
      */
     public function __construct($role)
     {
-        $this->pattern = '/as an? ' . strtr(preg_quote($role, '/'), [
-            '\*' => '.*',
-            '\?' => '.',
-            '\[' => '[',
-            '\]' => ']',
-        ]) . '[$\n]/i';
+        $this->pattern = sprintf(
+            '/as an? %s[$\n]/i',
+            strtr(
+                preg_quote($role, '/'),
+                [
+                    '\*' => '.*',
+                    '\?' => '.',
+                    '\[' => '[',
+                    '\]' => ']',
+                ]
+            )
+        );
     }
 
     /**
@@ -46,7 +52,7 @@ class RoleFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return preg_match($this->pattern, $feature->getDescription() ?? '') === 1;
+        return (bool) preg_match($this->pattern, $feature->getDescription() ?? '');
     }
 
     /**
