@@ -11,7 +11,6 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\ArrayLoader;
-use Behat\Gherkin\Node\OutlineNode;
 use PHPUnit\Framework\TestCase;
 
 class ArrayLoaderTest extends TestCase
@@ -184,7 +183,6 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertEquals(1, count($features));
 
-        /** @var OutlineNode[] $scenarios */
         $scenarios = $features[0]->getScenarios();
         $scenario = $scenarios[0];
 

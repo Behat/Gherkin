@@ -27,7 +27,7 @@ interface StepContainerInterface extends NodeInterface
     /**
      * Returns container steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     public function getSteps();
 }

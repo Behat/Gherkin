@@ -223,7 +223,7 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Feature');
+        $this->passedNodesStack[] = 'Feature';
 
         // Parse description, background, scenarios & outlines
         while ($this->predictTokenType() !== 'EOS') {
@@ -335,7 +335,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Scenario');
+        $this->passedNodesStack[] = 'Scenario';
 
         // Parse description and steps
         $steps = [];
@@ -393,7 +393,7 @@ class Parser
         // Parse description, steps and examples
         $steps = [];
 
-        array_push($this->passedNodesStack, 'Outline');
+        $this->passedNodesStack[] = 'Outline';
 
         while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
             if ($nextTokenType === 'Comment') {
@@ -454,7 +454,7 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Step');
+        $this->passedNodesStack[] = 'Step';
 
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
@@ -582,7 +582,7 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param string[] $tags
+     * @param array<array-key, string> $tags
      */
     protected function guardTags(array $tags)
     {
@@ -641,7 +641,7 @@ class Parser
     /**
      * Parses the rows of a table.
      *
-     * @return string[][]
+     * @return array<int, list<string>>
      */
     private function parseTableRows()
     {
@@ -663,7 +663,7 @@ class Parser
     /**
      * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
-     * @param StepNode[] $steps
+     * @param list<StepNode> $steps
      *
      * @return StepNode
      */

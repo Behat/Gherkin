@@ -32,7 +32,7 @@ class StepNode implements NodeInterface
      */
     private $text;
     /**
-     * @var ArgumentInterface[]
+     * @var list<ArgumentInterface>
      */
     private $arguments = [];
     /**
@@ -45,7 +45,7 @@ class StepNode implements NodeInterface
      *
      * @param string $keyword
      * @param string $text
-     * @param ArgumentInterface[] $arguments
+     * @param list<ArgumentInterface> $arguments
      * @param int $line
      * @param string $keywordType
      */
@@ -127,7 +127,7 @@ class StepNode implements NodeInterface
     /**
      * Returns step arguments.
      *
-     * @return ArgumentInterface[]
+     * @return list<ArgumentInterface>
      */
     public function getArguments()
     {
