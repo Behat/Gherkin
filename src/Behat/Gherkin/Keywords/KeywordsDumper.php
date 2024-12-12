@@ -105,13 +105,13 @@ class KeywordsDumper
     protected function dumpFeature($keyword, $short = true, $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
-{$keyword}: Internal operations
-  In order to stay secret
-  As a secret organization
-  We need to be able to erase past agents' memory
+        {$keyword}: Internal operations
+          In order to stay secret
+          As a secret organization
+          We need to be able to erase past agents' memory
 
 
-GHERKIN;
+        GHERKIN;
 
         // Background
         $keywords = explode('|', $this->keywords->getBackgroundKeywords());
@@ -161,9 +161,9 @@ GHERKIN;
     protected function dumpBackground($keyword, $short = true, $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
-  {$keyword}:
+          {$keyword}:
 
-GHERKIN;
+        GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
@@ -195,9 +195,9 @@ GHERKIN;
     protected function dumpScenario($keyword, $short = true, $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
-  {$keyword}: Erasing agent memory
+          {$keyword}: Erasing agent memory
 
-GHERKIN;
+        GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
@@ -253,9 +253,9 @@ GHERKIN;
     protected function dumpOutline($keyword, $short = true, $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
-  {$keyword}: Erasing other agents' memory
+          {$keyword}: Erasing other agents' memory
 
-GHERKIN;
+        GHERKIN;
 
         // Given
         $dump .= $this->dumpStep(
@@ -306,11 +306,11 @@ GHERKIN;
 
         $dump .= <<<GHERKIN
 
-    {$keyword}:
-      | agent1 | agent2 |
-      | D      | M      |
+            {$keyword}:
+              | agent1 | agent2 |
+              | D      | M      |
 
-GHERKIN;
+        GHERKIN;
 
         return $dump . "\n";
     }
@@ -338,9 +338,9 @@ GHERKIN;
             );
             $keywords = call_user_func($this->keywordsDumper, $keywords, $short);
             $dump .= <<<GHERKIN
-    {$keywords} {$text}
+                {$keywords} {$text}
 
-GHERKIN;
+            GHERKIN;
         } else {
             foreach ($keywords as $keyword) {
                 if ($excludeAsterisk && $keyword === '*') {
@@ -354,9 +354,9 @@ GHERKIN;
                 }
                 $keyword = call_user_func($this->keywordsDumper, [$keyword], $short);
                 $dump .= <<<GHERKIN
-    {$keyword}{$indent}{$text}
+                    {$keyword}{$indent}{$text}
 
-GHERKIN;
+                GHERKIN;
             }
         }
 

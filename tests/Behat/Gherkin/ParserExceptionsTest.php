@@ -55,11 +55,11 @@ class ParserExceptionsTest extends TestCase
 
     public function testStepRightAfterFeature()
     {
-        $feature = <<<GHERKIN
-Feature: Some feature
+        $feature = <<<'GHERKIN'
+        Feature: Some feature
 
-    Given some step-like line
-GHERKIN;
+            Given some step-like line
+        GHERKIN;
 
         $parsed = $this->gherkin->parse($feature);
 
@@ -68,22 +68,22 @@ GHERKIN;
 
     public function testTextInBackground()
     {
-        $feature = <<<GHERKIN
-Feature: Behat bug test
-    Background: remove X to couse bug
-    Step is red form is not valid
-    asd
-    asd
-    as
-    da
-    sd
-    as
-    das
-    d
+        $feature = <<<'GHERKIN'
+        Feature: Behat bug test
+            Background: remove X to couse bug
+            Step is red form is not valid
+            asd
+            asd
+            as
+            da
+            sd
+            as
+            das
+            d
 
 
-Scenario: bug user edit date
-GHERKIN;
+        Scenario: bug user edit date
+        GHERKIN;
 
         $feature = $this->gherkin->parse($feature);
         $background = $feature->getBackground();
@@ -95,77 +95,77 @@ GHERKIN;
 
     public function testTextInScenario()
     {
-        $feature = <<<GHERKIN
-Feature: Behat bug test
-    Scenario: remove X to cause bug
-    Step is red form is not valid
-    asd
-    asd
-    as
-    da
-    sd
-    as
-    das
-    d
+        $feature = <<<'GHERKIN'
+        Feature: Behat bug test
+            Scenario: remove X to cause bug
+            Step is red form is not valid
+            asd
+            asd
+            as
+            da
+            sd
+            as
+            das
+            d
 
 
-Scenario Outline: bug user edit date
-Step is red form is not valid
-asd
-asd
-as
-da
-sd
-as
-das
-d
-Examples:
- ||
+        Scenario Outline: bug user edit date
+        Step is red form is not valid
+        asd
+        asd
+        as
+        da
+        sd
+        as
+        das
+        d
+        Examples:
+         ||
 
-GHERKIN;
+        GHERKIN;
 
         $feature = $this->gherkin->parse($feature);
 
         $this->assertCount(2, $scenarios = $feature->getScenarios());
-        $firstTitle = <<<TEXT
-remove X to cause bug
-Step is red form is not valid
-asd
-asd
-as
-da
-sd
-as
-das
-d
-TEXT;
+        $firstTitle = <<<'TEXT'
+        remove X to cause bug
+        Step is red form is not valid
+        asd
+        asd
+        as
+        da
+        sd
+        as
+        das
+        d
+        TEXT;
         $this->assertEquals($firstTitle, $scenarios[0]->getTitle());
-        $secondTitle = <<<TEXT
-bug user edit date
-Step is red form is not valid
-asd
-asd
-as
-da
-sd
-as
-das
-d
-TEXT;
+        $secondTitle = <<<'TEXT'
+        bug user edit date
+        Step is red form is not valid
+        asd
+        asd
+        as
+        da
+        sd
+        as
+        das
+        d
+        TEXT;
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
     }
 
     public function testAmbigiousLanguage()
     {
-        $feature = <<<GHERKIN
-# language: en
+        $feature = <<<'GHERKIN'
+        # language: en
 
-# language: ru
+        # language: ru
 
-Feature: Some feature
+        Feature: Some feature
 
-    Given something wrong
-GHERKIN;
+            Given something wrong
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -173,11 +173,11 @@ GHERKIN;
 
     public function testEmptyOutline()
     {
-        $feature = <<<GHERKIN
-Feature: Some feature
+        $feature = <<<'GHERKIN'
+        Feature: Some feature
 
-    Scenario Outline:
-GHERKIN;
+            Scenario Outline:
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -185,14 +185,14 @@ GHERKIN;
 
     public function testWrongTagPlacement()
     {
-        $feature = <<<GHERKIN
-Feature: Some feature
+        $feature = <<<'GHERKIN'
+        Feature: Some feature
 
-    Scenario:
-        Given some step
-        @some_tag
-        Then some additional step
-GHERKIN;
+            Scenario:
+                Given some step
+                @some_tag
+                Then some additional step
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -200,13 +200,13 @@ GHERKIN;
 
     public function testBackgroundWithTag()
     {
-        $feature = <<<GHERKIN
-Feature: Some feature
+        $feature = <<<'GHERKIN'
+        Feature: Some feature
 
-    @some_tag
-    Background:
-        Given some step
-GHERKIN;
+            @some_tag
+            Background:
+                Given some step
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -214,14 +214,14 @@ GHERKIN;
 
     public function testEndlessPyString()
     {
-        $feature = <<<GHERKIN
-Feature:
+        $feature = <<<'GHERKIN'
+        Feature:
 
-    Scenario:
-        Given something with:
-            """
-            some text
-GHERKIN;
+            Scenario:
+                Given something with:
+                    """
+                    some text
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -229,14 +229,14 @@ GHERKIN;
 
     public function testWrongStepType()
     {
-        $feature = <<<GHERKIN
-Feature:
+        $feature = <<<'GHERKIN'
+        Feature:
 
-    Scenario:
-        Given some step
+            Scenario:
+                Given some step
 
-        Aaand some step
-GHERKIN;
+                Aaand some step
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -244,15 +244,15 @@ GHERKIN;
 
     public function testMultipleBackgrounds()
     {
-        $feature = <<<GHERKIN
-Feature:
+        $feature = <<<'GHERKIN'
+        Feature:
 
-    Background:
-        Given some step
+            Background:
+                Given some step
 
-    Background:
-        Aaand some step
-GHERKIN;
+            Background:
+                Aaand some step
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -260,11 +260,11 @@ GHERKIN;
 
     public function testMultipleFeatures()
     {
-        $feature = <<<GHERKIN
-Feature:
+        $feature = <<<'GHERKIN'
+        Feature:
 
-Feature:
-GHERKIN;
+        Feature:
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);
@@ -272,14 +272,14 @@ GHERKIN;
 
     public function testTableWithoutRightBorder()
     {
-        $feature = <<<GHERKIN
-Feature:
+        $feature = <<<'GHERKIN'
+        Feature:
 
-    Scenario:
-        Given something with:
-        | foo | bar
-        | 42  | 42
-GHERKIN;
+            Scenario:
+                Given something with:
+                | foo | bar
+                | 42  | 42
+        GHERKIN;
 
         $this->expectException("\Behat\Gherkin\Exception\ParserException");
         $this->gherkin->parse($feature);

@@ -57,18 +57,18 @@ class ParserTest extends TestCase
     {
         $parser = $this->getGherkinParser();
 
-        $parser->parse(<<<FEATURE
-Feature:
-Scenario:
-Given step
-@skipped
-FEATURE
+        $parser->parse(<<<'FEATURE'
+        Feature:
+        Scenario:
+        Given step
+        @skipped
+        FEATURE
         );
-        $feature2 = $parser->parse(<<<FEATURE
-Feature:
-Scenario:
-Given step
-FEATURE
+        $feature2 = $parser->parse(<<<'FEATURE'
+        Feature:
+        Scenario:
+        Given step
+        FEATURE
         );
 
         $this->assertFalse($feature2->hasTags());
@@ -76,11 +76,11 @@ FEATURE
 
     public function testSingleCharacterStepSupport()
     {
-        $feature = $this->getGherkinParser()->parse(<<<FEATURE
-Feature:
-Scenario:
-When x
-FEATURE
+        $feature = $this->getGherkinParser()->parse(<<<'FEATURE'
+        Feature:
+        Scenario:
+        When x
+        FEATURE
         );
 
         $scenarios = $feature->getScenarios();

@@ -25,5 +25,7 @@ return (new PhpCsFixer\Config())
         ],
         'concat_space' => ['spacing' => 'one'],
         'phpdoc_align' => ['align' => 'left'],
+        'heredoc_to_nowdoc' => true,
+        'heredoc_indentation' => ['indentation' => 'same_as_start'],
     ])
     ->setFinder($finder);

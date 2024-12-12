@@ -247,11 +247,11 @@ class TableNodeTest extends TestCase
             13 => ['2', 'antono', 'pa$sword'],
         ]);
 
-        $expected = <<<TABLE
-| id | username | password |
-| 42 | everzet  | qwerty   |
-| 2  | antono   | pa\$sword |
-TABLE;
+        $expected = <<<'TABLE'
+        | id | username | password |
+        | 42 | everzet  | qwerty   |
+        | 2  | antono   | pa$sword |
+        TABLE;
         $this->assertEquals($expected, $table->getTableAsString());
     }
 

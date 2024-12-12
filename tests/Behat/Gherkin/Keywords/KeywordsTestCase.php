@@ -102,11 +102,11 @@ abstract class KeywordsTestCase extends TestCase
 
                 $features[] = new FeatureNode(
                     'Internal operations',
-                    <<<DESC
-In order to stay secret
-As a secret organization
-We need to be able to erase past agents' memory
-DESC
+                    <<<'DESC'
+                    In order to stay secret
+                    As a secret organization
+                    We need to be able to erase past agents' memory
+                    DESC
                     ,
                     [],
                     $background,

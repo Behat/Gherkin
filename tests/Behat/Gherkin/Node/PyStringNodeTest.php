@@ -26,11 +26,11 @@ class PyStringNodeTest extends TestCase
     {
         $str = new PyStringNode(['line1', 'line2', 'line3'], 0);
 
-        $expected = <<<STR
-line1
-line2
-line3
-STR;
+        $expected = <<<'STR'
+        line1
+        line2
+        line3
+        STR;
         $this->assertEquals($expected, $str->getRaw());
     }
 }

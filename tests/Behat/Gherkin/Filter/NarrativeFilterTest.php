@@ -17,11 +17,11 @@ class NarrativeFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter()
     {
-        $description = <<<NAR
-In order to be able to read news in my own language
-As a french user
-I need to be able to switch website language to french
-NAR;
+        $description = <<<'NAR'
+        In order to be able to read news in my own language
+        As a french user
+        I need to be able to switch website language to french
+        NAR;
         $feature = new FeatureNode(null, $description, [], null, [], null, null, null, 1);
 
         $filter = new NarrativeFilter('/as (?:a|an) french user/');
