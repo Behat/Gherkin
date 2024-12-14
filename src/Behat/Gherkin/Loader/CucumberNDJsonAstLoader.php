@@ -85,7 +85,8 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                             self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
                             self::getTables($child['scenario']['examples']),
                             $child['scenario']['keyword'],
-                            $child['scenario']['location']['line']
+                            $child['scenario']['location']['line'],
+                            $child['scenario']['description'] ?? null
                         );
                     }
                     else {
@@ -94,7 +95,8 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                             self::getTags($child['scenario']),
                             self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
                             $child['scenario']['keyword'],
-                            $child['scenario']['location']['line']
+                            $child['scenario']['location']['line'],
+                            $child['scenario']['description'] ?? null
                         );
                     }
 
@@ -184,7 +186,9 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 return new ExampleTableNode(
                     $table,
                     $tableJson['keyword'],
-                    self::getTags($tableJson)
+                    self::getTags($tableJson),
+                    $tableJson['name'] ?? null,
+                    $tableJson['description'] ?? null
                 );
             },
             $json

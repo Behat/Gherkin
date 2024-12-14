@@ -28,16 +28,30 @@ class ExampleTableNode extends TableNode
     private $keyword;
 
     /**
+     * @var null|string
+     */
+    private $name;
+
+    /**
+     * @var null|string
+     */
+    private $description;
+
+    /**
      * Initializes example table.
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
      * @param string $keyword
      * @param string[] $tags
+     * @param null|string $name
+     * @param null|string $description
      */
-    public function __construct(array $table, $keyword, array $tags = array())
+    public function __construct(array $table, $keyword, array $tags = [], ?string $name = null, ?string $description = null)
     {
         $this->keyword = $keyword;
         $this->tags = $tags;
+        $this->name = $name;
+        $this->description = $description;
 
         parent::__construct($table);
     }
@@ -69,5 +83,25 @@ class ExampleTableNode extends TableNode
     public function getKeyword()
     {
         return $this->keyword;
+    }
+
+    /**
+     * Returns the name.
+     *
+     * @return null|string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Returns the description.
+     *
+     * @return null|string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

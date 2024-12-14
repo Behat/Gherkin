@@ -3,15 +3,11 @@
 namespace Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\ParserException;
-use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
-use Behat\Gherkin\Loader\ArrayLoader;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
-use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioInterface;
-use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +26,6 @@ class CompatibilityTest extends TestCase
         'rule.feature' => 'Rule keyword not supported',
         'rule_with_tag.feature' => 'Rule keyword not supported',
         'tags.feature' => 'Rule keyword not supported',
-        'descriptions.feature' => 'Examples table descriptions not supported',
         'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
         'scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
