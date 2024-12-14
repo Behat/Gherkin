@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -18,7 +18,7 @@ namespace Behat\Gherkin\Node;
 class ExampleTableNode extends TableNode
 {
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tags;
 
@@ -32,9 +32,9 @@ class ExampleTableNode extends TableNode
      *
      * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
      * @param string $keyword
-     * @param string[] $tags
+     * @param list<string> $tags
      */
-    public function __construct(array $table, $keyword, array $tags = array())
+    public function __construct(array $table, $keyword, array $tags = [])
     {
         $this->keyword = $keyword;
         $this->tags = $tags;
@@ -43,7 +43,7 @@ class ExampleTableNode extends TableNode
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -53,8 +53,9 @@ class ExampleTableNode extends TableNode
     }
 
     /**
-     * Returns attached tags
-     * @return \string[]
+     * Returns attached tags.
+     *
+     * @return list<string>
      */
     public function getTags()
     {

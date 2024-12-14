@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -22,23 +22,23 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $text;
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tags;
     /**
-     * @var StepNode[]
+     * @var list<StepNode>
      */
     private $outlineSteps;
     /**
-     * @var string[]
+     * @var array<string, string>
      */
     private $tokens;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
     /**
-     * @var null|StepNode[]
+     * @var list<StepNode>|null
      */
     private $steps;
     /**
@@ -46,26 +46,26 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $outlineTitle;
     /**
-     * @var null|int
+     * @var int|null
      */
     private $index;
 
     /**
      * Initializes outline.
      *
-     * @param string      $text         The entire row as a string, e.g. "| 1 | 2 | 3 |"
-     * @param string[]    $tags
-     * @param StepNode[]  $outlineSteps
-     * @param string[]    $tokens
-     * @param integer     $line         Line number within the feature file.
-     * @param string|null $outlineTitle Original title of the scenario outline.
-     * @param null|int    $index        The 1-based index of the row/example within the scenario outline.
+     * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
+     * @param array<array-key, string> $tags
+     * @param array<array-key, StepNode> $outlineSteps
+     * @param array<string, string> $tokens
+     * @param int $line line number within the feature file
+     * @param string|null $outlineTitle original title of the scenario outline
+     * @param int|null $index the 1-based index of the row/example within the scenario outline
      */
     public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
     {
         $this->text = $text;
-        $this->tags = $tags;
-        $this->outlineSteps = $outlineSteps;
+        $this->tags = array_values($tags);
+        $this->outlineSteps = array_values($outlineSteps);
         $this->tokens = $tokens;
         $this->line = $line;
         $this->outlineTitle = $outlineTitle;
@@ -73,7 +73,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -97,8 +97,8 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      *
      * @return string
      *
-     * @deprecated You should normally not depend on the original row text, but if you really do, please switch
-     *             to {@see self::getExampleText()} as this method will be removed in the next major version.
+     * @deprecated you should normally not depend on the original row text, but if you really do, please switch
+     *             to {@see self::getExampleText()} as this method will be removed in the next major version
      */
     public function getTitle()
     {
@@ -124,13 +124,13 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     public function hasTags()
     {
-        return 0 < count($this->getTags());
+        return count($this->getTags()) > 0;
     }
 
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getTags()
     {
@@ -144,23 +144,23 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     public function hasSteps()
     {
-        return 0 < count($this->outlineSteps);
+        return count($this->outlineSteps) > 0;
     }
 
     /**
      * Returns outline steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     public function getSteps()
     {
-        return $this->steps = $this->steps ? : $this->createExampleSteps();
+        return $this->steps = $this->steps ?: $this->createExampleSteps();
     }
 
     /**
      * Returns example tokens.
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getTokens()
     {
@@ -170,7 +170,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {
@@ -207,11 +207,11 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Creates steps for this example from abstract outline steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     protected function createExampleSteps()
     {
-        $steps = array();
+        $steps = [];
         foreach ($this->outlineSteps as $outlineStep) {
             $keyword = $outlineStep->getKeyword();
             $keywordType = $outlineStep->getKeywordType();
@@ -228,9 +228,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Replaces tokens in arguments with row values.
      *
-     * @param ArgumentInterface[] $arguments
+     * @param array<array-key, ArgumentInterface> $arguments
      *
-     * @return ArgumentInterface[]
+     * @return array<array-key, ArgumentInterface>
      */
     protected function replaceArgumentsTokens(array $arguments)
     {
@@ -249,8 +249,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Replaces tokens in table with row values.
      *
-     * @param TableNode $argument
-     *
      * @return TableNode
      */
     protected function replaceTableArgumentTokens(TableNode $argument)
@@ -267,8 +265,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 
     /**
      * Replaces tokens in PyString with row values.
-     *
-     * @param PyStringNode $argument
      *
      * @return PyStringNode
      */

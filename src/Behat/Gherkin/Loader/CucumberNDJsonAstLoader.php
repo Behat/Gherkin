@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Node\BackgroundNode;
@@ -11,11 +19,10 @@ use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 
 /**
- * Loads a feature from cucumber's protobuf JSON format
+ * Loads a feature from cucumber's protobuf JSON format.
  */
 class CucumberNDJsonAstLoader implements LoaderInterface
 {
-
     public function supports($resource)
     {
         return is_string($resource);
@@ -58,49 +65,45 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     private static function getTags(array $json)
     {
         return array_map(
-            static function(array $tag) { return preg_replace('/^@/', '', $tag['name']); },
-            isset($json['tags']) ? $json['tags'] : []
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
+            array_values($json['tags'] ?? [])
         );
     }
 
     /**
-     * @return ScenarioInterface[]
+     * @return list<ScenarioInterface>
      */
     private static function getScenarios(array $json)
     {
-
         return array_values(
             array_map(
                 static function ($child) {
-
                     if ($child['scenario']['examples']) {
                         return new OutlineNode(
-                            isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
+                            $child['scenario']['name'] ?? null,
                             self::getTags($child['scenario']),
-                            self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
+                            self::getSteps($child['scenario']['steps'] ?? []),
                             self::getTables($child['scenario']['examples']),
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
                         );
                     }
-                    else {
-                        return new ScenarioNode(
-                            $child['scenario']['name'],
-                            self::getTags($child['scenario']),
-                            self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
-                            $child['scenario']['keyword'],
-                            $child['scenario']['location']['line']
-                        );
-                    }
 
+                    return new ScenarioNode(
+                        $child['scenario']['name'],
+                        self::getTags($child['scenario']),
+                        self::getSteps($child['scenario']['steps'] ?? []),
+                        $child['scenario']['keyword'],
+                        $child['scenario']['location']['line']
+                    );
                 },
                 array_filter(
-                    isset($json['children']) ? $json['children'] : [],
+                    $json['children'] ?? [],
                     static function ($child) {
                         return isset($child['scenario']);
                     }
@@ -109,76 +112,56 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         );
     }
 
-    /**
-     * @return BackgroundNode|null
-     */
-    private static function getBackground(array $json)
+    private static function getBackground(array $json): ?BackgroundNode
     {
         $backgrounds = array_values(
             array_map(
-                static function ($child) {
-                    return new BackgroundNode(
-                        $child['background']['name'],
-                        self::getSteps(isset($child['background']['steps']) ? $child['background']['steps'] : []),
-                        $child['background']['keyword'],
-                        $child['background']['location']['line']
-                    );
-                },
+                static fn ($child) => new BackgroundNode(
+                    $child['background']['name'],
+                    self::getSteps($child['background']['steps'] ?? []),
+                    $child['background']['keyword'],
+                    $child['background']['location']['line']
+                ),
                 array_filter(
-                    isset($json['children']) ? $json['children'] : [],
-                    static function ($child) {
-                        return isset($child['background']);
-                    }
+                    $json['children'] ?? [],
+                    static fn ($child) => isset($child['background']),
                 )
             )
         );
 
-        return count($backgrounds) == 1 ? $backgrounds[0] : null;
+        return count($backgrounds) === 1 ? $backgrounds[0] : null;
     }
 
     /**
-     * @return StepNode[]
+     * @return list<StepNode>
      */
-    private static function getSteps(array $json)
+    private static function getSteps(array $items): array
     {
         return array_map(
-            static function(array $json) {
-                return new StepNode(
-                    trim($json['keyword']),
-                    $json['text'],
-                    [],
-                    $json['location']['line'],
-                    trim($json['keyword'])
-                );
-            },
-            $json
+            static fn (array $item) => new StepNode(
+                trim($item['keyword']),
+                $item['text'],
+                [],
+                $item['location']['line'],
+                trim($item['keyword'])
+            ),
+            array_values($items)
         );
     }
 
     /**
-     * @return ExampleTableNode[]
+     * @return list<ExampleTableNode>
      */
-    private static function getTables(array $json)
+    private static function getTables(array $items): array
     {
         return array_map(
-            static function($tableJson) {
-
+            static function ($tableJson) {
                 $table = [];
 
-                $table[$tableJson['tableHeader']['location']['line']] = array_map(
-                    static function($cell) {
-                        return $cell['value'];
-                    },
-                    $tableJson['tableHeader']['cells']
-                );
+                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
 
                 foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_map(
-                        static function($cell) {
-                            return $cell['value'];
-                        },
-                        $bodyRow['cells']
-                    );
+                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
                 }
 
                 return new ExampleTableNode(
@@ -187,7 +170,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     self::getTags($tableJson)
                 );
             },
-            $json
+            array_values($items)
         );
     }
 }

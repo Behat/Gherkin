@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -30,33 +30,33 @@ class YamlFileLoader extends AbstractFileLoader
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $path Resource to load
+     * @param mixed $resource Resource to load
      *
      * @return bool
      */
-    public function supports($path)
+    public function supports($resource)
     {
-        return is_string($path)
-            && is_file($absolute = $this->findAbsolutePath($path))
-            && 'yml' === pathinfo($absolute, PATHINFO_EXTENSION);
+        return is_string($resource)
+            && is_file($absolute = $this->findAbsolutePath($resource))
+            && pathinfo($absolute, PATHINFO_EXTENSION) === 'yml';
     }
 
     /**
      * Loads features from provided resource.
      *
-     * @param string $path Resource to load
+     * @param string $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
-    public function load($path)
+    public function load($resource)
     {
-        $path = $this->findAbsolutePath($path);
+        $path = $this->findAbsolutePath($resource);
         $hash = Yaml::parse(file_get_contents($path));
 
         $features = $this->loader->load($hash);
 
-        return array_map(function (FeatureNode $feature) use ($path) {
-            return new FeatureNode(
+        return array_map(
+            static fn (FeatureNode $feature) => new FeatureNode(
                 $feature->getTitle(),
                 $feature->getDescription(),
                 $feature->getTags(),
@@ -66,7 +66,8 @@ class YamlFileLoader extends AbstractFileLoader
                 $feature->getLanguage(),
                 $path,
                 $feature->getLine()
-            );
-        }, $features);
+            ),
+            $features
+        );
     }
 }

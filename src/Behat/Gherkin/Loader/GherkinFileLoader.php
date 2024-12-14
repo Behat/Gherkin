@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -27,8 +27,8 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Initializes loader.
      *
-     * @param Parser         $parser Parser
-     * @param CacheInterface $cache  Cache layer
+     * @param Parser $parser Parser
+     * @param CacheInterface $cache Cache layer
      */
     public function __construct(Parser $parser, ?CacheInterface $cache = null)
     {
@@ -49,27 +49,27 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $path Resource to load
+     * @param mixed $resource Resource to load
      *
      * @return bool
      */
-    public function supports($path)
+    public function supports($resource)
     {
-        return is_string($path)
-        && is_file($absolute = $this->findAbsolutePath($path))
-        && 'feature' === pathinfo($absolute, PATHINFO_EXTENSION);
+        return is_string($resource)
+            && is_file($absolute = $this->findAbsolutePath($resource))
+            && pathinfo($absolute, PATHINFO_EXTENSION) === 'feature';
     }
 
     /**
      * Loads features from provided resource.
      *
-     * @param string $path Resource to load
+     * @param string $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
-    public function load($path)
+    public function load($resource)
     {
-        $path = $this->findAbsolutePath($path);
+        $path = $this->findAbsolutePath($resource);
 
         if ($this->cache) {
             if ($this->cache->isFresh($path, filemtime($path))) {
@@ -81,7 +81,7 @@ class GherkinFileLoader extends AbstractFileLoader
             $feature = $this->parseFeature($path);
         }
 
-        return null !== $feature ? array($feature) : array();
+        return $feature !== null ? [$feature] : [];
     }
 
     /**
@@ -94,8 +94,7 @@ class GherkinFileLoader extends AbstractFileLoader
     protected function parseFeature($path)
     {
         $content = file_get_contents($path);
-        $feature = $this->parser->parse($content, $path);
 
-        return $feature;
+        return $this->parser->parse($content, $path);
     }
 }

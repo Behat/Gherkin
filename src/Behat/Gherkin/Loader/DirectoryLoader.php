@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -12,8 +12,6 @@ namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 /**
  * Directory contents loader.
@@ -37,41 +35,41 @@ class DirectoryLoader extends AbstractFileLoader
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $path Resource to load
+     * @param mixed $resource Resource to load
      *
      * @return bool
      */
-    public function supports($path)
+    public function supports($resource)
     {
-        return is_string($path)
-        && is_dir($this->findAbsolutePath($path));
+        return is_string($resource)
+            && is_dir($this->findAbsolutePath($resource));
     }
 
     /**
      * Loads features from provided resource.
      *
-     * @param string $path Resource to load
+     * @param string $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
-    public function load($path)
+    public function load($resource)
     {
-        $path = $this->findAbsolutePath($path);
+        $path = $this->findAbsolutePath($resource);
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
-        $paths = array_map('strval', iterator_to_array($iterator));
-        uasort($paths, 'strnatcasecmp');
+        $paths = array_map(strval(...), iterator_to_array($iterator));
+        uasort($paths, strnatcasecmp(...));
 
-        $features = array();
+        $features = [];
 
         foreach ($paths as $path) {
             $path = (string) $path;
             $loader = $this->gherkin->resolveLoader($path);
 
-            if (null !== $loader) {
-                $features = array_merge($features, $loader->load($path));
+            if ($loader !== null) {
+                array_push($features, ...$loader->load($path));
             }
         }
 

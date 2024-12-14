@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -25,77 +25,77 @@ interface KeywordsInterface
     public function setLanguage($language);
 
     /**
-     * Returns Feature keywords (splitted by "|").
+     * Returns Feature keywords (separated by "|").
      *
      * @return string
      */
     public function getFeatureKeywords();
 
     /**
-     * Returns Background keywords (splitted by "|").
+     * Returns Background keywords (separated by "|").
      *
      * @return string
      */
     public function getBackgroundKeywords();
 
     /**
-     * Returns Scenario keywords (splitted by "|").
+     * Returns Scenario keywords (separated by "|").
      *
      * @return string
      */
     public function getScenarioKeywords();
 
     /**
-     * Returns Scenario Outline keywords (splitted by "|").
+     * Returns Scenario Outline keywords (separated by "|").
      *
      * @return string
      */
     public function getOutlineKeywords();
 
     /**
-     * Returns Examples keywords (splitted by "|").
+     * Returns Examples keywords (separated by "|").
      *
      * @return string
      */
     public function getExamplesKeywords();
 
     /**
-     * Returns Given keywords (splitted by "|").
+     * Returns Given keywords (separated by "|").
      *
      * @return string
      */
     public function getGivenKeywords();
 
     /**
-     * Returns When keywords (splitted by "|").
+     * Returns When keywords (separated by "|").
      *
      * @return string
      */
     public function getWhenKeywords();
 
     /**
-     * Returns Then keywords (splitted by "|").
+     * Returns Then keywords (separated by "|").
      *
      * @return string
      */
     public function getThenKeywords();
 
     /**
-     * Returns And keywords (splitted by "|").
+     * Returns And keywords (separated by "|").
      *
      * @return string
      */
     public function getAndKeywords();
 
     /**
-     * Returns But keywords (splitted by "|").
+     * Returns But keywords (separated by "|").
      *
      * @return string
      */
     public function getButKeywords();
 
     /**
-     * Returns all step keywords (splitted by "|").
+     * Returns all step keywords (separated by "|").
      *
      * @return string
      */

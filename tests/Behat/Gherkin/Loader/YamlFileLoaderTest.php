@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
@@ -34,11 +42,11 @@ class YamlFileLoaderTest extends TestCase
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
         $this->assertEquals('en', $features[0]->getLanguage());
-        $expectedDescription = <<<EOS
-In order to avoid silly mistakes
-As a math idiot
-I want to be told the sum of two numbers
-EOS;
+        $expectedDescription = <<<'EOS'
+        In order to avoid silly mistakes
+        As a math idiot
+        I want to be told the sum of two numbers
+        EOS;
         $this->assertEquals($expectedDescription, $features[0]->getDescription());
 
         $scenarios = $features[0]->getScenarios();

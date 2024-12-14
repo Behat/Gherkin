@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -20,24 +20,22 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class PathsFilter extends SimpleFilter
 {
-    protected $filterPaths = array();
+    protected $filterPaths = [];
 
     /**
      * Initializes filter.
      *
-     * @param string[] $paths List of approved paths
+     * @param array<array-key, string> $paths List of approved paths
      */
     public function __construct(array $paths)
     {
-        $this->filterPaths = array_map(
-            function ($realpath) {
-                return rtrim($realpath, DIRECTORY_SEPARATOR) .
-                    (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
-            },
-            array_filter(
-                array_map('realpath', $paths)
-            )
-        );
+        foreach ($paths as $path) {
+            if (($realpath = realpath($path)) === false) {
+                continue;
+            }
+            $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
+                . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
+        }
     }
 
     /**
@@ -50,7 +48,7 @@ class PathsFilter extends SimpleFilter
     public function isFeatureMatch(FeatureNode $feature)
     {
         foreach ($this->filterPaths as $path) {
-            if (0 === strpos(realpath($feature->getFile()), $path)) {
+            if (str_starts_with(realpath($feature->getFile()), $path)) {
                 return true;
             }
         }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Exception;
 
-use RuntimeException;
-
-class ParserException extends RuntimeException implements Exception
+class ParserException extends \RuntimeException implements Exception
 {
 }
