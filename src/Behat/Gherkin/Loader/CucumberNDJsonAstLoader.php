@@ -50,7 +50,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         $featureJson = $json['gherkinDocument']['feature'];
 
         $feature = new FeatureNode(
-            isset($featureJson['name']) ? $featureJson['name'] : null,
+            $featureJson['name'] ?? null,
             $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
@@ -71,7 +71,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     {
         return array_map(
             static function (array $tag) { return preg_replace('/^@/', '', $tag['name']); },
-            isset($json['tags']) ? $json['tags'] : []
+            $json['tags'] ?? []
         );
     }
 
@@ -85,9 +85,9 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 static function ($child) {
                     if ($child['scenario']['examples']) {
                         return new OutlineNode(
-                            isset($child['scenario']['name']) ? $child['scenario']['name'] : null,
+                            $child['scenario']['name'] ?? null,
                             self::getTags($child['scenario']),
-                            self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
+                            self::getSteps($child['scenario']['steps'] ?? []),
                             self::getTables($child['scenario']['examples']),
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
@@ -96,14 +96,14 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                         return new ScenarioNode(
                             $child['scenario']['name'],
                             self::getTags($child['scenario']),
-                            self::getSteps(isset($child['scenario']['steps']) ? $child['scenario']['steps'] : []),
+                            self::getSteps($child['scenario']['steps'] ?? []),
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
                         );
                     }
                 },
                 array_filter(
-                    isset($json['children']) ? $json['children'] : [],
+                    $json['children'] ?? [],
                     static function ($child) {
                         return isset($child['scenario']);
                     }
@@ -122,13 +122,13 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 static function ($child) {
                     return new BackgroundNode(
                         $child['background']['name'],
-                        self::getSteps(isset($child['background']['steps']) ? $child['background']['steps'] : []),
+                        self::getSteps($child['background']['steps'] ?? []),
                         $child['background']['keyword'],
                         $child['background']['location']['line']
                     );
                 },
                 array_filter(
-                    isset($json['children']) ? $json['children'] : [],
+                    $json['children'] ?? [],
                     static function ($child) {
                         return isset($child['background']);
                     }

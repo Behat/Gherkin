@@ -263,7 +263,7 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadPyStringHash(array $hash, $line = 0)
     {
-        $line = isset($hash['line']) ? $hash['line'] : $line;
+        $line = $hash['line'] ?? $line;
 
         $strings = [];
         foreach (explode("\n", $hash['text']) as $string) {
@@ -300,7 +300,7 @@ class ArrayLoader implements LoaderInterface
         for ($i = 0; $i < count($exHash); ++$i) {
             if (isset($exHash[$i]['table'])) {
                 // we have examples as objects, hence there could be tags
-                $exHashTags = isset($exHash[$i]['tags']) ? $exHash[$i]['tags'] : [];
+                $exHashTags = $exHash[$i]['tags'] ?? [];
                 $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
             } else {
                 // we have examples as arrays
