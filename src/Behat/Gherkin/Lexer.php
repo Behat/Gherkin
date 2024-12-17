@@ -524,7 +524,7 @@ class Lexer
     {
         $line = $this->getTrimmedLine();
 
-        if ($line === '' && !str_starts_with($line, '@')) {
+        if ($line === '' || !str_starts_with($line, '@')) {
             return null;
         }
 
