@@ -343,7 +343,7 @@ class Lexer
             if ($type === 'Step') {
                 $padded = [];
                 foreach (explode('|', $keywords) as $keyword) {
-                    $padded[] = mb_strpos($keyword, '<', 0, 'utf8') !== false
+                    $padded[] = str_contains($keyword, '<')
                         ? preg_quote(mb_substr($keyword, 0, -1, 'utf8'), '/') . '\s*'
                         : preg_quote($keyword, '/') . '\s+';
                 }
@@ -558,7 +558,7 @@ class Lexer
             return null;
         }
 
-        if (mb_strpos(ltrim($this->line), '#', 0, 'utf8') !== 0) {
+        if (!str_starts_with(ltrim($this->line), '#')) {
             return null;
         }
 
@@ -577,7 +577,7 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if (mb_strpos($line, '#', 0, 'utf8') !== 0) {
+        if (!str_starts_with($line, '#')) {
             return null;
         }
 

@@ -37,7 +37,7 @@ class YamlFileLoaderTest extends TestCase
         $this->loader->setBasePath($basePath);
         $features = $this->loader->load('etalons/addition.yml');
 
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $this->assertEquals(realpath($basePath . DIRECTORY_SEPARATOR . 'etalons' . DIRECTORY_SEPARATOR . 'addition.yml'), $features[0]->getFile());
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
@@ -51,12 +51,12 @@ class YamlFileLoaderTest extends TestCase
 
         $scenarios = $features[0]->getScenarios();
 
-        $this->assertEquals(2, count($scenarios));
+        $this->assertCount(2, $scenarios);
         $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
         $this->assertEquals(7, $scenarios[0]->getLine());
         $this->assertEquals('Add two numbers', $scenarios[0]->getTitle());
         $steps = $scenarios[0]->getSteps();
-        $this->assertEquals(4, count($steps));
+        $this->assertCount(4, $steps);
         $this->assertEquals(9, $steps[1]->getLine());
         $this->assertEquals('And', $steps[1]->getType());
         $this->assertEquals('And', $steps[1]->getKeyword());
@@ -67,7 +67,7 @@ class YamlFileLoaderTest extends TestCase
         $this->assertEquals(13, $scenarios[1]->getLine());
         $this->assertEquals('Div two numbers', $scenarios[1]->getTitle());
         $steps = $scenarios[1]->getSteps();
-        $this->assertEquals(4, count($steps));
+        $this->assertCount(4, $steps);
         $this->assertEquals(16, $steps[2]->getLine());
         $this->assertEquals('When', $steps[2]->getType());
         $this->assertEquals('When', $steps[2]->getKeyword());

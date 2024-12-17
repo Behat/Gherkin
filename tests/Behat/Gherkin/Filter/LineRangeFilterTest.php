@@ -101,7 +101,7 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
         $exampleTableNodes = $scenarios[0]->getExampleTables();
-        $this->assertEquals(1, count($exampleTableNodes));
+        $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(3, $exampleTableNodes[0]->getRows());
         $this->assertSame([
             ['action', 'outcome'],
@@ -115,7 +115,7 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
         $exampleTableNodes = $scenarios[0]->getExampleTables();
-        $this->assertEquals(2, count($exampleTableNodes));
+        $this->assertCount(2, $exampleTableNodes);
 
         $this->assertCount(3, $exampleTableNodes[0]->getRows());
         $this->assertSame([
@@ -138,7 +138,7 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
         $exampleTableNodes = $scenarios[0]->getExampleTables();
-        $this->assertEquals(1, count($exampleTableNodes));
+        $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(2, $exampleTableNodes[0]->getRows());
         $this->assertSame([
             ['action', 'outcome'],

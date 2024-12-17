@@ -47,7 +47,7 @@ class ParserTest extends TestCase
         $features = $this->parseFixture($fixtureName . '.feature');
 
         $this->assertIsArray($features);
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
         $fixture = $features[0];
 
         $this->assertEquals($etalon, $fixture);

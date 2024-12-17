@@ -54,7 +54,9 @@ class KeywordsDumper
     public function dumpKeywords(array $keywords, $isShort)
     {
         if ($isShort) {
-            return count($keywords) > 1 ? '(' . implode('|', $keywords) . ')' : $keywords[0];
+            return count($keywords) > 1
+                ? '(' . implode('|', $keywords) . ')'
+                : $keywords[0];
         }
 
         return $keywords[0];
@@ -348,7 +350,7 @@ class KeywordsDumper
                 }
 
                 $indent = ' ';
-                if (mb_strpos($keyword, '<', 0, 'utf8') !== false) {
+                if (str_contains($keyword, '<')) {
                     $keyword = mb_substr($keyword, 0, -1, 'utf8');
                     $indent = '';
                 }

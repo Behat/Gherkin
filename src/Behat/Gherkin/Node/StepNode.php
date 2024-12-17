@@ -52,7 +52,12 @@ class StepNode implements NodeInterface
     public function __construct($keyword, $text, array $arguments, $line, $keywordType = null)
     {
         if (count($arguments) > 1) {
-            throw new NodeException(sprintf('Steps could have only one argument, but `%s %s` have %d.', $keyword, $text, count($arguments)));
+            throw new NodeException(sprintf(
+                'Steps could have only one argument, but `%s %s` have %d.',
+                $keyword,
+                $text,
+                count($arguments)
+            ));
         }
 
         $this->keyword = $keyword;
@@ -121,7 +126,7 @@ class StepNode implements NodeInterface
      */
     public function hasArguments()
     {
-        return count($this->arguments) > 0;
+        return $this->arguments !== [];
     }
 
     /**

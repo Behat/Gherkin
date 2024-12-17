@@ -33,11 +33,11 @@ class LineRangeFilter implements FilterInterface
      */
     public function __construct($filterMinLine, $filterMaxLine)
     {
-        $this->filterMinLine = intval($filterMinLine);
-        if ($filterMaxLine == '*') {
+        $this->filterMinLine = (int) $filterMinLine;
+        if ($filterMaxLine === '*') {
             $this->filterMaxLine = PHP_INT_MAX;
         } else {
-            $this->filterMaxLine = intval($filterMaxLine);
+            $this->filterMaxLine = (int) $filterMaxLine;
         }
     }
 

@@ -270,7 +270,7 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@etag22');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        $this->assertEquals(2, count($scenarioInterfaces));
+        $this->assertCount(2, $scenarioInterfaces);
         /* @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
         /* @noinspection PhpUndefinedMethodInspection */
