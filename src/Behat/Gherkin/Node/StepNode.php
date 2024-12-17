@@ -126,7 +126,7 @@ class StepNode implements NodeInterface
      */
     public function hasArguments()
     {
-        return $this->arguments !== [];
+        return (bool) count($this->arguments);
     }
 
     /**

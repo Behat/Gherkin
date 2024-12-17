@@ -77,7 +77,7 @@ class BackgroundNode implements ScenarioLikeInterface
      */
     public function hasSteps()
     {
-        return $this->steps !== [];
+        return (bool) count($this->steps);
     }
 
     /**
