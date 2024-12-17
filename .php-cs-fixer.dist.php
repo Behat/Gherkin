@@ -27,5 +27,6 @@ return (new PhpCsFixer\Config())
         'phpdoc_align' => ['align' => 'left'],
         'heredoc_to_nowdoc' => true,
         'heredoc_indentation' => ['indentation' => 'same_as_start'],
+        'single_line_throw' => false,
     ])
     ->setFinder($finder);

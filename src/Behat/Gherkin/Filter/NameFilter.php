@@ -46,7 +46,7 @@ class NameFilter extends SimpleFilter
         }
 
         if ($this->filterString[0] === '/') {
-            return preg_match($this->filterString, $feature->getTitle()) === 1;
+            return (bool) preg_match($this->filterString, $feature->getTitle());
         }
 
         return mb_strpos($feature->getTitle(), $this->filterString, 0, 'utf8') !== false;
@@ -65,7 +65,7 @@ class NameFilter extends SimpleFilter
             return false;
         }
 
-        if ($this->filterString[0] === '/' && preg_match($this->filterString, $scenario->getTitle()) === 1) {
+        if ($this->filterString[0] === '/' && preg_match($this->filterString, $scenario->getTitle())) {
             return true;
         } elseif (mb_strpos($scenario->getTitle(), $this->filterString, 0, 'utf8') !== false) {
             return true;

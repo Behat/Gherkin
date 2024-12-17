@@ -170,36 +170,22 @@ class Parser
             $type = $this->predictTokenType();
         }
 
-        switch ($type) {
-            case 'Feature':
-                return $this->parseFeature();
-            case 'Background':
-                return $this->parseBackground();
-            case 'Scenario':
-                return $this->parseScenario();
-            case 'Outline':
-                return $this->parseOutline();
-            case 'Examples':
-                return $this->parseExamples();
-            case 'TableRow':
-                return $this->parseTable();
-            case 'PyStringOp':
-                return $this->parsePyString();
-            case 'Step':
-                return $this->parseStep();
-            case 'Text':
-                return $this->parseText();
-            case 'Newline':
-                return $this->parseNewline();
-            case 'Tag':
-                return $this->parseTags();
-            case 'Language':
-                return $this->parseLanguage();
-            case 'EOS':
-                return '';
-        }
-
-        throw new ParserException(sprintf('Unknown token type: %s', $type));
+        return match ($type) {
+            'Feature' => $this->parseFeature(),
+            'Background' => $this->parseBackground(),
+            'Scenario' => $this->parseScenario(),
+            'Outline' => $this->parseOutline(),
+            'Examples' => $this->parseExamples(),
+            'TableRow' => $this->parseTable(),
+            'PyStringOp' => $this->parsePyString(),
+            'Step' => $this->parseStep(),
+            'Text' => $this->parseText(),
+            'Newline' => $this->parseNewline(),
+            'Tag' => $this->parseTags(),
+            'Language' => $this->parseLanguage(),
+            'EOS' => '',
+            default => throw new ParserException(sprintf('Unknown token type: %s', $type)),
+        };
     }
 
     /**
@@ -223,7 +209,7 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Feature');
+        $this->passedNodesStack[] = 'Feature';
 
         // Parse description, background, scenarios & outlines
         while ($this->predictTokenType() !== 'EOS') {
@@ -246,11 +232,21 @@ class Parser
             }
 
             if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
-                throw new ParserException(sprintf('Each Feature could have only one Background, but found multiple on lines %d and %d%s', $background->getLine(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Each Feature could have only one Background, but found multiple on lines %d and %d%s',
+                    $background->getLine(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof ScenarioNode) {
-                throw new ParserException(sprintf('Expected Scenario, Outline or Background, but got %s on line: %d%s', $node->getNodeType(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Scenario, Outline or Background, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
@@ -283,7 +279,11 @@ class Parser
         $line = $token['line'];
 
         if (count($this->popTags())) {
-            throw new ParserException(sprintf('Background can not be tagged, but it is on line: %d%s', $line, $this->file ? ' in file: ' . $this->file : ''));
+            throw new ParserException(sprintf(
+                'Background can not be tagged, but it is on line: %d%s',
+                $line,
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         // Parse description and steps
@@ -335,7 +335,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Scenario');
+        $this->passedNodesStack[] = 'Scenario';
 
         // Parse description and steps
         $steps = [];
@@ -393,7 +393,7 @@ class Parser
         // Parse description, steps and examples
         $steps = [];
 
-        array_push($this->passedNodesStack, 'Outline');
+        $this->passedNodesStack[] = 'Outline';
 
         while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
             if ($nextTokenType === 'Comment') {
@@ -454,7 +454,7 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Step');
+        $this->passedNodesStack[] = 'Step';
 
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
@@ -588,7 +588,10 @@ class Parser
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                trigger_error(sprintf('Whitespace in tags is deprecated, found "%s"', $tag), E_USER_DEPRECATED);
+                trigger_error(
+                    sprintf('Whitespace in tags is deprecated, found "%s"', $tag),
+                    E_USER_DEPRECATED
+                );
             }
         }
     }
@@ -632,7 +635,12 @@ class Parser
             $this->lexer->analyse($this->input, $token['value']);
             $this->languageSpecifierLine = $token['line'];
         } elseif ($token['line'] !== $this->languageSpecifierLine) {
-            throw new ParserException(sprintf('Ambiguous language specifiers on lines: %d and %d%s', $this->languageSpecifierLine, $token['line'], $this->file ? ' in file: ' . $this->file : ''));
+            throw new ParserException(sprintf(
+                'Ambiguous language specifiers on lines: %d and %d%s',
+                $this->languageSpecifierLine,
+                $token['line'],
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         return $this->parseExpression();
@@ -690,6 +698,10 @@ class Parser
 
     private function rethrowNodeException(NodeException $e): void
     {
-        throw new ParserException($e->getMessage() . ($this->file ? ' in file ' . $this->file : ''), 0, $e);
+        throw new ParserException(
+            $e->getMessage() . ($this->file ? ' in file ' . $this->file : ''),
+            0,
+            $e
+        );
     }
 }

@@ -128,9 +128,7 @@ class Lexer
      */
     public function predictToken()
     {
-        if ($this->stashedToken === null) {
-            $this->stashedToken = $this->getNextToken();
-        }
+        $this->stashedToken ??= $this->getNextToken();
 
         return $this->stashedToken;
     }
@@ -196,7 +194,9 @@ class Lexer
      */
     protected function getTrimmedLine()
     {
-        return $this->trimmedLine !== null ? $this->trimmedLine : $this->trimmedLine = trim($this->line);
+        $this->trimmedLine ??= trim($this->line);
+
+        return $this->trimmedLine;
     }
 
     /**
@@ -499,7 +499,7 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if (!isset($line[0]) || $line[0] !== '|' || substr($line, -1) !== '|') {
+        if ($line === '' || !str_starts_with($line, '|') || !str_ends_with($line, '|')) {
             return null;
         }
 
@@ -524,7 +524,7 @@ class Lexer
     {
         $line = $this->getTrimmedLine();
 
-        if (!isset($line[0]) || $line[0] !== '@') {
+        if ($line === '' && !str_starts_with($line, '@')) {
             return null;
         }
 
@@ -562,7 +562,7 @@ class Lexer
             return null;
         }
 
-        return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        return $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
     }
 
     /**
@@ -642,7 +642,7 @@ class Lexer
         }
 
         foreach ($this->stepKeywordTypesCache as $type => $keywords) {
-            if (in_array($native, $keywords) || in_array($native . '<', $keywords)) {
+            if (in_array($native, $keywords, true) || in_array($native . '<', $keywords, true)) {
                 return $type;
             }
         }
