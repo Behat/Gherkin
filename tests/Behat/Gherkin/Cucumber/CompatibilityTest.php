@@ -19,7 +19,11 @@ use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
+use Exception;
+use FilesystemIterator;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use SplFileInfo;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -76,7 +80,7 @@ class CompatibilityTest extends TestCase
     /**
      * @dataProvider goodCucumberFeatures
      */
-    public function testFeaturesParseTheSameAsCucumber(\SplFileInfo $file)
+    public function testFeaturesParseTheSameAsCucumber(SplFileInfo $file)
     {
         if (isset($this->notParsingCorrectly[$file->getFilename()])) {
             $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
@@ -98,7 +102,7 @@ class CompatibilityTest extends TestCase
     /**
      * @dataProvider badCucumberFeatures
      */
-    public function testBadFeaturesDoNotParse(\SplFileInfo $file)
+    public function testBadFeaturesDoNotParse(SplFileInfo $file)
     {
         if (isset($this->parsedButShouldNotBe[$file->getFilename()])) {
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
@@ -125,7 +129,7 @@ class CompatibilityTest extends TestCase
 
     private static function getCucumberFeatures($folder)
     {
-        foreach (new \FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
+        foreach (new FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
             if ($file->isFile() && $file->getExtension() == 'feature') {
                 yield $file->getFilename() => [$file];
             }
@@ -165,7 +169,7 @@ class CompatibilityTest extends TestCase
 
     private function setPrivateProperty($object, $propertyName, $value)
     {
-        $reflectionClass = new \ReflectionClass($object);
+        $reflectionClass = new ReflectionClass($object);
         $property = $reflectionClass->getProperty($propertyName);
         $property->setAccessible(true);
         $property->setValue($object, $value);
@@ -176,7 +180,7 @@ class CompatibilityTest extends TestCase
         set_error_handler(
             static function ($errno, $errstr) {
                 restore_error_handler();
-                throw new \Exception($errstr, $errno);
+                throw new Exception($errstr, $errno);
             },
             E_ALL
         );

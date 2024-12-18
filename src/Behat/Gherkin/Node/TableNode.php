@@ -10,15 +10,18 @@
 
 namespace Behat\Gherkin\Node;
 
+use ArrayIterator;
 use Behat\Gherkin\Exception\NodeException;
 use Iterator;
+use IteratorAggregate;
+use ReturnTypeWillChange;
 
 /**
  * Represents Gherkin Table argument.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class TableNode implements ArgumentInterface, \IteratorAggregate
+class TableNode implements ArgumentInterface, IteratorAggregate
 {
     /**
      * @var array
@@ -316,12 +319,12 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
     /**
      * Retrieves a hash iterator.
      *
-     * @return \Iterator
+     * @return Iterator
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
-        return new \ArrayIterator($this->getHash());
+        return new ArrayIterator($this->getHash());
     }
 
     /**

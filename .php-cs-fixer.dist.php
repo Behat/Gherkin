@@ -29,5 +29,6 @@ return (new PhpCsFixer\Config())
         'heredoc_indentation' => ['indentation' => 'same_as_start'],
         'single_line_throw' => false,
         'ternary_to_null_coalescing' => true,
+        'global_namespace_import' => false,
     ])
     ->setFinder($finder);

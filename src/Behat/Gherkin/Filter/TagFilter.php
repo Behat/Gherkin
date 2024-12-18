@@ -14,6 +14,8 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
+use function strlen;
+
 /**
  * Filters scenarios by feature/scenario tag.
  *
@@ -134,7 +136,7 @@ class TagFilter extends ComplexFilter
     {
         $satisfies = true;
 
-        if (\strlen($this->filterString) === 0) {
+        if (strlen($this->filterString) === 0) {
             return $satisfies;
         }
 

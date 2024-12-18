@@ -10,11 +10,13 @@
 
 namespace Behat\Gherkin\Exception;
 
+use RuntimeException;
+
 /**
  * Cache exception.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class CacheException extends \RuntimeException implements Exception
+class CacheException extends RuntimeException implements Exception
 {
 }
