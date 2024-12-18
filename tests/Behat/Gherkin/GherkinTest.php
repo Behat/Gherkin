@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Gherkin;
@@ -19,8 +27,8 @@ class GherkinTest extends TestCase
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
         $gherkin->addFilter($tagFilter = $this->getTagFilterMock());
 
-        $scenario = new ScenarioNode(null, array(), array(), null, null);
-        $feature = new FeatureNode(null, null, array(), null, array($scenario), null, null, null, null);
+        $scenario = new ScenarioNode(null, [], [], null, null);
+        $feature = new FeatureNode(null, null, [], null, [$scenario], null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -31,7 +39,7 @@ class GherkinTest extends TestCase
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue(array($feature)));
+            ->will($this->returnValue([$feature]));
 
         $nameFilter
             ->expects($this->once())
@@ -54,11 +62,11 @@ class GherkinTest extends TestCase
             ->with($this->identicalTo($feature))
             ->will($this->returnValue($feature));
 
-        $features = $gherkin->load($resource, array($customFilter1, $customFilter2));
-        $this->assertEquals(1, count($features));
+        $features = $gherkin->load($resource, [$customFilter1, $customFilter2]);
+        $this->assertCount(1, $features);
 
         $scenarios = $features[0]->getScenarios();
-        $this->assertEquals(1, count($scenarios));
+        $this->assertCount(1, $scenarios);
         $this->assertSame($scenario, $scenarios[0]);
     }
 
@@ -66,7 +74,7 @@ class GherkinTest extends TestCase
     {
         $gherkin = new Gherkin();
 
-        $this->assertEquals(array(), $gherkin->load('some/feature/resource'));
+        $this->assertEquals([], $gherkin->load('some/feature/resource'));
     }
 
     public function testLoaderFiltersFeatures()
@@ -75,7 +83,7 @@ class GherkinTest extends TestCase
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -86,7 +94,7 @@ class GherkinTest extends TestCase
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue(array($feature)));
+            ->will($this->returnValue([$feature]));
 
         $nameFilter
             ->expects($this->once())
@@ -100,7 +108,7 @@ class GherkinTest extends TestCase
             ->will($this->returnValue(false));
 
         $features = $gherkin->load($resource);
-        $this->assertEquals(0, count($features));
+        $this->assertCount(0, $features);
     }
 
     public function testSetFiltersOverridesAllFilters()
@@ -108,9 +116,9 @@ class GherkinTest extends TestCase
         $gherkin = new Gherkin();
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
-        $gherkin->setFilters(array());
+        $gherkin->setFilters([]);
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
 
         $loader
             ->expects($this->once())
@@ -121,7 +129,7 @@ class GherkinTest extends TestCase
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue(array($feature)));
+            ->will($this->returnValue([$feature]));
 
         $nameFilter
             ->expects($this->never())
@@ -131,7 +139,7 @@ class GherkinTest extends TestCase
             ->method('isFeatureMatch');
 
         $features = $gherkin->load($resource);
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
     }
 
     public function testSetBasePath()

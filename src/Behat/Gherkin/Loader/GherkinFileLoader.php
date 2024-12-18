@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -27,8 +27,8 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Initializes loader.
      *
-     * @param Parser         $parser Parser
-     * @param CacheInterface $cache  Cache layer
+     * @param Parser $parser Parser
+     * @param CacheInterface $cache Cache layer
      */
     public function __construct(Parser $parser, ?CacheInterface $cache = null)
     {
@@ -56,8 +56,8 @@ class GherkinFileLoader extends AbstractFileLoader
     public function supports($path)
     {
         return is_string($path)
-        && is_file($absolute = $this->findAbsolutePath($path))
-        && 'feature' === pathinfo($absolute, PATHINFO_EXTENSION);
+            && is_file($absolute = $this->findAbsolutePath($path))
+            && pathinfo($absolute, PATHINFO_EXTENSION) === 'feature';
     }
 
     /**
@@ -81,7 +81,7 @@ class GherkinFileLoader extends AbstractFileLoader
             $feature = $this->parseFeature($path);
         }
 
-        return null !== $feature ? array($feature) : array();
+        return $feature !== null ? [$feature] : [];
     }
 
     /**

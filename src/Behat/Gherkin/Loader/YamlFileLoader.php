@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -38,7 +38,7 @@ class YamlFileLoader extends AbstractFileLoader
     {
         return is_string($path)
             && is_file($absolute = $this->findAbsolutePath($path))
-            && 'yml' === pathinfo($absolute, PATHINFO_EXTENSION);
+            && pathinfo($absolute, PATHINFO_EXTENSION) === 'yml';
     }
 
     /**

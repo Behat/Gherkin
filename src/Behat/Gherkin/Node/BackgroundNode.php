@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -24,23 +24,23 @@ class BackgroundNode implements ScenarioLikeInterface
     /**
      * @var StepNode[]
      */
-    private $steps = array();
+    private $steps = [];
     /**
      * @var string
      */
     private $keyword;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
     /**
      * Initializes background.
      *
-     * @param null|string $title
-     * @param StepNode[]  $steps
-     * @param string      $keyword
-     * @param integer     $line
+     * @param string|null $title
+     * @param StepNode[] $steps
+     * @param string $keyword
+     * @param int $line
      */
     public function __construct($title, array $steps, $keyword, $line)
     {
@@ -51,7 +51,7 @@ class BackgroundNode implements ScenarioLikeInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -63,7 +63,7 @@ class BackgroundNode implements ScenarioLikeInterface
     /**
      * Returns background title.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getTitle()
     {
@@ -77,7 +77,7 @@ class BackgroundNode implements ScenarioLikeInterface
      */
     public function hasSteps()
     {
-        return 0 < count($this->steps);
+        return (bool) count($this->steps);
     }
 
     /**
@@ -103,7 +103,7 @@ class BackgroundNode implements ScenarioLikeInterface
     /**
      * Returns background declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

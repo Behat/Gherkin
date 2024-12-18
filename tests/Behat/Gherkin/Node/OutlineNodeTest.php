@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\ExampleNode;
@@ -12,121 +20,121 @@ class OutlineNodeTest extends TestCase
 {
     public function testCreatesExamplesForExampleTable(): void
     {
-        $steps = array(
-            new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', array(), null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', array(), null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', array(), null, 'Then'),
-        );
+        $steps = [
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+        ];
 
-        $table = new ExampleTableNode(array(
-            2 => array('name', 'email'),
-            22 => array('everzet', 'ever.zet@gmail.com'),
-            23 => array('example', 'example@example.com')
-        ), 'Examples');
+        $table = new ExampleTableNode([
+            2 => ['name', 'email'],
+            22 => ['everzet', 'ever.zet@gmail.com'],
+            23 => ['example', 'example@example.com'],
+        ], 'Examples');
 
-        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, null, null);
 
         $this->assertCount(2, $examples = $outline->getExamples());
         $this->assertEquals(22, $examples[0]->getLine());
         $this->assertEquals(23, $examples[1]->getLine());
-        $this->assertEquals(array('name' => 'everzet', 'email' => 'ever.zet@gmail.com'), $examples[0]->getTokens());
-        $this->assertEquals(array('name' => 'example', 'email' => 'example@example.com'), $examples[1]->getTokens());
+        $this->assertEquals(['name' => 'everzet', 'email' => 'ever.zet@gmail.com'], $examples[0]->getTokens());
+        $this->assertEquals(['name' => 'example', 'email' => 'example@example.com'], $examples[1]->getTokens());
     }
 
     public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags(): void
     {
-        $steps = array(
-            new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', array(), null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', array(), null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', array(), null, 'Then'),
-        );
+        $steps = [
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+        ];
 
-        $table = new ExampleTableNode(array(
-            2 => array('name', 'email'),
-            22 => array('everzet', 'ever.zet@gmail.com'),
-            23 => array('example', 'example@example.com')
-        ), 'Examples', array());
+        $table = new ExampleTableNode([
+            2 => ['name', 'email'],
+            22 => ['everzet', 'ever.zet@gmail.com'],
+            23 => ['example', 'example@example.com'],
+        ], 'Examples', []);
 
-        $table2 = new ExampleTableNode(array(
-            3 => array('name', 'email'),
-            32 => array('everzet2', 'ever.zet2@gmail.com'),
-            33 => array('example2', 'example2@example.com')
-        ), 'Examples', array('etag1', 'etag2'));
+        $table2 = new ExampleTableNode([
+            3 => ['name', 'email'],
+            32 => ['everzet2', 'ever.zet2@gmail.com'],
+            33 => ['example2', 'example2@example.com'],
+        ], 'Examples', ['etag1', 'etag2']);
 
-        $outline = new OutlineNode(null, array('otag1', 'otag2'), $steps, array($table, $table2), null, null);
+        $outline = new OutlineNode(null, ['otag1', 'otag2'], $steps, [$table, $table2], null, null);
 
         $this->assertCount(4, $examples = $outline->getExamples());
         $this->assertEquals(22, $examples[0]->getLine());
         $this->assertEquals(23, $examples[1]->getLine());
         $this->assertEquals(32, $examples[2]->getLine());
         $this->assertEquals(33, $examples[3]->getLine());
-        $this->assertEquals(array('name' => 'everzet', 'email' => 'ever.zet@gmail.com'), $examples[0]->getTokens());
-        $this->assertEquals(array('name' => 'example', 'email' => 'example@example.com'), $examples[1]->getTokens());
-        $this->assertEquals(array('name' => 'everzet2', 'email' => 'ever.zet2@gmail.com'), $examples[2]->getTokens());
-        $this->assertEquals(array('name' => 'example2', 'email' => 'example2@example.com'), $examples[3]->getTokens());
+        $this->assertEquals(['name' => 'everzet', 'email' => 'ever.zet@gmail.com'], $examples[0]->getTokens());
+        $this->assertEquals(['name' => 'example', 'email' => 'example@example.com'], $examples[1]->getTokens());
+        $this->assertEquals(['name' => 'everzet2', 'email' => 'ever.zet2@gmail.com'], $examples[2]->getTokens());
+        $this->assertEquals(['name' => 'example2', 'email' => 'example2@example.com'], $examples[3]->getTokens());
 
-        for ($i = 0; $i < 2; $i++) {
-            foreach (array('otag1', 'otag2') as $tag) {
-                $this->assertTrue($examples[$i]->hasTag($tag), "there is no tag " . $tag . " in example #" . $i);
+        for ($i = 0; $i < 2; ++$i) {
+            foreach (['otag1', 'otag2'] as $tag) {
+                $this->assertTrue($examples[$i]->hasTag($tag), 'there is no tag ' . $tag . ' in example #' . $i);
             }
         }
 
-        for ($i = 2; $i < 4; $i++) {
-            foreach (array('otag1', 'otag2', 'etag1', 'etag2') as $tag) {
-                $this->assertTrue($examples[$i]->hasTag($tag), "there is no tag " . $tag . " in example #" . $i);
+        for ($i = 2; $i < 4; ++$i) {
+            foreach (['otag1', 'otag2', 'etag1', 'etag2'] as $tag) {
+                $this->assertTrue($examples[$i]->hasTag($tag), 'there is no tag ' . $tag . ' in example #' . $i);
             }
         }
     }
 
     public function testCreatesEmptyExamplesForEmptyExampleTable(): void
     {
-        $steps = array(
-            new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', array(), null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', array(), null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', array(), null, 'Then'),
-        );
+        $steps = [
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+        ];
 
-        $table = new ExampleTableNode(array(
-            array('name', 'email')
-        ), 'Examples');
+        $table = new ExampleTableNode([
+            ['name', 'email'],
+        ], 'Examples');
 
-        $outline = new OutlineNode(null, array(), $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, null, null);
 
         $this->assertCount(0, $outline->getExamples());
     }
 
     public function testCreatesEmptyExamplesForNoExampleTable(): void
     {
-        $steps = array(
-            new StepNode('Gangway!', 'I am <name>', array(), null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', array(), null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', array(), null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', array(), null, 'Then'),
-        );
+        $steps = [
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+        ];
 
-        $table = new ExampleTableNode(array(), 'Examples');
+        $table = new ExampleTableNode([], 'Examples');
 
-        $outline = new OutlineNode(null, array(), $steps, array($table), null, null);
+        $outline = new OutlineNode(null, [], $steps, [$table], null, null);
 
         $this->assertCount(0, $outline->getExamples());
     }
 
     public function testPopulatesExampleWithOutlineTitle(): void
     {
-        $steps = array(
-            new StepNode('', 'I am <name>', array(), null, 'Given'),
-        );
+        $steps = [
+            new StepNode('', 'I am <name>', [], null, 'Given'),
+        ];
 
-        $table = new ExampleTableNode(array(
-            10 => array('name', 'email'),
-            11 => array('Ciaran', 'ciaran@example.com'),
-            12 => array('John', 'john@example.com'),
-        ), 'Examples');
+        $table = new ExampleTableNode([
+            10 => ['name', 'email'],
+            11 => ['Ciaran', 'ciaran@example.com'],
+            12 => ['John', 'john@example.com'],
+        ], 'Examples');
 
-        $outline = new OutlineNode('An outline title for <name>', array(), $steps, $table, null, null);
+        $outline = new OutlineNode('An outline title for <name>', [], $steps, $table, null, null);
 
         $this->assertSame(
             [

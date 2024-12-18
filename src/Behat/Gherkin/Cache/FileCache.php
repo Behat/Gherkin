@@ -1,18 +1,18 @@
 <?php
 
 /*
-* This file is part of the Behat Gherkin.
-* (c) Konstantin Kudryashov <ever.zet@gmail.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Exception\CacheException;
-use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Gherkin;
+use Behat\Gherkin\Node\FeatureNode;
 
 /**
  * File cache.
@@ -27,13 +27,13 @@ class FileCache implements CacheInterface
     /**
      * Initializes file cache.
      *
-     * @param string $path Path to the folder where to store caches.
+     * @param string $path path to the folder where to store caches
      *
      * @throws CacheException
      */
     public function __construct($path)
     {
-        $this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'v'.Gherkin::VERSION;
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'v' . Gherkin::VERSION;
 
         if (!is_dir($this->path)) {
             @mkdir($this->path, 0777, true);
@@ -47,8 +47,8 @@ class FileCache implements CacheInterface
     /**
      * Checks that cache for feature exists and is fresh.
      *
-     * @param string  $path      Feature path
-     * @param integer $timestamp The last time feature was updated
+     * @param string $path Feature path
+     * @param int $timestamp The last time feature was updated
      *
      * @return bool
      */
@@ -78,7 +78,7 @@ class FileCache implements CacheInterface
         $feature = unserialize(file_get_contents($cachePath));
 
         if (!$feature instanceof FeatureNode) {
-            throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath ));
+            throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath));
         }
 
         return $feature;
@@ -87,7 +87,7 @@ class FileCache implements CacheInterface
     /**
      * Caches feature node.
      *
-     * @param string      $path    Feature path
+     * @param string $path Feature path
      * @param FeatureNode $feature Feature instance
      */
     public function write($path, FeatureNode $feature)
@@ -104,6 +104,6 @@ class FileCache implements CacheInterface
      */
     protected function getCachePathFor($path)
     {
-        return $this->path.'/'.md5($path).'.feature.cache';
+        return $this->path . '/' . md5($path) . '.feature.cache';
     }
 }

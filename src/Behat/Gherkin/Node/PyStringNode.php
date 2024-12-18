@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -20,17 +20,17 @@ class PyStringNode implements ArgumentInterface
     /**
      * @var array
      */
-    private $strings = array();
+    private $strings = [];
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
     /**
      * Initializes PyString.
      *
-     * @param array   $strings String in form of [$stringLine]
-     * @param integer $line    Line number where string been started
+     * @param array $strings String in form of [$stringLine]
+     * @param int $line Line number where string been started
      */
     public function __construct(array $strings, $line)
     {
@@ -81,7 +81,7 @@ class PyStringNode implements ArgumentInterface
     /**
      * Returns line number at which PyString was started.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

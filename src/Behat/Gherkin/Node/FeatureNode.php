@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,6 +9,10 @@
  */
 
 namespace Behat\Gherkin\Node;
+
+use InvalidArgumentException;
+
+use function strlen;
 
 /**
  * Represents Gherkin Feature.
@@ -18,25 +22,25 @@ namespace Behat\Gherkin\Node;
 class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
 {
     /**
-     * @var null|string
+     * @var string|null
      */
     private $title;
     /**
-     * @var null|string
+     * @var string|null
      */
     private $description;
     /**
      * @var string[]
      */
-    private $tags = array();
+    private $tags = [];
     /**
-     * @var null|BackgroundNode
+     * @var BackgroundNode|null
      */
     private $background;
     /**
      * @var ScenarioInterface[]
      */
-    private $scenarios = array();
+    private $scenarios = [];
     /**
      * @var string
      */
@@ -46,26 +50,25 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $language;
     /**
-     * @var null|string
+     * @var string|null
      */
     private $file;
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
     /**
      * Initializes feature.
      *
-     * @param null|string         $title
-     * @param null|string         $description
-     * @param string[]            $tags
-     * @param null|BackgroundNode $background
+     * @param string|null $title
+     * @param string|null $description
+     * @param string[] $tags
      * @param ScenarioInterface[] $scenarios
-     * @param string              $keyword
-     * @param string              $language
-     * @param null|string         $file        The absolute path to the feature file.
-     * @param integer             $line
+     * @param string $keyword
+     * @param string $language
+     * @param string|null $file the absolute path to the feature file
+     * @param int $line
      */
     public function __construct(
         $title,
@@ -76,11 +79,11 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         $keyword,
         $language,
         $file,
-        $line
+        $line,
     ) {
         // Verify that the feature file is an absolute path.
         if (!empty($file) && !$this->isAbsolutePath($file)) {
-            throw new \InvalidArgumentException('The file should be an absolute path.');
+            throw new InvalidArgumentException('The file should be an absolute path.');
         }
         $this->title = $title;
         $this->description = $description;
@@ -94,7 +97,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -106,7 +109,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature title.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getTitle()
     {
@@ -126,7 +129,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature description.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -152,7 +155,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     public function hasTags()
     {
-        return 0 < count($this->tags);
+        return count($this->tags) > 0;
     }
 
     /**
@@ -172,13 +175,13 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     public function hasBackground()
     {
-        return null !== $this->background;
+        return $this->background !== null;
     }
 
     /**
      * Returns feature background.
      *
-     * @return null|BackgroundNode
+     * @return BackgroundNode|null
      */
     public function getBackground()
     {
@@ -192,7 +195,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     public function hasScenarios()
     {
-        return 0 < count($this->scenarios);
+        return count($this->scenarios) > 0;
     }
 
     /**
@@ -228,7 +231,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature file as an absolute path.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getFile()
     {
@@ -238,7 +241,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {
@@ -256,16 +259,16 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     protected function isAbsolutePath($file)
     {
-        if (null === $file) {
+        if ($file === null) {
             @trigger_error(sprintf('Calling "%s()" with a null in the $file argument is deprecated since Symfony 4.4.', __METHOD__), E_USER_DEPRECATED);
         }
 
         return strspn($file, '/\\', 0, 1)
-            || (\strlen($file) > 3 && ctype_alpha($file[0])
-                && ':' === $file[1]
+            || (strlen($file) > 3 && ctype_alpha($file[0])
+                && $file[1] === ':'
                 && strspn($file, '/\\', 2, 1)
             )
-            || null !== parse_url($file, PHP_URL_SCHEME)
+            || parse_url($file, PHP_URL_SCHEME) !== null
         ;
     }
 }
