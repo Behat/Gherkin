@@ -7,3 +7,4 @@
 /CONTRIBUTING.md            export-ignore
 /phpunit.dist.xml           export-ignore
 /.php-cs-fixer.dist.php     export-ignore
+/.git-blame-ignore-revs     export-ignore
