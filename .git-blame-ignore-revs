@@ -5,11 +5,11 @@
 #
 # $ git config blame.ignoreRevsFile .git-blame-ignore-revs
 #
-# A few rules for change this file:
-# - Commits are in chronological order - oldest on top. Therefore always append new commits.
-# - This is specifically for large commits - avoid adding commits with a very small impact, even if related
-#   to automated formatting.
-# - Each commit should be preceded with an comment clarifying the purpose of the commit.
+# A few rules for changing this file:
+# - Commits are in chronological order - oldest on top. Therefore new commits should be added in the end.
+# - The purpose is specifically for large commits - avoid adding commits with a very small impact, even if related
+#   to automated code style formatting.
+# - Each commit should be preceded with a comment detailing the purpose of the commit.
 
 # PHP-CS-Fixer Setup - Apply automated changes
 cc23fdc9376975d209489ae88b22ed945871d9cb
