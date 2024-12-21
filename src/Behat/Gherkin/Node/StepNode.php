@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -34,20 +34,20 @@ class StepNode implements NodeInterface
     /**
      * @var ArgumentInterface[]
      */
-    private $arguments = array();
+    private $arguments = [];
     /**
-     * @var integer
+     * @var int
      */
     private $line;
 
     /**
      * Initializes step.
      *
-     * @param string              $keyword
-     * @param string              $text
+     * @param string $keyword
+     * @param string $text
      * @param ArgumentInterface[] $arguments
-     * @param integer             $line
-     * @param string              $keywordType
+     * @param int $line
+     * @param string $keywordType
      */
     public function __construct($keyword, $text, array $arguments, $line, $keywordType = null)
     {
@@ -68,7 +68,7 @@ class StepNode implements NodeInterface
     }
 
     /**
-     * Returns node type string
+     * Returns node type string.
      *
      * @return string
      */
@@ -93,7 +93,6 @@ class StepNode implements NodeInterface
      * Returns step keyword in provided language (Given, When, Then, etc.).
      *
      * @return string
-     *
      */
     public function getKeyword()
     {
@@ -127,7 +126,7 @@ class StepNode implements NodeInterface
      */
     public function hasArguments()
     {
-        return 0 < count($this->arguments);
+        return (bool) count($this->arguments);
     }
 
     /**
@@ -143,7 +142,7 @@ class StepNode implements NodeInterface
     /**
      * Returns step declaration line number.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -37,10 +37,10 @@ class Parser
     private $lexer;
     private $input;
     private $file;
-    private $tags = array();
+    private $tags = [];
     private $languageSpecifierLine;
 
-    private $passedNodesStack = array();
+    private $passedNodesStack = [];
 
     /**
      * Initializes parser.
@@ -56,7 +56,7 @@ class Parser
      * Parses input & returns features array.
      *
      * @param string $input Gherkin string document
-     * @param string $file  File name
+     * @param string $file File name
      *
      * @return FeatureNode|null
      *
@@ -67,7 +67,7 @@ class Parser
         $this->languageSpecifierLine = null;
         $this->input = $input;
         $this->file = $file;
-        $this->tags = array();
+        $this->tags = [];
 
         try {
             $this->lexer->analyse($this->input, 'en');
@@ -83,7 +83,7 @@ class Parser
         while ('EOS' !== ($predicted = $this->predictTokenType())) {
             $node = $this->parseExpression();
 
-            if (null === $node || "\n" === $node) {
+            if ($node === null || $node === "\n") {
                 continue;
             }
 
@@ -127,7 +127,7 @@ class Parser
      *
      * @return array
      *
-     * @throws Exception\ParserException
+     * @throws ParserException
      */
     protected function expectTokenType($type)
     {
@@ -152,7 +152,7 @@ class Parser
      *
      * @param string $type Token type
      *
-     * @return null|array
+     * @return array|null
      */
     protected function acceptTokenType($type)
     {
@@ -192,36 +192,22 @@ class Parser
             $type = $this->predictTokenType();
         }
 
-        switch ($type) {
-            case 'Feature':
-                return $this->parseFeature();
-            case 'Background':
-                return $this->parseBackground();
-            case 'Scenario':
-                return $this->parseScenario();
-            case 'Outline':
-                return $this->parseOutline();
-            case 'Examples':
-                return $this->parseExamples();
-            case 'TableRow':
-                return $this->parseTable();
-            case 'PyStringOp':
-                return $this->parsePyString();
-            case 'Step':
-                return $this->parseStep();
-            case 'Text':
-                return $this->parseText();
-            case 'Newline':
-                return $this->parseNewline();
-            case 'Tag':
-                return $this->parseTags();
-            case 'Language':
-                return $this->parseLanguage();
-            case 'EOS':
-                return '';
-        }
-
-        throw new ParserException(sprintf('Unknown token type: %s', $type));
+        return match ($type) {
+            'Feature' => $this->parseFeature(),
+            'Background' => $this->parseBackground(),
+            'Scenario' => $this->parseScenario(),
+            'Outline' => $this->parseOutline(),
+            'Examples' => $this->parseExamples(),
+            'TableRow' => $this->parseTable(),
+            'PyStringOp' => $this->parsePyString(),
+            'Step' => $this->parseStep(),
+            'Text' => $this->parseText(),
+            'Newline' => $this->parseNewline(),
+            'Tag' => $this->parseTags(),
+            'Language' => $this->parseLanguage(),
+            'EOS' => '',
+            default => throw new ParserException(sprintf('Unknown token type: %s', $type)),
+        };
     }
 
     /**
@@ -239,21 +225,21 @@ class Parser
         $description = null;
         $tags = $this->popTags();
         $background = null;
-        $scenarios = array();
+        $scenarios = [];
         $keyword = $token['keyword'];
         $language = $this->lexer->getLanguage();
         $file = $this->file;
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Feature');
+        $this->passedNodesStack[] = 'Feature';
 
         // Parse description, background, scenarios & outlines
-        while ('EOS' !== $this->predictTokenType()) {
+        while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
 
             if (is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                $description .= (null !== $description ? "\n" : '') . $text;
+                $description .= ($description !== null ? "\n" : '') . $text;
                 continue;
             }
 
@@ -323,8 +309,8 @@ class Parser
         }
 
         // Parse description and steps
-        $steps = array();
-        $allowedTokenTypes = array('Step', 'Newline', 'Text', 'Comment');
+        $steps = [];
+        $allowedTokenTypes = ['Step', 'Newline', 'Text', 'Comment'];
         while (in_array($this->predictTokenType(), $allowedTokenTypes)) {
             $node = $this->parseExpression();
 
@@ -339,7 +325,7 @@ class Parser
                 continue;
             }
 
-            if ("\n" === $node) {
+            if ($node === "\n") {
                 continue;
             }
 
@@ -380,11 +366,11 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Scenario');
+        $this->passedNodesStack[] = 'Scenario';
 
         // Parse description and steps
-        $steps = array();
-        while (in_array($this->predictTokenType(), array('Step', 'Newline', 'Text', 'Comment'))) {
+        $steps = [];
+        while (in_array($this->predictTokenType(), ['Step', 'Newline', 'Text', 'Comment'])) {
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
@@ -398,7 +384,7 @@ class Parser
                 continue;
             }
 
-            if ("\n" === $node) {
+            if ($node === "\n") {
                 continue;
             }
 
@@ -441,15 +427,15 @@ class Parser
         $keyword = $token['keyword'];
 
         /** @var ExampleTableNode $examples */
-        $examples = array();
+        $examples = [];
         $line = $token['line'];
 
         // Parse description, steps and examples
-        $steps = array();
+        $steps = [];
 
-        array_push($this->passedNodesStack, 'Outline');
+        $this->passedNodesStack[] = 'Outline';
 
-        while (in_array($nextTokenType = $this->predictTokenType(), array('Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'))) {
+        while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
             if ($nextTokenType === 'Comment') {
                 $this->lexer->skipPredictedToken();
                 continue;
@@ -474,7 +460,7 @@ class Parser
                 continue;
             }
 
-            if ("\n" === $node) {
+            if ($node === "\n") {
                 continue;
             }
 
@@ -522,11 +508,11 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        array_push($this->passedNodesStack, 'Step');
+        $this->passedNodesStack[] = 'Step';
 
-        $arguments = array();
-        while (in_array($predicted = $this->predictTokenType(), array('PyStringOp', 'TableRow', 'Newline', 'Comment'))) {
-            if ('Comment' === $predicted || 'Newline' === $predicted) {
+        $arguments = [];
+        while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
+            if ($predicted === 'Comment' || $predicted === 'Newline') {
                 $this->acceptTokenType($predicted);
                 continue;
             }
@@ -550,13 +536,13 @@ class Parser
      */
     protected function parseExamples()
     {
-        $keyword = ($this->expectTokenType('Examples'))['keyword'];
-        $tags = empty($this->tags) ? array() : $this->popTags();
+        $keyword = $this->expectTokenType('Examples')['keyword'];
+        $tags = empty($this->tags) ? [] : $this->popTags();
         $table = $this->parseTableRows();
 
         try {
             return new ExampleTableNode($table, $keyword, $tags);
-        } catch(NodeException $e) {
+        } catch (NodeException $e) {
             $this->rethrowNodeException($e);
         }
     }
@@ -572,7 +558,7 @@ class Parser
 
         try {
             return new TableNode($table);
-        } catch(NodeException $e) {
+        } catch (NodeException $e) {
             $this->rethrowNodeException($e);
         }
     }
@@ -588,8 +574,8 @@ class Parser
 
         $line = $token['line'];
 
-        $strings = array();
-        while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && 'Text' === $predicted) {
+        $strings = [];
+        while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && $predicted === 'Text') {
             $token = $this->expectTokenType('Text');
 
             $strings[] = $token['value'];
@@ -613,12 +599,12 @@ class Parser
 
         $this->tags = array_merge($this->tags, $token['tags']);
 
-        $possibleTransitions = array(
-            'Outline' => array(
+        $possibleTransitions = [
+            'Outline' => [
                 'Examples',
-                'Step'
-            )
-        );
+                'Step',
+            ],
+        ];
 
         $currentType = '-1';
         // check if that is ok to go inside:
@@ -642,13 +628,13 @@ class Parser
     protected function popTags()
     {
         $tags = $this->tags;
-        $this->tags = array();
+        $this->tags = [];
 
         return $tags;
     }
 
     /**
-     * Checks the tags fit the required format
+     * Checks the tags fit the required format.
      *
      * @param string[] $tags
      */
@@ -656,7 +642,10 @@ class Parser
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                trigger_error(sprintf('Whitespace in tags is deprecated, found "%s"', $tag), E_USER_DEPRECATED);
+                trigger_error(
+                    sprintf('Whitespace in tags is deprecated, found "%s"', $tag),
+                    E_USER_DEPRECATED
+                );
             }
         }
     }
@@ -696,7 +685,7 @@ class Parser
     {
         $token = $this->expectTokenType('Language');
 
-        if (null === $this->languageSpecifierLine) {
+        if ($this->languageSpecifierLine === null) {
             $this->lexer->analyse($this->input, $token['value']);
             $this->languageSpecifierLine = $token['line'];
         } elseif ($token['line'] !== $this->languageSpecifierLine) {
@@ -712,15 +701,15 @@ class Parser
     }
 
     /**
-     * Parses the rows of a table
+     * Parses the rows of a table.
      *
      * @return string[][]
      */
     private function parseTableRows()
     {
-        $table = array();
-        while (in_array($predicted = $this->predictTokenType(), array('TableRow', 'Newline', 'Comment'))) {
-            if ('Comment' === $predicted || 'Newline' === $predicted) {
+        $table = [];
+        while (in_array($predicted = $this->predictTokenType(), ['TableRow', 'Newline', 'Comment'])) {
+            if ($predicted === 'Comment' || $predicted === 'Newline') {
                 $this->acceptTokenType($predicted);
                 continue;
             }
@@ -734,16 +723,16 @@ class Parser
     }
 
     /**
-     * Changes step node type for types But, And to type of previous step if it exists else sets to Given
+     * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
-     * @param StepNode   $node
      * @param StepNode[] $steps
+     *
      * @return StepNode
      */
-    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = array())
+    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = [])
     {
-        if (in_array($node->getKeywordType(), array('And', 'But'))) {
-            if (($prev = end($steps))) {
+        if (in_array($node->getKeywordType(), ['And', 'But'])) {
+            if ($prev = end($steps)) {
                 $keywordType = $prev->getKeywordType();
             } else {
                 $keywordType = 'Given';
@@ -757,6 +746,7 @@ class Parser
                 $keywordType
             );
         }
+
         return $node;
     }
 
