@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\PathsFilter;
@@ -9,21 +17,21 @@ class PathsFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, __FILE__, 1);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, __FILE__, 1);
 
-        $filter = new PathsFilter(array(__DIR__));
+        $filter = new PathsFilter([__DIR__]);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/def', dirname(__DIR__)));
+        $filter = new PathsFilter(['/abc', '/def', dirname(__DIR__)]);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/def', __DIR__));
+        $filter = new PathsFilter(['/abc', '/def', __DIR__]);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', __DIR__, '/def'));
+        $filter = new PathsFilter(['/abc', __DIR__, '/def']);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array('/abc', '/def', '/wrong/path'));
+        $filter = new PathsFilter(['/abc', '/def', '/wrong/path']);
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
@@ -31,21 +39,21 @@ class PathsFilterTest extends FilterTestCase
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
-        $filter = new PathsFilter(array($fixtures . 'full'));
+        $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array($fixtures . 'full' . DIRECTORY_SEPARATOR));
+        $filter = new PathsFilter([$fixtures . 'full' . DIRECTORY_SEPARATOR]);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array($fixtures . 'full_path' . DIRECTORY_SEPARATOR));
+        $filter = new PathsFilter([$fixtures . 'full_path' . DIRECTORY_SEPARATOR]);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array($fixtures . 'full_path'));
+        $filter = new PathsFilter([$fixtures . 'full_path']);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $filter = new PathsFilter(array($fixtures . 'ful._path')); // Don't accept regexp
+        $filter = new PathsFilter([$fixtures . 'ful._path']); // Don't accept regexp
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
@@ -53,9 +61,9 @@ class PathsFilterTest extends FilterTestCase
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
-        $filter = new PathsFilter(array($fixtures . 'full'));
+        $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 }

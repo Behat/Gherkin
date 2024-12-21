@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -22,8 +22,8 @@ interface CacheInterface
     /**
      * Checks that cache for feature exists and is fresh.
      *
-     * @param string  $path      Feature path
-     * @param integer $timestamp The last time feature was updated
+     * @param string $path Feature path
+     * @param int $timestamp The last time feature was updated
      *
      * @return bool
      */
@@ -41,7 +41,7 @@ interface CacheInterface
     /**
      * Caches feature node.
      *
-     * @param string      $path    Feature path
+     * @param string $path Feature path
      * @param FeatureNode $feature Feature instance
      */
     public function write($path, FeatureNode $feature);

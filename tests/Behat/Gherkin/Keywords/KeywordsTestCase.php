@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\KeywordsDumper;
@@ -15,7 +23,9 @@ use PHPUnit\Framework\TestCase;
 abstract class KeywordsTestCase extends TestCase
 {
     abstract protected function getKeywords();
+
     abstract protected function getKeywordsArray();
+
     abstract protected function getSteps($keywords, $text, &$line, $keywordType);
 
     public function translationTestDataProvider()
@@ -27,12 +37,12 @@ abstract class KeywordsTestCase extends TestCase
         // Remove languages with repeated keywords
         unset($keywordsArray['en-old'], $keywordsArray['uz'], $keywordsArray['ne']);
 
-        $data = array();
+        $data = [];
         foreach ($keywordsArray as $lang => $i18nKeywords) {
-            $features = array();
+            $features = [];
             foreach (explode('|', $i18nKeywords['feature']) as $transNum => $featureKeyword) {
                 $line = 1;
-                if ('en' !== $lang) {
+                if ($lang !== 'en') {
                     $line = 2;
                 }
 
@@ -41,19 +51,19 @@ abstract class KeywordsTestCase extends TestCase
 
                 $keywords = explode('|', $i18nKeywords['background']);
                 $backgroundLine = $line;
-                $line += 1;
+                ++$line;
                 $background = new BackgroundNode(null, array_merge(
                     $this->getSteps($i18nKeywords['given'], 'there is agent A', $line, 'Given'),
                     $this->getSteps($i18nKeywords['and'], 'there is agent B', $line, 'Given')
                 ), $keywords[0], $backgroundLine);
 
-                $line += 1;
+                ++$line;
 
-                $scenarios = array();
+                $scenarios = [];
 
                 foreach (explode('|', $i18nKeywords['scenario']) as $scenarioKeyword) {
                     $scenarioLine = $line;
-                    $line += 1;
+                    ++$line;
 
                     $steps = array_merge(
                         $this->getSteps($i18nKeywords['given'], 'there is agent J', $line, 'Given'),
@@ -63,12 +73,12 @@ abstract class KeywordsTestCase extends TestCase
                         $this->getSteps($i18nKeywords['but'], 'there should not be agent K', $line, 'Then')
                     );
 
-                    $scenarios[] = new ScenarioNode('Erasing agent memory', array(), $steps, $scenarioKeyword, $scenarioLine);
-                    $line += 1;
+                    $scenarios[] = new ScenarioNode('Erasing agent memory', [], $steps, $scenarioKeyword, $scenarioLine);
+                    ++$line;
                 }
                 foreach (explode('|', $i18nKeywords['scenario_outline']) as $outlineKeyword) {
                     $outlineLine = $line;
-                    $line += 1;
+                    ++$line;
 
                     $steps = array_merge(
                         $this->getSteps($i18nKeywords['given'], 'there is agent <agent1>', $line, 'Given'),
@@ -77,28 +87,28 @@ abstract class KeywordsTestCase extends TestCase
                         $this->getSteps($i18nKeywords['then'], 'there should be agent <agent1>', $line, 'Then'),
                         $this->getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line, 'Then')
                     );
-                    $line += 1;
+                    ++$line;
 
                     $keywords = explode('|', $i18nKeywords['examples']);
-                    $table = new ExampleTableNode(array(
-                        ++$line => array('agent1', 'agent2'),
-                        ++$line => array('D', 'M')
-                    ), $keywords[0]);
-                    $line += 1;
+                    $table = new ExampleTableNode([
+                        ++$line => ['agent1', 'agent2'],
+                        ++$line => ['D', 'M'],
+                    ], $keywords[0]);
+                    ++$line;
 
-                    $scenarios[] = new OutlineNode('Erasing other agents\' memory', array(), $steps, $table, $outlineKeyword, $outlineLine);
-                    $line += 1;
+                    $scenarios[] = new OutlineNode('Erasing other agents\' memory', [], $steps, $table, $outlineKeyword, $outlineLine);
+                    ++$line;
                 }
 
                 $features[] = new FeatureNode(
                     'Internal operations',
-                    <<<DESC
-In order to stay secret
-As a secret organization
-We need to be able to erase past agents' memory
-DESC
+                    <<<'DESC'
+                    In order to stay secret
+                    As a secret organization
+                    We need to be able to erase past agents' memory
+                    DESC
                     ,
-                    array(),
+                    [],
                     $background,
                     $scenarios,
                     $featureKeyword,
@@ -111,7 +121,7 @@ DESC
             $dumped = $dumper->dump($lang, false, true);
 
             foreach ($dumped as $num => $dumpedFeature) {
-                $data[$lang . "_" . $num] = array($lang, $num, $features[$num], $dumpedFeature);
+                $data[$lang . '_' . $num] = [$lang, $num, $features[$num], $dumpedFeature];
             }
         }
 
@@ -121,10 +131,10 @@ DESC
     /**
      * @dataProvider translationTestDataProvider
      *
-     * @param string      $language language name
-     * @param int         $num      Fixture index for that language
-     * @param FeatureNode $etalon   etalon features (to test against)
-     * @param string      $source   gherkin source
+     * @param string $language language name
+     * @param int $num Fixture index for that language
+     * @param FeatureNode $etalon etalon features (to test against)
+     * @param string $source gherkin source
      */
     public function testTranslation($language, $num, FeatureNode $etalon, $source)
     {

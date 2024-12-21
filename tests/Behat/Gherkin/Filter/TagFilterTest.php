@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\TagFilter;
@@ -13,83 +21,83 @@ class TagFilterTest extends TestCase
 {
     public function testFilterFeature()
     {
-        $feature = new FeatureNode(null, null, array('wip'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip'], null, [], null, null, null, 1);
         $filter = new TagFilter('@wip');
         $this->assertEquals($feature, $filter->filterFeature($feature));
 
-        $scenarios = array(
-            new ScenarioNode(null, array(), array(), null, 2),
-            $matchedScenario = new ScenarioNode(null, array('wip'), array(), null, 4)
-        );
-        $feature = new FeatureNode(null, null, array(), null, $scenarios, null, null, null, 1);
+        $scenarios = [
+            new ScenarioNode(null, [], [], null, 2),
+            $matchedScenario = new ScenarioNode(null, ['wip'], [], null, 4),
+        ];
+        $feature = new FeatureNode(null, null, [], null, $scenarios, null, null, null, 1);
         $filteredFeature = $filter->filterFeature($feature);
 
-        $this->assertSame(array($matchedScenario), $filteredFeature->getScenarios());
+        $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
 
         $filter = new TagFilter('~@wip');
-        $scenarios = array(
-            $matchedScenario = new ScenarioNode(null, array(), array(), null, 2),
-            new ScenarioNode(null, array('wip'), array(), null, 4)
-        );
-        $feature = new FeatureNode(null, null, array(), null, $scenarios, null, null, null, 1);
+        $scenarios = [
+            $matchedScenario = new ScenarioNode(null, [], [], null, 2),
+            new ScenarioNode(null, ['wip'], [], null, 4),
+        ];
+        $feature = new FeatureNode(null, null, [], null, $scenarios, null, null, null, 1);
         $filteredFeature = $filter->filterFeature($feature);
 
-        $this->assertSame(array($matchedScenario), $filteredFeature->getScenarios());
+        $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
     }
 
     public function testIsFeatureMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array(), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
 
         $filter = new TagFilter('@wip');
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('wip'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip'], null, [], null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
         $filter = new TagFilter('~@done');
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('wip', 'done'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('tag1', 'tag2', 'tag3'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['tag1', 'tag2', 'tag3'], null, [], null, null, null, 1);
         $filter = new TagFilter('@tag5,@tag4,@tag6');
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array(
+        $feature = new FeatureNode(null, null, [
             'tag1',
             'tag2',
             'tag3',
-            'tag5'
-        ), null, array(), null, null, null, 1);
+            'tag5',
+        ], null, [], null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
         $filter = new TagFilter('@wip&&@vip');
-        $feature = new FeatureNode(null, null, array('wip', 'done'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('wip', 'done', 'vip'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip', 'done', 'vip'], null, [], null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
         $filter = new TagFilter('@wip,@vip&&@user');
-        $feature = new FeatureNode(null, null, array('wip'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip'], null, [], null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('vip'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['vip'], null, [], null, null, null, 1);
         $this->assertFalse($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('wip', 'user'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['wip', 'user'], null, [], null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
 
-        $feature = new FeatureNode(null, null, array('vip', 'user'), null, array(), null, null, null, 1);
+        $feature = new FeatureNode(null, null, ['vip', 'user'], null, [], null, null, null, 1);
         $this->assertTrue($filter->isFeatureMatch($feature));
     }
 
     public function testIsScenarioMatchFilter()
     {
-        $feature = new FeatureNode(null, null, array('feature-tag'), null, array(), null, null, null, 1);
-        $scenario = new ScenarioNode(null, array(), array(), null, 2);
+        $feature = new FeatureNode(null, null, ['feature-tag'], null, [], null, null, null, 1);
+        $scenario = new ScenarioNode(null, [], [], null, 2);
 
         $filter = new TagFilter('@wip');
         $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
@@ -97,57 +105,57 @@ class TagFilterTest extends TestCase
         $filter = new TagFilter('~@done');
         $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
-        $scenario = new ScenarioNode(null, array(
-            'tag1',
-            'tag2',
-            'tag3'
-        ), array(), null, 2);
-        $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, array(
+        $scenario = new ScenarioNode(null, [
             'tag1',
             'tag2',
             'tag3',
-            'tag5'
-        ), array(), null, 2);
+        ], [], null, 2);
+        $filter = new TagFilter('@tag5,@tag4,@tag6');
+        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
+
+        $scenario = new ScenarioNode(null, [
+            'tag1',
+            'tag2',
+            'tag3',
+            'tag5',
+        ], [], null, 2);
         $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@wip&&@vip');
-        $scenario = new ScenarioNode(null, array('wip', 'not-done'), array(), null, 2);
+        $scenario = new ScenarioNode(null, ['wip', 'not-done'], [], null, 2);
         $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
-        $scenario = new ScenarioNode(null, array(
+        $scenario = new ScenarioNode(null, [
             'wip',
             'not-done',
-            'vip'
-        ), array(), null, 2);
+            'vip',
+        ], [], null, 2);
         $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@wip,@vip&&@user');
-        $scenario = new ScenarioNode(null, array(
-            'wip'
-        ), array(), null, 2);
+        $scenario = new ScenarioNode(null, [
+            'wip',
+        ], [], null, 2);
         $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
-        $scenario = new ScenarioNode(null, array('vip'), array(), null, 2);
+        $scenario = new ScenarioNode(null, ['vip'], [], null, 2);
         $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
-        $scenario = new ScenarioNode(null, array('wip', 'user'), array(), null, 2);
+        $scenario = new ScenarioNode(null, ['wip', 'user'], [], null, 2);
         $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, array('wip', 'user'), array(), null, 2);
+        $scenario = new ScenarioNode(null, ['wip', 'user'], [], null, 2);
         $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
 
         $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, array('wip'), array(), null, 2);
+        $scenario = new ScenarioNode(null, ['wip'], [], null, 2);
         $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
 
-        $scenario = new OutlineNode(null, array('wip'), array(), array(
-            new ExampleTableNode(array(), null, array('etag1', 'etag2')),
-            new ExampleTableNode(array(), null, array('etag2', 'etag3')),
-        ), null, 2);
+        $scenario = new OutlineNode(null, ['wip'], [], [
+            new ExampleTableNode([], null, ['etag1', 'etag2']),
+            new ExampleTableNode([], null, ['etag2', 'etag3']),
+        ], null, 2);
 
         $tagFilter = new TagFilter('@etag3');
         $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
@@ -177,18 +185,18 @@ class TagFilterTest extends TestCase
         $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario));
 
         $tagFilter = new TagFilter('@etag1&&@etag3');
-        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario), "Tags from different examples tables");
+        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario), 'Tags from different examples tables');
     }
 
     public function testFilterFeatureWithTaggedExamples()
     {
-        $exampleTableNode1 = new ExampleTableNode(array(), null, array('etag1', 'etag2'));
-        $exampleTableNode2 = new ExampleTableNode(array(), null, array('etag2', 'etag3'));
-        $scenario = new OutlineNode(null, array('wip'), array(), array(
+        $exampleTableNode1 = new ExampleTableNode([], null, ['etag1', 'etag2']);
+        $exampleTableNode2 = new ExampleTableNode([], null, ['etag2', 'etag3']);
+        $scenario = new OutlineNode(null, ['wip'], [], [
             $exampleTableNode1,
             $exampleTableNode2,
-        ), null, 2);
-        $feature = new FeatureNode(null, null, array('feature-tag'), null, array($scenario), null, null, null, 1);
+        ], null, 2);
+        $feature = new FeatureNode(null, null, ['feature-tag'], null, [$scenario], null, null, null, 1);
 
         $tagFilter = new TagFilter('@etag2');
         $matched = $tagFilter->filterFeature($feature);
@@ -198,14 +206,14 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@etag1');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode1), $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('~@etag3');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode1), $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@wip');
         $matched = $tagFilter->filterFeature($feature);
@@ -215,14 +223,14 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@wip&&@etag3');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode2), $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&@etag1&&@wip');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode1), $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&~@etag11111&&@wip');
         $matched = $tagFilter->filterFeature($feature);
@@ -232,41 +240,41 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@feature-tag&&~@etag1&&@wip');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode2), $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&@etag2');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
         $this->assertEquals($scenario, $scenarioInterfaces[0]);
 
-        $exampleTableNode1 = new ExampleTableNode(array(), null, array('etag1', 'etag'));
-        $exampleTableNode2 = new ExampleTableNode(array(), null, array('etag2', 'etag22', 'etag'));
-        $exampleTableNode3 = new ExampleTableNode(array(), null, array('etag3', 'etag22', 'etag'));
-        $exampleTableNode4 = new ExampleTableNode(array(), null, array('etag4', 'etag'));
-        $scenario1 = new OutlineNode(null, array('wip'), array(), array(
+        $exampleTableNode1 = new ExampleTableNode([], null, ['etag1', 'etag']);
+        $exampleTableNode2 = new ExampleTableNode([], null, ['etag2', 'etag22', 'etag']);
+        $exampleTableNode3 = new ExampleTableNode([], null, ['etag3', 'etag22', 'etag']);
+        $exampleTableNode4 = new ExampleTableNode([], null, ['etag4', 'etag']);
+        $scenario1 = new OutlineNode(null, ['wip'], [], [
             $exampleTableNode1,
             $exampleTableNode2,
-        ), null, 2);
-        $scenario2 = new OutlineNode(null, array('wip'), array(), array(
+        ], null, 2);
+        $scenario2 = new OutlineNode(null, ['wip'], [], [
             $exampleTableNode3,
             $exampleTableNode4,
-        ), null, 2);
-        $feature = new FeatureNode(null, null, array('feature-tag'), null, array($scenario1, $scenario2), null, null, null, 1);
+        ], null, 2);
+        $feature = new FeatureNode(null, null, ['feature-tag'], null, [$scenario1, $scenario2], null, null, null, 1);
 
         $tagFilter = new TagFilter('@etag');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        $this->assertEquals(array($scenario1, $scenario2), $scenarioInterfaces);
+        $this->assertEquals([$scenario1, $scenario2], $scenarioInterfaces);
 
         $tagFilter = new TagFilter('@etag22');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
         $this->assertEquals(2, count($scenarioInterfaces));
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode2), $scenarioInterfaces[0]->getExampleTables());
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals(array($exampleTableNode3), $scenarioInterfaces[1]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
+        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals([$exampleTableNode3], $scenarioInterfaces[1]->getExampleTables());
     }
 
     public function testFilterWithWhitespaceIsDeprecated()
@@ -274,7 +282,7 @@ class TagFilterTest extends TestCase
         $this->expectDeprecationError();
 
         $tagFilter = new TagFilter('@tag with space');
-        $scenario = new ScenarioNode(null, ['tag with space'], array(), null, 2);
+        $scenario = new ScenarioNode(null, ['tag with space'], [], null, 2);
         $feature = new FeatureNode(null, null, [], null, [$scenario], null, null, null, 1);
 
         $scenarios = $tagFilter->filterFeature($feature)->getScenarios();
@@ -291,7 +299,8 @@ class TagFilterTest extends TestCase
         $this->assertTrue($result);
     }
 
-    private function expectDeprecationError() {
+    private function expectDeprecationError()
+    {
         set_error_handler(
             static function ($errno, $errstr) {
                 restore_error_handler();

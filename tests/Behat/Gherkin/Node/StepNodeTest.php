@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\PyStringNode;
@@ -13,9 +21,9 @@ class StepNodeTest extends TestCase
     {
         $this->expectException('Behat\Gherkin\Exception\NodeException');
 
-        new StepNode('Gangway!', 'I am on the page:', array(
-            new PyStringNode(array('one', 'two'), 11),
-            new TableNode(array(array('one', 'two'))),
-        ), 10, 'Given');
+        new StepNode('Gangway!', 'I am on the page:', [
+            new PyStringNode(['one', 'two'], 11),
+            new TableNode([['one', 'two']]),
+        ], 10, 'Given');
     }
 }

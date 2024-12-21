@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -29,12 +29,12 @@ class RoleFilter extends SimpleFilter
      */
     public function __construct($role)
     {
-        $this->pattern = '/as an? ' . strtr(preg_quote($role, '/'), array(
+        $this->pattern = '/as an? ' . strtr(preg_quote($role, '/'), [
             '\*' => '.*',
             '\?' => '.',
             '\[' => '[',
-            '\]' => ']'
-        )) . '[$\n]/i';
+            '\]' => ']',
+        ]) . '[$\n]/i';
     }
 
     /**
@@ -46,7 +46,7 @@ class RoleFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        return 1 === preg_match($this->pattern, $feature->getDescription() ?? '');
+        return preg_match($this->pattern, $feature->getDescription() ?? '') === 1;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -64,13 +64,13 @@ class DirectoryLoader extends AbstractFileLoader
         $paths = array_map('strval', iterator_to_array($iterator));
         uasort($paths, 'strnatcasecmp');
 
-        $features = array();
+        $features = [];
 
         foreach ($paths as $path) {
             $path = (string) $path;
             $loader = $this->gherkin->resolveLoader($path);
 
-            if (null !== $loader) {
+            if ($loader !== null) {
                 $features = array_merge($features, $loader->load($path));
             }
         }

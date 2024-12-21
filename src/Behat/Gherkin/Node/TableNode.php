@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -28,9 +28,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      */
     private $table;
     /**
-     * @var integer
+     * @var int
      */
-    private $maxLineLength = array();
+    private $maxLineLength = [];
 
     /**
      * Initializes table.
@@ -45,7 +45,6 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $columnCount = null;
 
         foreach ($this->getRows() as $ridx => $row) {
-
             if (!is_array($row)) {
                 throw new NodeException(sprintf(
                     "Table row '%s' is expected to be array, got %s",
@@ -102,8 +101,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         }
 
         array_walk($list, function (&$item) {
-            $item = array($item);
+            $item = [$item];
         });
+
         return new self($list);
     }
 
@@ -137,7 +137,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         $rows = $this->getRows();
         $keys = array_shift($rows);
 
-        $hash = array();
+        $hash = [];
         foreach ($rows as $row) {
             $hash[] = array_combine($keys, $row);
         }
@@ -152,10 +152,10 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      */
     public function getRowsHash()
     {
-        $hash = array();
+        $hash = [];
 
         foreach ($this->getRows() as $row) {
-            $hash[array_shift($row)] = (1 == count($row)) ? $row[0] : $row;
+            $hash[array_shift($row)] = (count($row) == 1) ? $row[0] : $row;
         }
 
         return $hash;
@@ -195,7 +195,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns specific row in a table.
      *
-     * @param integer $index Row number
+     * @param int $index Row number
      *
      * @return array
      *
@@ -215,7 +215,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns specific column in a table.
      *
-     * @param integer $index Column number
+     * @param int $index Column number
      *
      * @return array
      *
@@ -228,7 +228,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
         }
 
         $rows = $this->getRows();
-        $column = array();
+        $column = [];
 
         foreach ($rows as $row) {
             $column[] = $row[$index];
@@ -240,9 +240,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns line number at which specific row was defined.
      *
-     * @param integer $index
+     * @param int $index
      *
-     * @return integer
+     * @return int
      *
      * @throws NodeException If row with specified index does not exist
      */
@@ -260,13 +260,13 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Converts row into delimited string.
      *
-     * @param integer $rowNum Row number
+     * @param int $rowNum Row number
      *
      * @return string
      */
     public function getRowAsString($rowNum)
     {
-        $values = array();
+        $values = [];
         foreach ($this->getRow($rowNum) as $column => $value) {
             $values[] = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
         }
@@ -277,14 +277,14 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Converts row into delimited string.
      *
-     * @param integer  $rowNum  Row number
+     * @param int $rowNum Row number
      * @param callable $wrapper Wrapper function
      *
      * @return string
      */
     public function getRowAsStringWithWrappedValues($rowNum, $wrapper)
     {
-        $values = array();
+        $values = [];
         foreach ($this->getRow($rowNum) as $column => $value) {
             $value = $this->padRight(' ' . $value . ' ', $this->maxLineLength[$column] + 2);
 
@@ -295,14 +295,14 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
-     * Converts entire table into string
+     * Converts entire table into string.
      *
      * @return string
      */
     public function getTableAsString()
     {
-        $lines = array();
-        for ($i = 0; $i < count($this->getRows()); $i++) {
+        $lines = [];
+        for ($i = 0; $i < count($this->getRows()); ++$i) {
             $lines[] = $this->getRowAsString($i);
         }
 
@@ -312,7 +312,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns line number at which table was started.
      *
-     * @return integer
+     * @return int
      */
     public function getLine()
     {
@@ -320,7 +320,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
-     * Converts table into string
+     * Converts table into string.
      *
      * @return string
      */
@@ -343,7 +343,6 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Obtains and adds rows from another table to the current table.
      * The second table should have the same structure as the current one.
-     * @param TableNode $node
      *
      * @deprecated remove together with OutlineNode::getExampleTable
      */
@@ -351,7 +350,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     {
         // check structure
         if ($this->getRow(0) !== $node->getRow(0)) {
-            throw new NodeException("Tables have different structure. Cannot merge one into another");
+            throw new NodeException('Tables have different structure. Cannot merge one into another');
         }
 
         $firstLine = $node->getLine();
@@ -367,8 +366,8 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Pads string right.
      *
-     * @param string  $text   Text to pad
-     * @param integer $length Length
+     * @param string $text Text to pad
+     * @param int $length Length
      *
      * @return string
      */

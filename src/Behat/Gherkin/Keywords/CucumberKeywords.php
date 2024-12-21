@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -32,7 +32,7 @@ class CucumberKeywords extends ArrayKeywords
         // Handle filename explicitly for BC reasons, as Symfony Yaml 3.0 does not do it anymore
         $file = null;
         if (strpos($yaml, "\n") === false && is_file($yaml)) {
-            if (false === is_readable($yaml)) {
+            if (is_readable($yaml) === false) {
                 throw new ParseException(sprintf('Unable to parse "%s" as the file is not readable.', $yaml));
             }
 
@@ -112,7 +112,7 @@ class CucumberKeywords extends ArrayKeywords
      */
     private function prepareStepString($keywordsString)
     {
-        if (0 === mb_strpos($keywordsString, '*|', 0, 'UTF-8')) {
+        if (mb_strpos($keywordsString, '*|', 0, 'UTF-8') === 0) {
             $keywordsString = mb_substr($keywordsString, 2, mb_strlen($keywordsString, 'utf8') - 2, 'utf8');
         }
 
