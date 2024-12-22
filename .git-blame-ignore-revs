@@ -1,0 +1,15 @@
+# Git 2.23+ allows ignoring commits from git-blame, useful to not display large automated commits.
+#
+# This file is a list of such commits, that you most probably are not interested in.
+# To make this work for your local setup, you need to run the following command:
+#
+# $ git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# A few rules for changing this file:
+# - Commits are in chronological order - oldest on top. Therefore new commits should be added in the end.
+# - The purpose is specifically for large commits - avoid adding commits with a very small impact, even if related
+#   to automated code style formatting.
+# - Each commit should be preceded with a comment detailing the purpose of the commit.
+
+# PHP-CS-Fixer Setup - Apply automated changes
+cc23fdc9376975d209489ae88b22ed945871d9cb

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -41,15 +41,15 @@ class NameFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        if (null === $feature->getTitle()) {
+        if ($feature->getTitle() === null) {
             return false;
         }
 
-        if ('/' === $this->filterString[0]) {
-            return 1 === preg_match($this->filterString, $feature->getTitle());
+        if ($this->filterString[0] === '/') {
+            return (bool) preg_match($this->filterString, $feature->getTitle());
         }
 
-        return false !== mb_strpos($feature->getTitle(), $this->filterString, 0, 'utf8');
+        return str_contains($feature->getTitle(), $this->filterString);
     }
 
     /**
@@ -61,13 +61,15 @@ class NameFilter extends SimpleFilter
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
-        if (null === $scenario->getTitle()) {
+        if ($scenario->getTitle() === null) {
             return false;
         }
 
-        if ('/' === $this->filterString[0] && 1 === preg_match($this->filterString, $scenario->getTitle())) {
+        if ($this->filterString[0] === '/' && preg_match($this->filterString, $scenario->getTitle())) {
             return true;
-        } elseif (false !== mb_strpos($scenario->getTitle(), $this->filterString, 0, 'utf8')) {
+        }
+
+        if (str_contains($scenario->getTitle(), $this->filterString)) {
             return true;
         }
 

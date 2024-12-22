@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CucumberKeywords;
@@ -20,13 +28,13 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     protected function getSteps($keywords, $text, &$line, $keywordType)
     {
-        $steps = array();
+        $steps = [];
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
-            if (false !== mb_strpos($keyword, '<')) {
+            if (str_contains($keyword, '<')) {
                 $keyword = mb_substr($keyword, 0, -1);
             }
 
-            $steps[] = new StepNode($keyword, $text, array(), $line++, $keywordType);
+            $steps[] = new StepNode($keyword, $text, [], $line++, $keywordType);
         }
 
         return $steps;

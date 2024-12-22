@@ -8,6 +8,22 @@ on:
     types: [ created ]
 
 jobs:
+  check_code_style:
+    name: Check code style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: '8.3'
+
+      - name: Install dependencies
+        run: composer update
+
+      - run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots
+
   tests:
     runs-on: ubuntu-latest
     name: Build and test

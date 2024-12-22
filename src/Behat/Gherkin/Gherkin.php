@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Behat Gherkin.
+ * This file is part of the Behat Gherkin Parser.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -23,16 +23,16 @@ use Behat\Gherkin\Loader\LoaderInterface;
  */
 class Gherkin
 {
-    const VERSION = '4.8.0';
+    public const VERSION = '4.8.0';
 
     /**
      * @var LoaderInterface[]
      */
-    protected $loaders = array();
+    protected $loaders = [];
     /**
      * @var FeatureFilterInterface[]
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Adds loader to manager.
@@ -61,8 +61,8 @@ class Gherkin
      */
     public function setFilters(array $filters)
     {
-        $this->filters = array();
-        array_map(array($this, 'addFilter'), $filters);
+        $this->filters = [];
+        array_map([$this, 'addFilter'], $filters);
     }
 
     /**
@@ -82,16 +82,16 @@ class Gherkin
     /**
      * Loads & filters resource with added loaders.
      *
-     * @param mixed                    $resource Resource to load
-     * @param FeatureFilterInterface[] $filters  Additional filters
+     * @param mixed $resource Resource to load
+     * @param FeatureFilterInterface[] $filters Additional filters
      *
      * @return array
      */
-    public function load($resource, array $filters = array())
+    public function load($resource, array $filters = [])
     {
         $filters = array_merge($this->filters, $filters);
 
-        $matches = array();
+        $matches = [];
         if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineRangeFilter($matches[2], $matches[3]);
@@ -102,11 +102,11 @@ class Gherkin
 
         $loader = $this->resolveLoader($resource);
 
-        if (null === $loader) {
-            return array();
+        if ($loader === null) {
+            return [];
         }
 
-        $features = array();
+        $features = [];
         foreach ($loader->load($resource) as $feature) {
             foreach ($filters as $filter) {
                 $feature = $filter->filterFeature($feature);
