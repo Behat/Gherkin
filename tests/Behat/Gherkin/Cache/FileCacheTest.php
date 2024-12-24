@@ -12,7 +12,6 @@ namespace Tests\Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Cache\FileCache;
 use Behat\Gherkin\Exception\CacheException;
-use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
@@ -59,9 +58,19 @@ class FileCacheTest extends TestCase
 
     public function testBrokenCacheRead(): void
     {
+        // First, write a valid cache and find the file that was written
+        $this->cache->write(
+            'broken_feature',
+            new FeatureNode(null, null, [], null, [], null, null, null, null),
+        );
+        $files = glob($this->path . '/**/*.feature.cache');
+        $this->assertCount(1, $files, 'Cache should have written a single file');
+
+        // Now simulate the file being corrupted and attempt to read it
+        file_put_contents($files[0], '');
+
         $this->expectException(CacheException::class);
 
-        touch($this->path . '/v' . Gherkin::VERSION . '/' . md5('broken_feature') . '.feature.cache');
         $this->cache->read('broken_feature');
     }
 
