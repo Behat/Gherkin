@@ -16,6 +16,7 @@ use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 class FileCacheTest extends TestCase
 {
@@ -77,13 +78,11 @@ class FileCacheTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->cache = new FileCache($this->path = sys_get_temp_dir() . '/gherkin-test');
+        $this->cache = new FileCache($this->path = sys_get_temp_dir() . uniqid('/gherkin-test'));
     }
 
     protected function tearDown(): void
     {
-        foreach (glob($this->path . '/*.feature.cache') as $file) {
-            unlink((string) $file);
-        }
+        (new Filesystem())->remove($this->path);
     }
 }
