@@ -23,6 +23,11 @@ use Behat\Gherkin\Loader\LoaderInterface;
  */
 class Gherkin
 {
+    /**
+     * @deprecated this constant will not be updated for releases after 4.8.0 and will be removed in the next major.
+     * You can use composer's runtime API to get the behat version if you need it. Note that composer's versions will
+     * not always be simple numeric values.
+     */
     public const VERSION = '4.8.0';
 
     /**
