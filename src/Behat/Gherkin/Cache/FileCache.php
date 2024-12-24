@@ -11,8 +11,8 @@
 namespace Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Exception\CacheException;
-use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
+use Composer\InstalledVersions;
 
 /**
  * File cache.
@@ -25,6 +25,17 @@ class FileCache implements CacheInterface
     private $path;
 
     /**
+     * Used as part of the cache directory path to invalidate cache if the installed package version changes.
+     */
+    private static function getGherkinVersionHash(): string
+    {
+        $version = InstalledVersions::getVersion('behat/gherkin');
+
+        // Composer version strings can contain arbitrary content so hash for filesystem safety
+        return md5($version);
+    }
+
+    /**
      * Initializes file cache.
      *
      * @param string $path path to the folder where to store caches
@@ -33,7 +44,7 @@ class FileCache implements CacheInterface
      */
     public function __construct($path)
     {
-        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'v' . Gherkin::VERSION;
+        $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::getGherkinVersionHash();
 
         if (!is_dir($this->path)) {
             @mkdir($this->path, 0777, true);
