@@ -636,7 +636,7 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param string[] $tags
+     * @param array<array-key, string> $tags
      */
     protected function guardTags(array $tags)
     {
@@ -703,7 +703,7 @@ class Parser
     /**
      * Parses the rows of a table.
      *
-     * @return string[][]
+     * @return array<int, list<string>>
      */
     private function parseTableRows()
     {
@@ -725,7 +725,7 @@ class Parser
     /**
      * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
-     * @param StepNode[] $steps
+     * @param list<StepNode> $steps
      *
      * @return StepNode
      */

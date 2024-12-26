@@ -30,7 +30,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $description;
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tags = [];
     /**
@@ -38,7 +38,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $background;
     /**
-     * @var ScenarioInterface[]
+     * @var list<ScenarioInterface>
      */
     private $scenarios = [];
     /**
@@ -63,8 +63,8 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      *
      * @param string|null $title
      * @param string|null $description
-     * @param string[] $tags
-     * @param ScenarioInterface[] $scenarios
+     * @param list<string> $tags
+     * @param list<ScenarioInterface> $scenarios
      * @param string $keyword
      * @param string $language
      * @param string|null $file the absolute path to the feature file
@@ -87,9 +87,9 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         }
         $this->title = $title;
         $this->description = $description;
-        $this->tags = $tags;
+        $this->tags = array_values($tags);
         $this->background = $background;
-        $this->scenarios = $scenarios;
+        $this->scenarios = array_values($scenarios);
         $this->keyword = $keyword;
         $this->language = $language;
         $this->file = $file;
@@ -161,7 +161,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature tags.
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getTags()
     {
@@ -201,7 +201,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature scenarios.
      *
-     * @return ScenarioInterface[]
+     * @return list<ScenarioInterface>
      */
     public function getScenarios()
     {

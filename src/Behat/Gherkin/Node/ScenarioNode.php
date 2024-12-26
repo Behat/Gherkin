@@ -26,7 +26,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $tags = [];
     /**
-     * @var StepNode[]
+     * @var list<StepNode>
      */
     private $steps = [];
     /**
@@ -42,15 +42,15 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
      * Initializes scenario.
      *
      * @param string|null $title
-     * @param StepNode[] $steps
+     * @param list<StepNode> $steps
      * @param string $keyword
      * @param int $line
      */
     public function __construct($title, array $tags, array $steps, $keyword, $line)
     {
         $this->title = $title;
-        $this->tags = $tags;
-        $this->steps = $steps;
+        $this->tags = array_values($tags);
+        $this->steps = array_values($steps);
         $this->keyword = $keyword;
         $this->line = $line;
     }
@@ -128,7 +128,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns scenario steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     public function getSteps()
     {
