@@ -25,19 +25,17 @@ class PathsFilter extends SimpleFilter
     /**
      * Initializes filter.
      *
-     * @param list<string> $paths List of approved paths
+     * @param array<array-key, string> $paths List of approved paths
      */
     public function __construct(array $paths)
     {
-        $this->filterPaths = array_map(
-            function ($realpath) {
-                return rtrim($realpath, DIRECTORY_SEPARATOR) .
-                    (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
-            },
-            array_filter(
-                array_map('realpath', $paths)
-            )
-        );
+        foreach ($paths as $path) {
+            if (($realpath = realpath($path)) === false) {
+                continue;
+            }
+            $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
+                . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
+        }
     }
 
     /**

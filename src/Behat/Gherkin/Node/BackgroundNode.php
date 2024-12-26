@@ -38,14 +38,14 @@ class BackgroundNode implements ScenarioLikeInterface
      * Initializes background.
      *
      * @param string|null $title
-     * @param list<StepNode> $steps
+     * @param array<array-key, StepNode> $steps
      * @param string $keyword
      * @param int $line
      */
     public function __construct($title, array $steps, $keyword, $line)
     {
         $this->title = $title;
-        $this->steps = $steps;
+        $this->steps = array_values($steps);
         $this->keyword = $keyword;
         $this->line = $line;
     }

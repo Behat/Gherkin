@@ -87,9 +87,9 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         }
         $this->title = $title;
         $this->description = $description;
-        $this->tags = $tags;
+        $this->tags = array_values($tags);
         $this->background = $background;
-        $this->scenarios = $scenarios;
+        $this->scenarios = array_values($scenarios);
         $this->keyword = $keyword;
         $this->language = $language;
         $this->file = $file;

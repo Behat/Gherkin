@@ -636,7 +636,7 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param list<string> $tags
+     * @param array<array-key, string> $tags
      */
     protected function guardTags(array $tags)
     {
@@ -703,7 +703,7 @@ class Parser
     /**
      * Parses the rows of a table.
      *
-     * @return list<list<string>>
+     * @return array<int, list<string>>
      */
     private function parseTableRows()
     {

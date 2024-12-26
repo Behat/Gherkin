@@ -49,8 +49,8 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     public function __construct($title, array $tags, array $steps, $keyword, $line)
     {
         $this->title = $title;
-        $this->tags = $tags;
-        $this->steps = $steps;
+        $this->tags = array_values($tags);
+        $this->steps = array_values($steps);
         $this->keyword = $keyword;
         $this->line = $line;
     }

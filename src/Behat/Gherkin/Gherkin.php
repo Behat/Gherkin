@@ -62,12 +62,12 @@ class Gherkin
     /**
      * Sets filters to the parser.
      *
-     * @param list<FeatureFilterInterface> $filters
+     * @param array<array-key, FeatureFilterInterface> $filters
      */
     public function setFilters(array $filters)
     {
         $this->filters = [];
-        array_map([$this, 'addFilter'], $filters);
+        array_map($this->addFilter(...), $filters);
     }
 
     /**
@@ -88,7 +88,7 @@ class Gherkin
      * Loads & filters resource with added loaders.
      *
      * @param mixed $resource Resource to load
-     * @param list<FeatureFilterInterface> $filters Additional filters
+     * @param array<array-key, FeatureFilterInterface> $filters Additional filters
      *
      * @return array
      */
@@ -97,10 +97,10 @@ class Gherkin
         $filters = array_merge($this->filters, $filters);
 
         $matches = [];
-        if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
+        if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineRangeFilter($matches[2], $matches[3]);
-        } elseif (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+        } elseif (preg_match('/^(.*):(\d+)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineFilter($matches[2]);
         }

@@ -128,7 +128,7 @@ class TagFilter extends ComplexFilter
     /**
      * Checks that node matches condition.
      *
-     * @param list<string> $tags
+     * @param array<array-key, string> $tags
      *
      * @return bool
      */

@@ -65,14 +65,14 @@ class OutlineNode implements ScenarioInterface
         $line,
     ) {
         $this->title = $title;
-        $this->tags = $tags;
-        $this->steps = $steps;
+        $this->tags = array_values($tags);
+        $this->steps = array_values($steps);
         $this->keyword = $keyword;
         $this->line = $line;
         if (!is_array($tables)) {
             $this->tables = [$tables];
         } else {
-            $this->tables = $tables;
+            $this->tables = array_values($tables);
         }
     }
 
