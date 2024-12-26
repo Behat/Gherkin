@@ -31,11 +31,11 @@ class Gherkin
     public const VERSION = '4.8.0';
 
     /**
-     * @var LoaderInterface[]
+     * @var list<LoaderInterface>
      */
     protected $loaders = [];
     /**
-     * @var FeatureFilterInterface[]
+     * @var list<FeatureFilterInterface>
      */
     protected $filters = [];
 
@@ -62,7 +62,7 @@ class Gherkin
     /**
      * Sets filters to the parser.
      *
-     * @param FeatureFilterInterface[] $filters
+     * @param list<FeatureFilterInterface> $filters
      */
     public function setFilters(array $filters)
     {
@@ -88,7 +88,7 @@ class Gherkin
      * Loads & filters resource with added loaders.
      *
      * @param mixed $resource Resource to load
-     * @param FeatureFilterInterface[] $filters Additional filters
+     * @param list<FeatureFilterInterface> $filters Additional filters
      *
      * @return array
      */

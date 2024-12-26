@@ -22,15 +22,15 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $text;
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tags;
     /**
-     * @var StepNode[]
+     * @var list<StepNode>
      */
     private $outlineSteps;
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tokens;
     /**
@@ -38,7 +38,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $line;
     /**
-     * @var StepNode[]|null
+     * @var list<StepNode>|null
      */
     private $steps;
     /**
@@ -54,9 +54,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      * Initializes outline.
      *
      * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
-     * @param string[] $tags
-     * @param StepNode[] $outlineSteps
-     * @param string[] $tokens
+     * @param list<string> $tags
+     * @param list<StepNode> $outlineSteps
+     * @param list<string> $tokens
      * @param int $line line number within the feature file
      * @param string|null $outlineTitle original title of the scenario outline
      * @param int|null $index the 1-based index of the row/example within the scenario outline
@@ -130,7 +130,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getTags()
     {
@@ -150,7 +150,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     public function getSteps()
     {
@@ -160,7 +160,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns example tokens.
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getTokens()
     {
@@ -207,7 +207,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Creates steps for this example from abstract outline steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     protected function createExampleSteps()
     {
@@ -228,9 +228,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Replaces tokens in arguments with row values.
      *
-     * @param ArgumentInterface[] $arguments
+     * @param list<ArgumentInterface> $arguments
      *
-     * @return ArgumentInterface[]
+     * @return list<ArgumentInterface>
      */
     protected function replaceArgumentsTokens(array $arguments)
     {

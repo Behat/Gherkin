@@ -25,7 +25,7 @@ class PathsFilter extends SimpleFilter
     /**
      * Initializes filter.
      *
-     * @param string[] $paths List of approved paths
+     * @param list<string> $paths List of approved paths
      */
     public function __construct(array $paths)
     {

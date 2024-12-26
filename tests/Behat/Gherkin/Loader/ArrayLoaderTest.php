@@ -184,7 +184,7 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(1, $features);
 
-        /** @var OutlineNode[] $scenarios */
+        /** @var list<OutlineNode> $scenarios */
         $scenarios = $features[0]->getScenarios();
         $scenario = $scenarios[0];
 

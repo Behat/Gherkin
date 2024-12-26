@@ -65,7 +65,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     private static function getTags(array $json)
     {
@@ -76,7 +76,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return ScenarioInterface[]
+     * @return list<ScenarioInterface>
      */
     private static function getScenarios(array $json)
     {
@@ -140,7 +140,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     private static function getSteps(array $json)
     {
@@ -159,7 +159,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return ExampleTableNode[]
+     * @return list<ExampleTableNode>
      */
     private static function getTables(array $json)
     {
