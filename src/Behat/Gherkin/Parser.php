@@ -426,7 +426,7 @@ class Parser
         $tags = $this->popTags();
         $keyword = $token['keyword'];
 
-        /** @var ExampleTableNode $examples */
+        /** @var list<ExampleTableNode> $examples */
         $examples = [];
         $line = $token['line'];
 
@@ -482,7 +482,7 @@ class Parser
             }
         }
 
-        if (empty($examples)) {
+        if (!count($examples)) {
             throw new ParserException(sprintf(
                 'Outline should have examples table, but got none for outline "%s" on line: %d%s',
                 rtrim($title),

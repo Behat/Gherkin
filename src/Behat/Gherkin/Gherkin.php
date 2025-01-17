@@ -132,7 +132,7 @@ class Gherkin
      *
      * @param mixed $resource Resource to load
      *
-     * @return LoaderInterface
+     * @return LoaderInterface|null
      */
     public function resolveLoader($resource)
     {
