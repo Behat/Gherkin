@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Exception;
 
-class LexerException extends \RuntimeException implements Exception
+use RuntimeException;
+
+class LexerException extends RuntimeException implements Exception
 {
 }

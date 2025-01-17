@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Exception;
 
-class NodeException extends \RuntimeException implements Exception
+use RuntimeException;
+
+class NodeException extends RuntimeException implements Exception
 {
 }

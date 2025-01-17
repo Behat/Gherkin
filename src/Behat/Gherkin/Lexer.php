@@ -272,7 +272,7 @@ class Lexer
     /**
      * Scans for token with specified keywords.
      *
-     * @param string $keywords Keywords (splitted with |)
+     * @param string $keywords Keywords (separated by "|")
      * @param string $type Expected token type
      *
      * @return array|null
