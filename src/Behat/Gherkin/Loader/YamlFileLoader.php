@@ -46,7 +46,7 @@ class YamlFileLoader extends AbstractFileLoader
      *
      * @param string $resource Resource to load
      *
-     * @return list<FeatureNode>
+     * @return FeatureNode[]
      */
     public function load($resource)
     {

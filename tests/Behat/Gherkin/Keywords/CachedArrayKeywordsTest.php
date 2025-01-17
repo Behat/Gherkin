@@ -33,7 +33,7 @@ class CachedArrayKeywordsTest extends KeywordsTestCase
                 continue;
             }
 
-            if (mb_strpos($keyword, '<') !== false) {
+            if (str_contains($keyword, '<')) {
                 $keyword = mb_substr($keyword, 0, -1);
             }
 

@@ -72,7 +72,11 @@ class Parser
         try {
             $this->lexer->analyse($this->input, 'en');
         } catch (LexerException $e) {
-            throw new ParserException(sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file), 0, $e);
+            throw new ParserException(
+                sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),
+                0,
+                $e
+            );
         }
 
         $feature = null;
@@ -89,15 +93,27 @@ class Parser
             }
 
             if ($feature && $node instanceof FeatureNode) {
-                throw new ParserException(sprintf('Only one feature is allowed per feature file. But %s got multiple.', $this->file));
+                throw new ParserException(sprintf(
+                    'Only one feature is allowed per feature file. But %s got multiple.',
+                    $this->file
+                ));
             }
 
             if (is_string($node)) {
-                throw new ParserException(sprintf('Expected Feature, but got text: "%s"%s', $node, $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Feature, but got text: "%s"%s',
+                    $node,
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof FeatureNode) {
-                throw new ParserException(sprintf('Expected Feature, but got %s on line: %d%s', $node->getKeyword(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Feature, but got %s on line: %d%s',
+                    $node->getKeyword(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
@@ -122,7 +138,13 @@ class Parser
 
         $token = $this->lexer->predictToken();
 
-        throw new ParserException(sprintf('Expected %s token, but got %s on line: %d%s', implode(' or ', $types), $this->predictTokenType(), $token['line'], $this->file ? ' in file: ' . $this->file : ''));
+        throw new ParserException(sprintf(
+            'Expected %s token, but got %s on line: %d%s',
+            implode(' or ', $types),
+            $this->predictTokenType(),
+            $token['line'],
+            $this->file ? ' in file: ' . $this->file : ''
+        ));
     }
 
     /**
@@ -170,36 +192,22 @@ class Parser
             $type = $this->predictTokenType();
         }
 
-        switch ($type) {
-            case 'Feature':
-                return $this->parseFeature();
-            case 'Background':
-                return $this->parseBackground();
-            case 'Scenario':
-                return $this->parseScenario();
-            case 'Outline':
-                return $this->parseOutline();
-            case 'Examples':
-                return $this->parseExamples();
-            case 'TableRow':
-                return $this->parseTable();
-            case 'PyStringOp':
-                return $this->parsePyString();
-            case 'Step':
-                return $this->parseStep();
-            case 'Text':
-                return $this->parseText();
-            case 'Newline':
-                return $this->parseNewline();
-            case 'Tag':
-                return $this->parseTags();
-            case 'Language':
-                return $this->parseLanguage();
-            case 'EOS':
-                return '';
-        }
-
-        throw new ParserException(sprintf('Unknown token type: %s', $type));
+        return match ($type) {
+            'Feature' => $this->parseFeature(),
+            'Background' => $this->parseBackground(),
+            'Scenario' => $this->parseScenario(),
+            'Outline' => $this->parseOutline(),
+            'Examples' => $this->parseExamples(),
+            'TableRow' => $this->parseTable(),
+            'PyStringOp' => $this->parsePyString(),
+            'Step' => $this->parseStep(),
+            'Text' => $this->parseText(),
+            'Newline' => $this->parseNewline(),
+            'Tag' => $this->parseTags(),
+            'Language' => $this->parseLanguage(),
+            'EOS' => '',
+            default => throw new ParserException(sprintf('Unknown token type: %s', $type)),
+        };
     }
 
     /**
@@ -246,11 +254,21 @@ class Parser
             }
 
             if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
-                throw new ParserException(sprintf('Each Feature could have only one Background, but found multiple on lines %d and %d%s', $background->getLine(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Each Feature could have only one Background, but found multiple on lines %d and %d%s',
+                    $background->getLine(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof ScenarioNode) {
-                throw new ParserException(sprintf('Expected Scenario, Outline or Background, but got %s on line: %d%s', $node->getNodeType(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Scenario, Outline or Background, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
@@ -283,7 +301,11 @@ class Parser
         $line = $token['line'];
 
         if (count($this->popTags())) {
-            throw new ParserException(sprintf('Background can not be tagged, but it is on line: %d%s', $line, $this->file ? ' in file: ' . $this->file : ''));
+            throw new ParserException(sprintf(
+                'Background can not be tagged, but it is on line: %d%s',
+                $line,
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         // Parse description and steps
@@ -308,11 +330,20 @@ class Parser
             }
 
             if (is_string($node)) {
-                throw new ParserException(sprintf('Expected Step, but got text: "%s"%s', $node, $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step, but got text: "%s"%s',
+                    $node,
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf('Expected Step, but got %s on line: %d%s', $node->getNodeType(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
@@ -358,11 +389,20 @@ class Parser
             }
 
             if (is_string($node)) {
-                throw new ParserException(sprintf('Expected Step, but got text: "%s"%s', $node, $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step, but got text: "%s"%s',
+                    $node,
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf('Expected Step, but got %s on line: %d%s', $node->getNodeType(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
@@ -425,16 +465,30 @@ class Parser
             }
 
             if (is_string($node)) {
-                throw new ParserException(sprintf('Expected Step or Examples table, but got text: "%s"%s', $node, $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step or Examples table, but got text: "%s"%s',
+                    $node,
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
 
             if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf('Expected Step or Examples table, but got %s on line: %d%s', $node->getNodeType(), $node->getLine(), $this->file ? ' in file: ' . $this->file : ''));
+                throw new ParserException(sprintf(
+                    'Expected Step or Examples table, but got %s on line: %d%s',
+                    $node->getNodeType(),
+                    $node->getLine(),
+                    $this->file ? ' in file: ' . $this->file : ''
+                ));
             }
         }
 
         if (empty($examples)) {
-            throw new ParserException(sprintf('Outline should have examples table, but got none for outline "%s" on line: %d%s', rtrim($title), $line, $this->file ? ' in file: ' . $this->file : ''));
+            throw new ParserException(sprintf(
+                'Outline should have examples table, but got none for outline "%s" on line: %d%s',
+                rtrim($title),
+                $line,
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line);
@@ -582,13 +636,16 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param array<array-key, string> $tags
+     * @param string[] $tags
      */
     protected function guardTags(array $tags)
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
-                trigger_error(sprintf('Whitespace in tags is deprecated, found "%s"', $tag), E_USER_DEPRECATED);
+                trigger_error(
+                    sprintf('Whitespace in tags is deprecated, found "%s"', $tag),
+                    E_USER_DEPRECATED
+                );
             }
         }
     }
@@ -632,7 +689,12 @@ class Parser
             $this->lexer->analyse($this->input, $token['value']);
             $this->languageSpecifierLine = $token['line'];
         } elseif ($token['line'] !== $this->languageSpecifierLine) {
-            throw new ParserException(sprintf('Ambiguous language specifiers on lines: %d and %d%s', $this->languageSpecifierLine, $token['line'], $this->file ? ' in file: ' . $this->file : ''));
+            throw new ParserException(sprintf(
+                'Ambiguous language specifiers on lines: %d and %d%s',
+                $this->languageSpecifierLine,
+                $token['line'],
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         return $this->parseExpression();
@@ -663,29 +725,29 @@ class Parser
     /**
      * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
-     * @param list<StepNode> $steps
+     * @param StepNode[] $steps
      *
      * @return StepNode
      */
     private function normalizeStepNodeKeywordType(StepNode $node, array $steps = [])
     {
-        if (in_array($node->getKeywordType(), ['And', 'But'])) {
-            if ($prev = end($steps)) {
-                $keywordType = $prev->getKeywordType();
-            } else {
-                $keywordType = 'Given';
-            }
-
-            $node = new StepNode(
-                $node->getKeyword(),
-                $node->getText(),
-                $node->getArguments(),
-                $node->getLine(),
-                $keywordType
-            );
+        if (!in_array($node->getKeywordType(), ['And', 'But'])) {
+            return $node;
         }
 
-        return $node;
+        if ($prev = end($steps)) {
+            $keywordType = $prev->getKeywordType();
+        } else {
+            $keywordType = 'Given';
+        }
+
+        return new StepNode(
+            $node->getKeyword(),
+            $node->getText(),
+            $node->getArguments(),
+            $node->getLine(),
+            $keywordType
+        );
     }
 
     /**
@@ -693,6 +755,10 @@ class Parser
      */
     private function rethrowNodeException(NodeException $e): void
     {
-        throw new ParserException($e->getMessage() . ($this->file ? ' in file ' . $this->file : ''), 0, $e);
+        throw new ParserException(
+            $e->getMessage() . ($this->file ? ' in file ' . $this->file : ''),
+            0,
+            $e
+        );
     }
 }

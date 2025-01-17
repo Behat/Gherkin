@@ -128,11 +128,7 @@ class Lexer
      */
     public function predictToken()
     {
-        if ($this->stashedToken === null) {
-            $this->stashedToken = $this->getNextToken();
-        }
-
-        return $this->stashedToken;
+        return $this->stashedToken ??= $this->getNextToken();
     }
 
     /**
@@ -196,7 +192,7 @@ class Lexer
      */
     protected function getTrimmedLine()
     {
-        return $this->trimmedLine !== null ? $this->trimmedLine : $this->trimmedLine = trim($this->line);
+        return $this->trimmedLine ??= trim($this->line);
     }
 
     /**
@@ -343,7 +339,7 @@ class Lexer
             if ($type === 'Step') {
                 $padded = [];
                 foreach (explode('|', $keywords) as $keyword) {
-                    $padded[] = mb_strpos($keyword, '<', 0, 'utf8') !== false
+                    $padded[] = str_contains($keyword, '<')
                         ? preg_quote(mb_substr($keyword, 0, -1, 'utf8'), '/') . '\s*'
                         : preg_quote($keyword, '/') . '\s+';
                 }
@@ -499,7 +495,7 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if (!isset($line[0]) || $line[0] !== '|' || substr($line, -1) !== '|') {
+        if ($line === '' || !str_starts_with($line, '|') || !str_ends_with($line, '|')) {
             return null;
         }
 
@@ -524,7 +520,7 @@ class Lexer
     {
         $line = $this->getTrimmedLine();
 
-        if (!isset($line[0]) || $line[0] !== '@') {
+        if ($line === '' || !str_starts_with($line, '@')) {
             return null;
         }
 
@@ -558,11 +554,11 @@ class Lexer
             return null;
         }
 
-        if (mb_strpos(ltrim($this->line), '#', 0, 'utf8') !== 0) {
+        if (!str_starts_with(ltrim($this->line), '#')) {
             return null;
         }
 
-        return $this->scanInput('/^\s*\#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        return $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
     }
 
     /**
@@ -577,7 +573,7 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if (mb_strpos($line, '#', 0, 'utf8') !== 0) {
+        if (!str_starts_with($line, '#')) {
             return null;
         }
 
@@ -642,7 +638,7 @@ class Lexer
         }
 
         foreach ($this->stepKeywordTypesCache as $type => $keywords) {
-            if (in_array($native, $keywords) || in_array($native . '<', $keywords)) {
+            if (in_array($native, $keywords, true) || in_array($native . '<', $keywords, true)) {
                 return $type;
             }
         }

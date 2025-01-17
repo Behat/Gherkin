@@ -263,7 +263,7 @@ class ArrayLoader implements LoaderInterface
      */
     protected function loadPyStringHash(array $hash, $line = 0)
     {
-        $line = isset($hash['line']) ? $hash['line'] : $line;
+        $line = $hash['line'] ?? $line;
 
         $strings = [];
         foreach (explode("\n", $hash['text']) as $string) {
@@ -289,22 +289,22 @@ class ArrayLoader implements LoaderInterface
      * Processes cases when examples are in the form of array of arrays
      * OR in the form of array of objects.
      *
-     * @param $exHash array hash
+     * @param $examplesHash array hash
      * @param $examplesKeyword string
      * @param $examples array
      *
      * @return array
      */
-    private function processExamplesArray($exHash, $examplesKeyword, $examples)
+    private function processExamplesArray($examplesHash, $examplesKeyword, $examples)
     {
-        for ($i = 0; $i < count($exHash); ++$i) {
-            if (isset($exHash[$i]['table'])) {
+        foreach ($examplesHash as $exampleHash) {
+            if (isset($exampleHash['table'])) {
                 // we have examples as objects, hence there could be tags
-                $exHashTags = isset($exHash[$i]['tags']) ? $exHash[$i]['tags'] : [];
-                $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
+                $exHashTags = $exampleHash['tags'] ?? [];
+                $examples[] = new ExampleTableNode($exampleHash['table'], $examplesKeyword, $exHashTags);
             } else {
                 // we have examples as arrays
-                $examples[] = new ExampleTableNode($exHash[$i], $examplesKeyword);
+                $examples[] = new ExampleTableNode($exampleHash, $examplesKeyword);
             }
         }
 

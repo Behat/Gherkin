@@ -22,15 +22,15 @@ class OutlineNode implements ScenarioInterface
      */
     private $title;
     /**
-     * @var list<string>
+     * @var string[]
      */
     private $tags;
     /**
-     * @var list<StepNode>
+     * @var StepNode[]
      */
     private $steps;
     /**
-     * @var ExampleTableNode|list<ExampleTableNode>
+     * @var ExampleTableNode|ExampleTableNode[]
      */
     private $tables;
     /**
@@ -42,7 +42,7 @@ class OutlineNode implements ScenarioInterface
      */
     private $line;
     /**
-     * @var list<ExampleNode>|null
+     * @var ExampleNode[]|null
      */
     private $examples;
 
@@ -50,9 +50,9 @@ class OutlineNode implements ScenarioInterface
      * Initializes outline.
      *
      * @param string|null $title
-     * @param list<string> $tags
-     * @param list<StepNode> $steps
-     * @param ExampleTableNode|list<ExampleTableNode> $tables
+     * @param string[] $tags
+     * @param StepNode[] $steps
+     * @param ExampleTableNode|ExampleTableNode[] $tables
      * @param string $keyword
      * @param int $line
      */
@@ -65,14 +65,14 @@ class OutlineNode implements ScenarioInterface
         $line,
     ) {
         $this->title = $title;
-        $this->tags = array_values($tags);
-        $this->steps = array_values($steps);
+        $this->tags = $tags;
+        $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
         if (!is_array($tables)) {
             $this->tables = [$tables];
         } else {
-            $this->tables = array_values($tables);
+            $this->tables = $tables;
         }
     }
 
@@ -121,7 +121,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return list<string>
+     * @return string[]
      */
     public function getTags()
     {
@@ -141,7 +141,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns outline steps.
      *
-     * @return list<StepNode>
+     * @return StepNode[]
      */
     public function getSteps()
     {
@@ -176,7 +176,8 @@ class OutlineNode implements ScenarioInterface
 
         /** @var ExampleTableNode $exampleTableNode */
         $exampleTableNode = new ExampleTableNode($table, $this->tables[0]->getKeyword());
-        for ($i = 1; $i < count($this->tables); ++$i) {
+        $tableCount = count($this->tables);
+        for ($i = 1; $i < $tableCount; ++$i) {
             $exampleTableNode->mergeRowsFromTable($this->tables[$i]);
         }
 
@@ -186,7 +187,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns list of examples for the outline.
      *
-     * @return list<ExampleNode>
+     * @return ExampleNode[]
      */
     public function getExamples()
     {
@@ -196,7 +197,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns examples tables array for the outline.
      *
-     * @return list<ExampleTableNode>
+     * @return ExampleTableNode[]
      */
     public function getExampleTables()
     {
@@ -226,7 +227,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Creates examples for this outline using examples table.
      *
-     * @return list<ExampleNode>
+     * @return ExampleNode[]
      */
     protected function createExamples()
     {

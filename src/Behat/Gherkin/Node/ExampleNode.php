@@ -22,11 +22,11 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     private $text;
     /**
-     * @var list<string>
+     * @var string[]
      */
     private $tags;
     /**
-     * @var list<StepNode>
+     * @var StepNode[]
      */
     private $outlineSteps;
     /**
@@ -64,8 +64,8 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
     {
         $this->text = $text;
-        $this->tags = array_values($tags);
-        $this->outlineSteps = array_values($outlineSteps);
+        $this->tags = $tags;
+        $this->outlineSteps = $outlineSteps;
         $this->tokens = $tokens;
         $this->line = $line;
         $this->outlineTitle = $outlineTitle;
@@ -130,7 +130,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline tags (including inherited from feature).
      *
-     * @return list<string>
+     * @return string[]
      */
     public function getTags()
     {
@@ -150,7 +150,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline steps.
      *
-     * @return list<StepNode>
+     * @return StepNode[]
      */
     public function getSteps()
     {
@@ -160,7 +160,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns example tokens.
      *
-     * @return list<string>
+     * @return string[]
      */
     public function getTokens()
     {

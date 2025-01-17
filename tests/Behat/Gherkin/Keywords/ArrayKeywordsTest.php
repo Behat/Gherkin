@@ -44,7 +44,7 @@ class ArrayKeywordsTest extends KeywordsTestCase
     {
         $steps = [];
         foreach (explode('|', $keywords) as $keyword) {
-            if (mb_strpos($keyword, '<') !== false) {
+            if (str_contains($keyword, '<')) {
                 $keyword = mb_substr($keyword, 0, -1);
             }
 

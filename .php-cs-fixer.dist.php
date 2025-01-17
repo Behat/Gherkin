@@ -6,7 +6,6 @@ $finder = (new PhpCsFixer\Finder())
 
 return (new PhpCsFixer\Config())
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
-    ->setRiskyAllowed(true)
     ->setRules([
         '@PER-CS' => true,
         '@Symfony' => true,
@@ -28,7 +27,8 @@ return (new PhpCsFixer\Config())
         'phpdoc_align' => ['align' => 'left'],
         'heredoc_to_nowdoc' => true,
         'heredoc_indentation' => ['indentation' => 'same_as_start'],
-        'phpdoc_array_type' => true,
-        'phpdoc_list_type' => true,
+        'single_line_throw' => false,
+        'ternary_to_null_coalescing' => true,
+        'global_namespace_import' => false,
     ])
     ->setFinder($finder);

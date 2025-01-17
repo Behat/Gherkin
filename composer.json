@@ -14,10 +14,12 @@
     ],
 
     "require": {
-        "php": "8.1.* || 8.2.* || 8.3.* || 8.4.*"
+        "php": "8.1.* || 8.2.* || 8.3.* || 8.4.*",
+        "composer-runtime-api": "^2.2"
     },
 
     "require-dev": {
+        "symfony/filesystem": "^5.4 || ^6.4 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/cucumber": "dev-gherkin-24.1.0",
@@ -73,7 +75,7 @@
         "lint": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpstan analyse --no-progress --memory-limit 512M",
-            "vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots"
+            "vendor/bin/php-cs-fixer check --diff --show-progress=dots --verbose"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",

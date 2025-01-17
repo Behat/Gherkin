@@ -22,7 +22,7 @@ class BackgroundNode implements ScenarioLikeInterface
      */
     private $title;
     /**
-     * @var list<StepNode>
+     * @var StepNode[]
      */
     private $steps = [];
     /**
@@ -38,14 +38,14 @@ class BackgroundNode implements ScenarioLikeInterface
      * Initializes background.
      *
      * @param string|null $title
-     * @param array<array-key, StepNode> $steps
+     * @param StepNode[] $steps
      * @param string $keyword
      * @param int $line
      */
     public function __construct($title, array $steps, $keyword, $line)
     {
         $this->title = $title;
-        $this->steps = array_values($steps);
+        $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
     }
@@ -77,13 +77,13 @@ class BackgroundNode implements ScenarioLikeInterface
      */
     public function hasSteps()
     {
-        return count($this->steps) > 0;
+        return (bool) count($this->steps);
     }
 
     /**
      * Returns background steps.
      *
-     * @return list<StepNode>
+     * @return StepNode[]
      */
     public function getSteps()
     {

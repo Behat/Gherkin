@@ -50,7 +50,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         $featureJson = $json['gherkinDocument']['feature'];
 
         $feature = new FeatureNode(
-            isset($featureJson['name']) ? $featureJson['name'] : null,
+            $featureJson['name'] ?? null,
             $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
@@ -150,7 +150,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return list<ExampleTableNode>
+     * @return ExampleTableNode[]
      */
     private static function getTables(array $items): array
     {
@@ -158,9 +158,21 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
+                $table[$tableJson['tableHeader']['location']['line']] = array_map(
+                    static function ($cell) {
+                        return $cell['value'];
+                    },
+                    $tableJson['tableHeader']['cells']
+                );
                 $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
 
                 foreach ($tableJson['tableBody'] as $bodyRow) {
+                    $table[$bodyRow['location']['line']] = array_map(
+                        static function ($cell) {
+                            return $cell['value'];
+                        },
+                        $bodyRow['cells']
+                    );
                     $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
                 }
 

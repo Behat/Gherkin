@@ -10,6 +10,10 @@
 
 namespace Behat\Gherkin\Node;
 
+use InvalidArgumentException;
+
+use function strlen;
+
 /**
  * Represents Gherkin Feature.
  *
@@ -26,7 +30,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $description;
     /**
-     * @var list<string>
+     * @var string[]
      */
     private $tags = [];
     /**
@@ -34,7 +38,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      */
     private $background;
     /**
-     * @var list<ScenarioInterface>
+     * @var ScenarioInterface[]
      */
     private $scenarios = [];
     /**
@@ -59,8 +63,8 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      *
      * @param string|null $title
      * @param string|null $description
-     * @param list<string> $tags
-     * @param list<ScenarioInterface> $scenarios
+     * @param string[] $tags
+     * @param ScenarioInterface[] $scenarios
      * @param string $keyword
      * @param string $language
      * @param string|null $file the absolute path to the feature file
@@ -79,13 +83,13 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     ) {
         // Verify that the feature file is an absolute path.
         if (!empty($file) && !$this->isAbsolutePath($file)) {
-            throw new \InvalidArgumentException('The file should be an absolute path.');
+            throw new InvalidArgumentException('The file should be an absolute path.');
         }
         $this->title = $title;
         $this->description = $description;
-        $this->tags = array_values($tags);
+        $this->tags = $tags;
         $this->background = $background;
-        $this->scenarios = array_values($scenarios);
+        $this->scenarios = $scenarios;
         $this->keyword = $keyword;
         $this->language = $language;
         $this->file = $file;
@@ -157,7 +161,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature tags.
      *
-     * @return list<string>
+     * @return string[]
      */
     public function getTags()
     {
@@ -197,7 +201,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns feature scenarios.
      *
-     * @return list<ScenarioInterface>
+     * @return ScenarioInterface[]
      */
     public function getScenarios()
     {
@@ -260,7 +264,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         }
 
         return strspn($file, '/\\', 0, 1)
-            || (\strlen($file) > 3 && ctype_alpha($file[0])
+            || (strlen($file) > 3 && ctype_alpha($file[0])
                 && $file[1] === ':'
                 && strspn($file, '/\\', 2, 1)
             )

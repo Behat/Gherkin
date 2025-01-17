@@ -10,15 +10,18 @@
 
 namespace Behat\Gherkin\Node;
 
+use ArrayIterator;
 use Behat\Gherkin\Exception\NodeException;
 use Iterator;
+use IteratorAggregate;
+use ReturnTypeWillChange;
 
 /**
  * Represents Gherkin Table argument.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class TableNode implements ArgumentInterface, \IteratorAggregate
+class TableNode implements ArgumentInterface, IteratorAggregate
 {
     /**
      * @var array
@@ -43,7 +46,11 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
 
         foreach ($this->getRows() as $ridx => $row) {
             if (!is_array($row)) {
-                throw new NodeException(sprintf("Table row '%s' is expected to be array, got %s", $ridx, gettype($row)));
+                throw new NodeException(sprintf(
+                    "Table row '%s' is expected to be array, got %s",
+                    $ridx,
+                    gettype($row)
+                ));
             }
 
             if ($columnCount === null) {
@@ -51,7 +58,12 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
             }
 
             if (count($row) !== $columnCount) {
-                throw new NodeException(sprintf("Table row '%s' is expected to have %s columns, got %s", $ridx, $columnCount, count($row)));
+                throw new NodeException(sprintf(
+                    "Table row '%s' is expected to have %s columns, got %s",
+                    $ridx,
+                    $columnCount,
+                    count($row)
+                ));
             }
 
             foreach ($row as $column => $string) {
@@ -60,7 +72,12 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
                 }
 
                 if (!is_scalar($string)) {
-                    throw new NodeException(sprintf("Table cell at row '%s', col '%s' is expected to be scalar, got %s", $ridx, $column, gettype($string)));
+                    throw new NodeException(sprintf(
+                        "Table cell at row '%s', col '%s' is expected to be scalar, got %s",
+                        $ridx,
+                        $column,
+                        gettype($string)
+                    ));
                 }
 
                 $this->maxLineLength[$column] = max($this->maxLineLength[$column], mb_strlen($string, 'utf8'));
@@ -138,7 +155,7 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
         $hash = [];
 
         foreach ($this->getRows() as $row) {
-            $hash[array_shift($row)] = (count($row) == 1) ? $row[0] : $row;
+            $hash[array_shift($row)] = count($row) === 1 ? $row[0] : $row;
         }
 
         return $hash;
@@ -285,7 +302,8 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
     public function getTableAsString()
     {
         $lines = [];
-        for ($i = 0; $i < count($this->getRows()); ++$i) {
+        $rowCount = count($this->getRows());
+        for ($i = 0; $i < $rowCount; ++$i) {
             $lines[] = $this->getRowAsString($i);
         }
 
@@ -315,12 +333,12 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
     /**
      * Retrieves a hash iterator.
      *
-     * @return \Iterator
+     * @return Iterator
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
-        return new \ArrayIterator($this->getHash());
+        return new ArrayIterator($this->getHash());
     }
 
     /**
@@ -357,7 +375,7 @@ class TableNode implements ArgumentInterface, \IteratorAggregate
     protected function padRight($text, $length)
     {
         while ($length > mb_strlen($text, 'utf8')) {
-            $text = $text . ' ';
+            $text .= ' ';
         }
 
         return $text;

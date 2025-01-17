@@ -63,10 +63,10 @@ class GherkinTest extends TestCase
             ->will($this->returnValue($feature));
 
         $features = $gherkin->load($resource, [$customFilter1, $customFilter2]);
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
 
         $scenarios = $features[0]->getScenarios();
-        $this->assertEquals(1, count($scenarios));
+        $this->assertCount(1, $scenarios);
         $this->assertSame($scenario, $scenarios[0]);
     }
 
@@ -108,7 +108,7 @@ class GherkinTest extends TestCase
             ->will($this->returnValue(false));
 
         $features = $gherkin->load($resource);
-        $this->assertEquals(0, count($features));
+        $this->assertCount(0, $features);
     }
 
     public function testSetFiltersOverridesAllFilters()
@@ -139,7 +139,7 @@ class GherkinTest extends TestCase
             ->method('isFeatureMatch');
 
         $features = $gherkin->load($resource);
-        $this->assertEquals(1, count($features));
+        $this->assertCount(1, $features);
     }
 
     public function testSetBasePath()
