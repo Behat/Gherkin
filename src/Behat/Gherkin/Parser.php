@@ -300,7 +300,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        if (count($this->popTags())) {
+        if (count($this->popTags()) !== 0) {
             throw new ParserException(sprintf(
                 'Background can not be tagged, but it is on line: %d%s',
                 $line,
@@ -319,7 +319,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -378,7 +378,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -454,7 +454,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -482,7 +482,7 @@ class Parser
             }
         }
 
-        if (!count($examples)) {
+        if (count($examples) === 0) {
             throw new ParserException(sprintf(
                 'Outline should have examples table, but got none for outline "%s" on line: %d%s',
                 rtrim($title),
