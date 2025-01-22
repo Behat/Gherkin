@@ -49,7 +49,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
         $featureJson = $json['gherkinDocument']['feature'];
 
-        $feature = new FeatureNode(
+        return new FeatureNode(
             $featureJson['name'] ?? null,
             $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
@@ -60,8 +60,6 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             preg_replace('/(?<=\\.feature).*$/', '', $filePath),
             $featureJson['location']['line']
         );
-
-        return $feature;
     }
 
     /**
@@ -114,22 +112,22 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     private static function getBackground(array $json): ?BackgroundNode
     {
-        $backgrounds = array_values(
-            array_map(
-                static fn ($child) => new BackgroundNode(
-                    $child['background']['name'],
-                    self::getSteps($child['background']['steps'] ?? []),
-                    $child['background']['keyword'],
-                    $child['background']['location']['line']
-                ),
-                array_filter(
-                    $json['children'] ?? [],
-                    static fn ($child) => isset($child['background']),
-                )
-            )
+        $backgrounds = array_filter(
+            $json['children'] ?? [],
+            static fn($child) => isset($child['background']),
         );
 
-        return count($backgrounds) === 1 ? $backgrounds[0] : null;
+        if (count($backgrounds) !== 1) {
+            return null;
+        }
+
+        $background = array_shift($backgrounds);
+        return new BackgroundNode(
+            $background['background']['name'],
+            self::getSteps($background['background']['steps'] ?? []),
+            $background['background']['keyword'],
+            $background['background']['location']['line']
+        );
     }
 
     /**
@@ -158,21 +156,9 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
-                $table[$tableJson['tableHeader']['location']['line']] = array_map(
-                    static function ($cell) {
-                        return $cell['value'];
-                    },
-                    $tableJson['tableHeader']['cells']
-                );
                 $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
 
                 foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_map(
-                        static function ($cell) {
-                            return $cell['value'];
-                        },
-                        $bodyRow['cells']
-                    );
                     $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
                 }
 

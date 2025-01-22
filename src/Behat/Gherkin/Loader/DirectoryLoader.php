@@ -12,6 +12,8 @@ namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Node\FeatureNode;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Directory contents loader.
@@ -56,8 +58,8 @@ class DirectoryLoader extends AbstractFileLoader
     {
         $path = $this->findAbsolutePath($resource);
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
         );
         $paths = array_map(strval(...), iterator_to_array($iterator));
         uasort($paths, strnatcasecmp(...));
