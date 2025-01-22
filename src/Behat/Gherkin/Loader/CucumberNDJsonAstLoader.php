@@ -114,7 +114,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     {
         $backgrounds = array_filter(
             $json['children'] ?? [],
-            static fn($child) => isset($child['background']),
+            static fn ($child) => isset($child['background']),
         );
 
         if (count($backgrounds) !== 1) {
@@ -122,6 +122,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         }
 
         $background = array_shift($backgrounds);
+
         return new BackgroundNode(
             $background['background']['name'],
             self::getSteps($background['background']['steps'] ?? []),
