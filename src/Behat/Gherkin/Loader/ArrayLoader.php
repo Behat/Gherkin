@@ -179,15 +179,7 @@ class ArrayLoader implements LoaderInterface
             $examplesKeyword = 'Examples';
         }
 
-        $exHash = $hash['examples'];
-        $examples = [];
-
-        if ($this->examplesAreInArray($exHash)) {
-            $examples = $this->processExamplesArray($exHash, $examplesKeyword, $examples);
-        } else {
-            // examples as a single table - we create an array with the only one element
-            $examples[] = new ExampleTableNode($exHash, $examplesKeyword);
-        }
+        $examples = $this->loadExamplesHash($hash['examples'], $examplesKeyword);
 
         return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line']);
     }
@@ -274,29 +266,23 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Checks if examples node is an array.
-     *
-     * @param $exHash object hash
-     *
-     * @return bool
-     */
-    private function examplesAreInArray($exHash)
-    {
-        return isset($exHash[0]);
-    }
-
-    /**
      * Processes cases when examples are in the form of array of arrays
      * OR in the form of array of objects.
      *
-     * @param $examplesHash array hash
-     * @param $examplesKeyword string
-     * @param $examples array
+     * @param array $examplesHash
+     * @param string $examplesKeyword
      *
-     * @return array
+     * @return list<ExampleTableNode>
      */
-    private function processExamplesArray($examplesHash, $examplesKeyword, $examples)
+    private function loadExamplesHash($examplesHash, $examplesKeyword)
     {
+        if (!isset($examplesHash[0])) {
+            // examples as a single table - create a list with the one element
+            return [new ExampleTableNode($examplesHash, $examplesKeyword)];
+        }
+
+        $examples = [];
+
         foreach ($examplesHash as $exampleHash) {
             if (isset($exampleHash['table'])) {
                 // we have examples as objects, hence there could be tags
