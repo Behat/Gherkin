@@ -15,10 +15,11 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LineRangeFilterTest extends FilterTestCase
 {
-    public function featureLineRangeProvider()
+    public static function featureLineRangeProvider(): iterable
     {
         return [
             ['1', '1', true],
@@ -29,10 +30,8 @@ class LineRangeFilterTest extends FilterTestCase
         ];
     }
 
-    /**
-     * @dataProvider featureLineRangeProvider
-     */
-    public function testIsFeatureMatchFilter($filterMinLine, $filterMaxLine, $expected)
+    #[DataProvider('featureLineRangeProvider')]
+    public function testIsFeatureMatchFilter(string $filterMinLine, string $filterMaxLine, bool $expected): void
     {
         $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
 
@@ -40,7 +39,7 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertSame($expected, $filter->isFeatureMatch($feature));
     }
 
-    public function scenarioLineRangeProvider()
+    public static function scenarioLineRangeProvider(): iterable
     {
         return [
             ['1', '2', 1],
@@ -55,10 +54,8 @@ class LineRangeFilterTest extends FilterTestCase
         ];
     }
 
-    /**
-     * @dataProvider scenarioLineRangeProvider
-     */
-    public function testIsScenarioMatchFilter($filterMinLine, $filterMaxLine, $expectedNumberOfMatches)
+    #[DataProvider('scenarioLineRangeProvider')]
+    public function testIsScenarioMatchFilter(string $filterMinLine, string $filterMaxLine, int $expectedNumberOfMatches): void
     {
         $scenario = new ScenarioNode(null, [], [], null, 2);
         $outline = new OutlineNode(null, [], [], [new ExampleTableNode([], null)], null, 3);
@@ -66,11 +63,11 @@ class LineRangeFilterTest extends FilterTestCase
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertEquals(
             $expectedNumberOfMatches,
-            intval($filter->isScenarioMatch($scenario)) + intval($filter->isScenarioMatch($outline))
+            (int) $filter->isScenarioMatch($scenario) + (int) $filter->isScenarioMatch($outline)
         );
     }
 
-    public function testFilterFeatureScenario()
+    public function testFilterFeatureScenario(): void
     {
         $filter = new LineRangeFilter(1, 3);
         $feature = $filter->filterFeature($this->getParsedFeature());
@@ -87,19 +84,20 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertCount(0, $scenarios = $feature->getScenarios());
     }
 
-    public function testFilterFeatureOutline()
+    public function testFilterFeatureOutline(): void
     {
         $filter = new LineRangeFilter(12, 14);
         $feature = $filter->filterFeature($this->getParsedFeature());
-        /* @var OutlineNode[] $scenarios */
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $this->assertFalse($scenarios[0]->hasExamples());
 
         $filter = new LineRangeFilter(16, 21);
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $exampleTableNodes = $scenarios[0]->getExampleTables();
         $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(3, $exampleTableNodes[0]->getRows());
@@ -114,6 +112,7 @@ class LineRangeFilterTest extends FilterTestCase
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $exampleTableNodes = $scenarios[0]->getExampleTables();
         $this->assertCount(2, $exampleTableNodes);
 
@@ -137,6 +136,7 @@ class LineRangeFilterTest extends FilterTestCase
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $exampleTableNodes = $scenarios[0]->getExampleTables();
         $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(2, $exampleTableNodes[0]->getRows());

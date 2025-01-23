@@ -23,14 +23,12 @@ use ReturnTypeWillChange;
  */
 class TableNode implements ArgumentInterface, IteratorAggregate
 {
+    private array $table;
+
     /**
-     * @var array
+     * @var array<array-key, int>
      */
-    private $table;
-    /**
-     * @var int
-     */
-    private $maxLineLength = [];
+    private array $maxLineLength = [];
 
     /**
      * Initializes table.

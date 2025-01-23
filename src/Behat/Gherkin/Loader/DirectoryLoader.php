@@ -44,7 +44,8 @@ class DirectoryLoader extends AbstractFileLoader
     public function supports($resource)
     {
         return is_string($resource)
-            && is_dir($this->findAbsolutePath($resource));
+            && ($path = $this->findAbsolutePath($resource)) !== false
+            && is_dir($path);
     }
 
     /**
@@ -57,6 +58,9 @@ class DirectoryLoader extends AbstractFileLoader
     public function load($resource)
     {
         $path = $this->findAbsolutePath($resource);
+        if ($path === false) {
+            throw new \LogicException("Unable to locate absolute path of supported resource: $resource");
+        }
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)

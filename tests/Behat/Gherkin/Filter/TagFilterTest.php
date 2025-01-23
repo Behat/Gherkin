@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
 {
-    public function testFilterFeature()
+    public function testFilterFeature(): void
     {
         $feature = new FeatureNode(null, null, ['wip'], null, [], null, null, null, 1);
         $filter = new TagFilter('@wip');
@@ -46,7 +46,7 @@ class TagFilterTest extends TestCase
         $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
     }
 
-    public function testIsFeatureMatchFilter()
+    public function testIsFeatureMatchFilter(): void
     {
         $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
 
@@ -95,7 +95,7 @@ class TagFilterTest extends TestCase
         $this->assertTrue($filter->isFeatureMatch($feature));
     }
 
-    public function testIsScenarioMatchFilter()
+    public function testIsScenarioMatchFilter(): void
     {
         $feature = new FeatureNode(null, null, ['feature-tag'], null, [], null, null, null, 1);
         $scenario = new ScenarioNode(null, [], [], null, 2);
@@ -189,7 +189,7 @@ class TagFilterTest extends TestCase
         $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario), 'Tags from different examples tables');
     }
 
-    public function testFilterFeatureWithTaggedExamples()
+    public function testFilterFeatureWithTaggedExamples(): void
     {
         $exampleTableNode1 = new ExampleTableNode([], null, ['etag1', 'etag2']);
         $exampleTableNode2 = new ExampleTableNode([], null, ['etag2', 'etag3']);
@@ -207,13 +207,13 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@etag1');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('~@etag3');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@wip');
@@ -224,13 +224,13 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@wip&&@etag3');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&@etag1&&@wip');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode1], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&~@etag11111&&@wip');
@@ -241,7 +241,7 @@ class TagFilterTest extends TestCase
         $tagFilter = new TagFilter('@feature-tag&&~@etag1&&@wip');
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
 
         $tagFilter = new TagFilter('@feature-tag&&@etag2');
@@ -272,13 +272,13 @@ class TagFilterTest extends TestCase
         $matched = $tagFilter->filterFeature($feature);
         $scenarioInterfaces = $matched->getScenarios();
         $this->assertCount(2, $scenarioInterfaces);
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[0]);
         $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
-        /* @noinspection PhpUndefinedMethodInspection */
+        $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[1]);
         $this->assertEquals([$exampleTableNode3], $scenarioInterfaces[1]->getExampleTables());
     }
 
-    public function testFilterWithWhitespaceIsDeprecated()
+    public function testFilterWithWhitespaceIsDeprecated(): void
     {
         $this->expectDeprecationError();
 
@@ -291,7 +291,7 @@ class TagFilterTest extends TestCase
         $this->assertEquals([$scenario], $scenarios);
     }
 
-    public function testTagFilterThatIsAllWhitespaceIsIgnored()
+    public function testTagFilterThatIsAllWhitespaceIsIgnored(): void
     {
         $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
         $tagFilter = new TagFilter('');
@@ -300,7 +300,7 @@ class TagFilterTest extends TestCase
         $this->assertTrue($result);
     }
 
-    private function expectDeprecationError()
+    private function expectDeprecationError(): void
     {
         set_error_handler(
             static function ($errno, $errstr) {
@@ -309,6 +309,6 @@ class TagFilterTest extends TestCase
             },
             E_ALL
         );
-        $this->expectException('Exception');
+        $this->expectException(Exception::class);
     }
 }

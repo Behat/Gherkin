@@ -56,8 +56,9 @@ class GherkinFileLoader extends AbstractFileLoader
     public function supports($resource)
     {
         return is_string($resource)
-            && is_file($absolute = $this->findAbsolutePath($resource))
-            && pathinfo($absolute, PATHINFO_EXTENSION) === 'feature';
+            && ($path = $this->findAbsolutePath($resource)) !== false
+            && is_file($path)
+            && pathinfo($path, PATHINFO_EXTENSION) === 'feature';
     }
 
     /**
@@ -70,6 +71,9 @@ class GherkinFileLoader extends AbstractFileLoader
     public function load($resource)
     {
         $path = $this->findAbsolutePath($resource);
+        if ($path === false) {
+            throw new \LogicException("Unable to locate absolute path of supported resource: $resource");
+        }
 
         if ($this->cache) {
             if ($this->cache->isFresh($path, filemtime($path))) {
