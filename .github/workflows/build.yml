@@ -19,34 +19,17 @@ jobs:
           php-version: '8.3'
       - run: composer validate --strict --no-check-lock
 
-  check_code_style:
+  check_code:
     name: Check code style
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: shivammathur/setup-php@v2
         with:
           coverage: none
           php-version: '8.3'
-
-      - name: Install dependencies
-        run: composer update
-
-      - run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --show-progress=dots
-
-  static_analysis:
-    name: Static analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
-        with:
-          coverage: none
-          php-version: '8.3'
-      - name: Install dependencies
-        run: composer update
-      - run: ./vendor/bin/phpstan analyze
+      - run: composer update
+      - run: composer lint
 
   tests:
     runs-on: ubuntu-latest
