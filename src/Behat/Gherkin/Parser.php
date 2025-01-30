@@ -750,10 +750,7 @@ class Parser
         );
     }
 
-    /**
-     * @return no-return
-     */
-    private function rethrowNodeException(NodeException $e): void
+    private function rethrowNodeException(NodeException $e): never
     {
         throw new ParserException(
             $e->getMessage() . ($this->file ? ' in file ' . $this->file : ''),
