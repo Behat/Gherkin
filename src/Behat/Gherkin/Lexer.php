@@ -128,9 +128,7 @@ class Lexer
      */
     public function predictToken()
     {
-        $this->stashedToken ??= $this->getNextToken();
-
-        return $this->stashedToken;
+        return $this->stashedToken ??= $this->getNextToken();
     }
 
     /**
@@ -194,9 +192,7 @@ class Lexer
      */
     protected function getTrimmedLine()
     {
-        $this->trimmedLine ??= trim($this->line);
-
-        return $this->trimmedLine;
+        return $this->trimmedLine ??= trim($this->line);
     }
 
     /**
@@ -276,7 +272,7 @@ class Lexer
     /**
      * Scans for token with specified keywords.
      *
-     * @param string $keywords Keywords (splitted with |)
+     * @param string $keywords Keywords (separated by "|")
      * @param string $type Expected token type
      *
      * @return array|null

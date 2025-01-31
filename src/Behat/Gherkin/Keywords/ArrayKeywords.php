@@ -73,7 +73,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Feature keywords (splitted by "|").
+     * Returns Feature keywords (separated by "|").
      *
      * @return string
      */
@@ -83,7 +83,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Background keywords (splitted by "|").
+     * Returns Background keywords (separated by "|").
      *
      * @return string
      */
@@ -93,7 +93,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Scenario keywords (splitted by "|").
+     * Returns Scenario keywords (separated by "|").
      *
      * @return string
      */
@@ -103,7 +103,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Scenario Outline keywords (splitted by "|").
+     * Returns Scenario Outline keywords (separated by "|").
      *
      * @return string
      */
@@ -113,7 +113,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Examples keywords (splitted by "|").
+     * Returns Examples keywords (separated by "|").
      *
      * @return string
      */
@@ -123,7 +123,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Given keywords (splitted by "|").
+     * Returns Given keywords (separated by "|").
      *
      * @return string
      */
@@ -133,7 +133,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns When keywords (splitted by "|").
+     * Returns When keywords (separated by "|").
      *
      * @return string
      */
@@ -143,7 +143,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns Then keywords (splitted by "|").
+     * Returns Then keywords (separated by "|").
      *
      * @return string
      */
@@ -153,7 +153,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns And keywords (splitted by "|").
+     * Returns And keywords (separated by "|").
      *
      * @return string
      */
@@ -163,7 +163,7 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
-     * Returns But keywords (splitted by "|").
+     * Returns But keywords (separated by "|").
      *
      * @return string
      */

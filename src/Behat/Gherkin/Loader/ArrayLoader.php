@@ -43,7 +43,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
     public function load($resource)
     {
@@ -179,15 +179,7 @@ class ArrayLoader implements LoaderInterface
             $examplesKeyword = 'Examples';
         }
 
-        $exHash = $hash['examples'];
-        $examples = [];
-
-        if ($this->examplesAreInArray($exHash)) {
-            $examples = $this->processExamplesArray($exHash, $examplesKeyword, $examples);
-        } else {
-            // examples as a single table - we create an array with the only one element
-            $examples[] = new ExampleTableNode($exHash, $examplesKeyword);
-        }
+        $examples = $this->loadExamplesHash($hash['examples'], $examplesKeyword);
 
         return new OutlineNode($hash['title'], $hash['tags'], $steps, $examples, $hash['keyword'], $hash['line']);
     }
@@ -195,7 +187,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads steps from provided hash.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     private function loadStepsHash(array $hash)
     {
@@ -274,37 +266,31 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * Checks if examples node is an array.
-     *
-     * @param $exHash object hash
-     *
-     * @return bool
-     */
-    private function examplesAreInArray($exHash)
-    {
-        return isset($exHash[0]);
-    }
-
-    /**
      * Processes cases when examples are in the form of array of arrays
      * OR in the form of array of objects.
      *
-     * @param $exHash array hash
-     * @param $examplesKeyword string
-     * @param $examples array
+     * @param array $examplesHash
+     * @param string $examplesKeyword
      *
-     * @return array
+     * @return list<ExampleTableNode>
      */
-    private function processExamplesArray($exHash, $examplesKeyword, $examples)
+    private function loadExamplesHash($examplesHash, $examplesKeyword)
     {
-        for ($i = 0; $i < count($exHash); ++$i) {
-            if (isset($exHash[$i]['table'])) {
+        if (!isset($examplesHash[0])) {
+            // examples as a single table - create a list with the one element
+            return [new ExampleTableNode($examplesHash, $examplesKeyword)];
+        }
+
+        $examples = [];
+
+        foreach ($examplesHash as $exampleHash) {
+            if (isset($exampleHash['table'])) {
                 // we have examples as objects, hence there could be tags
-                $exHashTags = $exHash[$i]['tags'] ?? [];
-                $examples[] = new ExampleTableNode($exHash[$i]['table'], $examplesKeyword, $exHashTags);
+                $exHashTags = $exampleHash['tags'] ?? [];
+                $examples[] = new ExampleTableNode($exampleHash['table'], $examplesKeyword, $exHashTags);
             } else {
                 // we have examples as arrays
-                $examples[] = new ExampleTableNode($exHash[$i], $examplesKeyword);
+                $examples[] = new ExampleTableNode($exampleHash, $examplesKeyword);
             }
         }
 

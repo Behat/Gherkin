@@ -300,7 +300,7 @@ class Parser
         $keyword = $token['keyword'];
         $line = $token['line'];
 
-        if (count($this->popTags())) {
+        if (count($this->popTags()) !== 0) {
             throw new ParserException(sprintf(
                 'Background can not be tagged, but it is on line: %d%s',
                 $line,
@@ -319,7 +319,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -378,7 +378,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -426,7 +426,7 @@ class Parser
         $tags = $this->popTags();
         $keyword = $token['keyword'];
 
-        /** @var ExampleTableNode $examples */
+        /** @var list<ExampleTableNode> $examples */
         $examples = [];
         $line = $token['line'];
 
@@ -454,7 +454,7 @@ class Parser
                 continue;
             }
 
-            if (!count($steps) && is_string($node)) {
+            if (count($steps) === 0 && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -482,7 +482,7 @@ class Parser
             }
         }
 
-        if (empty($examples)) {
+        if (count($examples) === 0) {
             throw new ParserException(sprintf(
                 'Outline should have examples table, but got none for outline "%s" on line: %d%s',
                 rtrim($title),
@@ -703,7 +703,7 @@ class Parser
     /**
      * Parses the rows of a table.
      *
-     * @return string[][]
+     * @return array<int, list<string>>
      */
     private function parseTableRows()
     {
@@ -731,26 +731,26 @@ class Parser
      */
     private function normalizeStepNodeKeywordType(StepNode $node, array $steps = [])
     {
-        if (in_array($node->getKeywordType(), ['And', 'But'])) {
-            if ($prev = end($steps)) {
-                $keywordType = $prev->getKeywordType();
-            } else {
-                $keywordType = 'Given';
-            }
-
-            $node = new StepNode(
-                $node->getKeyword(),
-                $node->getText(),
-                $node->getArguments(),
-                $node->getLine(),
-                $keywordType
-            );
+        if (!in_array($node->getKeywordType(), ['And', 'But'])) {
+            return $node;
         }
 
-        return $node;
+        if ($prev = end($steps)) {
+            $keywordType = $prev->getKeywordType();
+        } else {
+            $keywordType = 'Given';
+        }
+
+        return new StepNode(
+            $node->getKeyword(),
+            $node->getText(),
+            $node->getArguments(),
+            $node->getLine(),
+            $keywordType
+        );
     }
 
-    private function rethrowNodeException(NodeException $e): void
+    private function rethrowNodeException(NodeException $e): never
     {
         throw new ParserException(
             $e->getMessage() . ($this->file ? ' in file ' . $this->file : ''),

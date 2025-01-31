@@ -37,32 +37,32 @@ class DirectoryLoader extends AbstractFileLoader
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $path Resource to load
+     * @param mixed $resource Resource to load
      *
      * @return bool
      */
-    public function supports($path)
+    public function supports($resource)
     {
-        return is_string($path)
-        && is_dir($this->findAbsolutePath($path));
+        return is_string($resource)
+            && is_dir($this->findAbsolutePath($resource));
     }
 
     /**
      * Loads features from provided resource.
      *
-     * @param string $path Resource to load
+     * @param string $resource Resource to load
      *
-     * @return FeatureNode[]
+     * @return list<FeatureNode>
      */
-    public function load($path)
+    public function load($resource)
     {
-        $path = $this->findAbsolutePath($path);
+        $path = $this->findAbsolutePath($resource);
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
         );
-        $paths = array_map('strval', iterator_to_array($iterator));
-        uasort($paths, 'strnatcasecmp');
+        $paths = array_map(strval(...), iterator_to_array($iterator));
+        uasort($paths, strnatcasecmp(...));
 
         $features = [];
 
@@ -71,7 +71,7 @@ class DirectoryLoader extends AbstractFileLoader
             $loader = $this->gherkin->resolveLoader($path);
 
             if ($loader !== null) {
-                $features = array_merge($features, $loader->load($path));
+                array_push($features, ...$loader->load($path));
             }
         }
 

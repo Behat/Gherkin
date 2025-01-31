@@ -21,7 +21,7 @@ foreach (json_decode($composerConfig, true, 512, JSON_THROW_ON_ERROR)['repositor
     }
 }
 
-if (!isset($oldHash)) {
+if (!isset($oldHash, $oldTag)) {
     echo "ERROR: Could not parse the composer configuration\n";
     exit(1);
 }

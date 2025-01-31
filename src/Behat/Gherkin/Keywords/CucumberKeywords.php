@@ -31,8 +31,8 @@ class CucumberKeywords extends ArrayKeywords
     {
         // Handle filename explicitly for BC reasons, as Symfony Yaml 3.0 does not do it anymore
         $file = null;
-        if (strpos($yaml, "\n") === false && is_file($yaml)) {
-            if (is_readable($yaml) === false) {
+        if (!str_contains($yaml, "\n") && is_file($yaml)) {
+            if (!is_readable($yaml)) {
                 throw new ParseException(sprintf('Unable to parse "%s" as the file is not readable.', $yaml));
             }
 
@@ -54,7 +54,7 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Returns Feature keywords (splitted by "|").
+     * Returns Feature keywords (separated by "|").
      *
      * @return string
      */
@@ -64,7 +64,7 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Returns When keywords (splitted by "|").
+     * Returns When keywords (separated by "|").
      *
      * @return string
      */
@@ -74,7 +74,7 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Returns Then keywords (splitted by "|").
+     * Returns Then keywords (separated by "|").
      *
      * @return string
      */
@@ -84,7 +84,7 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Returns And keywords (splitted by "|").
+     * Returns And keywords (separated by "|").
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Returns But keywords (splitted by "|").
+     * Returns But keywords (separated by "|").
      *
      * @return string
      */

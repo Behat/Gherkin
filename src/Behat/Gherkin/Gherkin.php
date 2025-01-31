@@ -31,11 +31,11 @@ class Gherkin
     public const VERSION = '4.8.0';
 
     /**
-     * @var LoaderInterface[]
+     * @var list<LoaderInterface>
      */
     protected $loaders = [];
     /**
-     * @var FeatureFilterInterface[]
+     * @var list<FeatureFilterInterface>
      */
     protected $filters = [];
 
@@ -62,12 +62,12 @@ class Gherkin
     /**
      * Sets filters to the parser.
      *
-     * @param FeatureFilterInterface[] $filters
+     * @param array<array-key, FeatureFilterInterface> $filters
      */
     public function setFilters(array $filters)
     {
         $this->filters = [];
-        array_map([$this, 'addFilter'], $filters);
+        array_map($this->addFilter(...), $filters);
     }
 
     /**
@@ -88,7 +88,7 @@ class Gherkin
      * Loads & filters resource with added loaders.
      *
      * @param mixed $resource Resource to load
-     * @param FeatureFilterInterface[] $filters Additional filters
+     * @param array<array-key, FeatureFilterInterface> $filters Additional filters
      *
      * @return array
      */
@@ -97,10 +97,10 @@ class Gherkin
         $filters = array_merge($this->filters, $filters);
 
         $matches = [];
-        if (preg_match('/^(.*)\:(\d+)-(\d+|\*)$/', $resource, $matches)) {
+        if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineRangeFilter($matches[2], $matches[3]);
-        } elseif (preg_match('/^(.*)\:(\d+)$/', $resource, $matches)) {
+        } elseif (preg_match('/^(.*):(\d+)$/', $resource, $matches)) {
             $resource = $matches[1];
             $filters[] = new LineFilter($matches[2]);
         }
@@ -132,7 +132,7 @@ class Gherkin
      *
      * @param mixed $resource Resource to load
      *
-     * @return LoaderInterface
+     * @return LoaderInterface|null
      */
     public function resolveLoader($resource)
     {
