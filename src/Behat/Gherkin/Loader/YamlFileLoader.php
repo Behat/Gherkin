@@ -51,10 +51,7 @@ class YamlFileLoader extends AbstractFileLoader
      */
     public function load($resource)
     {
-        $path = $this->findAbsolutePath($resource);
-        if ($path === false) {
-            throw new \LogicException("Unable to locate absolute path of supported resource: $resource");
-        }
+        $path = $this->getAbsolutePath($resource);
         $hash = Yaml::parse(file_get_contents($path));
 
         $features = $this->loader->load($hash);
