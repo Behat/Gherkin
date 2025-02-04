@@ -15,14 +15,14 @@ use Behat\Gherkin\Node\FeatureNode;
 
 class NarrativeFilterTest extends FilterTestCase
 {
-    public function testIsFeatureMatchFilter()
+    public function testIsFeatureMatchFilter(): void
     {
         $description = <<<'NAR'
         In order to be able to read news in my own language
         As a french user
         I need to be able to switch website language to french
         NAR;
-        $feature = new FeatureNode(null, $description, [], null, [], null, null, null, 1);
+        $feature = new FeatureNode(null, $description, [], null, [], '', '', null, 1);
 
         $filter = new NarrativeFilter('/as (?:a|an) french user/');
         $this->assertFalse($filter->isFeatureMatch($feature));

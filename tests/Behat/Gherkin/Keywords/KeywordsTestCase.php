@@ -29,7 +29,7 @@ abstract class KeywordsTestCase extends TestCase
 
     abstract protected function getSteps($keywords, $text, &$line, $keywordType);
 
-    public function translationTestDataProvider()
+    public function translationTestDataProvider(): array
     {
         $keywords = $this->getKeywords();
         $dumper = new KeywordsDumper($keywords);
@@ -137,7 +137,7 @@ abstract class KeywordsTestCase extends TestCase
      * @param FeatureNode $etalon etalon features (to test against)
      * @param string $source gherkin source
      */
-    public function testTranslation($language, $num, FeatureNode $etalon, $source)
+    public function testTranslation($language, $num, FeatureNode $etalon, $source): void
     {
         $keywords = $this->getKeywords();
         $lexer = new Lexer($keywords);

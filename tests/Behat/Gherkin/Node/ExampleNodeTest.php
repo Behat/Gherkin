@@ -22,10 +22,10 @@ class ExampleNodeTest extends TestCase
     public function testCreateExampleSteps(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], 1, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], 1, 'Then'),
         ];
 
         $table = new ExampleTableNode([
@@ -34,7 +34,7 @@ class ExampleNodeTest extends TestCase
             ['example', 'example@example.com'],
         ], 'Examples');
 
-        $outline = new OutlineNode(null, [], $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, '', 1);
         $examples = $outline->getExamples();
 
         $this->assertCount(4, $steps = $examples[0]->getSteps());
@@ -71,15 +71,15 @@ class ExampleNodeTest extends TestCase
     public function testCreateExampleStepsWithArguments(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
             new StepNode(
                 'Blimey!',
                 'I open:',
                 [
-                    new PyStringNode(['page: <url>'], null),
+                    new PyStringNode(['page: <url>'], 1),
                 ],
-                null,
+                1,
                 'When'
             ),
             new StepNode(
@@ -88,7 +88,7 @@ class ExampleNodeTest extends TestCase
                 [
                     new TableNode([['page', '<url>']]),
                 ],
-                null,
+                1,
                 'Then'
             ),
         ];
@@ -99,7 +99,7 @@ class ExampleNodeTest extends TestCase
             ['example', 'example@example.com', 'other page'],
         ], 'Examples');
 
-        $outline = new OutlineNode(null, [], $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, '', 1);
         $examples = $outline->getExamples();
 
         $steps = $examples[0]->getSteps();

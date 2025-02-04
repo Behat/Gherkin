@@ -15,16 +15,16 @@ use PHPUnit\Framework\TestCase;
 
 class PyStringNodeTest extends TestCase
 {
-    public function testGetStrings()
+    public function testGetStrings(): void
     {
-        $str = new PyStringNode(['line1', 'line2', 'line3'], 0);
+        $str = new PyStringNode(['line1', 'line2', 'line3'], 1);
 
         $this->assertEquals(['line1', 'line2', 'line3'], $str->getStrings());
     }
 
-    public function testGetRaw()
+    public function testGetRaw(): void
     {
-        $str = new PyStringNode(['line1', 'line2', 'line3'], 0);
+        $str = new PyStringNode(['line1', 'line2', 'line3'], 1);
 
         $expected = <<<'STR'
         line1
