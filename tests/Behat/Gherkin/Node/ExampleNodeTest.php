@@ -19,13 +19,13 @@ use PHPUnit\Framework\TestCase;
 
 class ExampleNodeTest extends TestCase
 {
-    public function testCreateExampleSteps()
+    public function testCreateExampleSteps(): void
     {
         $steps = [
-            $step1 = new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            $step2 = new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            $step3 = new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            $step4 = new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
         ];
 
         $table = new ExampleTableNode([
@@ -68,17 +68,29 @@ class ExampleNodeTest extends TestCase
         $this->assertEquals('I open homepage', $steps[2]->getText());
     }
 
-    public function testCreateExampleStepsWithArguments()
+    public function testCreateExampleStepsWithArguments(): void
     {
         $steps = [
-            $step1 = new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            $step2 = new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            $step3 = new StepNode('Blimey!', 'I open:', [
-                new PyStringNode(['page: <url>'], null),
-            ], null, 'When'),
-            $step4 = new StepNode('Let go and haul', 'website should recognise me', [
-                new TableNode([['page', '<url>']]),
-            ], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
+            new StepNode(
+                'Blimey!',
+                'I open:',
+                [
+                    new PyStringNode(['page: <url>'], null),
+                ],
+                null,
+                'When'
+            ),
+            new StepNode(
+                'Let go and haul',
+                'website should recognise me',
+                [
+                    new TableNode([['page', '<url>']]),
+                ],
+                null,
+                'Then'
+            ),
         ];
 
         $table = new ExampleTableNode([
@@ -93,9 +105,11 @@ class ExampleNodeTest extends TestCase
         $steps = $examples[0]->getSteps();
 
         $args = $steps[2]->getArguments();
+        $this->assertInstanceOf(PyStringNode::class, $args[0]);
         $this->assertEquals('page: homepage', $args[0]->getRaw());
 
         $args = $steps[3]->getArguments();
+        $this->assertInstanceOf(TableNode::class, $args[0]);
         $this->assertEquals('| page | homepage |', $args[0]->getTableAsString());
     }
 }

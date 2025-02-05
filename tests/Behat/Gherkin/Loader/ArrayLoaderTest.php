@@ -11,19 +11,22 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\ArrayLoader;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\TestCase;
 
 class ArrayLoaderTest extends TestCase
 {
-    /** @var ArrayLoader */
-    private $loader;
+    private ArrayLoader $loader;
 
     protected function setUp(): void
     {
         $this->loader = new ArrayLoader();
     }
 
-    public function testSupports()
+    public function testSupports(): void
     {
         $this->assertFalse($this->loader->supports(__DIR__));
         $this->assertFalse($this->loader->supports(__FILE__));
@@ -34,12 +37,12 @@ class ArrayLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports(['feature' => []]));
     }
 
-    public function testLoadEmpty()
+    public function testLoadEmpty(): void
     {
         $this->assertEquals([], $this->loader->load(['features' => []]));
     }
 
-    public function testLoadFeatures()
+    public function testLoadFeatures(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -72,7 +75,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals(['some', 'tags'], $features[1]->getTags());
     }
 
-    public function testLoadScenarios()
+    public function testLoadScenarios(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -101,23 +104,23 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(3, $scenarios);
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
+        $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);
         $this->assertEquals('First scenario', $scenarios[0]->getTitle());
         $this->assertFalse($scenarios[0]->hasTags());
         $this->assertEquals(2, $scenarios[0]->getLine());
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[1]);
+        $this->assertInstanceOf(ScenarioNode::class, $scenarios[1]);
         $this->assertNull($scenarios[1]->getTitle());
         $this->assertEquals(['second', 'scenario', 'tags'], $scenarios[1]->getTags());
         $this->assertEquals(1, $scenarios[1]->getLine());
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[2]);
+        $this->assertInstanceOf(ScenarioNode::class, $scenarios[2]);
         $this->assertNull($scenarios[2]->getTitle());
         $this->assertEquals(['third', 'scenario'], $scenarios[2]->getTags());
         $this->assertEquals(3, $scenarios[2]->getLine());
     }
 
-    public function testLoadOutline()
+    public function testLoadOutline(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -144,18 +147,18 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(2, $outlines);
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\OutlineNode', $outlines[0]);
+        $this->assertInstanceOf(OutlineNode::class, $outlines[0]);
         $this->assertEquals('First outline', $outlines[0]->getTitle());
         $this->assertFalse($outlines[0]->hasTags());
         $this->assertEquals(2, $outlines[0]->getLine());
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\OutlineNode', $outlines[1]);
+        $this->assertInstanceOf(OutlineNode::class, $outlines[1]);
         $this->assertNull($outlines[1]->getTitle());
         $this->assertEquals(['second', 'outline', 'tags'], $outlines[1]->getTags());
         $this->assertEquals(1, $outlines[1]->getLine());
     }
 
-    public function testOutlineExamples()
+    public function testOutlineExamples(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -186,13 +189,14 @@ class ArrayLoaderTest extends TestCase
         $scenarios = $features[0]->getScenarios();
         $scenario = $scenarios[0];
 
+        $this->assertInstanceOf(OutlineNode::class, $scenario);
         $this->assertEquals(
             [['user' => 'ever', 'pass' => 'sdsd'], ['user' => 'anto', 'pass' => 'fdfd']],
             $scenario->getExampleTable()->getHash()
         );
     }
 
-    public function testLoadBackground()
+    public function testLoadBackground(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -218,7 +222,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals(2, $features[2]->getBackground()->getLine());
     }
 
-    public function testLoadSteps()
+    public function testLoadSteps(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -298,7 +302,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals(1, $steps[1]->getLine());
     }
 
-    public function testLoadStepArguments()
+    public function testLoadStepArguments(): void
     {
         $features = $this->loader->load([
             'features' => [
@@ -355,7 +359,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('step with table argument', $steps[0]->getText());
-        $this->assertInstanceOf('Behat\Gherkin\Node\TableNode', $arguments[0]);
+        $this->assertInstanceOf(TableNode::class, $arguments[0]);
         $this->assertEquals([['key' => 1, 'val' => 2], ['key' => 3, 'val' => 4]], $arguments[0]->getHash());
 
         $arguments = $steps[1]->getArguments();
@@ -363,7 +367,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals('Blimey!', $steps[1]->getKeyword());
         $this->assertEquals('When', $steps[1]->getKeywordType());
         $this->assertEquals('step with pystring argument', $steps[1]->getText());
-        $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
+        $this->assertInstanceOf(PyStringNode::class, $arguments[0]);
         $this->assertEquals('    some text', (string) $arguments[0]);
 
         $arguments = $steps[2]->getArguments();
@@ -371,11 +375,11 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals('Let go and haul', $steps[2]->getKeyword());
         $this->assertEquals('Then', $steps[2]->getKeywordType());
         $this->assertEquals('2nd step with pystring argument', $steps[2]->getText());
-        $this->assertInstanceOf('Behat\Gherkin\Node\PyStringNode', $arguments[0]);
+        $this->assertInstanceOf(PyStringNode::class, $arguments[0]);
         $this->assertEquals('some text', (string) $arguments[0]);
     }
 
-    public function testSingleFeatureArray()
+    public function testSingleFeatureArray(): void
     {
         $features = $this->loader->load([
             'feature' => [

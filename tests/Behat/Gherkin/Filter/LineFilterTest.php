@@ -18,7 +18,7 @@ use Behat\Gherkin\Node\ScenarioNode;
 
 class LineFilterTest extends FilterTestCase
 {
-    public function testIsFeatureMatchFilter()
+    public function testIsFeatureMatchFilter(): void
     {
         $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
 
@@ -32,7 +32,7 @@ class LineFilterTest extends FilterTestCase
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
-    public function testIsScenarioMatchFilter()
+    public function testIsScenarioMatchFilter(): void
     {
         $scenario = new ScenarioNode(null, [], [], null, 2);
 
@@ -54,7 +54,7 @@ class LineFilterTest extends FilterTestCase
         $this->assertTrue($filter->isScenarioMatch($outline));
     }
 
-    public function testFilterFeatureScenario()
+    public function testFilterFeatureScenario(): void
     {
         $filter = new LineFilter(2);
         $feature = $filter->filterFeature($this->getParsedFeature());
@@ -71,19 +71,20 @@ class LineFilterTest extends FilterTestCase
         $this->assertCount(0, $scenarios = $feature->getScenarios());
     }
 
-    public function testFilterFeatureOutline()
+    public function testFilterFeatureOutline(): void
     {
         $filter = new LineFilter(13);
         $feature = $filter->filterFeature($this->getParsedFeature());
-        /* @var OutlineNode[] $scenarios */
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $this->assertCount(4, $scenarios[0]->getExampleTable()->getRows());
 
         $filter = new LineFilter(20);
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $exampleTableNodes = $scenarios[0]->getExampleTables();
         $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(2, $exampleTableNodes[0]->getRows());
@@ -97,6 +98,7 @@ class LineFilterTest extends FilterTestCase
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $exampleTableNodes = $scenarios[0]->getExampleTables();
         $this->assertCount(1, $exampleTableNodes);
         $this->assertCount(2, $exampleTableNodes[0]->getRows());
@@ -110,6 +112,7 @@ class LineFilterTest extends FilterTestCase
         $feature = $filter->filterFeature($this->getParsedFeature());
         $this->assertCount(1, $scenarios = $feature->getScenarios());
         $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
+        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
         $this->assertCount(1, $scenarios[0]->getExampleTable()->getRows());
         $this->assertSame([['action', 'outcome']], $scenarios[0]->getExampleTable()->getRows());
     }

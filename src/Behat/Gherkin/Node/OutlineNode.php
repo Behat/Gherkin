@@ -30,7 +30,7 @@ class OutlineNode implements ScenarioInterface
      */
     private $steps;
     /**
-     * @var ExampleTableNode|ExampleTableNode[]
+     * @var array<array-key, ExampleTableNode>
      */
     private $tables;
     /**
@@ -52,7 +52,7 @@ class OutlineNode implements ScenarioInterface
      * @param string|null $title
      * @param string[] $tags
      * @param StepNode[] $steps
-     * @param ExampleTableNode|ExampleTableNode[] $tables
+     * @param ExampleTableNode|array<array-key, ExampleTableNode> $tables
      * @param string $keyword
      * @param int $line
      */
@@ -69,11 +69,7 @@ class OutlineNode implements ScenarioInterface
         $this->steps = $steps;
         $this->keyword = $keyword;
         $this->line = $line;
-        if (!is_array($tables)) {
-            $this->tables = [$tables];
-        } else {
-            $this->tables = $tables;
-        }
+        $this->tables = is_array($tables) ? $tables : [$tables];
     }
 
     /**
@@ -197,7 +193,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Returns examples tables array for the outline.
      *
-     * @return ExampleTableNode[]
+     * @return array<array-key, ExampleTableNode>
      */
     public function getExampleTables()
     {

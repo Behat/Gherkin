@@ -37,8 +37,9 @@ class YamlFileLoader extends AbstractFileLoader
     public function supports($resource)
     {
         return is_string($resource)
-            && is_file($absolute = $this->findAbsolutePath($resource))
-            && pathinfo($absolute, PATHINFO_EXTENSION) === 'yml';
+            && ($path = $this->findAbsolutePath($resource)) !== false
+            && is_file($path)
+            && pathinfo($path, PATHINFO_EXTENSION) === 'yml';
     }
 
     /**
@@ -50,7 +51,7 @@ class YamlFileLoader extends AbstractFileLoader
      */
     public function load($resource)
     {
-        $path = $this->findAbsolutePath($resource);
+        $path = $this->getAbsolutePath($resource);
         $hash = Yaml::parse(file_get_contents($path));
 
         $features = $this->loader->load($hash);

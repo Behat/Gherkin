@@ -50,7 +50,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @param string $path Relative path
      *
-     * @return string
+     * @return false|string
      */
     protected function findAbsolutePath($path)
     {
@@ -68,5 +68,18 @@ abstract class AbstractFileLoader implements FileLoaderInterface
         }
 
         return false;
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
+    final protected function getAbsolutePath(string $path): string
+    {
+        $resolvedPath = $this->findAbsolutePath($path);
+        if ($resolvedPath === false) {
+            throw new \RuntimeException("Unable to locate absolute path of \"$path\"");
+        }
+
+        return $resolvedPath;
     }
 }
