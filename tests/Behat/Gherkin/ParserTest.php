@@ -160,10 +160,29 @@ class ParserTest extends TestCase
         if (!extension_loaded('xdebug')) {
             $this->markTestSkipped('xdebug extension must be enabled.');
         }
-        $defaultPHPSetting = 256;
-        ini_set('xdebug.max_nesting_level', $defaultPHPSetting);
 
-        $lineCount = 150; // 119 is the real threshold, higher just in case
-        $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+        $this->callWithIniSetting(
+            'xdebug.max_nesting_level',
+            256,
+            function () {
+                $lineCount = 150; // 119 is the real threshold, higher just in case
+                $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+            }
+        );
+    }
+
+    protected function callWithIniSetting(string $setting, mixed $value, callable $closure): void
+    {
+        $oldValue = ini_set($setting, $value);
+
+        if ($oldValue === false) {
+            throw new \RuntimeException("Cannot set INI setting `$setting` to `$value`");
+        }
+
+        try {
+            $closure();
+        } finally {
+            ini_set($setting, $oldValue);
+        }
     }
 }
