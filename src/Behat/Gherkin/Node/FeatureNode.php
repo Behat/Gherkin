@@ -254,13 +254,11 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param string $file A file path
      *
      * @return bool
-     *
-     * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php
      */
     protected function isAbsolutePath($file)
     {
         if ($file === null) {
-            @trigger_error(sprintf('Calling "%s()" with a null in the $file argument is deprecated since Symfony 4.4.', __METHOD__), E_USER_DEPRECATED);
+            throw new InvalidArgumentException('The provided file path must not be null.');
         }
 
         return strspn($file, '/\\', 0, 1)
