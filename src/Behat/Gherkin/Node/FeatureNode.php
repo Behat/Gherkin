@@ -254,6 +254,8 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      * @param string $file A file path
      *
      * @return bool
+     *
+     * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php
      */
     protected function isAbsolutePath($file)
     {
