@@ -21,10 +21,10 @@ class OutlineNodeTest extends TestCase
     public function testCreatesExamplesForExampleTable(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], 1, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], 1, 'Then'),
         ];
 
         $table = new ExampleTableNode([
@@ -33,7 +33,7 @@ class OutlineNodeTest extends TestCase
             23 => ['example', 'example@example.com'],
         ], 'Examples');
 
-        $outline = new OutlineNode(null, [], $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, '', 1);
 
         $this->assertCount(2, $examples = $outline->getExamples());
         $this->assertEquals(22, $examples[0]->getLine());
@@ -45,10 +45,10 @@ class OutlineNodeTest extends TestCase
     public function testCreatesExamplesForExampleTableWithSeveralExamplesAndTags(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], 1, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], 1, 'Then'),
         ];
 
         $table = new ExampleTableNode([
@@ -63,7 +63,7 @@ class OutlineNodeTest extends TestCase
             33 => ['example2', 'example2@example.com'],
         ], 'Examples', ['etag1', 'etag2']);
 
-        $outline = new OutlineNode(null, ['otag1', 'otag2'], $steps, [$table, $table2], null, null);
+        $outline = new OutlineNode(null, ['otag1', 'otag2'], $steps, [$table, $table2], '', 1);
 
         $this->assertCount(4, $examples = $outline->getExamples());
         $this->assertEquals(22, $examples[0]->getLine());
@@ -91,17 +91,17 @@ class OutlineNodeTest extends TestCase
     public function testCreatesEmptyExamplesForEmptyExampleTable(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], 1, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], 1, 'Then'),
         ];
 
         $table = new ExampleTableNode([
             ['name', 'email'],
         ], 'Examples');
 
-        $outline = new OutlineNode(null, [], $steps, $table, null, null);
+        $outline = new OutlineNode(null, [], $steps, $table, '', 1);
 
         $this->assertCount(0, $outline->getExamples());
     }
@@ -109,15 +109,15 @@ class OutlineNodeTest extends TestCase
     public function testCreatesEmptyExamplesForNoExampleTable(): void
     {
         $steps = [
-            new StepNode('Gangway!', 'I am <name>', [], null, 'Given'),
-            new StepNode('Aye!', 'my email is <email>', [], null, 'And'),
-            new StepNode('Blimey!', 'I open homepage', [], null, 'When'),
-            new StepNode('Let go and haul', 'website should recognise me', [], null, 'Then'),
+            new StepNode('Gangway!', 'I am <name>', [], 1, 'Given'),
+            new StepNode('Aye!', 'my email is <email>', [], 1, 'And'),
+            new StepNode('Blimey!', 'I open homepage', [], 1, 'When'),
+            new StepNode('Let go and haul', 'website should recognise me', [], 1, 'Then'),
         ];
 
         $table = new ExampleTableNode([], 'Examples');
 
-        $outline = new OutlineNode(null, [], $steps, [$table], null, null);
+        $outline = new OutlineNode(null, [], $steps, [$table], '', 1);
 
         $this->assertCount(0, $outline->getExamples());
     }
@@ -125,7 +125,7 @@ class OutlineNodeTest extends TestCase
     public function testPopulatesExampleWithOutlineTitle(): void
     {
         $steps = [
-            new StepNode('', 'I am <name>', [], null, 'Given'),
+            new StepNode('', 'I am <name>', [], 1, 'Given'),
         ];
 
         $table = new ExampleTableNode([
@@ -134,7 +134,7 @@ class OutlineNodeTest extends TestCase
             12 => ['John', 'john@example.com'],
         ], 'Examples');
 
-        $outline = new OutlineNode('An outline title for <name>', [], $steps, $table, null, null);
+        $outline = new OutlineNode('An outline title for <name>', [], $steps, $table, '', 1);
 
         $this->assertSame(
             [

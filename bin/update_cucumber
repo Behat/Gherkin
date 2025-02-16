@@ -1,11 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-if (PHP_VERSION_ID < 70400) {
-    echo "Updater requires PHP 7.4";
-    exit(1);
-}
-
 $composerFile = __DIR__ . '/../composer.json';
 $composerConfig = file_get_contents($composerFile);
 foreach (json_decode($composerConfig, true, 512, JSON_THROW_ON_ERROR)['repositories'] as $repository)

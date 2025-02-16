@@ -145,7 +145,7 @@ class Lexer
      * Constructs token with specified parameters.
      *
      * @param string $type Token type
-     * @param string $value Token value
+     * @param int|string|null $value Token value
      *
      * @return array
      */

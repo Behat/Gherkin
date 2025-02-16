@@ -251,7 +251,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     /**
      * Returns whether the file path is an absolute path.
      *
-     * @param string $file A file path
+     * @param string|null $file A file path
      *
      * @return bool
      *

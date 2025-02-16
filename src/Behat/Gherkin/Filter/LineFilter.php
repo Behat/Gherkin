@@ -22,16 +22,19 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class LineFilter implements FilterInterface
 {
+    /**
+     * @var int
+     */
     protected $filterLine;
 
     /**
      * Initializes filter.
      *
-     * @param string $filterLine Line of the scenario to filter on
+     * @param int|numeric-string $filterLine Line of the scenario to filter on
      */
     public function __construct($filterLine)
     {
-        $this->filterLine = intval($filterLine);
+        $this->filterLine = (int) $filterLine;
     }
 
     /**

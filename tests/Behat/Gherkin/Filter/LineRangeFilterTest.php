@@ -33,7 +33,7 @@ class LineRangeFilterTest extends FilterTestCase
     #[DataProvider('featureLineRangeProvider')]
     public function testIsFeatureMatchFilter(string $filterMinLine, string $filterMaxLine, bool $expected): void
     {
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertSame($expected, $filter->isFeatureMatch($feature));
@@ -57,8 +57,8 @@ class LineRangeFilterTest extends FilterTestCase
     #[DataProvider('scenarioLineRangeProvider')]
     public function testIsScenarioMatchFilter(string $filterMinLine, string $filterMaxLine, int $expectedNumberOfMatches): void
     {
-        $scenario = new ScenarioNode(null, [], [], null, 2);
-        $outline = new OutlineNode(null, [], [], [new ExampleTableNode([], null)], null, 3);
+        $scenario = new ScenarioNode(null, [], [], '', 2);
+        $outline = new OutlineNode(null, [], [], [new ExampleTableNode([], '')], '', 3);
 
         $filter = new LineRangeFilter($filterMinLine, $filterMaxLine);
         $this->assertEquals(

@@ -14,46 +14,36 @@ use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    private $gherkin;
-    private $yaml;
-
-    public function parserTestDataProvider()
-    {
-        $data = [];
-
-        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
-            $testname = basename($file, '.yml');
-
-            $data[$testname] = [$testname];
-        }
-
-        return $data;
-    }
+    private Parser $gherkin;
+    private YamlFileLoader $yaml;
 
     /**
-     * @dataProvider parserTestDataProvider
-     *
-     * @param string $fixtureName name of the fixture
+     * @return iterable<string, array{fixtureName: string}>
      */
-    public function testParser($fixtureName)
+    public static function parserTestDataProvider(): iterable
+    {
+        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
+            $testname = basename($file, '.yml');
+            yield $testname => ['fixtureName' => $testname];
+        }
+    }
+
+    #[DataProvider('parserTestDataProvider')]
+    public function testParser(string $fixtureName): void
     {
         $etalon = $this->parseEtalon($fixtureName . '.yml');
-        $features = $this->parseFixture($fixtureName . '.feature');
-
-        $this->assertIsArray($features);
-        $this->assertCount(1, $features);
-        $fixture = $features[0];
+        $fixture = $this->parseFixture($fixtureName . '.feature');
 
         $this->assertEquals($etalon, $fixture);
     }
 
-    public function testParserResetsTagsBetweenFeatures()
+    public function testParserResetsTagsBetweenFeatures(): void
     {
         $parser = $this->getGherkinParser();
 
@@ -74,7 +64,7 @@ class ParserTest extends TestCase
         $this->assertFalse($feature2->hasTags());
     }
 
-    public function testSingleCharacterStepSupport()
+    public function testSingleCharacterStepSupport(): void
     {
         $feature = $this->getGherkinParser()->parse(<<<'FEATURE'
         Feature:
@@ -84,7 +74,6 @@ class ParserTest extends TestCase
         );
 
         $scenarios = $feature->getScenarios();
-        /** @var ScenarioNode $scenario */
         $scenario = array_shift($scenarios);
 
         $this->assertCount(1, $scenario->getSteps());
@@ -92,68 +81,63 @@ class ParserTest extends TestCase
 
     protected function getGherkinParser()
     {
-        if ($this->gherkin === null) {
-            $keywords = new ArrayKeywords([
-                'en' => [
-                    'feature' => 'Feature',
-                    'background' => 'Background',
-                    'scenario' => 'Scenario',
-                    'scenario_outline' => 'Scenario Outline',
-                    'examples' => 'Examples',
-                    'given' => 'Given',
-                    'when' => 'When',
-                    'then' => 'Then',
-                    'and' => 'And',
-                    'but' => 'But',
-                ],
-                'ru' => [
-                    'feature' => 'Функционал',
-                    'background' => 'Предыстория',
-                    'scenario' => 'Сценарий',
-                    'scenario_outline' => 'Структура сценария',
-                    'examples' => 'Примеры',
-                    'given' => 'Допустим',
-                    'when' => 'То',
-                    'then' => 'Если',
-                    'and' => 'И',
-                    'but' => 'Но',
-                ],
-                'ja' => [
-                    'feature' => 'フィーチャ',
-                    'background' => '背景',
-                    'scenario' => 'シナリオ',
-                    'scenario_outline' => 'シナリオアウトライン',
-                    'examples' => '例|サンプル',
-                    'given' => '前提<',
-                    'when' => 'もし<',
-                    'then' => 'ならば<',
-                    'and' => 'かつ<',
-                    'but' => 'しかし<',
-                ],
-            ]);
-            $this->gherkin = new Parser(new Lexer($keywords));
-        }
-
-        return $this->gherkin;
+        return $this->gherkin ??= new Parser(
+            new Lexer(
+                new ArrayKeywords([
+                    'en' => [
+                        'feature' => 'Feature',
+                        'background' => 'Background',
+                        'scenario' => 'Scenario',
+                        'scenario_outline' => 'Scenario Outline',
+                        'examples' => 'Examples',
+                        'given' => 'Given',
+                        'when' => 'When',
+                        'then' => 'Then',
+                        'and' => 'And',
+                        'but' => 'But',
+                    ],
+                    'ru' => [
+                        'feature' => 'Функционал',
+                        'background' => 'Предыстория',
+                        'scenario' => 'Сценарий',
+                        'scenario_outline' => 'Структура сценария',
+                        'examples' => 'Примеры',
+                        'given' => 'Допустим',
+                        'when' => 'То',
+                        'then' => 'Если',
+                        'and' => 'И',
+                        'but' => 'Но',
+                    ],
+                    'ja' => [
+                        'feature' => 'フィーチャ',
+                        'background' => '背景',
+                        'scenario' => 'シナリオ',
+                        'scenario_outline' => 'シナリオアウトライン',
+                        'examples' => '例|サンプル',
+                        'given' => '前提<',
+                        'when' => 'もし<',
+                        'then' => 'ならば<',
+                        'and' => 'かつ<',
+                        'but' => 'しかし<',
+                    ],
+                ])
+            )
+        );
     }
 
-    protected function getYamlParser()
+    protected function getYamlParser(): YamlFileLoader
     {
-        if ($this->yaml === null) {
-            $this->yaml = new YamlFileLoader();
-        }
-
-        return $this->yaml;
+        return $this->yaml ??= new YamlFileLoader();
     }
 
-    protected function parseFixture($fixture)
+    protected function parseFixture(string $fixture): ?FeatureNode
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
 
-        return [$this->getGherkinParser()->parse(file_get_contents($file), $file)];
+        return $this->getGherkinParser()->parse(file_get_contents($file), $file);
     }
 
-    protected function parseEtalon($etalon)
+    protected function parseEtalon($etalon): FeatureNode
     {
         $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
         $feature = $features[0];
@@ -171,15 +155,22 @@ class ParserTest extends TestCase
         );
     }
 
-    public function testParsingManyCommentsShouldPass()
+    public function testParsingManyCommentsShouldPass(): void
     {
         if (!extension_loaded('xdebug')) {
             $this->markTestSkipped('xdebug extension must be enabled.');
         }
-        $defaultPHPSetting = 256;
-        $this->iniSet('xdebug.max_nesting_level', $defaultPHPSetting);
 
-        $lineCount = 150; // 119 is the real threshold, higher just in case
-        $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+        $oldMaxNestingLevel = ini_set('xdebug.max_nesting_level', 256);
+        if ($oldMaxNestingLevel === false) {
+            throw new \RuntimeException('Could not set INI setting value');
+        }
+
+        try {
+            $lineCount = 150; // 119 is the real threshold, higher just in case
+            $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+        } finally {
+            ini_set('xdebug.max_nesting_level', $oldMaxNestingLevel);
+        }
     }
 }

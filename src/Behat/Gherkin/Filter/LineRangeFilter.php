@@ -22,14 +22,20 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class LineRangeFilter implements FilterInterface
 {
+    /**
+     * @var int
+     */
     protected $filterMinLine;
+    /**
+     * @var int
+     */
     protected $filterMaxLine;
 
     /**
      * Initializes filter.
      *
-     * @param string $filterMinLine Minimum line of a scenario to filter on
-     * @param string $filterMaxLine Maximum line of a scenario to filter on
+     * @param int|numeric-string $filterMinLine Minimum line of a scenario to filter on
+     * @param int|numeric-string|'*' $filterMaxLine Maximum line of a scenario to filter on
      */
     public function __construct($filterMinLine, $filterMaxLine)
     {

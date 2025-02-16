@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
@@ -17,10 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 class ParserExceptionsTest extends TestCase
 {
-    /**
-     * @var Parser
-     */
-    private $gherkin;
+    private Parser $gherkin;
 
     protected function setUp(): void
     {
@@ -53,7 +51,7 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin = new Parser(new Lexer($keywords));
     }
 
-    public function testStepRightAfterFeature()
+    public function testStepRightAfterFeature(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Some feature
@@ -66,11 +64,11 @@ class ParserExceptionsTest extends TestCase
         $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
     }
 
-    public function testTextInBackground()
+    public function testTextInBackground(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Behat bug test
-            Background: remove X to couse bug
+            Background: remove X to cause bug
             Step is red form is not valid
             asd
             asd
@@ -88,12 +86,12 @@ class ParserExceptionsTest extends TestCase
         $feature = $this->gherkin->parse($feature);
         $background = $feature->getBackground();
         $this->assertEquals(
-            "remove X to couse bug\nStep is red form is not valid\nasd\nasd\nas\nda\nsd\nas\ndas\nd",
+            "remove X to cause bug\nStep is red form is not valid\nasd\nasd\nas\nda\nsd\nas\ndas\nd",
             $background->getTitle()
         );
     }
 
-    public function testTextInScenario()
+    public function testTextInScenario(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Behat bug test
@@ -155,7 +153,7 @@ class ParserExceptionsTest extends TestCase
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
     }
 
-    public function testAmbigiousLanguage()
+    public function testAmbigiousLanguage(): void
     {
         $feature = <<<'GHERKIN'
         # language: en
@@ -167,11 +165,11 @@ class ParserExceptionsTest extends TestCase
             Given something wrong
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testEmptyOutline()
+    public function testEmptyOutline(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Some feature
@@ -179,11 +177,11 @@ class ParserExceptionsTest extends TestCase
             Scenario Outline:
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testWrongTagPlacement()
+    public function testWrongTagPlacement(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Some feature
@@ -194,11 +192,11 @@ class ParserExceptionsTest extends TestCase
                 Then some additional step
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testBackgroundWithTag()
+    public function testBackgroundWithTag(): void
     {
         $feature = <<<'GHERKIN'
         Feature: Some feature
@@ -208,11 +206,11 @@ class ParserExceptionsTest extends TestCase
                 Given some step
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testEndlessPyString()
+    public function testEndlessPyString(): void
     {
         $feature = <<<'GHERKIN'
         Feature:
@@ -223,11 +221,11 @@ class ParserExceptionsTest extends TestCase
                     some text
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testWrongStepType()
+    public function testWrongStepType(): void
     {
         $feature = <<<'GHERKIN'
         Feature:
@@ -238,11 +236,11 @@ class ParserExceptionsTest extends TestCase
                 Aaand some step
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testMultipleBackgrounds()
+    public function testMultipleBackgrounds(): void
     {
         $feature = <<<'GHERKIN'
         Feature:
@@ -254,11 +252,11 @@ class ParserExceptionsTest extends TestCase
                 Aaand some step
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testMultipleFeatures()
+    public function testMultipleFeatures(): void
     {
         $feature = <<<'GHERKIN'
         Feature:
@@ -266,11 +264,11 @@ class ParserExceptionsTest extends TestCase
         Feature:
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 
-    public function testTableWithoutRightBorder()
+    public function testTableWithoutRightBorder(): void
     {
         $feature = <<<'GHERKIN'
         Feature:
@@ -281,7 +279,7 @@ class ParserExceptionsTest extends TestCase
                 | 42  | 42
         GHERKIN;
 
-        $this->expectException("\Behat\Gherkin\Exception\ParserException");
+        $this->expectException(ParserException::class);
         $this->gherkin->parse($feature);
     }
 }

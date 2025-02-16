@@ -15,9 +15,9 @@ use Behat\Gherkin\Node\FeatureNode;
 
 class PathsFilterTest extends FilterTestCase
 {
-    public function testIsFeatureMatchFilter()
+    public function testIsFeatureMatchFilter(): void
     {
-        $feature = new FeatureNode(null, null, [], null, [], null, null, __FILE__, 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', __FILE__, 1);
 
         $filter = new PathsFilter([__DIR__]);
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -35,11 +35,11 @@ class PathsFilterTest extends FilterTestCase
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
-    public function testItDoesNotMatchPartialPaths()
+    public function testItDoesNotMatchPartialPaths(): void
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, [], null, [], null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
         $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));
@@ -57,11 +57,11 @@ class PathsFilterTest extends FilterTestCase
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
-    public function testItDoesNotMatchIfFileWithSameNameButNotPathExistsInFolder()
+    public function testItDoesNotMatchIfFileWithSameNameButNotPathExistsInFolder(): void
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
 
-        $feature = new FeatureNode(null, null, [], null, [], null, null, $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', $fixtures . 'full_path' . DIRECTORY_SEPARATOR . 'file1', 1);
 
         $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));

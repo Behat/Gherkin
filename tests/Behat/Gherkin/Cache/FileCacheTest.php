@@ -19,8 +19,18 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class FileCacheTest extends TestCase
 {
-    private $path;
-    private $cache;
+    private string $path;
+    private FileCache $cache;
+
+    protected function setUp(): void
+    {
+        $this->cache = new FileCache($this->path = sys_get_temp_dir() . uniqid('/gherkin-test'));
+    }
+
+    protected function tearDown(): void
+    {
+        (new Filesystem())->remove($this->path);
+    }
 
     public function testIsFreshWhenThereIsNoFile(): void
     {
@@ -29,7 +39,7 @@ class FileCacheTest extends TestCase
 
     public function testIsFreshOnFreshFile(): void
     {
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $this->cache->write('some_path', $feature);
 
@@ -38,7 +48,7 @@ class FileCacheTest extends TestCase
 
     public function testIsFreshOnOutdated(): void
     {
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $this->cache->write('some_path', $feature);
 
@@ -47,8 +57,8 @@ class FileCacheTest extends TestCase
 
     public function testCacheAndRead(): void
     {
-        $scenarios = [new ScenarioNode('Some scenario', [], [], null, null)];
-        $feature = new FeatureNode('Some feature', 'some description', [], null, $scenarios, null, null, null, null);
+        $scenarios = [new ScenarioNode('Some scenario', [], [], '', 1)];
+        $feature = new FeatureNode('Some feature', 'some description', [], null, $scenarios, '', '', null, 1);
 
         $this->cache->write('some_feature', $feature);
         $featureRead = $this->cache->read('some_feature');
@@ -61,7 +71,7 @@ class FileCacheTest extends TestCase
         // First, write a valid cache and find the file that was written
         $this->cache->write(
             'broken_feature',
-            new FeatureNode(null, null, [], null, [], null, null, null, null),
+            new FeatureNode(null, null, [], null, [], '', '', null, 1),
         );
         $files = glob($this->path . '/**/*.feature.cache');
         $this->assertCount(1, $files, 'Cache should have written a single file');
@@ -83,15 +93,5 @@ class FileCacheTest extends TestCase
         } else {
             new FileCache('/dev/null/gherkin-test');
         }
-    }
-
-    protected function setUp(): void
-    {
-        $this->cache = new FileCache($this->path = sys_get_temp_dir() . uniqid('/gherkin-test'));
-    }
-
-    protected function tearDown(): void
-    {
-        (new Filesystem())->remove($this->path);
     }
 }
