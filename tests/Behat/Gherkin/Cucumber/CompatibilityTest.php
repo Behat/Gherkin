@@ -111,7 +111,7 @@ class CompatibilityTest extends TestCase
      */
     public static function goodCucumberFeatures(): iterable
     {
-        yield from self::getCucumberFeatures('/good');
+        return self::getCucumberFeatures('/good');
     }
 
     /**
@@ -119,7 +119,7 @@ class CompatibilityTest extends TestCase
      */
     public static function badCucumberFeatures(): iterable
     {
-        yield from self::getCucumberFeatures('/bad');
+        return self::getCucumberFeatures('/bad');
     }
 
     /**
