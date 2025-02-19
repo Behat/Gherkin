@@ -20,7 +20,7 @@ class LineFilterTest extends FilterTestCase
 {
     public function testIsFeatureMatchFilter(): void
     {
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $filter = new LineFilter(1);
         $this->assertTrue($filter->isFeatureMatch($feature));
@@ -34,7 +34,7 @@ class LineFilterTest extends FilterTestCase
 
     public function testIsScenarioMatchFilter(): void
     {
-        $scenario = new ScenarioNode(null, [], [], null, 2);
+        $scenario = new ScenarioNode(null, [], [], '', 2);
 
         $filter = new LineFilter(2);
         $this->assertTrue($filter->isScenarioMatch($scenario));
@@ -45,7 +45,7 @@ class LineFilterTest extends FilterTestCase
         $filter = new LineFilter(5);
         $this->assertFalse($filter->isScenarioMatch($scenario));
 
-        $outline = new OutlineNode(null, [], [], new ExampleTableNode([], null), null, 20);
+        $outline = new OutlineNode(null, [], [], new ExampleTableNode([], ''), '', 20);
 
         $filter = new LineFilter(5);
         $this->assertFalse($filter->isScenarioMatch($outline));

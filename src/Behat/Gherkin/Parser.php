@@ -31,6 +31,8 @@ use Behat\Gherkin\Node\TableNode;
  * $featuresArray = $parser->parse('/path/to/feature.feature');
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */
 class Parser
 {
@@ -83,7 +85,7 @@ class Parser
         while ('EOS' !== ($predicted = $this->predictTokenType())) {
             $node = $this->parseExpression();
 
-            if ($node === null || $node === "\n") {
+            if ($node === "\n") {
                 continue;
             }
 
@@ -178,7 +180,7 @@ class Parser
     /**
      * Parses current expression & returns Node.
      *
-     * @return string|FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|TableNode|StepNode
+     * @phpstan-return TParsedExpressionResult
      *
      * @throws ParserException
      */
@@ -262,14 +264,12 @@ class Parser
                 ));
             }
 
-            if (!$node instanceof ScenarioNode) {
-                throw new ParserException(sprintf(
-                    'Expected Scenario, Outline or Background, but got %s on line: %d%s',
-                    $node->getNodeType(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new ParserException(sprintf(
+                'Expected Scenario, Outline or Background, but got %s on line: %d%s',
+                $node->getNodeType(),
+                $node->getLine(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         return new FeatureNode(
@@ -337,14 +337,12 @@ class Parser
                 ));
             }
 
-            if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf(
-                    'Expected Step, but got %s on line: %d%s',
-                    $node->getNodeType(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new ParserException(sprintf(
+                'Expected Step, but got %s on line: %d%s',
+                $node->getNodeType(),
+                $node->getLine(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
@@ -396,14 +394,12 @@ class Parser
                 ));
             }
 
-            if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf(
-                    'Expected Step, but got %s on line: %d%s',
-                    $node->getNodeType(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new ParserException(sprintf(
+                'Expected Step, but got %s on line: %d%s',
+                $node->getNodeType(),
+                $node->getLine(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         array_pop($this->passedNodesStack);
@@ -472,14 +468,12 @@ class Parser
                 ));
             }
 
-            if (!$node instanceof StepNode) {
-                throw new ParserException(sprintf(
-                    'Expected Step or Examples table, but got %s on line: %d%s',
-                    $node->getNodeType(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new ParserException(sprintf(
+                'Expected Step or Examples table, but got %s on line: %d%s',
+                $node->getNodeType(),
+                $node->getLine(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
         }
 
         if (count($examples) === 0) {
@@ -589,7 +583,7 @@ class Parser
     /**
      * Parses tags.
      *
-     * @return BackgroundNode|FeatureNode|OutlineNode|ScenarioNode|StepNode|TableNode|string
+     * @phpstan-return TParsedExpressionResult
      */
     protected function parseTags()
     {
@@ -677,7 +671,7 @@ class Parser
     /**
      * Parses language block and updates lexer configuration based on it.
      *
-     * @return BackgroundNode|FeatureNode|OutlineNode|ScenarioNode|StepNode|TableNode|string
+     * @phpstan-return TParsedExpressionResult
      *
      * @throws ParserException
      */

@@ -8,21 +8,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Behat\Gherkin\Cucumber;
+namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\ParserException;
-use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
-use Behat\Gherkin\Loader\LoaderInterface;
-use Behat\Gherkin\Node\ScenarioInterface;
+use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
-use Exception;
 use FilesystemIterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use RuntimeException;
 use SplFileInfo;
 
 /**
@@ -34,7 +33,7 @@ class CompatibilityTest extends TestCase
 {
     public const TESTDATA_PATH = __DIR__ . '/../../../../vendor/cucumber/cucumber/gherkin/testdata';
 
-    private $notParsingCorrectly = [
+    private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
         'rule_with_tag.feature' => 'Rule keyword not supported',
@@ -51,23 +50,17 @@ class CompatibilityTest extends TestCase
         'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
     ];
 
-    private $parsedButShouldNotBe = [
+    private array $parsedButShouldNotBe = [
         'invalid_language.feature' => 'Invalid language is silently ignored',
     ];
 
-    private $deprecatedInsteadOfParseError = [
+    private array $deprecatedInsteadOfParseError = [
         'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
     ];
 
-    /**
-     * @var Parser
-     */
-    private $parser;
+    private Parser $parser;
 
-    /**
-     * @var LoaderInterface
-     */
-    private $loader;
+    private CucumberNDJsonAstLoader $loader;
 
     protected function setUp(): void
     {
@@ -77,10 +70,8 @@ class CompatibilityTest extends TestCase
         $this->loader = new CucumberNDJsonAstLoader();
     }
 
-    /**
-     * @dataProvider goodCucumberFeatures
-     */
-    public function testFeaturesParseTheSameAsCucumber(SplFileInfo $file)
+    #[DataProvider('goodCucumberFeatures')]
+    public function testFeaturesParseTheSameAsCucumber(SplFileInfo $file): void
     {
         if (isset($this->notParsingCorrectly[$file->getFilename()])) {
             $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
@@ -99,10 +90,8 @@ class CompatibilityTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider badCucumberFeatures
-     */
-    public function testBadFeaturesDoNotParse(SplFileInfo $file)
+    #[DataProvider('badCucumberFeatures')]
+    public function testBadFeaturesDoNotParse(SplFileInfo $file): void
     {
         if (isset($this->parsedButShouldNotBe[$file->getFilename()])) {
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
@@ -117,73 +106,77 @@ class CompatibilityTest extends TestCase
         $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
     }
 
-    public static function goodCucumberFeatures()
+    /**
+     * @return iterable<string, array{file: SplFileInfo}>
+     */
+    public static function goodCucumberFeatures(): iterable
     {
         return self::getCucumberFeatures('/good');
     }
 
-    public static function badCucumberFeatures()
+    /**
+     * @return iterable<string, array{file: SplFileInfo}>
+     */
+    public static function badCucumberFeatures(): iterable
     {
         return self::getCucumberFeatures('/bad');
     }
 
-    private static function getCucumberFeatures($folder)
+    /**
+     * @return iterable<string, array{file: SplFileInfo}>
+     */
+    private static function getCucumberFeatures(string $folder): iterable
     {
         foreach (new FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
-            if ($file->isFile() && $file->getExtension() == 'feature') {
-                yield $file->getFilename() => [$file];
+            if ($file->isFile() && $file->getExtension() === 'feature') {
+                yield $file->getFilename() => ['file' => $file];
             }
         }
     }
 
     /**
-     * Renove features that aren't present in the cucumber source.
+     * Remove features that aren't present in the cucumber source.
      */
-    private function normaliseFeature($featureNode)
+    private function normaliseFeature(?FeatureNode $featureNode): ?FeatureNode
     {
         if (is_null($featureNode)) {
             return null;
         }
 
-        $scenarios = array_map(
-            function (ScenarioInterface $scenarioNode) {
-                $steps = array_map(
-                    function (StepNode $step) {
-                        $this->setPrivateProperty($step, 'keywordType', '');
-                        $this->setPrivateProperty($step, 'arguments', []);
+        foreach ($featureNode->getScenarios() as $scenarioNode) {
+            $steps = array_map(
+                function (StepNode $step) {
+                    $this->setPrivateProperty($step, 'keywordType', '');
+                    $this->setPrivateProperty($step, 'arguments', []);
 
-                        return $step;
-                    },
-                    $scenarioNode->getSteps()
-                );
+                    return $step;
+                },
+                $scenarioNode->getSteps()
+            );
 
-                $this->setPrivateProperty($scenarioNode, 'steps', $steps);
-
-                return $scenarioNode;
-            },
-            $featureNode->getScenarios()
-        );
+            $this->setPrivateProperty($scenarioNode, 'steps', $steps);
+        }
 
         return $featureNode;
     }
 
-    private function setPrivateProperty($object, $propertyName, $value)
+    private function setPrivateProperty(object $object, string $propertyName, mixed $value): void
     {
         $reflectionClass = new ReflectionClass($object);
         $property = $reflectionClass->getProperty($propertyName);
-        $property->setAccessible(true);
         $property->setValue($object, $value);
     }
 
-    private function expectDeprecationErrorMatches($message)
+    private function expectDeprecationErrorMatches(string $message): void
     {
         set_error_handler(
             static function ($errno, $errstr) {
                 restore_error_handler();
-                throw new Exception($errstr, $errno);
+                throw new RuntimeException($errstr, $errno);
             },
             E_ALL
         );
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessageMatches($message);
     }
 }

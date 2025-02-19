@@ -10,14 +10,19 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Filter\FilterInterface;
+use Behat\Gherkin\Filter\NameFilter;
+use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Gherkin;
+use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class GherkinTest extends TestCase
 {
-    public function testLoader()
+    public function testLoader(): void
     {
         $customFilter1 = $this->getCustomFilterMock();
         $customFilter2 = $this->getCustomFilterMock();
@@ -27,40 +32,40 @@ class GherkinTest extends TestCase
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
         $gherkin->addFilter($tagFilter = $this->getTagFilterMock());
 
-        $scenario = new ScenarioNode(null, [], [], null, null);
-        $feature = new FeatureNode(null, null, [], null, [$scenario], null, null, null, null);
+        $scenario = new ScenarioNode(null, [], [], '', 1);
+        $feature = new FeatureNode(null, null, [], null, [$scenario], '', '', null, 1);
 
         $loader
             ->expects($this->once())
             ->method('supports')
             ->with($resource = 'some/feature/resource')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $loader
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue([$feature]));
+            ->willReturn([$feature]);
 
         $nameFilter
             ->expects($this->once())
             ->method('filterFeature')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue($feature));
+            ->willReturn($feature);
         $tagFilter
             ->expects($this->once())
             ->method('filterFeature')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue($feature));
+            ->willReturn($feature);
         $customFilter1
             ->expects($this->once())
             ->method('filterFeature')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue($feature));
+            ->willReturn($feature);
         $customFilter2
             ->expects($this->once())
             ->method('filterFeature')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue($feature));
+            ->willReturn($feature);
 
         $features = $gherkin->load($resource, [$customFilter1, $customFilter2]);
         $this->assertCount(1, $features);
@@ -70,66 +75,66 @@ class GherkinTest extends TestCase
         $this->assertSame($scenario, $scenarios[0]);
     }
 
-    public function testNotFoundLoader()
+    public function testNotFoundLoader(): void
     {
         $gherkin = new Gherkin();
 
         $this->assertEquals([], $gherkin->load('some/feature/resource'));
     }
 
-    public function testLoaderFiltersFeatures()
+    public function testLoaderFiltersFeatures(): void
     {
         $gherkin = new Gherkin();
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
 
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $loader
             ->expects($this->once())
             ->method('supports')
             ->with($resource = 'some/feature/resource')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $loader
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue([$feature]));
+            ->willReturn([$feature]);
 
         $nameFilter
             ->expects($this->once())
             ->method('filterFeature')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue($feature));
+            ->willReturn($feature);
         $nameFilter
             ->expects($this->once())
             ->method('isFeatureMatch')
             ->with($this->identicalTo($feature))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $features = $gherkin->load($resource);
         $this->assertCount(0, $features);
     }
 
-    public function testSetFiltersOverridesAllFilters()
+    public function testSetFiltersOverridesAllFilters(): void
     {
         $gherkin = new Gherkin();
         $gherkin->addLoader($loader = $this->getLoaderMock());
         $gherkin->addFilter($nameFilter = $this->getNameFilterMock());
         $gherkin->setFilters([]);
 
-        $feature = new FeatureNode(null, null, [], null, [], null, null, null, null);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $loader
             ->expects($this->once())
             ->method('supports')
             ->with($resource = 'some/feature/resource')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $loader
             ->expects($this->once())
             ->method('load')
             ->with($resource)
-            ->will($this->returnValue([$feature]));
+            ->willReturn([$feature]);
 
         $nameFilter
             ->expects($this->never())
@@ -142,7 +147,7 @@ class GherkinTest extends TestCase
         $this->assertCount(1, $features);
     }
 
-    public function testSetBasePath()
+    public function testSetBasePath(): void
     {
         $gherkin = new Gherkin();
         $gherkin->addLoader($loader1 = $this->getLoaderMock());
@@ -151,42 +156,42 @@ class GherkinTest extends TestCase
         $loader1
             ->expects($this->once())
             ->method('setBasePath')
-            ->with($basePath = '/base/path')
-            ->will($this->returnValue(null));
+            ->with('/base/path')
+            ->willReturn(null);
 
         $loader2
             ->expects($this->once())
             ->method('setBasePath')
-            ->with($basePath = '/base/path')
-            ->will($this->returnValue(null));
+            ->with('/base/path')
+            ->willReturn(null);
 
-        $gherkin->setBasePath($basePath);
+        $gherkin->setBasePath('/base/path');
     }
 
-    protected function getLoaderMock()
+    protected function getLoaderMock(): MockObject&GherkinFileLoader
     {
-        return $this->getMockBuilder('Behat\Gherkin\Loader\GherkinFileLoader')
+        return $this->getMockBuilder(GherkinFileLoader::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
-    protected function getCustomFilterMock()
+    protected function getCustomFilterMock(): MockObject&FilterInterface
     {
-        return $this->getMockBuilder('Behat\Gherkin\Filter\FilterInterface')
+        return $this->getMockBuilder(FilterInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
-    protected function getNameFilterMock()
+    protected function getNameFilterMock(): MockObject&NameFilter
     {
-        return $this->getMockBuilder('Behat\Gherkin\Filter\NameFilter')
+        return $this->getMockBuilder(NameFilter::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
-    protected function getTagFilterMock()
+    protected function getTagFilterMock(): MockObject&TagFilter
     {
-        return $this->getMockBuilder('Behat\Gherkin\Filter\TagFilter')
+        return $this->getMockBuilder(TagFilter::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

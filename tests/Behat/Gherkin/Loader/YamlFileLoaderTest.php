@@ -11,18 +11,19 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
+use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
 
 class YamlFileLoaderTest extends TestCase
 {
-    private $loader;
+    private YamlFileLoader $loader;
 
     protected function setUp(): void
     {
         $this->loader = new YamlFileLoader();
     }
 
-    public function testSupports()
+    public function testSupports(): void
     {
         $this->assertFalse($this->loader->supports(__DIR__));
         $this->assertFalse($this->loader->supports(__FILE__));
@@ -31,7 +32,7 @@ class YamlFileLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/etalons/addition.yml'));
     }
 
-    public function testLoadAddition()
+    public function testLoadAddition(): void
     {
         $basePath = __DIR__ . '/../Fixtures';
         $this->loader->setBasePath($basePath);
@@ -52,7 +53,7 @@ class YamlFileLoaderTest extends TestCase
         $scenarios = $features[0]->getScenarios();
 
         $this->assertCount(2, $scenarios);
-        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[0]);
+        $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);
         $this->assertEquals(7, $scenarios[0]->getLine());
         $this->assertEquals('Add two numbers', $scenarios[0]->getTitle());
         $steps = $scenarios[0]->getSteps();
@@ -63,7 +64,7 @@ class YamlFileLoaderTest extends TestCase
         $this->assertEquals('Given', $steps[1]->getKeywordType());
         $this->assertEquals('I have entered 12 into the calculator', $steps[1]->getText());
 
-        $this->assertInstanceOf('Behat\Gherkin\Node\ScenarioNode', $scenarios[1]);
+        $this->assertInstanceOf(ScenarioNode::class, $scenarios[1]);
         $this->assertEquals(13, $scenarios[1]->getLine());
         $this->assertEquals('Div two numbers', $scenarios[1]->getTitle());
         $steps = $scenarios[1]->getSteps();
