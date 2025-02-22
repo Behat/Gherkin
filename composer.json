@@ -34,14 +34,14 @@
     },
 
     "autoload": {
-        "psr-0": {
-            "Behat\\Gherkin": "src/"
+        "psr-4": {
+            "Behat\\Gherkin\\": "src/"
         }
     },
 
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\Behat\\Gherkin\\": "tests/"
         }
     },
 

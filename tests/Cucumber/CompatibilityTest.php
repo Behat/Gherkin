@@ -31,7 +31,7 @@ use SplFileInfo;
  */
 class CompatibilityTest extends TestCase
 {
-    public const TESTDATA_PATH = __DIR__ . '/../../../../vendor/cucumber/cucumber/gherkin/testdata';
+    public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/cucumber/gherkin/testdata';
 
     private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
@@ -64,7 +64,7 @@ class CompatibilityTest extends TestCase
 
     protected function setUp(): void
     {
-        $arrKeywords = include __DIR__ . '/../../../../i18n.php';
+        $arrKeywords = include __DIR__ . '/../../i18n.php';
         $lexer = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
         $this->parser = new Parser($lexer);
         $this->loader = new CucumberNDJsonAstLoader();

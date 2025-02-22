@@ -20,12 +20,12 @@
          displayDetailsOnTestsThatTriggerWarnings="true">
     <testsuites>
         <testsuite name="Behat Gherkin test suite">
-            <directory>./tests/Behat/Gherkin/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
     <source>
         <include>
-            <directory>./src/Behat/Gherkin/</directory>
+            <directory>./src/</directory>
         </include>
     </source>
 </phpunit>
