@@ -15,8 +15,10 @@ namespace Behat\Gherkin\Node;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class ExampleTableNode extends TableNode
+class ExampleTableNode extends TableNode implements TaggedNodeInterface
 {
+    use TaggedNodeTrait;
+
     /**
      * @var string[]
      */
@@ -52,11 +54,6 @@ class ExampleTableNode extends TableNode
         return 'ExampleTable';
     }
 
-    /**
-     * Returns attached tags.
-     *
-     * @return string[]
-     */
     public function getTags()
     {
         return $this->tags;

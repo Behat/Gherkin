@@ -128,11 +128,15 @@ class OutlineNodeTest extends TestCase
             new StepNode('', 'I am <name>', [], 1, 'Given'),
         ];
 
-        $table = new ExampleTableNode([
-            10 => ['name', 'email'],
-            11 => ['Ciaran', 'ciaran@example.com'],
-            12 => ['John', 'john@example.com'],
-        ], 'Examples');
+        $table = new ExampleTableNode(
+            [
+                10 => ['name', 'email'],
+                11 => ['Ciaran', 'ciaran@example.com'],
+                12 => ['John', 'john@example.com'],
+            ],
+            'Examples',
+            ['tagA', 'tagB'],
+        );
 
         $outline = new OutlineNode('An outline title for <name>', [], $steps, $table, '', 1);
 
@@ -143,12 +147,14 @@ class OutlineNodeTest extends TestCase
                     'getTitle' => '| Ciaran | ciaran@example.com |',
                     'getOutlineTitle' => 'An outline title for <name>',
                     'getExampleText' => '| Ciaran | ciaran@example.com |',
+                    'getTags' => ['tagA', 'tagB'],
                 ],
                 [
                     'getName' => 'An outline title for John #2',
                     'getTitle' => '| John   | john@example.com   |',
                     'getOutlineTitle' => 'An outline title for <name>',
                     'getExampleText' => '| John   | john@example.com   |',
+                    'getTags' => ['tagA', 'tagB'],
                 ],
             ],
             array_map(
@@ -158,6 +164,7 @@ class OutlineNodeTest extends TestCase
                         'getTitle' => $node->getTitle(),
                         'getOutlineTitle' => $node->getOutlineTitle(),
                         'getExampleText' => $node->getExampleText(),
+                        'getTags' => $node->getTags(),
                     ];
                 },
                 $outline->getExamples()

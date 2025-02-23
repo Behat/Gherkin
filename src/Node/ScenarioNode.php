@@ -17,6 +17,8 @@ namespace Behat\Gherkin\Node;
  */
 class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
 {
+    use TaggedNodeTrait;
+
     /**
      * @var string
      */
@@ -83,33 +85,6 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
         return $this->title;
     }
 
-    /**
-     * Checks if scenario is tagged with tag.
-     *
-     * @param string $tag
-     *
-     * @return bool
-     */
-    public function hasTag($tag)
-    {
-        return in_array($tag, $this->getTags());
-    }
-
-    /**
-     * Checks if scenario has tags (both inherited from feature and own).
-     *
-     * @return bool
-     */
-    public function hasTags()
-    {
-        return count($this->getTags()) > 0;
-    }
-
-    /**
-     * Returns scenario tags (including inherited from feature).
-     *
-     * @return array
-     */
     public function getTags()
     {
         return $this->tags;
