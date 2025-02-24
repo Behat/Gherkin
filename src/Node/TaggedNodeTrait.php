@@ -12,6 +12,8 @@ namespace Behat\Gherkin\Node;
 
 /**
  * This trait partially implements {@see TaggedNodeInterface}.
+ *
+ * @internal
  */
 trait TaggedNodeTrait
 {
