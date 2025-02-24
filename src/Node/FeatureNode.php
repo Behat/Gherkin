@@ -21,6 +21,8 @@ use function strlen;
  */
 class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
 {
+    use TaggedNodeTrait;
+
     /**
      * @var string|null
      */
@@ -136,33 +138,6 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
         return $this->description;
     }
 
-    /**
-     * Checks if feature is tagged with tag.
-     *
-     * @param string $tag
-     *
-     * @return bool
-     */
-    public function hasTag($tag)
-    {
-        return in_array($tag, $this->tags);
-    }
-
-    /**
-     * Checks if feature has tags.
-     *
-     * @return bool
-     */
-    public function hasTags()
-    {
-        return count($this->tags) > 0;
-    }
-
-    /**
-     * Returns feature tags.
-     *
-     * @return string[]
-     */
     public function getTags()
     {
         return $this->tags;

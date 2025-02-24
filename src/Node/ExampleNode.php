@@ -17,6 +17,8 @@ namespace Behat\Gherkin\Node;
  */
 class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 {
+    use TaggedNodeTrait;
+
     /**
      * @var string
      */
@@ -105,33 +107,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
         return $this->text;
     }
 
-    /**
-     * Checks if outline is tagged with tag.
-     *
-     * @param string $tag
-     *
-     * @return bool
-     */
-    public function hasTag($tag)
-    {
-        return in_array($tag, $this->getTags());
-    }
-
-    /**
-     * Checks if outline has tags (both inherited from feature and own).
-     *
-     * @return bool
-     */
-    public function hasTags()
-    {
-        return count($this->getTags()) > 0;
-    }
-
-    /**
-     * Returns outline tags (including inherited from feature).
-     *
-     * @return string[]
-     */
     public function getTags()
     {
         return $this->tags;

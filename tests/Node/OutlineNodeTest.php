@@ -65,27 +65,38 @@ class OutlineNodeTest extends TestCase
 
         $outline = new OutlineNode(null, ['otag1', 'otag2'], $steps, [$table, $table2], '', 1);
 
-        $this->assertCount(4, $examples = $outline->getExamples());
-        $this->assertEquals(22, $examples[0]->getLine());
-        $this->assertEquals(23, $examples[1]->getLine());
-        $this->assertEquals(32, $examples[2]->getLine());
-        $this->assertEquals(33, $examples[3]->getLine());
-        $this->assertEquals(['name' => 'everzet', 'email' => 'ever.zet@gmail.com'], $examples[0]->getTokens());
-        $this->assertEquals(['name' => 'example', 'email' => 'example@example.com'], $examples[1]->getTokens());
-        $this->assertEquals(['name' => 'everzet2', 'email' => 'ever.zet2@gmail.com'], $examples[2]->getTokens());
-        $this->assertEquals(['name' => 'example2', 'email' => 'example2@example.com'], $examples[3]->getTokens());
-
-        for ($i = 0; $i < 2; ++$i) {
-            foreach (['otag1', 'otag2'] as $tag) {
-                $this->assertTrue($examples[$i]->hasTag($tag), 'there is no tag ' . $tag . ' in example #' . $i);
-            }
-        }
-
-        for ($i = 2; $i < 4; ++$i) {
-            foreach (['otag1', 'otag2', 'etag1', 'etag2'] as $tag) {
-                $this->assertTrue($examples[$i]->hasTag($tag), 'there is no tag ' . $tag . ' in example #' . $i);
-            }
-        }
+        $this->assertSame(
+            [
+                [
+                    'line' => 22,
+                    'tokens' => ['name' => 'everzet', 'email' => 'ever.zet@gmail.com'],
+                    'tags' => ['otag1', 'otag2'],
+                ],
+                [
+                    'line' => 23,
+                    'tokens' => ['name' => 'example', 'email' => 'example@example.com'],
+                    'tags' => ['otag1', 'otag2'],
+                ],
+                [
+                    'line' => 32,
+                    'tokens' => ['name' => 'everzet2', 'email' => 'ever.zet2@gmail.com'],
+                    'tags' => ['otag1', 'otag2', 'etag1', 'etag2'],
+                ],
+                [
+                    'line' => 33,
+                    'tokens' => ['name' => 'example2', 'email' => 'example2@example.com'],
+                    'tags' => ['otag1', 'otag2', 'etag1', 'etag2'],
+                ],
+            ],
+            array_map(
+                static fn (ExampleNode $example) => [
+                    'line' => $example->getLine(),
+                    'tokens' => $example->getTokens(),
+                    'tags' => $example->getTags(),
+                ],
+                $outline->getExamples(),
+            ),
+        );
     }
 
     public function testCreatesEmptyExamplesForEmptyExampleTable(): void
@@ -128,11 +139,15 @@ class OutlineNodeTest extends TestCase
             new StepNode('', 'I am <name>', [], 1, 'Given'),
         ];
 
-        $table = new ExampleTableNode([
-            10 => ['name', 'email'],
-            11 => ['Ciaran', 'ciaran@example.com'],
-            12 => ['John', 'john@example.com'],
-        ], 'Examples');
+        $table = new ExampleTableNode(
+            [
+                10 => ['name', 'email'],
+                11 => ['Ciaran', 'ciaran@example.com'],
+                12 => ['John', 'john@example.com'],
+            ],
+            'Examples',
+            ['tagA', 'tagB'],
+        );
 
         $outline = new OutlineNode('An outline title for <name>', [], $steps, $table, '', 1);
 
@@ -143,12 +158,14 @@ class OutlineNodeTest extends TestCase
                     'getTitle' => '| Ciaran | ciaran@example.com |',
                     'getOutlineTitle' => 'An outline title for <name>',
                     'getExampleText' => '| Ciaran | ciaran@example.com |',
+                    'getTags' => ['tagA', 'tagB'],
                 ],
                 [
                     'getName' => 'An outline title for John #2',
                     'getTitle' => '| John   | john@example.com   |',
                     'getOutlineTitle' => 'An outline title for <name>',
                     'getExampleText' => '| John   | john@example.com   |',
+                    'getTags' => ['tagA', 'tagB'],
                 ],
             ],
             array_map(
@@ -158,6 +175,7 @@ class OutlineNodeTest extends TestCase
                         'getTitle' => $node->getTitle(),
                         'getOutlineTitle' => $node->getOutlineTitle(),
                         'getExampleText' => $node->getExampleText(),
+                        'getTags' => $node->getTags(),
                     ];
                 },
                 $outline->getExamples()
