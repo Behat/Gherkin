@@ -24,7 +24,7 @@ class CachedArrayKeywords extends ArrayKeywords
     /**
      * Initializes holder with file.
      *
-     * @param string $file Cached array path
+     * @param string|null $file Cached array path
      */
     public function __construct($file = null)
     {
