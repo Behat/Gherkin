@@ -18,7 +18,7 @@ class CachedArrayKeywordsTest extends KeywordsTestCase
     protected function getKeywords()
     {
         // Test with the default i18n file provided in this repository
-        return new CachedArrayKeywords();
+        return CachedArrayKeywords::withDefaultKeywords();
     }
 
     protected function getKeywordsArray()

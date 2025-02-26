@@ -19,15 +19,18 @@ namespace Behat\Gherkin\Keywords;
  */
 class CachedArrayKeywords extends ArrayKeywords
 {
-    private const I18N_FILE_LOCATION = __DIR__ . '/../../../../i18n.php';
+    public static function withDefaultKeywords(): self
+    {
+        return new self(__DIR__ . '/../../../../i18n.php');
+    }
 
     /**
      * Initializes holder with file.
      *
      * @param string $file Cached array path
      */
-    public function __construct($file = null)
+    public function __construct($file)
     {
-        parent::__construct(require $file ?? self::I18N_FILE_LOCATION);
+        parent::__construct(require $file);
     }
 }
