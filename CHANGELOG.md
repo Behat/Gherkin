@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.12.0] - 2025-02-26
+
+### Changed
+* Gherkin::VERSION is deprecated and will not be updated, use the composer runtime API if you need to identify the
+  running version. This also changes the value used to namespace cached feature files.
+  by @acoulton in [#279](https://github.com/Behat/Gherkin/pull/279)
+
+### Added
+
+* Provide `CachedArrayKeywords::withDefaultKeywords()` to create an instance without an external dependency on the path
+  to the `i18n.php` file in this repo. **NOTE** that paths to source files will change in the next Gherkin release -
+  use the new constructor to avoid any impact.
+  by @carlos-granados in [#290](https://github.com/Behat/Gherkin/pull/290)
+
+### Internal
+
+* Upgrade to phpunit 10 by @uuf6429 in [#275](https://github.com/Behat/Gherkin/pull/275)
+* Remove redundant files by @uuf6429 in [#278](https://github.com/Behat/Gherkin/pull/278)
+* Update documentation by @uuf6429 in [#274](https://github.com/Behat/Gherkin/pull/274)
+* Adopt PHP CS Fixer and apply code styles by @uuf6429 in [#277](https://github.com/Behat/Gherkin/pull/277)
+* Add PHPStan and improve / fix docblock annotations and type-safety within methods to achieve level 5 by
+  @uuf6429 in [#276](https://github.com/Behat/Gherkin/pull/276), [#281](https://github.com/Behat/Gherkin/pull/281),
+  [#282](https://github.com/Behat/Gherkin/pull/282), and [#287](https://github.com/Behat/Gherkin/pull/287)
+
 # [4.11.0] - 2024-12-06
 
 ### Changed
@@ -420,4 +444,5 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.12.0]: https://github.com/Behat/Gherkin/compare/v4.11.0...v4.12.0
 [4.11.0]: https://github.com/Behat/Gherkin/compare/v4.10.0...v4.11.0
