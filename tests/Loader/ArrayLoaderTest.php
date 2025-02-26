@@ -60,19 +60,19 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(2, $features);
 
-        $this->assertEquals(3, $features[0]->getLine());
-        $this->assertEquals('First feature', $features[0]->getTitle());
+        $this->assertSame(3, $features[0]->getLine());
+        $this->assertSame('First feature', $features[0]->getTitle());
         $this->assertNull($features[0]->getDescription());
         $this->assertNull($features[0]->getFile());
-        $this->assertEquals('en', $features[0]->getLanguage());
-        $this->assertFalse($features[0]->hasTags());
+        $this->assertSame('en', $features[0]->getLanguage());
+        $this->assertSame([], $features[0]->getTags());
 
-        $this->assertEquals(1, $features[1]->getLine());
+        $this->assertSame(1, $features[1]->getLine());
         $this->assertNull($features[1]->getTitle());
-        $this->assertEquals('Second feature description', $features[1]->getDescription());
+        $this->assertSame('Second feature description', $features[1]->getDescription());
         $this->assertNull($features[1]->getFile());
-        $this->assertEquals('ru', $features[1]->getLanguage());
-        $this->assertEquals(['some', 'tags'], $features[1]->getTags());
+        $this->assertSame('ru', $features[1]->getLanguage());
+        $this->assertSame(['some', 'tags'], $features[1]->getTags());
     }
 
     public function testLoadScenarios(): void
@@ -105,19 +105,19 @@ class ArrayLoaderTest extends TestCase
         $this->assertCount(3, $scenarios);
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);
-        $this->assertEquals('First scenario', $scenarios[0]->getTitle());
-        $this->assertFalse($scenarios[0]->hasTags());
-        $this->assertEquals(2, $scenarios[0]->getLine());
+        $this->assertSame('First scenario', $scenarios[0]->getTitle());
+        $this->assertSame([], $scenarios[0]->getTags());
+        $this->assertSame(2, $scenarios[0]->getLine());
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[1]);
         $this->assertNull($scenarios[1]->getTitle());
-        $this->assertEquals(['second', 'scenario', 'tags'], $scenarios[1]->getTags());
-        $this->assertEquals(1, $scenarios[1]->getLine());
+        $this->assertSame(['second', 'scenario', 'tags'], $scenarios[1]->getTags());
+        $this->assertSame(1, $scenarios[1]->getLine());
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[2]);
         $this->assertNull($scenarios[2]->getTitle());
-        $this->assertEquals(['third', 'scenario'], $scenarios[2]->getTags());
-        $this->assertEquals(3, $scenarios[2]->getLine());
+        $this->assertSame(['third', 'scenario'], $scenarios[2]->getTags());
+        $this->assertSame(3, $scenarios[2]->getLine());
     }
 
     public function testLoadOutline(): void
@@ -148,14 +148,14 @@ class ArrayLoaderTest extends TestCase
         $this->assertCount(2, $outlines);
 
         $this->assertInstanceOf(OutlineNode::class, $outlines[0]);
-        $this->assertEquals('First outline', $outlines[0]->getTitle());
-        $this->assertFalse($outlines[0]->hasTags());
-        $this->assertEquals(2, $outlines[0]->getLine());
+        $this->assertSame('First outline', $outlines[0]->getTitle());
+        $this->assertSame([], $outlines[0]->getTags());
+        $this->assertSame(2, $outlines[0]->getLine());
 
         $this->assertInstanceOf(OutlineNode::class, $outlines[1]);
         $this->assertNull($outlines[1]->getTitle());
-        $this->assertEquals(['second', 'outline', 'tags'], $outlines[1]->getTags());
-        $this->assertEquals(1, $outlines[1]->getLine());
+        $this->assertSame(['second', 'outline', 'tags'], $outlines[1]->getTags());
+        $this->assertSame(1, $outlines[1]->getLine());
     }
 
     public function testOutlineExamples(): void
