@@ -19,6 +19,11 @@ namespace Behat\Gherkin\Keywords;
  */
 class CachedArrayKeywords extends ArrayKeywords
 {
+    public static function withDefaultKeywords(): self
+    {
+        return new self(__DIR__ . '/../../i18n.php');
+    }
+
     /**
      * Initializes holder with file.
      *
@@ -26,6 +31,6 @@ class CachedArrayKeywords extends ArrayKeywords
      */
     public function __construct($file)
     {
-        parent::__construct(include $file);
+        parent::__construct(require $file);
     }
 }
