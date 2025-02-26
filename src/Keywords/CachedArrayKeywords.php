@@ -21,7 +21,7 @@ class CachedArrayKeywords extends ArrayKeywords
 {
     public static function withDefaultKeywords(): self
     {
-        return new self(__DIR__ . '/../../../../i18n.php');
+        return new self(__DIR__ . '/../../i18n.php');
     }
 
     /**
