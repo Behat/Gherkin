@@ -61,6 +61,8 @@ class RoleFilter extends SimpleFilter
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return false This filter is designed to work only with features
+     *
+     * @codeCoverageIgnore
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {

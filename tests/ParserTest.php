@@ -10,11 +10,13 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
+use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -80,6 +82,83 @@ class ParserTest extends TestCase
         $scenario = array_shift($scenarios);
 
         $this->assertCount(1, $scenario->getSteps());
+    }
+
+    public function testParsingManyCommentsShouldPass(): void
+    {
+        if (!extension_loaded('xdebug')) {
+            $this->markTestSkipped('xdebug extension must be enabled.');
+        }
+
+        $oldMaxNestingLevel = ini_set('xdebug.max_nesting_level', 256);
+        if ($oldMaxNestingLevel === false) {
+            throw new \RuntimeException('Could not set INI setting value');
+        }
+
+        try {
+            $lineCount = 150; // 119 is the real threshold, higher just in case
+            $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+        } finally {
+            ini_set('xdebug.max_nesting_level', $oldMaxNestingLevel);
+        }
+    }
+
+    #[DataProvider('parserErrorDataProvider')]
+    public function testParserError(string $content, Exception $exception): void
+    {
+        $this->expectExceptionObject($exception);
+
+        $this->getGherkinParser()->parse($content, '/fake.feature');
+    }
+
+    /**
+     * @return iterable<array{content: string, exception: Exception}>
+     */
+    public static function parserErrorDataProvider(): iterable
+    {
+        yield 'missing feature' => [
+            'content' => <<<'FEATURE'
+            Scenario: nope
+            FEATURE,
+            'exception' => new ParserException('Expected Feature, but got Scenario on line: 1 in file: /fake.feature'),
+        ];
+
+        yield 'invalid content encoding' => [
+            'content' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
+            'exception' => new ParserException('Lexer exception "Feature file is not in UTF8 encoding" thrown for file /fake.feature'),
+        ];
+
+        yield 'text content in background' => [
+            'content' => <<<'FEATURE'
+            Feature:
+              Background:
+                Given I do something
+                nope
+            FEATURE,
+            'exception' => new ParserException('Expected Step, but got text: "    nope" in file: /fake.feature'),
+        ];
+
+        yield 'text content in outline' => [
+            'content' => <<<'FEATURE'
+            Feature:
+              Scenario Outline:
+                Given I do something
+                nope
+            FEATURE,
+            'exception' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
+        ];
+
+        yield 'invalid outline examples table' => [
+            'content' => <<<'FEATURE'
+            Feature:
+              Scenario Outline:
+                Given I do something
+                Examples:
+                | aaaa | bbbb |
+                | cccc   cccc |
+            FEATURE,
+            'exception' => new ParserException('Table row \'1\' is expected to have 2 columns, got 1 in file /fake.feature'),
+        ];
     }
 
     protected function getGherkinParser()
@@ -156,24 +235,5 @@ class ParserTest extends TestCase
             __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
             $feature->getLine()
         );
-    }
-
-    public function testParsingManyCommentsShouldPass(): void
-    {
-        if (!extension_loaded('xdebug')) {
-            $this->markTestSkipped('xdebug extension must be enabled.');
-        }
-
-        $oldMaxNestingLevel = ini_set('xdebug.max_nesting_level', 256);
-        if ($oldMaxNestingLevel === false) {
-            throw new \RuntimeException('Could not set INI setting value');
-        }
-
-        try {
-            $lineCount = 150; // 119 is the real threshold, higher just in case
-            $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
-        } finally {
-            ini_set('xdebug.max_nesting_level', $oldMaxNestingLevel);
-        }
     }
 }

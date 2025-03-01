@@ -95,10 +95,12 @@ class Parser
             }
 
             if ($feature && $node instanceof FeatureNode) {
+                // @codeCoverageIgnoreStart
                 throw new ParserException(sprintf(
                     'Only one feature is allowed per feature file. But %s got multiple.',
                     $this->file
                 ));
+                // @codeCoverageIgnoreEnd
             }
 
             if (is_string($node)) {
@@ -319,14 +321,16 @@ class Parser
                 continue;
             }
 
-            if (count($steps) === 0 && is_string($node)) {
+            if ($steps === [] && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
             }
 
             if ($node === "\n") {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
 
             if (is_string($node)) {
@@ -337,12 +341,14 @@ class Parser
                 ));
             }
 
+            // @codeCoverageIgnoreStart
             throw new ParserException(sprintf(
                 'Expected Step, but got %s on line: %d%s',
                 $node->getNodeType(),
                 $node->getLine(),
                 $this->file ? ' in file: ' . $this->file : ''
             ));
+            // @codeCoverageIgnoreEnd
         }
 
         return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
@@ -376,14 +382,16 @@ class Parser
                 continue;
             }
 
-            if (count($steps) === 0 && is_string($node)) {
+            if ($steps === [] && is_string($node)) {
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
             }
 
             if ($node === "\n") {
+                // @codeCoverageIgnoreStart
                 continue;
+                // @codeCoverageIgnoreEnd
             }
 
             if (is_string($node)) {
@@ -394,12 +402,14 @@ class Parser
                 ));
             }
 
+            // @codeCoverageIgnoreStart
             throw new ParserException(sprintf(
                 'Expected Step, but got %s on line: %d%s',
                 $node->getNodeType(),
                 $node->getLine(),
                 $this->file ? ' in file: ' . $this->file : ''
             ));
+            // @codeCoverageIgnoreEnd
         }
 
         array_pop($this->passedNodesStack);
@@ -468,12 +478,14 @@ class Parser
                 ));
             }
 
+            // @codeCoverageIgnoreStart
             throw new ParserException(sprintf(
                 'Expected Step or Examples table, but got %s on line: %d%s',
                 $node->getNodeType(),
                 $node->getLine(),
                 $this->file ? ' in file: ' . $this->file : ''
             ));
+            // @codeCoverageIgnoreEnd
         }
 
         if (count($examples) === 0) {

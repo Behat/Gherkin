@@ -63,6 +63,14 @@ class NameFilterTest extends TestCase
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
+    public function testUntitledFeatureDoesNotMatch(): void
+    {
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
+        $filter = new NameFilter('');
+
+        $this->assertFalse($filter->isFeatureMatch($feature));
+    }
+
     public function testIsScenarioMatchFilter(): void
     {
         $filter = new NameFilter('scenario1');
@@ -84,5 +92,13 @@ class NameFilterTest extends TestCase
 
         $filter = new NameFilter('/scen.rio/');
         $this->assertTrue($filter->isScenarioMatch($scenario));
+    }
+
+    public function testUntitledScenarioDoesNotMatch(): void
+    {
+        $scenario = new ScenarioNode(null, [], [], '', 1);
+        $filter = new NameFilter('');
+
+        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }
