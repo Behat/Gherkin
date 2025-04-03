@@ -19,7 +19,6 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class ParserTest extends TestCase
@@ -111,15 +110,15 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @return iterable<array{expectedException: Exception, featureTextOrTokens: string|list<array<string, mixed>>}>
+     * @return iterable<array{expectedException: Exception, featureText: string|list<array<string, mixed>>}>
      */
     public static function parserErrorDataProvider(): iterable
     {
         yield 'missing feature' => [
             'expectedException' => new ParserException('Expected Feature, but got Scenario on line: 1 in file: /fake.feature'),
             'featureText' => <<<'FEATURE'
-                Scenario: nope
-                FEATURE,
+            Scenario: nope
+            FEATURE,
         ];
 
         yield 'invalid content encoding' => [
@@ -130,33 +129,33 @@ final class ParserTest extends TestCase
         yield 'text content in background' => [
             'expectedException' => new ParserException('Expected Step, but got text: "    nope" in file: /fake.feature'),
             'featureText' => <<<'FEATURE'
-                Feature:
-                  Background:
-                    Given I do something
-                    nope
-                FEATURE,
+            Feature:
+              Background:
+                Given I do something
+                nope
+            FEATURE,
         ];
 
         yield 'text content in outline' => [
             'expectedException' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
             'featureText' => <<<'FEATURE'
-                Feature:
-                  Scenario Outline:
-                    Given I do something
-                    nope
-                FEATURE,
+            Feature:
+              Scenario Outline:
+                Given I do something
+                nope
+            FEATURE,
         ];
 
         yield 'invalid outline examples table' => [
             'expectedException' => new ParserException('Table row \'1\' is expected to have 2 columns, got 1 in file /fake.feature'),
             'featureText' => <<<'FEATURE'
-                Feature:
-                  Scenario Outline:
-                    Given I do something
-                    Examples:
-                    | aaaa | bbbb |
-                    | cccc   cccc |
-                FEATURE,
+            Feature:
+              Scenario Outline:
+                Given I do something
+                Examples:
+                | aaaa | bbbb |
+                | cccc   cccc |
+            FEATURE,
         ];
     }
 
