@@ -102,18 +102,12 @@ final class ParserTest extends TestCase
         }
     }
 
-    /**
-     * @param string|list<array<string, mixed>> $featureTextOrTokens
-     */
     #[DataProvider('parserErrorDataProvider')]
-    public function testParserError(Exception $expectedException, string|array $featureTextOrTokens): void
+    public function testParserError(Exception $expectedException, string $featureText): void
     {
-        $lexer = is_array($featureTextOrTokens) ? $this->createMockLexer($featureTextOrTokens) : null;
-        $content = is_string($featureTextOrTokens) ? $featureTextOrTokens : '';
-
         $this->expectExceptionObject($expectedException);
 
-        $this->createGherkinParser($lexer)->parse($content, '/fake.feature');
+        $this->createGherkinParser()->parse($featureText, '/fake.feature');
     }
 
     /**
@@ -123,19 +117,19 @@ final class ParserTest extends TestCase
     {
         yield 'missing feature' => [
             'expectedException' => new ParserException('Expected Feature, but got Scenario on line: 1 in file: /fake.feature'),
-            'featureTextOrTokens' => <<<'FEATURE'
+            'featureText' => <<<'FEATURE'
                 Scenario: nope
                 FEATURE,
         ];
 
         yield 'invalid content encoding' => [
             'expectedException' => new ParserException('Lexer exception "Feature file is not in UTF8 encoding" thrown for file /fake.feature'),
-            'featureTextOrTokens' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
+            'featureText' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
         ];
 
         yield 'text content in background' => [
             'expectedException' => new ParserException('Expected Step, but got text: "    nope" in file: /fake.feature'),
-            'featureTextOrTokens' => <<<'FEATURE'
+            'featureText' => <<<'FEATURE'
                 Feature:
                   Background:
                     Given I do something
@@ -145,7 +139,7 @@ final class ParserTest extends TestCase
 
         yield 'text content in outline' => [
             'expectedException' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
-            'featureTextOrTokens' => <<<'FEATURE'
+            'featureText' => <<<'FEATURE'
                 Feature:
                   Scenario Outline:
                     Given I do something
@@ -155,7 +149,7 @@ final class ParserTest extends TestCase
 
         yield 'invalid outline examples table' => [
             'expectedException' => new ParserException('Table row \'1\' is expected to have 2 columns, got 1 in file /fake.feature'),
-            'featureTextOrTokens' => <<<'FEATURE'
+            'featureText' => <<<'FEATURE'
                 Feature:
                   Scenario Outline:
                     Given I do something
@@ -241,20 +235,5 @@ final class ParserTest extends TestCase
             __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
             $feature->getLine()
         );
-    }
-
-    /**
-     * @param list<array<string, mixed>> $featureTokens
-     */
-    private function createMockLexer(array $featureTokens): MockObject&Lexer
-    {
-        $lexer = $this->getMockBuilder(Lexer::class)
-            ->onlyMethods(['getNextToken'])
-            ->enableOriginalConstructor()
-            ->setConstructorArgs([$this->createKeywords()])
-            ->getMock();
-        $lexer->method('getNextToken')->willReturnOnConsecutiveCalls(...$featureTokens);
-
-        return $lexer;
     }
 }
