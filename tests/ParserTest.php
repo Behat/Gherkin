@@ -243,6 +243,9 @@ final class ParserTest extends TestCase
         );
     }
 
+    /**
+     * @param list<array<string, mixed>> $featureTokens
+     */
     private function createMockLexer(array $featureTokens): MockObject&Lexer
     {
         $lexer = $this->getMockBuilder(Lexer::class)
