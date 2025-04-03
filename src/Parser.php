@@ -95,12 +95,10 @@ class Parser
             }
 
             if ($feature && $node instanceof FeatureNode) {
-                // @codeCoverageIgnoreStart
                 throw new ParserException(sprintf(
                     'Only one feature is allowed per feature file. But %s got multiple.',
                     $this->file
                 ));
-                // @codeCoverageIgnoreEnd
             }
 
             if (is_string($node)) {

@@ -12,19 +12,18 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class ParserTest extends TestCase
+final class ParserTest extends TestCase
 {
-    private Parser $gherkin;
-    private YamlFileLoader $yaml;
-
     /**
      * @return iterable<string, array{fixtureName: string}>
      */
@@ -47,7 +46,7 @@ class ParserTest extends TestCase
 
     public function testParserResetsTagsBetweenFeatures(): void
     {
-        $parser = $this->getGherkinParser();
+        $parser = $this->createGherkinParser();
 
         $parser->parse(
             <<<'FEATURE'
@@ -70,7 +69,7 @@ class ParserTest extends TestCase
 
     public function testSingleCharacterStepSupport(): void
     {
-        $feature = $this->getGherkinParser()->parse(
+        $feature = $this->createGherkinParser()->parse(
             <<<'FEATURE'
             Feature:
             Scenario:
@@ -97,131 +96,138 @@ class ParserTest extends TestCase
 
         try {
             $lineCount = 150; // 119 is the real threshold, higher just in case
-            $this->assertNull($this->getGherkinParser()->parse(str_repeat("# \n", $lineCount)));
+            $this->assertNull($this->createGherkinParser()->parse(str_repeat("# \n", $lineCount)));
         } finally {
             ini_set('xdebug.max_nesting_level', $oldMaxNestingLevel);
         }
     }
 
+    /**
+     * @param string|list<array<string, mixed>> $featureTextOrTokens
+     */
     #[DataProvider('parserErrorDataProvider')]
-    public function testParserError(string $content, Exception $exception): void
+    public function testParserError(Exception $expectedException, string|array $featureTextOrTokens): void
     {
-        $this->expectExceptionObject($exception);
+        $lexer = is_array($featureTextOrTokens) ? $this->createMockLexer($featureTextOrTokens) : null;
+        $content = is_string($featureTextOrTokens) ? $featureTextOrTokens : '';
 
-        $this->getGherkinParser()->parse($content, '/fake.feature');
+        $this->expectExceptionObject($expectedException);
+
+        $this->createGherkinParser($lexer)->parse($content, '/fake.feature');
     }
 
     /**
-     * @return iterable<array{content: string, exception: Exception}>
+     * @return iterable<array{expectedException: Exception, featureTextOrTokens: string|list<array<string, mixed>>}>
      */
     public static function parserErrorDataProvider(): iterable
     {
         yield 'missing feature' => [
-            'content' => <<<'FEATURE'
-            Scenario: nope
-            FEATURE,
-            'exception' => new ParserException('Expected Feature, but got Scenario on line: 1 in file: /fake.feature'),
+            'expectedException' => new ParserException('Expected Feature, but got Scenario on line: 1 in file: /fake.feature'),
+            'featureTextOrTokens' => <<<'FEATURE'
+                Scenario: nope
+                FEATURE,
         ];
 
         yield 'invalid content encoding' => [
-            'content' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
-            'exception' => new ParserException('Lexer exception "Feature file is not in UTF8 encoding" thrown for file /fake.feature'),
+            'expectedException' => new ParserException('Lexer exception "Feature file is not in UTF8 encoding" thrown for file /fake.feature'),
+            'featureTextOrTokens' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
         ];
 
         yield 'text content in background' => [
-            'content' => <<<'FEATURE'
-            Feature:
-              Background:
-                Given I do something
-                nope
-            FEATURE,
-            'exception' => new ParserException('Expected Step, but got text: "    nope" in file: /fake.feature'),
+            'expectedException' => new ParserException('Expected Step, but got text: "    nope" in file: /fake.feature'),
+            'featureTextOrTokens' => <<<'FEATURE'
+                Feature:
+                  Background:
+                    Given I do something
+                    nope
+                FEATURE,
         ];
 
         yield 'text content in outline' => [
-            'content' => <<<'FEATURE'
-            Feature:
-              Scenario Outline:
-                Given I do something
-                nope
-            FEATURE,
-            'exception' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
+            'expectedException' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
+            'featureTextOrTokens' => <<<'FEATURE'
+                Feature:
+                  Scenario Outline:
+                    Given I do something
+                    nope
+                FEATURE,
         ];
 
         yield 'invalid outline examples table' => [
-            'content' => <<<'FEATURE'
-            Feature:
-              Scenario Outline:
-                Given I do something
-                Examples:
-                | aaaa | bbbb |
-                | cccc   cccc |
-            FEATURE,
-            'exception' => new ParserException('Table row \'1\' is expected to have 2 columns, got 1 in file /fake.feature'),
+            'expectedException' => new ParserException('Table row \'1\' is expected to have 2 columns, got 1 in file /fake.feature'),
+            'featureTextOrTokens' => <<<'FEATURE'
+                Feature:
+                  Scenario Outline:
+                    Given I do something
+                    Examples:
+                    | aaaa | bbbb |
+                    | cccc   cccc |
+                FEATURE,
         ];
     }
 
-    protected function getGherkinParser()
+    private function createGherkinParser(?Lexer $lexer = null): Parser
     {
-        return $this->gherkin ??= new Parser(
-            new Lexer(
-                new ArrayKeywords([
-                    'en' => [
-                        'feature' => 'Feature',
-                        'background' => 'Background',
-                        'scenario' => 'Scenario',
-                        'scenario_outline' => 'Scenario Outline',
-                        'examples' => 'Examples',
-                        'given' => 'Given',
-                        'when' => 'When',
-                        'then' => 'Then',
-                        'and' => 'And',
-                        'but' => 'But',
-                    ],
-                    'ru' => [
-                        'feature' => 'Функционал',
-                        'background' => 'Предыстория',
-                        'scenario' => 'Сценарий',
-                        'scenario_outline' => 'Структура сценария',
-                        'examples' => 'Примеры',
-                        'given' => 'Допустим',
-                        'when' => 'То',
-                        'then' => 'Если',
-                        'and' => 'И',
-                        'but' => 'Но',
-                    ],
-                    'ja' => [
-                        'feature' => 'フィーチャ',
-                        'background' => '背景',
-                        'scenario' => 'シナリオ',
-                        'scenario_outline' => 'シナリオアウトライン',
-                        'examples' => '例|サンプル',
-                        'given' => '前提<',
-                        'when' => 'もし<',
-                        'then' => 'ならば<',
-                        'and' => 'かつ<',
-                        'but' => 'しかし<',
-                    ],
-                ])
-            )
-        );
+        return new Parser($lexer ?? new Lexer($this->createKeywords()));
     }
 
-    protected function getYamlParser(): YamlFileLoader
+    private function createKeywords(): KeywordsInterface
     {
-        return $this->yaml ??= new YamlFileLoader();
+        return new ArrayKeywords([
+            'en' => [
+                'feature' => 'Feature',
+                'background' => 'Background',
+                'scenario' => 'Scenario',
+                'scenario_outline' => 'Scenario Outline',
+                'examples' => 'Examples',
+                'given' => 'Given',
+                'when' => 'When',
+                'then' => 'Then',
+                'and' => 'And',
+                'but' => 'But',
+            ],
+            'ru' => [
+                'feature' => 'Функционал',
+                'background' => 'Предыстория',
+                'scenario' => 'Сценарий',
+                'scenario_outline' => 'Структура сценария',
+                'examples' => 'Примеры',
+                'given' => 'Допустим',
+                'when' => 'То',
+                'then' => 'Если',
+                'and' => 'И',
+                'but' => 'Но',
+            ],
+            'ja' => [
+                'feature' => 'フィーチャ',
+                'background' => '背景',
+                'scenario' => 'シナリオ',
+                'scenario_outline' => 'シナリオアウトライン',
+                'examples' => '例|サンプル',
+                'given' => '前提<',
+                'when' => 'もし<',
+                'then' => 'ならば<',
+                'and' => 'かつ<',
+                'but' => 'しかし<',
+            ],
+        ]);
     }
 
-    protected function parseFixture(string $fixture): ?FeatureNode
+    private function createYamlParser(): YamlFileLoader
+    {
+        return new YamlFileLoader();
+    }
+
+    private function parseFixture(string $fixture): ?FeatureNode
     {
         $file = __DIR__ . '/Fixtures/features/' . $fixture;
 
-        return $this->getGherkinParser()->parse(file_get_contents($file), $file);
+        return $this->createGherkinParser()->parse(file_get_contents($file), $file);
     }
 
-    protected function parseEtalon($etalon): FeatureNode
+    private function parseEtalon($etalon): FeatureNode
     {
-        $features = $this->getYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
+        $features = $this->createYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
         $feature = $features[0];
 
         return new FeatureNode(
@@ -235,5 +241,17 @@ class ParserTest extends TestCase
             __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
             $feature->getLine()
         );
+    }
+
+    private function createMockLexer(array $featureTokens): MockObject&Lexer
+    {
+        $lexer = $this->getMockBuilder(Lexer::class)
+            ->onlyMethods(['getNextToken'])
+            ->enableOriginalConstructor()
+            ->setConstructorArgs([$this->createKeywords()])
+            ->getMock();
+        $lexer->method('getNextToken')->willReturnOnConsecutiveCalls(...$featureTokens);
+
+        return $lexer;
     }
 }
