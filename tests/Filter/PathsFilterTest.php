@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\PathsFilter;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 class PathsFilterTest extends FilterTestCase
 {
@@ -65,5 +66,14 @@ class PathsFilterTest extends FilterTestCase
 
         $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));
+    }
+
+    public function testIsScenarioMatchFilter(): void
+    {
+        $scenario = new ScenarioNode(null, [], [], '', 1);
+
+        $filter = new PathsFilter([__DIR__]);
+
+        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }

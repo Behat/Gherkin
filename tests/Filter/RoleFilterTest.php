@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\RoleFilter;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 class RoleFilterTest extends FilterTestCase
 {
@@ -80,5 +81,14 @@ class RoleFilterTest extends FilterTestCase
         $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
         $filter = new RoleFilter('American User');
         $this->assertFalse($filter->isFeatureMatch($feature));
+    }
+
+    public function testIsScenarioMatchFilter(): void
+    {
+        $scenario = new ScenarioNode(null, [], [], '', 1);
+
+        $filter = new RoleFilter('user');
+
+        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }
