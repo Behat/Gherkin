@@ -13,6 +13,7 @@ namespace Behat\Gherkin;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Exception\UnexpectedParserNodeException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -325,28 +326,7 @@ class Parser
                 continue;
             }
 
-            if ($node === "\n") {
-                // @codeCoverageIgnoreStart
-                continue;
-                // @codeCoverageIgnoreEnd
-            }
-
-            if (is_string($node)) {
-                throw new ParserException(sprintf(
-                    'Expected Step, but got text: "%s"%s',
-                    $node,
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            // @codeCoverageIgnoreStart
-            throw new ParserException(sprintf(
-                'Expected Step, but got %s on line: %d%s',
-                $node->getNodeType(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-            // @codeCoverageIgnoreEnd
+            throw new UnexpectedParserNodeException('Step', $node, $this->file);
         }
 
         return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
@@ -387,27 +367,10 @@ class Parser
             }
 
             if ($node === "\n") {
-                // @codeCoverageIgnoreStart
                 continue;
-                // @codeCoverageIgnoreEnd
             }
 
-            if (is_string($node)) {
-                throw new ParserException(sprintf(
-                    'Expected Step, but got text: "%s"%s',
-                    $node,
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            // @codeCoverageIgnoreStart
-            throw new ParserException(sprintf(
-                'Expected Step, but got %s on line: %d%s',
-                $node->getNodeType(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-            // @codeCoverageIgnoreEnd
+            throw new UnexpectedParserNodeException('Step', $node, $this->file);
         }
 
         array_pop($this->passedNodesStack);
@@ -468,22 +431,7 @@ class Parser
                 continue;
             }
 
-            if (is_string($node)) {
-                throw new ParserException(sprintf(
-                    'Expected Step or Examples table, but got text: "%s"%s',
-                    $node,
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            // @codeCoverageIgnoreStart
-            throw new ParserException(sprintf(
-                'Expected Step or Examples table, but got %s on line: %d%s',
-                $node->getNodeType(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-            // @codeCoverageIgnoreEnd
+            throw new UnexpectedParserNodeException('Step or Examples table', $node, $this->file);
         }
 
         if (count($examples) === 0) {
