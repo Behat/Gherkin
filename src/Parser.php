@@ -326,6 +326,10 @@ class Parser
                 continue;
             }
 
+            if ($node === "\n") {
+                continue;
+            }
+
             throw new UnexpectedParserNodeException('Step', $node, $this->file);
         }
 
