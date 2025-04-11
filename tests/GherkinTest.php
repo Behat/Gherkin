@@ -15,8 +15,10 @@ use Behat\Gherkin\Filter\NameFilter;
 use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Loader\GherkinFileLoader;
+use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -166,6 +168,70 @@ class GherkinTest extends TestCase
             ->willReturn(null);
 
         $gherkin->setBasePath('/base/path');
+    }
+
+    /**
+     * @param list<FeatureNode> $features
+     * @param list<FeatureNode> $expectedFeatures
+     */
+    #[DataProvider('resourceLineFilterDataProvider')]
+    public function testResourceLineFilter(string $resource, array $features, string $expectedResource, array $expectedFeatures): void
+    {
+        $gherkin = new Gherkin();
+        $loader = $this->createMock(LoaderInterface::class);
+        $gherkin->addLoader($loader);
+
+        $loader
+            ->expects($this->once())
+            ->method('supports')
+            ->with($this->identicalTo($expectedResource))
+            ->willReturn(true);
+        $loader
+            ->expects($this->once())
+            ->method('load')
+            ->with($this->identicalTo($expectedResource))
+            ->willReturn($features);
+
+        $this->assertEquals($expectedFeatures, $gherkin->load($resource));
+    }
+
+    public static function resourceLineFilterDataProvider(): iterable
+    {
+        // For this test, let's assume that each feature takes up 3 lines
+        $features = [
+            $feature1 = new FeatureNode(null, null, [], null, [], '', '', null, 1),
+            $feature2 = new FeatureNode(null, null, [], null, [], '', '', null, 4),
+            $feature3 = new FeatureNode(null, null, [], null, [], '', '', null, 7),
+            $feature4 = new FeatureNode(null, null, [], null, [], '', '', null, 10),
+        ];
+
+        yield 'single line' => [
+            'resource' => 'example1.feature:4',
+            'features' => $features,
+            'expectedResource' => 'example1.feature',
+            'expectedFeatures' => [$feature2],
+        ];
+
+        yield 'multiple lines, finite range' => [
+            'resource' => 'example2.feature:4-8',
+            'features' => $features,
+            'expectedResource' => 'example2.feature',
+            'expectedFeatures' => [$feature2, $feature3],
+        ];
+
+        yield 'multiple lines, open-ended' => [
+            'resource' => 'example3.feature:4-*',
+            'features' => $features,
+            'expectedResource' => 'example3.feature',
+            'expectedFeatures' => [$feature2, $feature3, $feature4],
+        ];
+
+        yield 'all lines (no filter)' => [
+            'resource' => 'example4.feature',
+            'features' => $features,
+            'expectedResource' => 'example4.feature',
+            'expectedFeatures' => [$feature1, $feature2, $feature3, $feature4],
+        ];
     }
 
     protected function getLoaderMock(): MockObject&GherkinFileLoader

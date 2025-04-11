@@ -60,3 +60,7 @@ Feature: Tag samples
     # comment after tag
     Scenario: another scenario with tag and then comment
         Given this scenario has a tag and comment
+
+    @sample_13 # comment after tag on same line
+    Scenario: another scenario with tag and then comment, but on same line
+        Given this scenario has a tag and comment

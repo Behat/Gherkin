@@ -20,6 +20,9 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class RoleFilter extends SimpleFilter
 {
+    /**
+     * @var string
+     */
     protected $pattern;
 
     /**
@@ -43,27 +46,14 @@ class RoleFilter extends SimpleFilter
         );
     }
 
-    /**
-     * Checks if Feature matches specified filter.
-     *
-     * @param FeatureNode $feature Feature instance
-     *
-     * @return bool
-     */
     public function isFeatureMatch(FeatureNode $feature)
     {
         return (bool) preg_match($this->pattern, $feature->getDescription() ?? '');
     }
 
-    /**
-     * Checks if scenario or outline matches specified filter.
-     *
-     * @param ScenarioInterface $scenario Scenario or Outline node instance
-     *
-     * @return false This filter is designed to work only with features
-     */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
+        // This filter does not apply to scenarios.
         return false;
     }
 }

@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\NarrativeFilter;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 class NarrativeFilterTest extends FilterTestCase
 {
@@ -38,5 +39,14 @@ class NarrativeFilterTest extends FilterTestCase
 
         $filter = new NarrativeFilter('/user$/');
         $this->assertFalse($filter->isFeatureMatch($feature));
+    }
+
+    public function testIsScenarioMatchFilter(): void
+    {
+        $scenario = new ScenarioNode(null, [], [], '', 1);
+
+        $filter = new NarrativeFilter('user');
+
+        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }
