@@ -73,7 +73,7 @@ class FileCacheTest extends TestCase
             'broken_feature',
             new FeatureNode(null, null, [], null, [], '', '', null, 1),
         );
-        $files = glob($this->path . '/**/*.feature.cache');
+        $files = glob($this->path . '/**/*.feature.cache') ?: [];
         $this->assertCount(1, $files, 'Cache should have written a single file');
 
         // Now simulate the file being corrupted and attempt to read it

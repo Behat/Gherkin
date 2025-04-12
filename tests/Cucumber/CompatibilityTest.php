@@ -15,7 +15,6 @@ use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -23,6 +22,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
+use Tests\Behat\Gherkin\FileReaderTrait;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -31,8 +31,13 @@ use SplFileInfo;
  */
 class CompatibilityTest extends TestCase
 {
+    use FileReaderTrait;
+
     public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/cucumber/gherkin/testdata';
 
+    /**
+     * @var array<string, string>
+     */
     private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
         'rule.feature' => 'Rule keyword not supported',
@@ -50,10 +55,16 @@ class CompatibilityTest extends TestCase
         'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
     ];
 
+    /**
+     * @var array<string, string>
+     */
     private array $parsedButShouldNotBe = [
         'invalid_language.feature' => 'Invalid language is silently ignored',
     ];
 
+    /**
+     * @var array<string, string>
+     */
     private array $deprecatedInsteadOfParseError = [
         'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
     ];
@@ -79,14 +90,14 @@ class CompatibilityTest extends TestCase
 
         $gherkinFile = $file->getPathname();
 
-        $actual = $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
+        $actual = $this->parser->parse(self::readFile($gherkinFile), $gherkinFile);
         $cucumberFeatures = $this->loader->load($gherkinFile . '.ast.ndjson');
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
         $this->assertEquals(
             $this->normaliseFeature($expected),
             $this->normaliseFeature($actual),
-            file_get_contents($gherkinFile)
+            self::readFile($gherkinFile)
         );
     }
 
@@ -103,7 +114,7 @@ class CompatibilityTest extends TestCase
             $this->expectException(ParserException::class);
         }
         $gherkinFile = $file->getPathname();
-        $this->parser->parse(file_get_contents($gherkinFile), $gherkinFile);
+        $this->parser->parse(self::readFile($gherkinFile), $gherkinFile);
     }
 
     /**
@@ -127,7 +138,11 @@ class CompatibilityTest extends TestCase
      */
     private static function getCucumberFeatures(string $folder): iterable
     {
-        foreach (new FilesystemIterator(self::TESTDATA_PATH . $folder) as $file) {
+        $fileIterator = new FilesystemIterator(self::TESTDATA_PATH . $folder);
+        /**
+         * @var iterable<string, SplFileInfo> $fileIterator
+         */
+        foreach ($fileIterator as $file) {
             if ($file->isFile() && $file->getExtension() === 'feature') {
                 yield $file->getFilename() => ['file' => $file];
             }
@@ -144,17 +159,10 @@ class CompatibilityTest extends TestCase
         }
 
         foreach ($featureNode->getScenarios() as $scenarioNode) {
-            $steps = array_map(
-                function (StepNode $step) {
-                    $this->setPrivateProperty($step, 'keywordType', '');
-                    $this->setPrivateProperty($step, 'arguments', []);
-
-                    return $step;
-                },
-                $scenarioNode->getSteps()
-            );
-
-            $this->setPrivateProperty($scenarioNode, 'steps', $steps);
+            foreach ($scenarioNode->getSteps() as $step) {
+                $this->setPrivateProperty($step, 'keywordType', '');
+                $this->setPrivateProperty($step, 'arguments', []);
+            }
         }
 
         return $featureNode;

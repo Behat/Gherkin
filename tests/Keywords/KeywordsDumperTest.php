@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class KeywordsDumperTest extends TestCase
 {
-    private $keywords;
+    private ArrayKeywords $keywords;
 
     protected function setUp(): void
     {
@@ -48,7 +48,7 @@ class KeywordsDumperTest extends TestCase
         ]);
     }
 
-    public function testEnKeywordsDumper()
+    public function testEnKeywordsDumper(): void
     {
         $dumper = new KeywordsDumper($this->keywords);
 
@@ -85,7 +85,7 @@ class KeywordsDumperTest extends TestCase
         $this->assertEquals($etalon, $dumped);
     }
 
-    public function testRuKeywordsDumper()
+    public function testRuKeywordsDumper(): void
     {
         $dumper = new KeywordsDumper($this->keywords);
 
@@ -123,7 +123,7 @@ class KeywordsDumperTest extends TestCase
         $this->assertEquals($etalon, $dumped);
     }
 
-    public function testRuKeywordsCustomKeywordsDumper()
+    public function testRuKeywordsCustomKeywordsDumper(): void
     {
         $dumper = new KeywordsDumper($this->keywords);
         $dumper->setKeywordsDumperFunction(function ($keywords) {
@@ -164,7 +164,7 @@ class KeywordsDumperTest extends TestCase
         $this->assertEquals($etalon, $dumped);
     }
 
-    public function testExtendedVersionDumper()
+    public function testExtendedVersionDumper(): void
     {
         $dumper = new KeywordsDumper($this->keywords);
 

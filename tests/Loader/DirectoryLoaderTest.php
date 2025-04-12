@@ -10,42 +10,41 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Loader\DirectoryLoader;
+use Behat\Gherkin\Loader\GherkinFileLoader;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DirectoryLoaderTest extends TestCase
 {
-    private $gherkin;
-    private $loader;
-    private $featuresPath;
+    private MockObject&Gherkin $gherkin;
+    private DirectoryLoader $loader;
+    private string $featuresPath;
 
     protected function setUp(): void
     {
         $this->gherkin = $this->createGherkinMock();
         $this->loader = new DirectoryLoader($this->gherkin);
 
-        $this->featuresPath = realpath(__DIR__ . '/../Fixtures/directories');
+        $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/directories');
     }
 
-    protected function createGherkinMock()
+    protected function createGherkinMock(): MockObject&Gherkin
     {
-        $gherkin = $this->getMockBuilder('Behat\Gherkin\Gherkin')
+        return $this->getMockBuilder(Gherkin::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        return $gherkin;
     }
 
-    protected function createGherkinFileLoaderMock()
+    protected function createGherkinFileLoaderMock(): MockObject&GherkinFileLoader
     {
-        $loader = $this->getMockBuilder('Behat\Gherkin\Loader\GherkinFileLoader')
+        return $this->getMockBuilder(GherkinFileLoader::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        return $loader;
     }
 
-    public function testSupports()
+    public function testSupports(): void
     {
         $this->assertFalse($this->loader->supports('non-existent path'));
         $this->assertFalse($this->loader->supports('non-existent path:2'));
@@ -56,31 +55,31 @@ class DirectoryLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/features'));
     }
 
-    public function testUndefinedFileLoad()
+    public function testUndefinedFileLoad(): void
     {
         $this->gherkin
             ->expects($this->once())
             ->method('resolveLoader')
             ->with($this->featuresPath . DIRECTORY_SEPARATOR . 'phps' . DIRECTORY_SEPARATOR . 'some_file.php')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
 
         $this->assertEquals([], $this->loader->load($this->featuresPath . '/phps'));
     }
 
-    public function testBasePath()
+    public function testBasePath(): void
     {
         $this->gherkin
             ->expects($this->once())
             ->method('resolveLoader')
             ->with($this->featuresPath . DIRECTORY_SEPARATOR . 'phps' . DIRECTORY_SEPARATOR . 'some_file.php')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
 
         $this->loader->setBasePath($this->featuresPath);
 
         $this->assertEquals([], $this->loader->load('phps'));
     }
 
-    public function testDefinedFileLoad()
+    public function testDefinedFileLoad(): void
     {
         $loaderMock = $this->createGherkinFileLoaderMock();
 
@@ -88,13 +87,13 @@ class DirectoryLoaderTest extends TestCase
             ->expects($this->once())
             ->method('resolveLoader')
             ->with($this->featuresPath . DIRECTORY_SEPARATOR . 'phps' . DIRECTORY_SEPARATOR . 'some_file.php')
-            ->will($this->returnValue($loaderMock));
+            ->willReturn($loaderMock);
 
         $loaderMock
             ->expects($this->once())
             ->method('load')
             ->with($this->featuresPath . DIRECTORY_SEPARATOR . 'phps' . DIRECTORY_SEPARATOR . 'some_file.php')
-            ->will($this->returnValue(['feature1', 'feature2']));
+            ->willReturn(['feature1', 'feature2']);
 
         $this->assertEquals(['feature1', 'feature2'], $this->loader->load($this->featuresPath . '/phps'));
     }

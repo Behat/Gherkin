@@ -11,29 +11,43 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\KeywordsDumper;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
-use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @phpstan-import-type TMultiLanguageKeywords from KeywordsInterface
+ */
 abstract class KeywordsTestCase extends TestCase
 {
-    abstract protected function getKeywords();
+    abstract protected static function getKeywords(): KeywordsInterface;
 
-    abstract protected function getKeywordsArray();
+    /**
+     * @phpstan-return TMultiLanguageKeywords
+     */
+    abstract protected static function getKeywordsArray(): array;
 
-    abstract protected function getSteps($keywords, $text, &$line, $keywordType);
+    /**
+     * @return list<StepNode>
+     */
+    abstract protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array;
 
-    public function translationTestDataProvider(): array
+    /**
+     * @return iterable<string, array{language: string, num: int, etalon: FeatureNode, source: string}>
+     */
+    public static function translationTestDataProvider(): iterable
     {
-        $keywords = $this->getKeywords();
+        $keywords = static::getKeywords();
         $dumper = new KeywordsDumper($keywords);
-        $keywordsArray = $this->getKeywordsArray();
+        $keywordsArray = static::getKeywordsArray();
 
         // Remove languages with repeated keywords
         unset($keywordsArray['en-old'], $keywordsArray['uz'], $keywordsArray['ne']);
@@ -54,8 +68,8 @@ abstract class KeywordsTestCase extends TestCase
                 $backgroundLine = $line;
                 ++$line;
                 $background = new BackgroundNode(null, array_merge(
-                    $this->getSteps($i18nKeywords['given'], 'there is agent A', $line, 'Given'),
-                    $this->getSteps($i18nKeywords['and'], 'there is agent B', $line, 'Given')
+                    static::getSteps($i18nKeywords['given'], 'there is agent A', $line, 'Given'),
+                    static::getSteps($i18nKeywords['and'], 'there is agent B', $line, 'Given')
                 ), $keywords[0], $backgroundLine);
 
                 ++$line;
@@ -67,11 +81,11 @@ abstract class KeywordsTestCase extends TestCase
                     ++$line;
 
                     $steps = array_merge(
-                        $this->getSteps($i18nKeywords['given'], 'there is agent J', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['and'], 'there is agent K', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['when'], 'I erase agent K\'s memory', $line, 'When'),
-                        $this->getSteps($i18nKeywords['then'], 'there should be agent J', $line, 'Then'),
-                        $this->getSteps($i18nKeywords['but'], 'there should not be agent K', $line, 'Then')
+                        static::getSteps($i18nKeywords['given'], 'there is agent J', $line, 'Given'),
+                        static::getSteps($i18nKeywords['and'], 'there is agent K', $line, 'Given'),
+                        static::getSteps($i18nKeywords['when'], 'I erase agent K\'s memory', $line, 'When'),
+                        static::getSteps($i18nKeywords['then'], 'there should be agent J', $line, 'Then'),
+                        static::getSteps($i18nKeywords['but'], 'there should not be agent K', $line, 'Then')
                     );
 
                     $scenarios[] = new ScenarioNode('Erasing agent memory', [], $steps, $scenarioKeyword, $scenarioLine);
@@ -82,11 +96,11 @@ abstract class KeywordsTestCase extends TestCase
                     ++$line;
 
                     $steps = array_merge(
-                        $this->getSteps($i18nKeywords['given'], 'there is agent <agent1>', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['and'], 'there is agent <agent2>', $line, 'Given'),
-                        $this->getSteps($i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line, 'When'),
-                        $this->getSteps($i18nKeywords['then'], 'there should be agent <agent1>', $line, 'Then'),
-                        $this->getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line, 'Then')
+                        static::getSteps($i18nKeywords['given'], 'there is agent <agent1>', $line, 'Given'),
+                        static::getSteps($i18nKeywords['and'], 'there is agent <agent2>', $line, 'Given'),
+                        static::getSteps($i18nKeywords['when'], 'I erase agent <agent2>\'s memory', $line, 'When'),
+                        static::getSteps($i18nKeywords['then'], 'there should be agent <agent1>', $line, 'Then'),
+                        static::getSteps($i18nKeywords['but'], 'there should not be agent <agent2>', $line, 'Then')
                     );
                     ++$line;
 
@@ -107,8 +121,7 @@ abstract class KeywordsTestCase extends TestCase
                     In order to stay secret
                     As a secret organization
                     We need to be able to erase past agents' memory
-                    DESC
-                    ,
+                    DESC,
                     [],
                     $background,
                     $scenarios,
@@ -122,7 +135,12 @@ abstract class KeywordsTestCase extends TestCase
             $dumped = $dumper->dump($lang, false, true);
 
             foreach ($dumped as $num => $dumpedFeature) {
-                $data[$lang . '_' . $num] = [$lang, $num, $features[$num], $dumpedFeature];
+                yield $lang . '_' . $num => [
+                    'language' => $lang,
+                    'num' => $num,
+                    'etalon' => $features[$num],
+                    'source' => $dumpedFeature,
+                ];
             }
         }
 
@@ -130,23 +148,22 @@ abstract class KeywordsTestCase extends TestCase
     }
 
     /**
-     * @dataProvider translationTestDataProvider
-     *
      * @param string $language language name
      * @param int $num Fixture index for that language
      * @param FeatureNode $etalon etalon features (to test against)
      * @param string $source gherkin source
      */
-    public function testTranslation($language, $num, FeatureNode $etalon, $source): void
+    #[DataProvider('translationTestDataProvider')]
+    public function testTranslation(string $language, int $num, FeatureNode $etalon, string $source): void
     {
-        $keywords = $this->getKeywords();
+        $keywords = static::getKeywords();
         $lexer = new Lexer($keywords);
         $parser = new Parser($lexer);
 
         try {
             $parsed = $parser->parse($source, __DIR__ . DIRECTORY_SEPARATOR . $language . '_' . ($num + 1) . '.feature');
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage() . ":\n" . $source, 0, $e);
+        } catch (\Throwable $e) {
+            throw new \RuntimeException($e->getMessage() . ":\n" . $source, 0, $e);
         }
 
         $this->assertEquals($etalon, $parsed);
