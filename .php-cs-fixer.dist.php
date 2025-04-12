@@ -2,6 +2,7 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->in(__DIR__)
+    ->name(['cucumber_changelog', 'update_cucumber', 'update_i18n'])
     ->notPath('i18n.php');
 
 return (new PhpCsFixer\Config())
