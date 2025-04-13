@@ -13,11 +13,11 @@ $composerFile = __DIR__ . '/../composer.json';
 $composerConfigStr = file_get_contents($composerFile) ?: '';
 $composerConfig = (array) json_decode($composerConfigStr, true, 512, JSON_THROW_ON_ERROR);
 foreach ($composerConfig['repositories'] ?? [] as $repository) {
-    if (!isset($repository['type']) || $repository['type'] !== 'package') {
+    if (($repository['type'] ?? null) !== 'package') {
         continue;
     }
 
-    if (isset($repository['package']['name']) && $repository['package']['name'] === 'cucumber/cucumber') {
+    if (($repository['package']['name']) ?? null) === 'cucumber/cucumber') {
         $oldTag = preg_replace('/^dev-gherkin-/', '', $repository['package']['version']);
         $oldHash = $repository['package']['source']['reference'];
         break;
