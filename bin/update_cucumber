@@ -17,7 +17,7 @@ foreach ($composerConfig['repositories'] ?? [] as $repository) {
         continue;
     }
 
-    if (($repository['package']['name']) ?? null) === 'cucumber/cucumber') {
+    if (($repository['package']['name'] ?? null) === 'cucumber/cucumber') {
         $oldTag = preg_replace('/^dev-gherkin-/', '', $repository['package']['version']);
         $oldHash = $repository['package']['source']['reference'];
         break;

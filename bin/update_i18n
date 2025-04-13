@@ -10,13 +10,15 @@
  */
 
 $gherkinFile = __DIR__ . '/../vendor/cucumber/cucumber/gherkin/gherkin-languages.json';
-$json = file_get_contents($gherkinFile) ?: '';
+$gherkinLanguages = json_decode(file_get_contents($gherkinFile) ?: '', true, 512, JSON_THROW_ON_ERROR);
+assert(is_array($gherkinLanguages));
 $array = [];
 
-foreach ((array) json_decode($json, true) as $lang => $keywords) {
+foreach ($gherkinLanguages as $lang => $keywords) {
     $langMessages = [];
 
-    foreach ((array) $keywords as $type => $words) {
+    assert(is_array($keywords));
+    foreach ($keywords as $type => $words) {
         if (!is_array($words)) {
             $words = [$words];
         }
