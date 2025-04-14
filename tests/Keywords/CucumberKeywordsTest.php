@@ -13,14 +13,12 @@ namespace Tests\Behat\Gherkin\Keywords;
 use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
-use Tests\Behat\Gherkin\FileReaderTrait;
 
 class CucumberKeywordsTest extends KeywordsTestCase
 {
-    use FileReaderTrait;
-
     protected static function getKeywords(): KeywordsInterface
     {
         return new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
@@ -28,7 +26,7 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = self::readFile(__DIR__ . '/../Fixtures/i18n.yml');
+        $data = (new Filesystem())->readFile(__DIR__ . '/../Fixtures/i18n.yml');
 
         return Yaml::parse($data);
     }

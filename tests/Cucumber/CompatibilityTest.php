@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
-use Tests\Behat\Gherkin\FileReaderTrait;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -31,8 +31,6 @@ use Tests\Behat\Gherkin\FileReaderTrait;
  */
 class CompatibilityTest extends TestCase
 {
-    use FileReaderTrait;
-
     public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/cucumber/gherkin/testdata';
 
     /**
@@ -88,16 +86,17 @@ class CompatibilityTest extends TestCase
             $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
         }
 
+        $filesystem = new Filesystem();
         $gherkinFile = $file->getPathname();
 
-        $actual = $this->parser->parse(self::readFile($gherkinFile), $gherkinFile);
+        $actual = $this->parser->parse($filesystem->readFile($gherkinFile), $gherkinFile);
         $cucumberFeatures = $this->loader->load($gherkinFile . '.ast.ndjson');
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
         $this->assertEquals(
             $this->normaliseFeature($expected),
             $this->normaliseFeature($actual),
-            self::readFile($gherkinFile)
+            $filesystem->readFile($gherkinFile)
         );
     }
 
@@ -108,13 +107,16 @@ class CompatibilityTest extends TestCase
             $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
         }
 
+        $filesystem = new Filesystem();
+        $gherkinFile = $file->getPathname();
+
         if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
             $this->expectDeprecationErrorMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
         } else {
             $this->expectException(ParserException::class);
         }
-        $gherkinFile = $file->getPathname();
-        $this->parser->parse(self::readFile($gherkinFile), $gherkinFile);
+
+        $this->parser->parse($filesystem->readFile($gherkinFile), $gherkinFile);
     }
 
     /**

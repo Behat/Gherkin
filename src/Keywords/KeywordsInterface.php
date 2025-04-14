@@ -18,10 +18,6 @@ namespace Behat\Gherkin\Keywords;
  * @phpstan-type TLanguage string
  * @phpstan-type TKeywordsArray array{feature: string, background: string, scenario: string, scenario_outline: string, examples: string, given: string, when: string, then: string, and: string, but: string}
  * @phpstan-type TMultiLanguageKeywords array<TLanguage, TKeywordsArray>
- * @phpstan-type TKeywordsString string
- * @phpstan-type TStepKeywordsType 'Given'|'When'|'Then'|'And'|'But'
- * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
- * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
  */
 interface KeywordsInterface
 {

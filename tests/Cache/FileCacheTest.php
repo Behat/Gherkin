@@ -16,6 +16,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 
 class FileCacheTest extends TestCase
 {
@@ -73,7 +74,15 @@ class FileCacheTest extends TestCase
             'broken_feature',
             new FeatureNode(null, null, [], null, [], '', '', null, 1),
         );
-        $files = glob($this->path . '/**/*.feature.cache') ?: [];
+        $files = iterator_to_array(
+            (new Finder())
+                ->in($this->path)
+                ->depth(1)
+                ->name('*.feature.cache')
+                ->files(),
+            false
+        );
+
         $this->assertCount(1, $files, 'Cache should have written a single file');
 
         // Now simulate the file being corrupted and attempt to read it
