@@ -25,8 +25,20 @@ class Filesystem
     /**
      * @return list<string>
      */
-    public static function find(string $pattern): array
+    public static function findRecursively(string $path, string $pattern): array
     {
-        return glob($pattern) ?: [];
+        /**
+         * @var iterable<string, \SplFileInfo> $fileIterator
+         */
+        $fileIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::CHILD_FIRST);
+
+        $found = [];
+        foreach ($fileIterator as $file) {
+            if (fnmatch($pattern, $file->getFilename())) {
+                $found[] = $file->getPathname();
+            }
+        }
+
+        return $found;
     }
 }
