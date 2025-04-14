@@ -21,7 +21,6 @@ use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 final class ParserTest extends TestCase
@@ -221,7 +220,7 @@ final class ParserTest extends TestCase
     {
         $file = __DIR__ . "/Fixtures/features/$fixture";
 
-        return $this->createGherkinParser()->parse((new Filesystem())->readFile($file), $file);
+        return $this->createGherkinParser()->parse(Filesystem::readFile($file), $file);
     }
 
     private function parseEtalon(string $etalon): FeatureNode
