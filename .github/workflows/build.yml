@@ -55,9 +55,9 @@ jobs:
           ini-file: "development"
           coverage: none
 
-      - name: Update Symfony version
+      - name: Update symfony/yaml version
         if: matrix.symfony-version != ''
-        run: composer require --no-update "symfony/yaml:${{ matrix.symfony-version }}"
+        run: composer require --dev "symfony/yaml:${{ matrix.symfony-version }}"
 
       - name: Install dependencies
         run: composer update ${{ matrix.composer-flags }}
