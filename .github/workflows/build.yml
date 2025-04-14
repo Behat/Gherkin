@@ -57,7 +57,7 @@ jobs:
 
       - name: Update Symfony version
         if: matrix.symfony-version != ''
-        run: composer require --no-update "symfony/symfony:${{ matrix.symfony-version }}"
+        run: composer require --no-update "symfony/yaml:${{ matrix.symfony-version }}"
 
       - name: Install dependencies
         run: composer update ${{ matrix.composer-flags }}
