@@ -21,7 +21,6 @@ use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Finder\Finder;
 
 final class ParserTest extends TestCase
 {
@@ -30,7 +29,7 @@ final class ParserTest extends TestCase
      */
     public static function parserTestDataProvider(): iterable
     {
-        foreach ((new Finder())->in(__DIR__ . '/Fixtures/etalons')->name('*.yml') as $file) {
+        foreach (Filesystem::find(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
             yield $testname => ['fixtureName' => $testname];
         }
