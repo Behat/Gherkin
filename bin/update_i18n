@@ -1,30 +1,41 @@
 #!/usr/bin/env php
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 $gherkinFile = __DIR__ . '/../vendor/cucumber/cucumber/gherkin/gherkin-languages.json';
-$json  = file_get_contents($gherkinFile);
-$array = array();
+$gherkinLanguages = json_decode(file_get_contents($gherkinFile) ?: '', true, 512, JSON_THROW_ON_ERROR);
+assert(is_array($gherkinLanguages));
+$array = [];
 
-foreach (json_decode($json, true) as $lang => $keywords) {
-    $langMessages = array();
+foreach ($gherkinLanguages as $lang => $keywords) {
+    $langMessages = [];
 
+    assert(is_array($keywords));
     foreach ($keywords as $type => $words) {
         if (!is_array($words)) {
-            $words = array($words);
+            $words = [$words];
         }
 
-        if ('scenarioOutline' === $type) {
+        if ($type === 'scenarioOutline') {
             $type = 'scenario_outline';
         }
 
-        if (in_array($type, array('given', 'when', 'then', 'and', 'but'))) {
-            $formattedKeywords = array();
+        if (in_array($type, ['given', 'when', 'then', 'and', 'but'])) {
+            $formattedKeywords = [];
 
             foreach ($words as $word) {
+                assert(is_string($word));
                 $formattedWord = trim($word);
 
                 if ($formattedWord === $word) {
-                    $formattedWord = $formattedWord.'<'; // Convert the keywords to the syntax used by Gherkin 2, which is expected by our Lexer.
+                    $formattedWord .= '<'; // Convert the keywords to the syntax used by Gherkin 2, which is expected by our Lexer.
                 }
 
                 $formattedKeywords[] = $formattedWord;
@@ -33,7 +44,10 @@ foreach (json_decode($json, true) as $lang => $keywords) {
             $words = $formattedKeywords;
         }
 
-        usort($words, function($type1, $type2) {
+        usort($words, static function ($type1, $type2) {
+            assert(is_string($type1));
+            assert(is_string($type2));
+
             return [mb_strlen($type2, 'utf8'), $type1] <=> [mb_strlen($type1, 'utf8'), $type2];
         });
 
@@ -50,10 +64,10 @@ foreach (json_decode($json, true) as $lang => $keywords) {
 $enData = $array['en'];
 unset($array['en']);
 ksort($array);
-$array = array_merge(array('en' => $enData), $array);
+$array = array_merge(['en' => $enData], $array);
 $arrayString = var_export($array, true);
 
-file_put_contents(__DIR__.'/../i18n.php', <<<EOD
+file_put_contents(__DIR__ . '/../i18n.php', <<<EOD
 <?php
 
 /*

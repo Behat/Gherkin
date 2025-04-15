@@ -1,14 +1,22 @@
 #!/usr/bin/env php
 <?php
 
-if ($argc != 2) {
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+if ($argc !== 2) {
     echo "Usage: {$argv[0]} <version>\n";
     exit(1);
 }
 
 $version = $argv[1];
 
-if (!preg_match('/[0-9]+.[0-9]+.[0-9]+/', $version)) {
+if (!preg_match('/\d+.\d+.\d+/', $version)) {
     echo "Error: Version format not recognised\n";
     exit(1);
 }
@@ -18,7 +26,7 @@ if (!$changelog = file_get_contents(__DIR__ . '/../vendor/cucumber/cucumber/gher
     exit(1);
 }
 
-if (!preg_match('/(?<changes>##\s+\['.preg_quote($version, '/').'\].*?)^##\s/ms', $changelog, $matches)) {
+if (!preg_match('/(?<changes>##\s+\[' . preg_quote($version, '/') . '\].*?)^##\s/ms', $changelog, $matches)) {
     echo "Error: Could not find version $version in changelog\n";
     exit(1);
 }
@@ -28,6 +36,6 @@ if (!preg_match('/(?<changes>##\s+\['.preg_quote($version, '/').'\].*?)^##\s/ms'
 echo "Found changelog:\n$changes";
 
 if (getenv('GITHUB_ACTIONS')) {
-    $changes = strtr($changes, ["%" => "%25", "\r" => '%0D', "\n" => '%0A', ':' => '%3A', ',' => '%2C']);
+    $changes = strtr($changes, ['%' => '%25', "\r" => '%0D', "\n" => '%0A', ':' => '%3A', ',' => '%2C']);
     echo "::set-output name=changelog::$changes\n";
 }

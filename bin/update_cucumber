@@ -1,15 +1,23 @@
 #!/usr/bin/env php
 <?php
 
+/*
+ * This file is part of the Behat Gherkin Parser.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 $composerFile = __DIR__ . '/../composer.json';
-$composerConfig = file_get_contents($composerFile);
-foreach (json_decode($composerConfig, true, 512, JSON_THROW_ON_ERROR)['repositories'] as $repository)
-{
-    if ($repository['type'] !== 'package') {
+$composerConfigStr = file_get_contents($composerFile) ?: '';
+$composerConfig = (array) json_decode($composerConfigStr, true, 512, JSON_THROW_ON_ERROR);
+foreach ($composerConfig['repositories'] ?? [] as $repository) {
+    if (($repository['type'] ?? null) !== 'package') {
         continue;
     }
 
-    if ($repository['package']['name'] == 'cucumber/cucumber') {
+    if (($repository['package']['name'] ?? null) === 'cucumber/cucumber') {
         $oldTag = preg_replace('/^dev-gherkin-/', '', $repository['package']['version']);
         $oldHash = $repository['package']['source']['reference'];
         break;
@@ -23,9 +31,9 @@ if (!isset($oldHash, $oldTag)) {
 
 echo "Latest local hash is {$oldHash} (tagged {$oldTag})\n";
 
-if(!preg_match(
+if (!preg_match(
     '/^(?<hash>[0-9a-z]+)\s+\S+\\/v(?<tag>[0-9.]+)/',
-    shell_exec('git ls-remote --tags https://github.com/cucumber/cucumber.git | grep refs/tags/gherkin | sort --version-sort -k2 | tail -n 1'),
+    shell_exec('git ls-remote --tags https://github.com/cucumber/cucumber.git | grep refs/tags/gherkin | sort --version-sort -k2 | tail -n 1') ?: '',
     $matches
 )) {
     echo "ERROR: Could not parse the repository tags\n";
@@ -35,21 +43,20 @@ if(!preg_match(
 
 echo "Latest remote hash is {$newHash} (tagged {$newTag})\n";
 
-if ($matches['hash'] == $oldHash) {
+if ($matches['hash'] === $oldHash) {
     echo "Hashes match, nothing to do\n";
     exit(0);
 }
 
 $newJson = str_replace(
-    [$oldHash, 'dev-gherkin-'.$oldTag],
-    [$newHash, 'dev-gherkin-'.$newTag],
-    $composerConfig
+    [$oldHash, 'dev-gherkin-' . $oldTag],
+    [$newHash, 'dev-gherkin-' . $newTag],
+    $composerConfigStr
 );
 
 file_put_contents($composerFile, $newJson);
 
 echo "Updated composer config:\n$newJson";
-
 
 if (getenv('GITHUB_ACTIONS')) {
     echo "::set-output name=cucumber_version::$newTag\n";
