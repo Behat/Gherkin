@@ -15,7 +15,6 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
-use Tests\Behat\Gherkin\Filesystem;
 
 class CucumberKeywordsTest extends KeywordsTestCase
 {
@@ -26,9 +25,7 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = Filesystem::readFile(__DIR__ . '/../Fixtures/i18n.yml');
-
-        return Yaml::parse($data);
+        return Yaml::parseFile(__DIR__ . '/../Fixtures/i18n.yml');
     }
 
     protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array
