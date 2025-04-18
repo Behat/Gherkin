@@ -11,16 +11,17 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
 
 class ArrayKeywordsTest extends KeywordsTestCase
 {
-    protected function getKeywords()
+    protected static function getKeywords(): KeywordsInterface
     {
-        return new ArrayKeywords($this->getKeywordsArray());
+        return new ArrayKeywords(static::getKeywordsArray());
     }
 
-    protected function getKeywordsArray()
+    protected static function getKeywordsArray(): array
     {
         return [
             'with_special_chars' => [
@@ -40,7 +41,7 @@ class ArrayKeywordsTest extends KeywordsTestCase
         ];
     }
 
-    protected function getSteps($keywords, $text, &$line, $keywordType)
+    protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array
     {
         $steps = [];
         foreach (explode('|', $keywords) as $keyword) {

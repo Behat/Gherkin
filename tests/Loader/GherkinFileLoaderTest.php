@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Cache\CacheInterface;
 use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
@@ -18,13 +19,19 @@ use PHPUnit\Framework\TestCase;
 
 class GherkinFileLoaderTest extends TestCase
 {
-    /**
-     * @var GherkinFileLoader
-     */
-    private $loader;
-    private $featuresPath;
+    private GherkinFileLoader $loader;
+    private string $featuresPath;
 
-    public function testSupports()
+    protected function setUp(): void
+    {
+        $keywords = new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
+        $parser = new Parser(new Lexer($keywords));
+        $this->loader = new GherkinFileLoader($parser);
+
+        $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/features');
+    }
+
+    public function testSupports(): void
     {
         $this->assertFalse($this->loader->supports('non-existent path'));
         $this->assertFalse($this->loader->supports('non-existent path:2'));
@@ -35,7 +42,7 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/features/pystring.feature'));
     }
 
-    public function testLoad()
+    public function testLoad(): void
     {
         $features = $this->loader->load($this->featuresPath . '/pystring.feature');
         $this->assertCount(1, $features);
@@ -48,15 +55,15 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
     }
 
-    public function testParsingUncachedFeature()
+    public function testParsingUncachedFeature(): void
     {
-        $cache = $this->getMockBuilder('Behat\Gherkin\Cache\CacheInterface')->getMock();
+        $cache = $this->getMockBuilder(CacheInterface::class)->getMock();
         $this->loader->setCache($cache);
 
         $cache->expects($this->once())
             ->method('isFresh')
             ->with($path = $this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', filemtime($path))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cache->expects($this->once())
             ->method('write');
@@ -65,20 +72,20 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertCount(1, $features);
     }
 
-    public function testParsingCachedFeature()
+    public function testParsingCachedFeature(): void
     {
-        $cache = $this->getMockBuilder('Behat\Gherkin\Cache\CacheInterface')->getMock();
+        $cache = $this->getMockBuilder(CacheInterface::class)->getMock();
         $this->loader->setCache($cache);
 
         $cache->expects($this->once())
             ->method('isFresh')
             ->with($path = $this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', filemtime($path))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $cache->expects($this->once())
             ->method('read')
             ->with($path)
-            ->will($this->returnValue('cache'));
+            ->willReturn('cache');
 
         $cache->expects($this->never())
             ->method('write');
@@ -87,7 +94,7 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertEquals('cache', $features[0]);
     }
 
-    public function testBasePath()
+    public function testBasePath(): void
     {
         $this->assertFalse($this->loader->supports('features'));
         $this->assertFalse($this->loader->supports('tables.feature'));
@@ -107,14 +114,5 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
         $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
-    }
-
-    protected function setUp(): void
-    {
-        $keywords = new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
-        $parser = new Parser(new Lexer($keywords));
-        $this->loader = new GherkinFileLoader($parser);
-
-        $this->featuresPath = realpath(__DIR__ . '/../Fixtures/features');
     }
 }

@@ -37,11 +37,17 @@ class TaggedNodeTraitTest extends TestCase
         $this->assertFalse($node->hasTag('b'));
     }
 
+    /**
+     * @param list<string> $tags
+     */
     private function createTaggedNode(array $tags): TaggedNodeInterface
     {
         return new class($tags) implements TaggedNodeInterface {
             use TaggedNodeTrait;
 
+            /**
+             * @param list<string> $tags
+             */
             public function __construct(private readonly array $tags)
             {
             }

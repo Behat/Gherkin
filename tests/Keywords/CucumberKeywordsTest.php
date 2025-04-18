@@ -11,23 +11,28 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CucumberKeywords;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
+use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
+use Tests\Behat\Gherkin\Filesystem;
 
 class CucumberKeywordsTest extends KeywordsTestCase
 {
-    protected function getKeywords()
+    protected static function getKeywords(): KeywordsInterface
     {
         return new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
     }
 
-    protected function getKeywordsArray()
+    protected static function getKeywordsArray(): array
     {
-        return Yaml::parse(file_get_contents(__DIR__ . '/../Fixtures/i18n.yml'));
+        $data = Filesystem::readFile(__DIR__ . '/../Fixtures/i18n.yml');
+
+        return Yaml::parse($data);
     }
 
-    protected function getSteps($keywords, $text, &$line, $keywordType)
+    protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array
     {
         $steps = [];
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
@@ -43,22 +48,20 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     public function testYamlSourceFileIsAttachedToException(): void
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'test');
+        $root = vfsStream::setup();
+        $root->addChild(
+            $file = vfsStream::newFile('invalid.yaml')
+                ->setContent("invalid:\n\tinvalid:yaml")
+        );
 
-        try {
-            file_put_contents($tempFile, "invalid:\n\tinvalid:yaml");
+        $this->expectExceptionObject(new ParseException(
+            'YAML file cannot contain tabs as indentation',
+            2,
+            "\tinvalid:yaml",
+            $file->url(),
+        ));
 
-            $this->expectExceptionObject(new ParseException(
-                'YAML file cannot contain tabs as indentation',
-                2,
-                "\tinvalid:yaml",
-                $tempFile,
-            ));
-
-            new CucumberKeywords($tempFile);
-        } finally {
-            @unlink($tempFile);
-        }
+        new CucumberKeywords($file->url());
     }
 
     public function testYamlRootMustBeAnArray(): void
@@ -71,22 +74,16 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     public function testYamlFileMustBeReadable(): void
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'test');
+        $root = vfsStream::setup();
+        $root->addChild(
+            $file = vfsStream::newFile('unreadable.yaml')
+                ->setContent("aaa:\n  bbb: cccc")
+                ->chmod(0)
+        );
 
-        try {
-            file_put_contents($tempFile, "aaa:\n  bbb: cccc");
-            if (PHP_OS_FAMILY === 'Windows') {
-                exec('icacls ' . escapeshellarg($tempFile) . ' /deny Everyone:(R)');
-            } else {
-                chmod($tempFile, 0);
-            }
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage("Unable to parse \"{$file->url()}\" as the file is not readable.");
 
-            $this->expectException(ParseException::class);
-            $this->expectExceptionMessage("Unable to parse \"$tempFile\" as the file is not readable.");
-
-            new CucumberKeywords($tempFile);
-        } finally {
-            @unlink($tempFile);
-        }
+        new CucumberKeywords($file->url());
     }
 }

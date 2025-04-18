@@ -13,6 +13,8 @@ namespace Tests\Behat\Gherkin;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Node\BackgroundNode;
+use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 
@@ -61,6 +63,7 @@ class ParserExceptionsTest extends TestCase
 
         $parsed = $this->gherkin->parse($feature);
 
+        $this->assertInstanceOf(FeatureNode::class, $parsed);
         $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
     }
 
@@ -83,8 +86,10 @@ class ParserExceptionsTest extends TestCase
         Scenario: bug user edit date
         GHERKIN;
 
-        $feature = $this->gherkin->parse($feature);
-        $background = $feature->getBackground();
+        $parsed = $this->gherkin->parse($feature);
+        $this->assertInstanceOf(FeatureNode::class, $parsed);
+        $background = $parsed->getBackground();
+        $this->assertInstanceOf(BackgroundNode::class, $background);
         $this->assertEquals(
             "remove X to cause bug\nStep is red form is not valid\nasd\nasd\nas\nda\nsd\nas\ndas\nd",
             $background->getTitle()
@@ -123,6 +128,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $feature = $this->gherkin->parse($feature);
+        $this->assertInstanceOf(FeatureNode::class, $feature);
 
         $this->assertCount(2, $scenarios = $feature->getScenarios());
         $firstTitle = <<<'TEXT'

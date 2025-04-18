@@ -11,22 +11,23 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CachedArrayKeywords;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
 
 class CachedArrayKeywordsTest extends KeywordsTestCase
 {
-    protected function getKeywords()
+    protected static function getKeywords(): KeywordsInterface
     {
         // Test with the default i18n file provided in this repository
         return CachedArrayKeywords::withDefaultKeywords();
     }
 
-    protected function getKeywordsArray()
+    protected static function getKeywordsArray(): array
     {
         return require __DIR__ . '/../../i18n.php';
     }
 
-    protected function getSteps($keywords, $text, &$line, $keywordType)
+    protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array
     {
         $steps = [];
         foreach (explode('|', $keywords) as $keyword) {
