@@ -19,6 +19,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class LineRangeFilterTest extends FilterTestCase
 {
+    /**
+     * @return iterable<array{numeric-string, numeric-string|'*', bool}>
+     */
     public static function featureLineRangeProvider(): iterable
     {
         return [
@@ -30,6 +33,10 @@ class LineRangeFilterTest extends FilterTestCase
         ];
     }
 
+    /**
+     * @param numeric-string $filterMinLine
+     * @param numeric-string|'*' $filterMaxLine
+     */
     #[DataProvider('featureLineRangeProvider')]
     public function testIsFeatureMatchFilter(string $filterMinLine, string $filterMaxLine, bool $expected): void
     {
@@ -39,6 +46,9 @@ class LineRangeFilterTest extends FilterTestCase
         $this->assertSame($expected, $filter->isFeatureMatch($feature));
     }
 
+    /**
+     * @return iterable<array{numeric-string, numeric-string|'*', int}>
+     */
     public static function scenarioLineRangeProvider(): iterable
     {
         return [
@@ -54,6 +64,10 @@ class LineRangeFilterTest extends FilterTestCase
         ];
     }
 
+    /**
+     * @param numeric-string $filterMinLine
+     * @param numeric-string|'*' $filterMaxLine
+     */
     #[DataProvider('scenarioLineRangeProvider')]
     public function testIsScenarioMatchFilter(string $filterMinLine, string $filterMaxLine, int $expectedNumberOfMatches): void
     {

@@ -12,12 +12,13 @@ namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
+use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 
 abstract class FilterTestCase extends TestCase
 {
-    protected function getParser()
+    protected function getParser(): Parser
     {
         return new Parser(
             new Lexer(
@@ -39,7 +40,7 @@ abstract class FilterTestCase extends TestCase
         );
     }
 
-    protected function getGherkinFeature()
+    protected function getGherkinFeature(): string
     {
         return <<<'GHERKIN'
         Feature: Long feature with outline
@@ -72,8 +73,9 @@ abstract class FilterTestCase extends TestCase
         GHERKIN;
     }
 
-    protected function getParsedFeature()
+    protected function getParsedFeature(): FeatureNode
     {
-        return $this->getParser()->parse($this->getGherkinFeature());
+        return $this->getParser()->parse($this->getGherkinFeature())
+            ?? throw new \LogicException('Could not parse predefined feature in getGherkinFeature()');
     }
 }

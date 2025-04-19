@@ -195,6 +195,9 @@ class GherkinTest extends TestCase
         $this->assertEquals($expectedFeatures, $gherkin->load($resource));
     }
 
+    /**
+     * @return iterable<string, array{resource: string, features: list<FeatureNode>, expectedResource: string, expectedFeatures: list<FeatureNode>}>
+     */
     public static function resourceLineFilterDataProvider(): iterable
     {
         // For this test, let's assume that each feature takes up 3 lines

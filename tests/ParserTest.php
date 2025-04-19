@@ -16,6 +16,7 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,7 +29,7 @@ final class ParserTest extends TestCase
      */
     public static function parserTestDataProvider(): iterable
     {
-        foreach (glob(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
+        foreach (Filesystem::find(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
             $testname = basename($file, '.yml');
             yield $testname => ['fixtureName' => $testname];
         }
@@ -63,6 +64,7 @@ final class ParserTest extends TestCase
             FEATURE
         );
 
+        $this->assertInstanceOf(FeatureNode::class, $feature2);
         $this->assertSame([], $feature2->getTags());
     }
 
@@ -76,9 +78,11 @@ final class ParserTest extends TestCase
             FEATURE
         );
 
+        $this->assertInstanceOf(FeatureNode::class, $feature);
         $scenarios = $feature->getScenarios();
         $scenario = array_shift($scenarios);
 
+        $this->assertInstanceOf(ScenarioNode::class, $scenario);
         $this->assertCount(1, $scenario->getSteps());
     }
 
@@ -213,12 +217,12 @@ final class ParserTest extends TestCase
 
     private function parseFixture(string $fixture): ?FeatureNode
     {
-        $file = __DIR__ . '/Fixtures/features/' . $fixture;
+        $file = __DIR__ . "/Fixtures/features/$fixture";
 
-        return $this->createGherkinParser()->parse(file_get_contents($file), $file);
+        return $this->createGherkinParser()->parse(Filesystem::readFile($file), $file);
     }
 
-    private function parseEtalon($etalon): FeatureNode
+    private function parseEtalon(string $etalon): FeatureNode
     {
         $features = $this->createYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
         $feature = $features[0];
