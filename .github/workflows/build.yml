@@ -39,25 +39,28 @@ jobs:
       matrix:
         php: [ 8.1, 8.2, 8.3, 8.4 ]
         composer-flags: [ "" ]
+        symfony-version: [ "" ]
         include:
           - php: 8.1
-            composer-flags: "--with=symfony/yaml:^5.4"
+            symfony-version: '^5.4'
           - php: 8.1
-            composer-flags: "--with=symfony/yaml:^6.4"
+            symfony-version: '^6.4'
     steps:
       - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
           ini-file: "development"
-          coverage: "xdebug"
-      - run: composer update ${{ matrix.composer-flags }}
-      - run: ./vendor/bin/phpunit --coverage-clover=coverage.xml --log-junit junit.xml --colors=always --testdox
-      - uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
-          flags: php-${{ matrix.php }},flags:${{ matrix.composer-flags }}
-      - uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          coverage: none
+
+      - name: Update Symfony version
+        if: matrix.symfony-version != ''
+        run: composer require --no-update "symfony/symfony:${{ matrix.symfony-version }}"
+
+      - name: Install dependencies
+        run: composer update ${{ matrix.composer-flags }}
+
+      - name: Run tests (phpunit)
+        run: ./vendor/bin/phpunit
