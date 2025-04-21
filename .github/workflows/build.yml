@@ -55,9 +55,6 @@ jobs:
       - run: composer test -- --coverage-clover=coverage.xml --log-junit junit.xml --testdox
       - uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
           flags: php${{ matrix.php }}${{ matrix.composer-flags }}
       - uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
