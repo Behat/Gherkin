@@ -13,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: shivammathur/setup-php@v2
         with:
           coverage: none
           php-version: '8.3'
+
       - run: composer validate --strict --no-check-lock
 
   check_code:
@@ -24,11 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: shivammathur/setup-php@v2
         with:
           coverage: none
           php-version: '8.3'
+
       - run: composer update --ansi --no-progress
+
       - run: composer lint
 
   tests:
@@ -46,15 +51,20 @@ jobs:
             composer-flags: "--with=symfony/yaml:^6.4"
     steps:
       - uses: actions/checkout@v4
+
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "${{ matrix.php }}"
           ini-file: "development"
           coverage: "xdebug"
+
       - run: composer update ${{ matrix.composer-flags }} --ansi --no-progress
+
       - run: composer test -- --coverage-clover=coverage.xml --log-junit junit.xml --testdox
+
       - uses: codecov/codecov-action@v4
         with:
           files: coverage.xml
           flags: php${{ matrix.php }}${{ matrix.composer-flags }}
+
       - uses: codecov/test-results-action@v1
