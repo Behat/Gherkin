@@ -9,55 +9,261 @@
  * file that was distributed with this source code.
  */
 
-$composerFile = __DIR__ . '/../composer.json';
-$composerConfigStr = file_get_contents($composerFile) ?: '';
-$composerConfig = (array) json_decode($composerConfigStr, true, 512, JSON_THROW_ON_ERROR);
-foreach ($composerConfig['repositories'] ?? [] as $repository) {
-    if (($repository['type'] ?? null) !== 'package') {
-        continue;
+ini_set('error_reporting', E_ALL);
+set_error_handler(static fn ($code, $msg, $file, $line) => throw new ErrorException($msg, $code, $code, $file, $line));
+
+$updater = new
+/**
+ * @phpstan-type CurrentVersionArray array{tag_name: string, hash: string, composer_version: string}
+ * @phpstan-type GitHubReleaseArray array{tag_name: string, hash: string, html_url: string, changelog: string}
+ */
+class {
+    public function update(string $composerFile, string $outputVarsFile): void
+    {
+        assert(is_file($composerFile), "'$composerFile' should be a file");
+        $composerConfigStr = $this->getContents($composerFile);
+
+        $currentVersion = $this->findComposerGherkinVersion($composerConfigStr);
+        echo "Current local version is {$currentVersion['hash']} (tagged {$currentVersion['tag_name']})\n";
+
+        $releases = $this->listGitHubReleases('cucumber/gherkin');
+        echo "Latest upstream version is {$releases[0]['hash']} (tagged {$releases[0]['tag_name']})\n";
+
+        // We only want to bump by one version at a time so that any test failures are easier to trace
+        $nextVersion = $this->findNextGherkinRelease($releases, $currentVersion);
+        if ($nextVersion === false) {
+            echo "Nothing to update\n";
+            $this->writeGitHubOutputs($outputVarsFile, ['cucumber_updated' => 'no']);
+
+            return;
+        }
+
+        echo "Next upstream version is {$nextVersion['hash']} (tagged {$nextVersion['tag_name']})\n";
+        $this->updateComposerJsonFile($composerFile, $composerConfigStr, $currentVersion, $nextVersion);
+        $this->writeGitHubOutputs($outputVarsFile, [
+            'cucumber_updated' => 'yes',
+            'cucumber_version' => $nextVersion['tag_name'],
+            'commit_msg' => $this->buildCommitMessage($currentVersion, $nextVersion),
+        ]);
+        echo "Updated composer.json\n";
+
+        // Sanity check that the update has applied correctly and the composer.json still parses as expected
+        $updatedVersion = $this->findComposerGherkinVersion($this->getContents($composerFile));
+        assert(
+            ($updatedVersion['hash'] === $nextVersion['hash'])
+            && ($updatedVersion['tag_name'] === $nextVersion['tag_name']),
+            'Updated composer.json should match expected versions',
+        );
     }
 
-    if (($repository['package']['name'] ?? null) === 'cucumber/gherkin-monorepo') {
-        $oldTag = preg_replace('/^dev-gherkin-/', '', $repository['package']['version']);
-        $oldHash = $repository['package']['source']['reference'];
-        break;
+    private function findComposerGherkinVersion(string $composerConfigStr): array
+    {
+        $composerConfig = $this->jsonDecodeArray($composerConfigStr);
+        assert(
+            is_array($composerConfig['repositories'] ?? null)
+            && is_array($composerConfig['repositories'][0] ?? null),
+            'composer.json should contain custom repository configuration',
+        );
+
+        $repository = $composerConfig['repositories'][0];
+        assert(
+            is_array($repository['package'] ?? null)
+            && ($repository['package']['name'] ?? null) === 'cucumber/gherkin-monorepo'
+            && isset($repository['package']['version'])
+            && is_array($repository['package']['source'] ?? null)
+            && isset($repository['package']['source']['reference']),
+            'First composer.json repository should be our custom gherkin package with expected structure',
+        );
+
+        $composerVersion = $repository['package']['version'];
+        assert(
+            is_array($composerConfig['require-dev'] ?? null)
+            && ($composerConfig['require-dev']['cucumber/gherkin-monorepo'] ?? null) === $composerVersion,
+            'composer.json should require cucumber/gherkin-monorepo at the same version provided by the package',
+        );
+
+        assert(
+            (bool) preg_match('/^dev-gherkin-(v[\d.]+)$/', $composerVersion, $matches),
+            "composer version '$composerVersion' should match expected pattern",
+        );
+
+        return [
+            'tag_name' => $matches[1],
+            'hash' => $repository['package']['source']['reference'],
+            'composer_version' => $composerVersion,
+        ];
     }
-}
 
-if (!isset($oldHash, $oldTag)) {
-    echo "ERROR: Could not parse the composer configuration\n";
-    exit(1);
-}
+    private function jsonDecodeArray(string $json): array
+    {
+        $result = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+        assert(is_array($result), "'$json' should be a JSON array");
 
-echo "Latest local hash is {$oldHash} (tagged {$oldTag})\n";
+        return $result;
+    }
 
-if (!preg_match(
-    '/^(?<hash>[0-9a-z]+)\s+\S+\\/v(?<tag>[0-9.]+)/',
-    shell_exec('git ls-remote --tags https://github.com/cucumber/gherkin.git | grep refs/tags/v | sort --version-sort -k2 | tail -n 1') ?: '',
-    $matches
-)) {
-    echo "ERROR: Could not parse the repository tags\n";
-    exit(1);
-}
-['hash' => $newHash, 'tag' => $newTag] = $matches;
+    /**
+     * @return list<GitHubReleaseArray>
+     */
+    private function listGitHubReleases(string $repo): array
+    {
+        // GitHub requires API requests to send a user_agent header for tracing
+        ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
+        $releases = $this->jsonDecodeArray($this->getContents("https://api.github.com/repos/$repo/releases"));
 
-echo "Latest remote hash is {$newHash} (tagged {$newTag})\n";
+        // Releases API is in order of github release ID, this may not be version order (e.g. major releases may be
+        // interspersed with point releases to older versions). So sort it most recent -> oldest by version number.
+        usort($releases, static fn (array $a, array $b) => version_compare($b['tag_name'], $a['tag_name']));
 
-if ($matches['hash'] === $oldHash) {
-    echo "Hashes match, nothing to do\n";
+        // Sanity check and simplify the GitHub API response structure to reduce assertions and type issues elsewhere
+        return array_map(
+            static function (mixed $release) {
+                assert(
+                    is_array($release)
+                    && isset($release['tag_name'])
+                    && isset($release['body'])
+                    && isset($release['html_url'])
+                    && isset($release['target_commitish']),
+                    'github release JSON should match expected structure',
+                );
+
+                // Edge case: they created the 29.0.0 release manually and for some reason it reports a target_commitish
+                // of `main` rather than the hash of the v29.0.0 tag. We could look up the tag in the API, but not worth
+                // it just for this one so hardcoded the value instead.
+                if ($release['tag_name'] === 'v29.0.0') {
+                    $release['target_commitish'] = 'c7d527d49d67ae39fe5a91aabcc5578c23ef1c5c';
+                }
+
+                // Protect against any future releases that don't properly target a tag SHA.
+                assert(
+                    preg_match('/^[a-z0-9]{40}$/', $release['target_commitish']),
+                    'target_commitish for ' . $release['tag_name'] . ' should be a hash',
+                );
+
+                return [
+                    'tag_name' => $release['tag_name'],
+                    'hash' => $release['target_commitish'],
+                    'html_url' => $release['html_url'],
+                    'changelog' => $release['body'],
+                ];
+            },
+            $releases,
+        );
+    }
+
+    /**
+     * @param list<GitHubReleaseArray> $releases
+     * @param CurrentVersionArray $currentVersion
+     *
+     * @return GitHubReleaseArray|false
+     */
+    private function findNextGherkinRelease(array $releases, array $currentVersion): array|false
+    {
+        foreach ($releases as $index => $release) {
+            if ($release['tag_name'] !== $currentVersion['tag_name']) {
+                continue;
+            }
+
+            assert(
+                $release['hash'] === $currentVersion['hash'],
+                'Commit hash for release ' . $release['tag_name'] . ' should match the previous value',
+            );
+
+            if ($index === 0) {
+                // We are already on the latest release
+                return false;
+            }
+
+            return $releases[$index - 1];
+        }
+
+        // Temporary workaround - we are currently using v24.1.0 which is not present as a GitHub release on the new
+        // gherkin repo. The next one we want is v25.0.0 and that is the first release on the new repo.
+        if ($currentVersion['tag_name'] === 'v24.1.0') {
+            return array_pop($releases);
+        }
+
+        // This shouldn't be possible, we must have found it there previously.
+        throw new RuntimeException('Could not find version ' . $currentVersion['tag_name'] . ' in GitHub releases');
+    }
+
+    /**
+     * @param CurrentVersionArray $currentVersion
+     * @param GitHubReleaseArray $nextVersion
+     */
+    private function buildCommitMessage(array $currentVersion, array $nextVersion): string
+    {
+        $compareUrl = sprintf(
+            'https://github.com/cucumber/gherkin/compare/%s...%s',
+            $currentVersion['hash'],
+            $nextVersion['hash'],
+        );
+
+        // Remove `#` prefixes on issues and PR numbers (otherwise these will incorrectly autolink to our own repo).
+        $body = preg_replace('/#(\d+)/', '$1', $nextVersion['changelog']);
+        // Remove `@` prefixes on github username tags so that they don't create a notification / backlink
+        $body = preg_replace('/@(\w+)/', '$1', $body);
+        // Prevent any github links from spamming issues and PRs on other repos with backlinks
+        $body = preg_replace('_https://github\.com_', 'https://redirect.github.com', $body);
+
+        return implode("\n", [
+            'Automatic cucumber tag update to ' . $nextVersion['tag_name'],
+            '',
+            'Compare: ' . $compareUrl,
+            '',
+            $body,
+        ]);
+    }
+
+    /**
+     * @param CurrentVersionArray $currentVersion
+     * @param GitHubReleaseArray $nextVersion
+     */
+    private function updateComposerJsonFile(string $composerFile, string $composerConfigStr, array $currentVersion, array $nextVersion): void
+    {
+        // Use string replacement rather than json_encode so that we preserve the existing composer.json format
+        $newJSON = strtr($composerConfigStr, [
+            $currentVersion['composer_version'] => 'dev-gherkin-' . $nextVersion['tag_name'],
+            $currentVersion['hash'] => $nextVersion['hash'],
+        ]);
+
+        assert(file_put_contents($composerFile, $newJSON), 'Updated composer.json');
+    }
+
+    /**
+     * @param array<string,string> $vars
+     */
+    private function writeGitHubOutputs(string $outputVarsFile, array $vars): void
+    {
+        // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-an-output-parameter
+        // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#multiline-strings
+        foreach ($vars as $name => $value) {
+            if (str_contains($value, "\n")) {
+                $var = "$name<<ENDOFVAR\n" . $value . "\nENDOFVAR\n";
+            } else {
+                $var = "$name=$value\n";
+            }
+
+            assert((bool) file_put_contents($outputVarsFile, $var, FILE_APPEND), "Wrote output var $name");
+        }
+    }
+
+    private function getContents(string $filenameOrUrl): string
+    {
+        $content = file_get_contents($filenameOrUrl);
+        assert($content !== false, 'Should be able to read ' . $filenameOrUrl);
+
+        return $content;
+    }
+};
+
+try {
+    $updater->update(
+        __DIR__ . '/../composer.json',
+        getenv('GITHUB_OUTPUT') ?: __DIR__ . '/update_cucumber_output',
+    );
     exit(0);
-}
-
-$newJson = str_replace(
-    [$oldHash, 'dev-gherkin-' . $oldTag],
-    [$newHash, 'dev-gherkin-' . $newTag],
-    $composerConfigStr
-);
-
-file_put_contents($composerFile, $newJson);
-
-echo "Updated composer config:\n$newJson";
-
-if (getenv('GITHUB_ACTIONS')) {
-    echo "::set-output name=cucumber_version::$newTag\n";
+} catch (Throwable $e) {
+    echo 'ERROR: ' . $e->getMessage() . "\n";
+    exit(1);
 }

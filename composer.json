@@ -75,7 +75,6 @@
         "lint": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpstan analyze --ansi --no-progress --memory-limit 512M",
-            "vendor/bin/phpstan analyze bin/cucumber_changelog --ansi --no-progress --memory-limit 512M",
             "vendor/bin/phpstan analyze bin/update_cucumber --ansi --no-progress --memory-limit 512M",
             "vendor/bin/phpstan analyze bin/update_i18n --ansi --no-progress --memory-limit 512M",
             "vendor/bin/php-cs-fixer check --diff --ansi --show-progress=dots --verbose"
