@@ -11,6 +11,9 @@ jobs:
 
     runs-on: ubuntu-latest
     name: Upstream cucumber update
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -78,11 +81,17 @@ jobs:
       - run: bin/update_i18n
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
 
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+        with:
+          app-id: ${{ vars.GHERKIN_UPDATER_APP_ID }}
+          private-key: ${{ secrets.GHERKIN_UPDATER_APP_KEY }}
+
       - run: .github/commit-and-push-gherkin-update.sh
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
         env:
-          # @todo: use a custom app token so the push triggers builds
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           BRANCH_NAME: ${{ steps.check-existing-pr.commit_branch }}
           COMMIT_MSG: ${{ steps.cucumber.outputs.commit_msg }}
           PR_EXISTS: ${{ steps.check-existing-pr.outputs.exists }}
