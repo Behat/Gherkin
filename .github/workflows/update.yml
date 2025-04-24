@@ -11,42 +11,88 @@ jobs:
 
     runs-on: ubuntu-latest
     name: Upstream cucumber update
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.4
           coverage: none
 
-      - uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: composer update
-
-      - name: Update cucumber tag
-        id: cucumber
-        run: bin/update_cucumber
-
-      - name: Re-install dependencies
-        run: composer update
-        if: steps.cucumber.outputs.cucumber_version
-
-      - name: Update translations
-        run: bin/update_i18n
-        if: steps.cucumber.outputs.cucumber_version
-
-      - name: Find changelog
-        id: changelog
-        run: bin/cucumber_changelog ${{ steps.cucumber.outputs.cucumber_version }}
-        if: steps.cucumber.outputs.cucumber_version
-
-      - name: Open a PR
-        uses: peter-evans/create-pull-request@v7
-        if: steps.cucumber.outputs.cucumber_version
+      - name: Check whether to update or create PR
+        id: check-existing-pr
+        uses: actions/github-script@v7
         with:
-          commit-message: Automatic Cucumber tag update to ${{ steps.cucumber.outputs.cucumber_version }}
-          branch: cucumber-update-${{ steps.cucumber.outputs.cucumber_version }}
-          delete-branch: true
-          title: Cucumber update ${{ steps.cucumber.outputs.cucumber_version }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          base: 'master'
+          script: |
+            async function findOpenPR({owner, repo, branchPrefix}) {
+              const iterator = github.paginate.iterator(github.rest.pulls.list, {owner, repo, state: 'open'})
+              const repoFullName = `${owner}/${repo}`
+
+              for await (const response of iterator) {
+                const matchingPR = response.data.find((pr) => (
+                  pr.head.ref.startsWith(branchPrefix)
+                  && (pr.head.repo.full_name === repoFullName)
+                ))
+
+                if (matchingPR) {
+                  return matchingPR
+                }
+              }
+
+              // No existing PRs
+              return false
+            }
+
+            const branchPrefix = 'cucumber-update-'
+
+            const pr = await findOpenPR({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branchPrefix
+            })
+
+            if (pr) {
+              core.info(`Found existing PR ${pr.number} for ${pr.head.ref}`)
+              core.setOutput('exists', 'true')
+              core.setOutput('checkout_branch', pr.head.ref)
+              core.setOutput('commit_branch', pr.head.ref)
+            } else {
+              const timestamp = Math.floor(Date.now() / 1000)
+              const newBranch = `${branchPrefix}${timestamp}`
+
+              core.info(`No existing PR - starting new branch ${newBranch}`)
+              core.setOutput('exists', 'false')
+              core.setOutput('checkout_branch', 'master')
+              core.setOutput('commit_branch', newBranch)
+            }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.check-existing-pr.checkout_branch }}
+
+      - run: bin/update_cucumber
+        id: cucumber
+
+      - run: composer update
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+
+      - run: bin/update_i18n
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+        with:
+          app-id: ${{ vars.GHERKIN_UPDATER_APP_ID }}
+          private-key: ${{ secrets.GHERKIN_UPDATER_APP_KEY }}
+
+      - run: .github/commit-and-push-gherkin-update.sh
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH_NAME: ${{ steps.check-existing-pr.commit_branch }}
+          COMMIT_MSG: ${{ steps.cucumber.outputs.commit_msg }}
+          PR_EXISTS: ${{ steps.check-existing-pr.outputs.exists }}
+          PR_TITLE: Update to cucumber/gherkin ${{ steps.cucumber.outputs.cucumber_version }}

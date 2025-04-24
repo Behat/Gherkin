@@ -22,7 +22,7 @@
         "symfony/filesystem": "^5.4 || ^6.4 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
-        "cucumber/cucumber": "dev-gherkin-24.1.0",
+        "cucumber/gherkin-monorepo": "dev-gherkin-v24.1.0",
         "friendsofphp/php-cs-fixer": "^3.65",
         "phpstan/phpstan": "^2",
         "phpstan/extension-installer": "^1",
@@ -55,17 +55,17 @@
         {
             "type": "package",
             "package": {
-                "name": "cucumber/cucumber",
-                "version": "dev-gherkin-24.1.0",
+                "name": "cucumber/gherkin-monorepo",
+                "version": "dev-gherkin-v24.1.0",
                 "source": {
                     "type": "git",
-                    "url": "https://github.com/cucumber/cucumber.git",
-                    "reference": "1bd907bfcd246275e6d11f62c0885e654cec58cf"
+                    "url": "https://github.com/cucumber/gherkin.git",
+                    "reference": "2264c6d4ffa8a914808d32ec74781b4dc583fea4"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/cucumber/cucumber/zipball/1bd907bfcd246275e6d11f62c0885e654cec58cf",
-                    "reference": "1bd907bfcd246275e6d11f62c0885e654cec58cf"
+                    "url": "https://api.github.com/repos/cucumber/gherkin/zipball/2264c6d4ffa8a914808d32ec74781b4dc583fea4",
+                    "reference": "2264c6d4ffa8a914808d32ec74781b4dc583fea4"
                 }
             }
         }
@@ -75,7 +75,6 @@
         "lint": [
             "Composer\\Config::disableProcessTimeout",
             "vendor/bin/phpstan analyze --ansi --no-progress --memory-limit 512M",
-            "vendor/bin/phpstan analyze bin/cucumber_changelog --ansi --no-progress --memory-limit 512M",
             "vendor/bin/phpstan analyze bin/update_cucumber --ansi --no-progress --memory-limit 512M",
             "vendor/bin/phpstan analyze bin/update_i18n --ansi --no-progress --memory-limit 512M",
             "vendor/bin/php-cs-fixer check --diff --ansi --show-progress=dots --verbose"

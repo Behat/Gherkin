@@ -31,7 +31,7 @@ use SplFileInfo;
  */
 class CompatibilityTest extends TestCase
 {
-    public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/cucumber/gherkin/testdata';
+    public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
 
     private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
