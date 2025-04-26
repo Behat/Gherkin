@@ -12,6 +12,12 @@
 ini_set('error_reporting', E_ALL);
 set_error_handler(static fn ($code, $msg, $file, $line) => throw new ErrorException($msg, $code, $code, $file, $line));
 
+if (ini_get('zend.assertions') !== '1') {
+    // Ensure our assertions are actually processed. Otherwise any code inside the assert() call is compiled out
+    echo "This script must be run with zend.assertions set to 1\n";
+    exit;
+}
+
 $updater = new
 /**
  * @phpstan-type CurrentVersionArray array{tag_name: string, hash: string, composer_version: string}
@@ -264,6 +270,6 @@ try {
     );
     exit(0);
 } catch (Throwable $e) {
-    echo 'ERROR: ' . $e->getMessage() . "\n";
+    echo sprintf("ERROR [%s:%d]: %s\n", $e->getFile(), $e->getLine(), $e->getMessage());
     exit(1);
 }
