@@ -11,23 +11,24 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Keywords\CucumberKeywords;
+use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class CucumberKeywordsTest extends KeywordsTestCase
 {
-    protected function getKeywords()
+    protected static function getKeywords(): KeywordsInterface
     {
         return new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
     }
 
-    protected function getKeywordsArray()
+    protected static function getKeywordsArray(): array
     {
-        return Yaml::parse(file_get_contents(__DIR__ . '/../Fixtures/i18n.yml'));
+        return Yaml::parseFile(__DIR__ . '/../Fixtures/i18n.yml');
     }
 
-    protected function getSteps($keywords, $text, &$line, $keywordType)
+    protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array
     {
         $steps = [];
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
@@ -69,6 +70,9 @@ class CucumberKeywordsTest extends KeywordsTestCase
         new CucumberKeywords("a\nstring");
     }
 
+    /**
+     * @todo Use VFS
+     */
     public function testYamlFileMustBeReadable(): void
     {
         $tempFile = tempnam(sys_get_temp_dir(), 'test');

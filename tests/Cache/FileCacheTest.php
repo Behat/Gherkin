@@ -15,8 +15,11 @@ use Behat\Gherkin\Exception\CacheException;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
+use Tests\Behat\Gherkin\Filesystem;
 
+/**
+ * @todo Use VFS
+ */
 class FileCacheTest extends TestCase
 {
     private string $path;
@@ -25,11 +28,6 @@ class FileCacheTest extends TestCase
     protected function setUp(): void
     {
         $this->cache = new FileCache($this->path = sys_get_temp_dir() . uniqid('/gherkin-test'));
-    }
-
-    protected function tearDown(): void
-    {
-        (new Filesystem())->remove($this->path);
     }
 
     public function testIsFreshWhenThereIsNoFile(): void
@@ -73,7 +71,8 @@ class FileCacheTest extends TestCase
             'broken_feature',
             new FeatureNode(null, null, [], null, [], '', '', null, 1),
         );
-        $files = glob($this->path . '/**/*.feature.cache');
+        $files = Filesystem::find("$this->path/**/*.feature.cache");
+
         $this->assertCount(1, $files, 'Cache should have written a single file');
 
         // Now simulate the file being corrupted and attempt to read it

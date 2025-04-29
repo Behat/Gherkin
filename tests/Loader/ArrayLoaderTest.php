@@ -217,9 +217,9 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertFalse($features[0]->hasBackground());
         $this->assertTrue($features[1]->hasBackground());
-        $this->assertEquals(0, $features[1]->getBackground()->getLine());
+        $this->assertEquals(0, $features[1]->getBackground()?->getLine());
         $this->assertTrue($features[2]->hasBackground());
-        $this->assertEquals(2, $features[2]->getBackground()->getLine());
+        $this->assertEquals(2, $features[2]->getBackground()?->getLine());
     }
 
     public function testLoadSteps(): void
@@ -255,7 +255,7 @@ class ArrayLoaderTest extends TestCase
         ]);
 
         $background = $features[0]->getBackground();
-        $this->assertTrue($background->hasSteps());
+        $this->assertTrue($background?->hasSteps());
         $this->assertCount(2, $background->getSteps());
         $steps = $background->getSteps();
         $this->assertEquals('Gangway!', $steps[0]->getType());
@@ -348,7 +348,7 @@ class ArrayLoaderTest extends TestCase
 
         $background = $features[0]->getBackground();
 
-        $this->assertTrue($background->hasSteps());
+        $this->assertTrue($background?->hasSteps());
 
         $steps = $background->getSteps();
 

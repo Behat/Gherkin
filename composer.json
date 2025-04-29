@@ -19,7 +19,6 @@
     },
 
     "require-dev": {
-        "symfony/filesystem": "^5.4 || ^6.4 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/gherkin-monorepo": "dev-gherkin-v24.1.0",
