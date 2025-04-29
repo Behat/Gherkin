@@ -62,7 +62,7 @@ jobs:
 
       - run: composer test -- --coverage-clover=coverage.xml --log-junit junit.xml --testdox
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
