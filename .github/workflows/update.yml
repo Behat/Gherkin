@@ -3,6 +3,7 @@ name: Update Cucumber
 on:
   schedule:
     - cron: '0 7 * * *'
+  workflow_dispatch:
 
 jobs:
   cucumber-update:
