@@ -3,6 +3,7 @@ name: Update Cucumber
 on:
   schedule:
     - cron: '0 7 * * *'
+  workflow_dispatch:
 
 jobs:
   cucumber-update:
@@ -71,7 +72,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.check-existing-pr.checkout_branch }}
+          ref: ${{ steps.check-existing-pr.outputs.checkout_branch }}
 
       - run: bin/update_cucumber
         id: cucumber
@@ -93,7 +94,7 @@ jobs:
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          BRANCH_NAME: ${{ steps.check-existing-pr.commit_branch }}
+          BRANCH_NAME: ${{ steps.check-existing-pr.outputs.commit_branch }}
           COMMIT_MSG: ${{ steps.cucumber.outputs.commit_msg }}
           PR_EXISTS: ${{ steps.check-existing-pr.outputs.exists }}
           PR_TITLE: Update to cucumber/gherkin ${{ steps.cucumber.outputs.cucumber_version }}
