@@ -20,8 +20,8 @@ if (ini_get('zend.assertions') !== '1') {
 
 $updater = new
 /**
- * @phpstan-type CurrentVersionArray array{tag_name: string, hash: string, composer_version: string}
- * @phpstan-type GitHubReleaseArray array{tag_name: string, hash: string, html_url: string, changelog: string}
+ * @phpstan-type TCurrentVersionArray array{tag_name: string, hash: string, composer_version: string}
+ * @phpstan-type TGitHubReleaseArray array{tag_name: string, hash: string, html_url: string, changelog: string}
  */
 class {
     public function update(string $composerFile, string $outputVarsFile): void
@@ -62,6 +62,9 @@ class {
         );
     }
 
+    /**
+     * @phpstan-return TCurrentVersionArray
+     */
     private function findComposerGherkinVersion(string $composerConfigStr): array
     {
         $composerConfig = $this->jsonDecodeArray($composerConfigStr);
@@ -77,13 +80,15 @@ class {
             && ($repository['package']['name'] ?? null) === 'cucumber/gherkin-monorepo'
             && isset($repository['package']['version'])
             && is_array($repository['package']['source'] ?? null)
-            && isset($repository['package']['source']['reference']),
+            && isset($repository['package']['source']['reference'])
+            && is_string($repository['package']['source']['reference']),
             'First composer.json repository should be our custom gherkin package with expected structure',
         );
 
         $composerVersion = $repository['package']['version'];
         assert(
-            is_array($composerConfig['require-dev'] ?? null)
+            is_string($composerVersion)
+            && is_array($composerConfig['require-dev'] ?? null)
             && ($composerConfig['require-dev']['cucumber/gherkin-monorepo'] ?? null) === $composerVersion,
             'composer.json should require cucumber/gherkin-monorepo at the same version provided by the package',
         );
@@ -100,6 +105,9 @@ class {
         ];
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     private function jsonDecodeArray(string $json): array
     {
         $result = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
@@ -109,7 +117,7 @@ class {
     }
 
     /**
-     * @return list<GitHubReleaseArray>
+     * @phpstan-return non-empty-list<TGitHubReleaseArray>
      */
     private function listGitHubReleases(string $repo): array
     {
@@ -117,19 +125,36 @@ class {
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
         $releases = $this->jsonDecodeArray($this->getContents("https://api.github.com/repos/$repo/releases"));
 
+        assert($releases !== []);
+
         // Releases API is in order of github release ID, this may not be version order (e.g. major releases may be
         // interspersed with point releases to older versions). So sort it most recent -> oldest by version number.
-        usort($releases, static fn (array $a, array $b) => version_compare($b['tag_name'], $a['tag_name']));
+        usort($releases, static function (mixed $a, mixed $b) {
+            assert(
+                is_array($a)
+                && is_array($b)
+                && is_string($a['tag_name'] ?? null)
+                && is_string($b['tag_name'] ?? null)
+            );
+
+            return version_compare($b['tag_name'], $a['tag_name']);
+        });
 
         // Sanity check and simplify the GitHub API response structure to reduce assertions and type issues elsewhere
         return array_map(
             static function (mixed $release) {
                 assert(
                     is_array($release)
-                    && isset($release['tag_name'])
-                    && isset($release['body'])
-                    && isset($release['html_url'])
-                    && isset($release['target_commitish']),
+                    && isset(
+                        $release['tag_name'],
+                        $release['body'],
+                        $release['html_url'],
+                        $release['target_commitish']
+                    )
+                    && is_string($release['tag_name'])
+                    && is_string($release['body'])
+                    && is_string($release['html_url'])
+                    && is_string($release['target_commitish']),
                     'github release JSON should match expected structure',
                 );
 
@@ -142,7 +167,7 @@ class {
 
                 // Protect against any future releases that don't properly target a tag SHA.
                 assert(
-                    preg_match('/^[a-z0-9]{40}$/', $release['target_commitish']),
+                    (bool) preg_match('/^[a-z0-9]{40}$/', $release['target_commitish']),
                     'target_commitish for ' . $release['tag_name'] . ' should be a hash',
                 );
 
@@ -158,10 +183,10 @@ class {
     }
 
     /**
-     * @param list<GitHubReleaseArray> $releases
-     * @param CurrentVersionArray $currentVersion
+     * @phpstan-param non-empty-list<TGitHubReleaseArray> $releases
+     * @phpstan-param TCurrentVersionArray $currentVersion
      *
-     * @return GitHubReleaseArray|false
+     * @phpstan-return TGitHubReleaseArray|false
      */
     private function findNextGherkinRelease(array $releases, array $currentVersion): array|false
     {
@@ -194,8 +219,8 @@ class {
     }
 
     /**
-     * @param CurrentVersionArray $currentVersion
-     * @param GitHubReleaseArray $nextVersion
+     * @phpstan-param TCurrentVersionArray $currentVersion
+     * @phpstan-param TGitHubReleaseArray $nextVersion
      */
     private function buildCommitMessage(array $currentVersion, array $nextVersion): string
     {
@@ -205,12 +230,15 @@ class {
             $nextVersion['hash'],
         );
 
-        // Remove `#` prefixes on issues and PR numbers (otherwise these will incorrectly autolink to our own repo).
-        $body = preg_replace('/#(\d+)/', '$1', $nextVersion['changelog']);
-        // Remove `@` prefixes on github username tags so that they don't create a notification / backlink
-        $body = preg_replace('/@(\w+)/', '$1', $body);
-        // Prevent any github links from spamming issues and PRs on other repos with backlinks
-        $body = preg_replace('_https://github\.com_', 'https://redirect.github.com', $body);
+        $replacements = [
+            // Remove `#` prefixes on issues and PR numbers (otherwise these will incorrectly autolink to our own repo).
+            '/#(\d+)/' => '$1',
+            // Remove `@` prefixes on github username tags so that they don't create a notification / backlink
+            '/@(\w+)/' => '$1',
+            // Prevent any github links from spamming issues and PRs on other repos with backlinks
+            '_https://github\.com_' => 'https://redirect.github.com',
+        ];
+        $body = preg_replace(array_keys($replacements), array_values($replacements), $nextVersion['changelog']);
 
         return implode("\n", [
             'Automatic cucumber tag update to ' . $nextVersion['tag_name'],
@@ -222,8 +250,8 @@ class {
     }
 
     /**
-     * @param CurrentVersionArray $currentVersion
-     * @param GitHubReleaseArray $nextVersion
+     * @phpstan-param TCurrentVersionArray $currentVersion
+     * @phpstan-param TGitHubReleaseArray $nextVersion
      */
     private function updateComposerJsonFile(string $composerFile, string $composerConfigStr, array $currentVersion, array $nextVersion): void
     {
@@ -233,11 +261,11 @@ class {
             $currentVersion['hash'] => $nextVersion['hash'],
         ]);
 
-        assert(file_put_contents($composerFile, $newJSON), 'Updated composer.json');
+        assert((bool) file_put_contents($composerFile, $newJSON), 'Updated composer.json');
     }
 
     /**
-     * @param array<string,string> $vars
+     * @param array<string, string> $vars
      */
     private function writeGitHubOutputs(string $outputVarsFile, array $vars): void
     {
