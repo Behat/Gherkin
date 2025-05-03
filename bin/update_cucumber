@@ -125,23 +125,10 @@ class {
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
         $releases = $this->jsonDecodeArray($this->getContents("https://api.github.com/repos/$repo/releases"));
 
-        assert($releases !== []);
-
-        // Releases API is in order of github release ID, this may not be version order (e.g. major releases may be
-        // interspersed with point releases to older versions). So sort it most recent -> oldest by version number.
-        usort($releases, static function (mixed $a, mixed $b) {
-            assert(
-                is_array($a)
-                && is_array($b)
-                && is_string($a['tag_name'] ?? null)
-                && is_string($b['tag_name'] ?? null)
-            );
-
-            return version_compare($b['tag_name'], $a['tag_name']);
-        });
+        assert($releases !== [], 'github should have returned at least one release');
 
         // Sanity check and simplify the GitHub API response structure to reduce assertions and type issues elsewhere
-        return array_map(
+        $releases = array_map(
             static function (mixed $release) {
                 assert(
                     is_array($release)
@@ -180,6 +167,12 @@ class {
             },
             $releases,
         );
+
+        // Releases API is in order of github release ID, this may not be version order (e.g. major releases may be
+        // interspersed with point releases to older versions). So sort it most recent -> oldest by version number.
+        usort($releases, static fn (array $a, array $b) => version_compare($b['tag_name'], $a['tag_name']));
+
+        return $releases;
     }
 
     /**
