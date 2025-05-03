@@ -138,6 +138,22 @@ return array (
     'then' => 'O halda|*',
     'when' => 'Nə vaxt ki|Əgər|*',
   ),
+  'be' => 
+  array (
+    'and' => 'Таксама|Ды|*|I',
+    'background' => 'Кантэкст',
+    'but' => 'Інакш|Але|*',
+    'examples' => 'Прыклады',
+    'feature' => 'Функцыянальнасць|Фіча',
+    'given' => 'Дадзена|Няхай|*',
+    'name' => 'Belarusian',
+    'native' => 'Беларуская',
+    'rule' => 'Правілы',
+    'scenario' => 'Сцэнарый|Cцэнар',
+    'scenario_outline' => 'Шаблон сцэнарыя|Узор сцэнара',
+    'then' => 'Тады|*',
+    'when' => 'Калі|*',
+  ),
   'bg' => 
   array (
     'and' => '*|И',
