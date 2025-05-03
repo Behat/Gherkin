@@ -260,7 +260,7 @@ return array (
     'given' => 'Givet|*',
     'name' => 'Danish',
     'native' => 'dansk',
-    'rule' => 'Rule',
+    'rule' => 'Regel',
     'scenario' => 'Eksempel|Scenarie',
     'scenario_outline' => 'Abstrakt Scenario',
     'then' => 'Så|*',
@@ -420,7 +420,7 @@ return array (
     'given' => 'Donitaĵo|Komence|*',
     'name' => 'Esperanto',
     'native' => 'Esperanto',
-    'rule' => 'Rule',
+    'rule' => 'Regulo',
     'scenario' => 'Ekzemplo|Scenaro|Kazo',
     'scenario_outline' => 'Konturo de la scenaro|Kazo-skizo|Skizo',
     'then' => 'Do|*',
@@ -668,7 +668,7 @@ return array (
   ),
   'it' => 
   array (
-    'and' => '*|E',
+    'and' => 'Ed|*|E',
     'background' => 'Contesto',
     'but' => 'Ma|*',
     'examples' => 'Esempi',
@@ -842,6 +842,22 @@ return array (
     'then' => 'Togash|*',
     'when' => 'Koga|*',
   ),
+  'ml' => 
+  array (
+    'and' => 'ഒപ്പം<|*',
+    'background' => 'പശ്ചാത്തലം',
+    'but' => 'പക്ഷേ<|*',
+    'examples' => 'ഉദാഹരണങ്ങൾ',
+    'feature' => 'സവിശേഷത',
+    'given' => 'നൽകിയത്<|*',
+    'name' => 'Malayalam',
+    'native' => 'മലയാളം',
+    'rule' => 'നിയമം',
+    'scenario' => 'രംഗം',
+    'scenario_outline' => 'സാഹചര്യത്തിന്റെ രൂപരേഖ',
+    'then' => 'പിന്നെ<|*',
+    'when' => 'എപ്പോൾ<',
+  ),
   'mn' => 
   array (
     'and' => 'Тэгээд|Мөн|*',
@@ -900,7 +916,7 @@ return array (
     'given' => 'Gegeven|Stel|*',
     'name' => 'Dutch',
     'native' => 'Nederlands',
-    'rule' => 'Rule',
+    'rule' => 'Regel',
     'scenario' => 'Voorbeeld|Scenario',
     'scenario_outline' => 'Abstract Scenario',
     'then' => 'Dan|*',
