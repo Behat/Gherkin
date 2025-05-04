@@ -52,7 +52,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
         return new FeatureNode(
             $featureJson['name'] ?? null,
-            trim($featureJson['description'] ?? '') ?: null,
+            $featureJson['description'] ? trim($featureJson['description']) : null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
             self::getScenarios($featureJson),
@@ -158,16 +158,22 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
-                if (!isset($tableJson['tableHeader'])) {
-                    throw new NodeException(
-                        sprintf(
-                            'Table header is required, but none was specified for the example on line %s.',
-                            $tableJson['location']['line'],
-                        )
-                    );
+                if (isset($tableJson['tableHeader'])) {
+                    // Table header seems to have been deprecated, but is still in use (in cucumber test fixtures)
+                    $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
+                } else {
+                    // Otherwise, assume the header is the first row (which would be now required)
+                    $firstRow = array_shift($tableJson['tableBody']);
+                    if ($firstRow === null) {
+                        throw new NodeException(
+                            sprintf(
+                                'Expected either a table header or at least one row for the example on line %s but found none.',
+                                $tableJson['location']['line'],
+                            )
+                        );
+                    }
+                    $table[$firstRow['line']] = array_column($firstRow['cells'], 'value');
                 }
-
-                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
 
                 foreach ($tableJson['tableBody'] as $bodyRow) {
                     $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');

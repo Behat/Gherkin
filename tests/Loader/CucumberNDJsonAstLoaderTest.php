@@ -126,10 +126,11 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         );
     }
 
-    public function testOutlineTableHeaderIsRequired(): void
+    public function testOutlineTableHeaderOrNonEmptyTableIsRequired(): void
     {
-        $this->expectException(NodeException::class);
-        $this->expectExceptionMessage('Table header is required, but none was specified for the example on line 3.');
+        $this->expectExceptionObject(
+            new NodeException('Expected either a table header or at least one row for the example on line 3 but found none.')
+        );
 
         $this->loader->load($this->serializeCucumberMessagesToFile([
             'gherkinDocument' => [
@@ -143,20 +144,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                                 'examples' => [
                                     [
                                         'location' => ['line' => 3],
-                                        'tableBody' => [
-                                            [
-                                                'cells' => [
-                                                    ['value' => 'A1'],
-                                                    ['value' => 'B1'],
-                                                ],
-                                            ],
-                                            [
-                                                'cells' => [
-                                                    ['value' => 'A2'],
-                                                    ['value' => 'B2'],
-                                                ],
-                                            ],
-                                        ],
+                                        'tableBody' => [],
                                     ],
                                 ],
                             ],
