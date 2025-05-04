@@ -18,7 +18,9 @@ class TableNodeTest extends TestCase
 {
     public function testConstructorExpectsSameNumberOfColumnsInEachRow(): void
     {
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException("Table row '1' is expected to have 2 columns, got 1")
+        );
 
         new TableNode([
             ['username', 'password'],
@@ -317,14 +319,18 @@ class TableNodeTest extends TestCase
             210 => ['242', '2everzet', '2qwerty'],
         ]);
 
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException('Tables have different structure. Cannot merge one into another')
+        );
 
         $table->mergeRowsFromTable($new);
     }
 
     public function testGetTableFromListWithMultidimensionalArrayArgument(): void
     {
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException('List is not a one-dimensional array.')
+        );
 
         TableNode::fromList([
             [1, 2, 3],
@@ -344,7 +350,9 @@ class TableNodeTest extends TestCase
             210 => ['242', '2everzet', '2qwerty'],
         ]);
 
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException('Tables have different structure. Cannot merge one into another')
+        );
 
         $table->mergeRowsFromTable($new);
     }
@@ -361,7 +369,9 @@ class TableNodeTest extends TestCase
             210 => ['242', '2everzet'],
         ]);
 
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException('Tables have different structure. Cannot merge one into another')
+        );
 
         $table->mergeRowsFromTable($new);
     }

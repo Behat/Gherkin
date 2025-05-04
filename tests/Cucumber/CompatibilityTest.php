@@ -111,6 +111,7 @@ class CompatibilityTest extends TestCase
         if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
             $this->expectDeprecationErrorMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
         } else {
+            // Note that the exception message is not part of compatibility testing and therefore cannot be checked.
             $this->expectException(ParserException::class);
         }
 

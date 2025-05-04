@@ -20,7 +20,9 @@ class StepNodeTest extends TestCase
 {
     public function testThatStepCanHaveOnlyOneArgument(): void
     {
-        $this->expectException(NodeException::class);
+        $this->expectExceptionObject(
+            new NodeException('Steps could have only one argument, but `Gangway! I am on the page:` have 2.g')
+        );
 
         new StepNode('Gangway!', 'I am on the page:', [
             new PyStringNode(['one', 'two'], 11),
