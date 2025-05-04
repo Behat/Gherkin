@@ -172,6 +172,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -184,6 +185,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -199,6 +201,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -213,6 +216,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -228,6 +232,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -243,6 +248,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -259,6 +265,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -271,6 +278,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 
@@ -286,6 +294,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectException(ParserException::class);
+
         $this->gherkin->parse($feature);
     }
 }

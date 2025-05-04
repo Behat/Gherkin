@@ -309,6 +309,7 @@ class TagFilterTest extends TestCase
             },
             E_ALL
         );
+
         $this->expectException(Exception::class);
     }
 }

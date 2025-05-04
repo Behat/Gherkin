@@ -184,7 +184,8 @@ class CompatibilityTest extends TestCase
             },
             E_ALL
         );
-        $this->expectException(RuntimeException::class);
+
         $this->expectExceptionMessageMatches($message);
+        $this->expectException(RuntimeException::class);
     }
 }
