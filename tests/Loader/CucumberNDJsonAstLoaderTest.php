@@ -155,6 +155,76 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         ]));
     }
 
+    public function testOutlineTableHeaderRetrievedFromTableBodyWhenMissing(): void
+    {
+        $file = $this->serializeCucumberMessagesToFile([
+            'gherkinDocument' => [
+                'feature' => [
+                    'location' => ['line' => 1],
+                    'description' => 'Feature containing a scenario with an explicit table header',
+                    'keyword' => 'feature',
+                    'language' => 'en',
+                    'children' => [
+                        [
+                            'scenario' => [
+                                'location' => ['line' => 2],
+                                'keyword' => 'outline',
+                                'examples' => [
+                                    [
+                                        'location' => ['line' => 3],
+                                        'keyword' => 'example',
+                                        'tableBody' => [
+                                            [
+                                                'location' => ['line' => 777],
+                                                'cells' => [
+                                                    ['value' => 'A1'],
+                                                    ['value' => 'B1'],
+                                                ],
+                                            ],
+                                            [
+                                                'location' => ['line' => 888],
+                                                'cells' => [
+                                                    ['value' => 'A2'],
+                                                    ['value' => 'B2'],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $features = $this->loader->load($file);
+
+        $this->assertEquals(
+            [
+                new FeatureNode(
+                    null,
+                    'Feature containing a scenario with an explicit table header',
+                    [],
+                    null,
+                    [
+                        new OutlineNode(null, [], [], [
+                            new ExampleTableNode([
+                                777 => ['A1', 'B1'],
+                                888 => ['A2', 'B2'],
+                            ], 'example'),
+                        ], 'outline', 2),
+                    ],
+                    'feature',
+                    'en',
+                    $file,
+                    1,
+                ),
+            ],
+            $features,
+        );
+    }
+
     private function serializeCucumberMessagesToFile(mixed ...$messages): string
     {
         return 'data://application/x-ndjson;base64,'

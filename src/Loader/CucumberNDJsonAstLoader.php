@@ -172,7 +172,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                             )
                         );
                     }
-                    $table[$firstRow['line']] = array_column($firstRow['cells'], 'value');
+                    $table[$firstRow['location']['line']] = array_column($firstRow['cells'], 'value');
                 }
 
                 foreach ($tableJson['tableBody'] as $bodyRow) {
