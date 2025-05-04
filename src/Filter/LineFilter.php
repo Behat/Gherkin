@@ -95,13 +95,8 @@ class LineFilter implements FilterInterface
                             $filteredTable[$this->filterLine] = $table[$this->filterLine];
                         }
 
-                        $scenario = new OutlineNode(
-                            $scenario->getTitle(),
-                            $scenario->getTags(),
-                            $scenario->getSteps(),
+                        $scenario = $scenario->withTables(
                             [new ExampleTableNode($filteredTable, $exampleTable->getKeyword(), $exampleTable->getTags())],
-                            $scenario->getKeyword(),
-                            $scenario->getLine()
                         );
                     }
                 }
@@ -110,16 +105,6 @@ class LineFilter implements FilterInterface
             $scenarios[] = $scenario;
         }
 
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $scenarios,
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine()
-        );
+        return $feature->withScenarios($scenarios);
     }
 }
