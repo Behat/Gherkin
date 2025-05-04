@@ -21,7 +21,7 @@ class StepNodeTest extends TestCase
     public function testThatStepCanHaveOnlyOneArgument(): void
     {
         $this->expectExceptionObject(
-            new NodeException('Steps could have only one argument, but `Gangway! I am on the page:` have 2.g')
+            new NodeException('Steps could have only one argument, but `Gangway! I am on the page:` have 2.')
         );
 
         new StepNode('Gangway!', 'I am on the page:', [
