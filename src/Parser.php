@@ -569,6 +569,15 @@ class Parser
         }
 
         $nextType = $this->predictTokenType();
+
+        if ($nextType === 'EOS') {
+            throw new ParserException(sprintf(
+                'Unexpected end of file after tags on line %d%s',
+                $token['line'],
+                $this->file ? ' in file: ' . $this->file : '',
+            ));
+        }
+
         if (!isset($possibleTransitions[$currentType]) || in_array($nextType, $possibleTransitions[$currentType])) {
             return $this->parseExpression();
         }
