@@ -59,6 +59,7 @@ class CompatibilityTest extends TestCase
      */
     private array $parsedButShouldNotBe = [
         'invalid_language.feature' => 'Invalid language is silently ignored',
+        'unexpected_end_of_file.feature' => 'EOF after tags is ignored',
     ];
 
     /**
