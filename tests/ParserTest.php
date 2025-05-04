@@ -48,14 +48,18 @@ final class ParserTest extends TestCase
     {
         $parser = $this->createGherkinParser();
 
-        $parser->parse(
-            <<<'FEATURE'
-            Feature:
-            Scenario:
-            Given step
-            @skipped
-            FEATURE
-        );
+        try {
+            $parser->parse(
+                <<<'FEATURE'
+                Feature:
+                Scenario:
+                Given step
+                @skipped
+                FEATURE,
+            );
+        } catch (ParserException) {
+            // expected - features cannot end with tags
+        }
         $feature2 = $parser->parse(
             <<<'FEATURE'
             Feature:
