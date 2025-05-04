@@ -50,8 +50,8 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         $featureJson = $json['gherkinDocument']['feature'];
 
         return new FeatureNode(
-            $featureJson['name'] ?? null,
-            $featureJson['description'] ?? null,
+            $featureJson['name'],
+            $featureJson['description'],
             self::getTags($featureJson),
             self::getBackground($featureJson),
             self::getScenarios($featureJson),
@@ -83,7 +83,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 static function ($child) {
                     if ($child['scenario']['examples']) {
                         return new OutlineNode(
-                            $child['scenario']['name'] ?? null,
+                            $child['scenario']['name'],
                             self::getTags($child['scenario']),
                             self::getSteps($child['scenario']['steps'] ?? []),
                             self::getTables($child['scenario']['examples']),
