@@ -27,11 +27,12 @@ abstract class ComplexFilter implements ComplexFilterInterface
      */
     public function filterFeature(FeatureNode $feature)
     {
-        return $feature->withScenarios(
-            array_filter(
-                $feature->getScenarios(),
-                fn (ScenarioInterface $scenario) => $this->isScenarioMatch($feature, $scenario)
-            )
+        $scenarios = $feature->getScenarios();
+        $filteredScenarios = array_filter(
+            $scenarios,
+            fn (ScenarioInterface $scenario) => $this->isScenarioMatch($feature, $scenario)
         );
+
+        return $scenarios === $filteredScenarios ? $feature : $feature->withScenarios($filteredScenarios);
     }
 }
