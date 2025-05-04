@@ -224,22 +224,22 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns a copy of this features but with a different set of scenarios.
+     * Returns a copy of this feature but with a different set of scenarios.
      *
      * @param array<array-key, ScenarioInterface> $scenarios
      */
     public function withScenarios(array $scenarios): self
     {
         return new self(
-            $this->getTitle(),
-            $this->getDescription(),
-            $this->getTags(),
-            $this->getBackground(),
+            $this->title,
+            $this->description,
+            $this->tags,
+            $this->background,
             array_values($scenarios),
-            $this->getKeyword(),
-            $this->getLanguage(),
-            $this->getFile(),
-            $this->getLine()
+            $this->keyword,
+            $this->language,
+            $this->file,
+            $this->line,
         );
     }
 

@@ -21,42 +21,21 @@ class ComplexFilterTest extends FilterTestCase
     {
         $scenarios = [new ScenarioNode('Scenario#1', [], [], '', 1)];
         $feature = new FeatureNode('Feature#1', null, [], null, $scenarios, '', '', null, 1);
+        $nonFilteringFilter = new class extends ComplexFilter {
+            public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario): bool
+            {
+                return true;
+            }
 
-        $filter = $this->createComplexFilter([$feature], $scenarios);
+            public function isFeatureMatch(FeatureNode $feature): bool
+            {
+                return true;
+            }
+        };
 
-        $filtered = $filter->filterFeature($feature);
+        $filtered = $nonFilteringFilter->filterFeature($feature);
 
         $this->assertCount(1, $scenarios = $filtered->getScenarios());
         $this->assertSame('Scenario#1', $scenarios[0]->getTitle());
-    }
-
-    /**
-     * @param list<FeatureNode> $matchingFeatures
-     * @param list<ScenarioInterface> $matchingScenarios
-     */
-    private function createComplexFilter(array $matchingFeatures, array $matchingScenarios): ComplexFilter
-    {
-        return new class($matchingFeatures, $matchingScenarios) extends ComplexFilter {
-            /**
-             * @param list<FeatureNode> $matchingFeatures
-             * @param list<ScenarioInterface> $matchingScenarios
-             */
-            public function __construct(
-                private readonly array $matchingFeatures,
-                private readonly array $matchingScenarios,
-            ) {
-            }
-
-            public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
-            {
-                return in_array($feature, $this->matchingFeatures, true)
-                    && in_array($scenario, $this->matchingScenarios, true);
-            }
-
-            public function isFeatureMatch(FeatureNode $feature)
-            {
-                return in_array($feature, $this->matchingFeatures, true);
-            }
-        };
     }
 }

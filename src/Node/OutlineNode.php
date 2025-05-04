@@ -201,12 +201,12 @@ class OutlineNode implements ScenarioInterface
     public function withTables(array $exampleTables): self
     {
         return new OutlineNode(
-            $this->getTitle(),
-            $this->getTags(),
-            $this->getSteps(),
+            $this->title,
+            $this->tags,
+            $this->steps,
             $exampleTables,
-            $this->getKeyword(),
-            $this->getLine()
+            $this->keyword,
+            $this->line,
         );
     }
 
