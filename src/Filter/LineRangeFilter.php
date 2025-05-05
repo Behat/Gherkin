@@ -40,11 +40,7 @@ class LineRangeFilter implements FilterInterface
     public function __construct($filterMinLine, $filterMaxLine)
     {
         $this->filterMinLine = (int) $filterMinLine;
-        if ($filterMaxLine === '*') {
-            $this->filterMaxLine = PHP_INT_MAX;
-        } else {
-            $this->filterMaxLine = (int) $filterMaxLine;
-        }
+        $this->filterMaxLine = $filterMaxLine === '*' ? PHP_INT_MAX : (int) $filterMaxLine;
     }
 
     /**
@@ -119,29 +115,12 @@ class LineRangeFilter implements FilterInterface
                     }
                 }
 
-                $scenario = new OutlineNode(
-                    $scenario->getTitle(),
-                    $scenario->getTags(),
-                    $scenario->getSteps(),
-                    $exampleTableNodes,
-                    $scenario->getKeyword(),
-                    $scenario->getLine()
-                );
+                $scenario = $scenario->withTables($exampleTableNodes);
             }
 
             $scenarios[] = $scenario;
         }
 
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $scenarios,
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine()
-        );
+        return $feature->withScenarios($scenarios);
     }
 }

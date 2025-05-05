@@ -30,25 +30,11 @@ abstract class SimpleFilter implements FilterInterface
             return $feature;
         }
 
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($scenario)) {
-                continue;
-            }
-
-            $scenarios[] = $scenario;
-        }
-
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $scenarios,
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine()
+        return $feature->withScenarios(
+            array_filter(
+                $feature->getScenarios(),
+                $this->isScenarioMatch(...)
+            )
         );
     }
 }

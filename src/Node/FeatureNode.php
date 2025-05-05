@@ -224,6 +224,26 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
+     * Returns a copy of this feature but with a different set of scenarios.
+     *
+     * @param array<array-key, ScenarioInterface> $scenarios
+     */
+    public function withScenarios(array $scenarios): self
+    {
+        return new self(
+            $this->title,
+            $this->description,
+            $this->tags,
+            $this->background,
+            array_values($scenarios),
+            $this->keyword,
+            $this->language,
+            $this->file,
+            $this->line,
+        );
+    }
+
+    /**
      * Returns whether the file path is an absolute path.
      *
      * @param string|null $file A file path
@@ -243,7 +263,6 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
                 && $file[1] === ':'
                 && strspn($file, '/\\', 2, 1)
             )
-            || parse_url($file, PHP_URL_SCHEME) !== null
-        ;
+            || parse_url($file, PHP_URL_SCHEME) !== null;
     }
 }
