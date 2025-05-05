@@ -15,7 +15,7 @@ set_error_handler(static fn ($code, $msg, $file, $line) => throw new ErrorExcept
 if (ini_get('zend.assertions') !== '1') {
     // Ensure our assertions are actually processed. Otherwise any code inside the assert() call is compiled out
     echo "This script must be run with zend.assertions set to 1\n";
-    exit;
+    exit(1);
 }
 
 $updater = new
