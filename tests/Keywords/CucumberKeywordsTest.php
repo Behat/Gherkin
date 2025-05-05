@@ -64,8 +64,9 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     public function testYamlRootMustBeAnArray(): void
     {
-        $this->expectException(ParseException::class);
-        $this->expectExceptionMessage('Root element must be an array, but string found.');
+        $this->expectExceptionObject(
+            new ParseException('Root element must be an array, but string found.')
+        );
 
         new CucumberKeywords("a\nstring");
     }
@@ -85,8 +86,9 @@ class CucumberKeywordsTest extends KeywordsTestCase
                 chmod($tempFile, 0);
             }
 
-            $this->expectException(ParseException::class);
-            $this->expectExceptionMessage("Unable to parse \"$tempFile\" as the file is not readable.");
+            $this->expectExceptionObject(
+                new ParseException("Unable to parse \"$tempFile\" as the file is not readable.")
+            );
 
             new CucumberKeywords($tempFile);
         } finally {
