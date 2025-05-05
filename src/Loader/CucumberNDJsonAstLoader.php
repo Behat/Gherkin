@@ -10,7 +10,6 @@
 
 namespace Behat\Gherkin\Loader;
 
-use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -159,24 +158,11 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 $table = [];
 
                 if (isset($tableJson['tableHeader'])) {
-                    // Table header seems to have been deprecated, but is still in use (in cucumber test fixtures)
                     $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
-                } else {
-                    // Otherwise, assume the header is the first row (which would be now required)
-                    $firstRow = array_shift($tableJson['tableBody']);
-                    if ($firstRow === null) {
-                        throw new NodeException(
-                            sprintf(
-                                'Expected either a table header or at least one row for the example on line %s but found none.',
-                                $tableJson['location']['line'],
-                            )
-                        );
-                    }
-                    $table[$firstRow['location']['line']] = array_column($firstRow['cells'], 'value');
-                }
 
-                foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    foreach ($tableJson['tableBody'] as $bodyRow) {
+                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    }
                 }
 
                 return new ExampleTableNode(

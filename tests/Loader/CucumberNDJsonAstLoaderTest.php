@@ -10,7 +10,6 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
-use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
@@ -39,7 +38,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
             'gherkinDocument' => [
                 'feature' => [
                     'location' => ['line' => 111],
-                    'description' => 'Feature with a valid Scenario',
+                    'name' => 'Feature with a valid Scenario',
                     'keyword' => 'fea',
                     'language' => 'en',
                     'children' => [
@@ -102,8 +101,8 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         $this->assertEquals(
             [
                 new FeatureNode(
-                    null,
                     'Feature with a valid Scenario',
+                    null,
                     [],
                     new BackgroundNode('Empty Background', [], 'bac', 222),
                     [
@@ -126,42 +125,12 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         );
     }
 
-    public function testOutlineTableHeaderOrNonEmptyTableIsRequired(): void
-    {
-        $this->expectExceptionObject(
-            new NodeException('Expected either a table header or at least one row for the example on line 3 but found none.')
-        );
-
-        $this->loader->load($this->serializeCucumberMessagesToFile([
-            'gherkinDocument' => [
-                'feature' => [
-                    'location' => ['line' => 1],
-                    'description' => 'Feature containing a scenario with an invalid example table structure',
-                    'children' => [
-                        [
-                            'scenario' => [
-                                'location' => ['line' => 2],
-                                'examples' => [
-                                    [
-                                        'location' => ['line' => 3],
-                                        'tableBody' => [],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ]));
-    }
-
-    public function testOutlineTableHeaderRetrievedFromTableBodyWhenMissing(): void
+    public function testOutlineTableBodyIgnoredWhenTableHeaderIsMissing(): void
     {
         $file = $this->serializeCucumberMessagesToFile([
             'gherkinDocument' => [
                 'feature' => [
                     'location' => ['line' => 1],
-                    'description' => 'Feature containing a scenario with an explicit table header',
                     'keyword' => 'feature',
                     'language' => 'en',
                     'children' => [
@@ -200,29 +169,10 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
 
         $features = $this->loader->load($file);
 
-        $this->assertEquals(
-            [
-                new FeatureNode(
-                    null,
-                    'Feature containing a scenario with an explicit table header',
-                    [],
-                    null,
-                    [
-                        new OutlineNode(null, [], [], [
-                            new ExampleTableNode([
-                                777 => ['A1', 'B1'],
-                                888 => ['A2', 'B2'],
-                            ], 'example'),
-                        ], 'outline', 2),
-                    ],
-                    'feature',
-                    'en',
-                    $file,
-                    1,
-                ),
-            ],
-            $features,
-        );
+        $scenario = $features[0]->getScenarios()[0] ?? null;
+        $this->assertInstanceOf(OutlineNode::class, $scenario);
+        $table = $scenario->getExampleTables()[0] ?? null;
+        $this->assertTrue($table->isEmpty());
     }
 
     private function serializeCucumberMessagesToFile(mixed ...$messages): string
