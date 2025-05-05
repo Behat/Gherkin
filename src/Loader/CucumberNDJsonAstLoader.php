@@ -51,7 +51,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
         return new FeatureNode(
             $featureJson['name'] ?? null,
-            $featureJson['description'] ? trim($featureJson['description']) : null,
+            $featureJson['description'] ?? null,
             self::getTags($featureJson),
             self::getBackground($featureJson),
             self::getScenarios($featureJson),
