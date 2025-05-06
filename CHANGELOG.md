@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.13.0] - 2025-05-06
+
+### Changed
+
+* Files have been moved to flatten paths into a PSR-4 structure (instead of the previous PSR-0). This may affect users
+  who are requiring files directly rather than using the composer autoloader as expected.
+  See the 4.12.0 release for the new `CachedArrayKeywords::withDefaultKeywords()` to use the `i18n.php` file without
+  depending on paths to other files in this repo. By @uuf6429 in [#288](https://github.com/Behat/Gherkin/pull/288)
+
+### Added
+
+* ExampleTableNode now implements TaggedNodeInterface. Also refactored node tag handling methods. By @uuf6429 in
+  [#289](https://github.com/Behat/Gherkin/pull/289)
+* Improve some exceptions thrown when parsing invalid feature files. Also increased test coverage. By @uuf6429 in
+  [#295](https://github.com/Behat/Gherkin/pull/295)
+* New translations for `amh` (Amharic), `be` (Belarusian) and `ml` (Malayalam) from cucumber/gherkin in [#306](https://github.com/Behat/Gherkin/pull/306)
+* Improved translations / whitespace for `ga` (Irish), `it` (Italian), `ja` (Japanese), `ka` (Georgian) and `ko` (Korean)
+  from cucumber/gherkin in [#306](https://github.com/Behat/Gherkin/pull/306)
+
+### Internal
+
+* Fix & improve automatic CI updates to newer cucumber/gherkin test data and translations. By @acoulton in
+  [#300](https://github.com/Behat/Gherkin/pull/300), [#302](https://github.com/Behat/Gherkin/pull/302),
+  [#304](https://github.com/Behat/Gherkin/pull/304), [#305](https://github.com/Behat/Gherkin/pull/305)
+* Update code style and resolve PHPStan warnings (up to level 9) in tests and CI scripts. By @uuf6429 in
+  [#296](https://github.com/Behat/Gherkin/pull/296), [#297](https://github.com/Behat/Gherkin/pull/297)
+  and [#307](https://github.com/Behat/Gherkin/pull/307)
+* Make tests that expect exceptions more explicit by @uuf6429 in [#310](https://github.com/Behat/Gherkin/pull/310)
+* Improve CI workflows and integrate Codecov reporting by @uuf6429 in [#299](https://github.com/Behat/Gherkin/pull/299)
+  and [#301](https://github.com/Behat/Gherkin/pull/301)
+* Refactor tag filtering implementation by @uuf6429 in [#308](https://github.com/Behat/Gherkin/pull/308)
+* Update cucumber/gherkin parity tests to v32.1.1 in [#306](https://github.com/Behat/Gherkin/pull/306)
+
 # [4.12.0] - 2025-02-26
 
 ### Changed
@@ -444,5 +477,6 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.13.0]: https://github.com/Behat/Gherkin/compare/v4.12.0...v4.13.0
 [4.12.0]: https://github.com/Behat/Gherkin/compare/v4.11.0...v4.12.0
 [4.11.0]: https://github.com/Behat/Gherkin/compare/v4.10.0...v4.11.0
