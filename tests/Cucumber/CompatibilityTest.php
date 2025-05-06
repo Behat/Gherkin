@@ -46,7 +46,6 @@ class CompatibilityTest extends TestCase
         'extra_table_content.feature' => 'Table without right border triggers a ParserException',
         'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
-        'scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
         'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
