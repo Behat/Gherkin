@@ -205,7 +205,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Scenario, Outline or Background, but got Step on line: 6')
+            new ParserException('Step can not be tagged, but it is on line: 6')
         );
 
         $this->gherkin->parse($feature);
@@ -258,7 +258,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        Aaand some step"')
+            new ParserException('Expected Step or Examples table, but got text: "        Aaand some step"')
         );
 
         $this->gherkin->parse($feature);
@@ -310,7 +310,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        | foo | bar"')
+            new ParserException('Expected Step or Examples table, but got text: "        | foo | bar"')
         );
 
         $this->gherkin->parse($feature);

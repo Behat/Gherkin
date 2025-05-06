@@ -59,7 +59,7 @@ final class ParserTest extends TestCase
             );
         } catch (ParserException $e) {
             // expected - features cannot end with tags
-            $this->assertSame('Unexpected end of file after tags on line 5', $e->getMessage());
+            $this->assertSame('Unexpected end of file after tags on line: 5', $e->getMessage());
         }
         $feature2 = $parser->parse(
             <<<'FEATURE'
