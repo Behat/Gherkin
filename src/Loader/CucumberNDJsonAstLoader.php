@@ -157,10 +157,12 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
-                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
+                if (isset($tableJson['tableHeader'])) {
+                    $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
 
-                foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    foreach ($tableJson['tableBody'] as $bodyRow) {
+                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    }
                 }
 
                 return new ExampleTableNode(
