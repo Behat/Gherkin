@@ -29,7 +29,7 @@ final class ParserTest extends TestCase
      */
     public static function parserTestDataProvider(): iterable
     {
-        foreach (Filesystem::find(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
+        foreach (Filesystem::findFilesRecursively(__DIR__ . '/Fixtures/etalons', '*.yml') as $file) {
             $testname = basename($file, '.yml');
             yield $testname => ['fixtureName' => $testname];
         }
