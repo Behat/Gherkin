@@ -20,41 +20,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     use TaggedNodeTrait;
 
     /**
-     * @var string
-     */
-    private $text;
-    /**
-     * @var string[]
-     */
-    private $tags;
-    /**
-     * @var StepNode[]
-     */
-    private $outlineSteps;
-    /**
-     * @var array<string, string>
-     */
-    private $tokens;
-    /**
-     * @var int
-     */
-    private $line;
-    /**
-     * @var list<StepNode>|null
-     */
-    private $steps;
-    /**
-     * @var string
-     */
-    private $outlineTitle;
-    /**
-     * @var int|null
-     */
-    private $index;
-
-    /**
-     * Initializes outline.
-     *
      * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
      * @param array<array-key, string> $tags
      * @param array<array-key, StepNode> $outlineSteps
@@ -62,16 +27,18 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      * @param int $line line number within the feature file
      * @param string|null $outlineTitle original title of the scenario outline
      * @param int|null $index the 1-based index of the row/example within the scenario outline
+     * @param list<StepNode>|null $steps
      */
-    public function __construct($text, array $tags, $outlineSteps, array $tokens, $line, $outlineTitle = null, $index = null)
-    {
-        $this->text = $text;
-        $this->tags = $tags;
-        $this->outlineSteps = $outlineSteps;
-        $this->tokens = $tokens;
-        $this->line = $line;
-        $this->outlineTitle = $outlineTitle;
-        $this->index = $index;
+    public function __construct(
+        private readonly string $text,
+        private readonly array $tags,
+        private readonly array $outlineSteps,
+        private readonly array $tokens,
+        private readonly int $line,
+        private readonly ?string $outlineTitle = null,
+        private readonly ?int $index = null,
+        private ?array $steps = null,
+    ) {
     }
 
     /**
@@ -125,11 +92,11 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline steps.
      *
-     * @return StepNode[]
+     * @return list<StepNode>
      */
     public function getSteps()
     {
-        return $this->steps = $this->steps ?: $this->createExampleSteps();
+        return $this->steps ?? ($this->steps = $this->createExampleSteps());
     }
 
     /**
@@ -177,6 +144,23 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     public function getExampleText(): string
     {
         return $this->text;
+    }
+
+    /**
+     * Returns a copy of this example, but with a different set of steps.
+     */
+    public function withSteps(array $steps): self
+    {
+        return new self(
+            $this->text,
+            $this->tags,
+            $this->outlineSteps,
+            $this->tokens,
+            $this->line,
+            $this->outlineTitle,
+            $this->index,
+            $steps,
+        );
     }
 
     /**

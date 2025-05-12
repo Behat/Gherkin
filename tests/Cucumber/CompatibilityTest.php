@@ -15,11 +15,12 @@ use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
+use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
 use Tests\Behat\Gherkin\Filesystem;
@@ -165,25 +166,23 @@ class CompatibilityTest extends TestCase
             // https://github.com/Behat/Gherkin/issues/209
             // We need to be able to ignore that difference so that we can still run cucumber tests that
             // include a description but are covering other features.
-            $trimmedDescription = preg_replace('/^\s+/m', '', $featureNode->getDescription());
-            $this->setPrivateProperty($featureNode, 'description', $trimmedDescription);
+            $featureNode = $featureNode->withDescription(preg_replace('/^\s+/m', '', $featureNode->getDescription()));
         }
 
-        foreach ($featureNode->getScenarios() as $scenarioNode) {
-            foreach ($scenarioNode->getSteps() as $step) {
-                $this->setPrivateProperty($step, 'keywordType', '');
-                $this->setPrivateProperty($step, 'arguments', []);
-            }
-        }
-
-        return $featureNode;
-    }
-
-    private function setPrivateProperty(object $object, string $propertyName, mixed $value): void
-    {
-        $reflectionClass = new ReflectionClass($object);
-        $property = $reflectionClass->getProperty($propertyName);
-        $property->setValue($object, $value);
+        return $featureNode->withScenarios(
+            array_map(
+                static fn (ScenarioInterface $scenario) => $scenario
+                    ->withSteps(
+                        array_map(
+                            static fn (StepNode $step) => $step
+                                ->withKeywordType('')
+                                ->withArguments([]),
+                            $scenario->getSteps(),
+                        )
+                    ),
+                $featureNode->getScenarios(),
+            ),
+        );
     }
 
     private function expectDeprecationErrorMatches(string $message): void

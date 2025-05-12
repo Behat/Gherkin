@@ -20,57 +20,27 @@ class OutlineNode implements ScenarioInterface
     use TaggedNodeTrait;
 
     /**
-     * @var string
-     */
-    private $title;
-    /**
-     * @var string[]
-     */
-    private $tags;
-    /**
-     * @var StepNode[]
-     */
-    private $steps;
-    /**
      * @var array<array-key, ExampleTableNode>
      */
-    private $tables;
+    private array $tables;
     /**
-     * @var string
+     * @var ExampleNode[]
      */
-    private $keyword;
-    /**
-     * @var int
-     */
-    private $line;
-    /**
-     * @var ExampleNode[]|null
-     */
-    private $examples;
+    private array $examples;
 
     /**
-     * Initializes outline.
-     *
-     * @param string|null $title
      * @param string[] $tags
      * @param StepNode[] $steps
      * @param ExampleTableNode|array<array-key, ExampleTableNode> $tables
-     * @param string $keyword
-     * @param int $line
      */
     public function __construct(
-        $title,
-        array $tags,
-        array $steps,
-        $tables,
-        $keyword,
-        $line,
+        private readonly ?string $title,
+        private readonly array $tags,
+        private readonly array $steps,
+        array|ExampleTableNode $tables,
+        private readonly string $keyword,
+        private readonly int $line,
     ) {
-        $this->title = $title;
-        $this->tags = $tags;
-        $this->steps = $steps;
-        $this->keyword = $keyword;
-        $this->line = $line;
         $this->tables = is_array($tables) ? $tables : [$tables];
     }
 
@@ -162,7 +132,7 @@ class OutlineNode implements ScenarioInterface
      */
     public function getExamples()
     {
-        return $this->examples = $this->examples ?: $this->createExamples();
+        return $this->examples ?? ($this->examples = $this->createExamples());
     }
 
     /**
@@ -196,15 +166,32 @@ class OutlineNode implements ScenarioInterface
     }
 
     /**
+     * Returns a copy of this outline, but with a different table.
+     *
      * @param array<array-key, ExampleTableNode> $exampleTables
      */
     public function withTables(array $exampleTables): self
     {
-        return new OutlineNode(
+        return new self(
             $this->title,
             $this->tags,
             $this->steps,
             $exampleTables,
+            $this->keyword,
+            $this->line,
+        );
+    }
+
+    /**
+     * Returns a copy of this outline, but with a different set of steps.
+     */
+    public function withSteps(array $steps): self
+    {
+        return new self(
+            $this->title,
+            $this->tags,
+            $steps,
+            $this->tables,
             $this->keyword,
             $this->line,
         );

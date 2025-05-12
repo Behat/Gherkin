@@ -41,21 +41,22 @@ namespace Behat\Gherkin\Keywords;
  * ));
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-import-type TMultiLanguageKeywords from KeywordsInterface
  */
 class ArrayKeywords implements KeywordsInterface
 {
-    private $keywords = [];
     private $keywordString = [];
     private $language;
 
     /**
      * Initializes holder with keywords.
      *
-     * @param array $keywords Keywords array
+     * @param TMultiLanguageKeywords $keywords Keywords array
      */
-    public function __construct(array $keywords)
-    {
-        $this->keywords = $keywords;
+    public function __construct(
+        private readonly array $keywords,
+    ) {
     }
 
     /**
