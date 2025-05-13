@@ -128,7 +128,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         );
     }
 
-    public function testOutlineTableBodyIgnoredWhenTableHeaderIsMissing(): void
+    public function testOutlineTableBodyRequiresTableHeader(): void
     {
         $file = $this->serializeCucumberMessagesToFile([
             'gherkinDocument' => [

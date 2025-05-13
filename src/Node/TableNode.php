@@ -363,14 +363,6 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     }
 
     /**
-     * Returns true if table is empty (has no rows, but it might have a header).
-     */
-    public function isEmpty(): bool
-    {
-        return count($this->table) <= 1;
-    }
-
-    /**
      * Pads string right.
      *
      * @param string $text Text to pad

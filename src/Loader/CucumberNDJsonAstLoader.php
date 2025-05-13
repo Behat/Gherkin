@@ -158,7 +158,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
-                if (empty($tableJson['tableHeader']) && !empty($tableJson['tableBody'])) {
+                if (!isset($tableJson['tableHeader']) && $tableJson['tableBody'] !== []) {
                     throw new NodeException(
                         sprintf(
                             'Table header is required when a table body is provided for the example on line %s.',
