@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
@@ -167,12 +168,9 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
             ],
         ]);
 
-        $features = $this->loader->load($file);
+        $this->expectExceptionObject(new NodeException('Table header is required when a table body is provided for the example on line 3.'));
 
-        $scenario = $features[0]->getScenarios()[0] ?? null;
-        $this->assertInstanceOf(OutlineNode::class, $scenario);
-        $table = $scenario->getExampleTables()[0] ?? null;
-        $this->assertTrue($table->isEmpty());
+        $this->loader->load($file);
     }
 
     private function serializeCucumberMessagesToFile(mixed ...$messages): string

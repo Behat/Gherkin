@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -68,7 +69,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json)
     {
         return array_map(
-            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
+            static fn(array $tag) => preg_replace('/^@/', '', $tag['name']),
             array_values($json['tags'] ?? [])
         );
     }
@@ -114,7 +115,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     {
         $backgrounds = array_filter(
             $json['children'] ?? [],
-            static fn ($child) => isset($child['background']),
+            static fn($child) => isset($child['background']),
         );
 
         if (count($backgrounds) !== 1) {
@@ -137,7 +138,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getSteps(array $items): array
     {
         return array_map(
-            static fn (array $item) => new StepNode(
+            static fn(array $item) => new StepNode(
                 trim($item['keyword']),
                 $item['text'],
                 [],
@@ -157,12 +158,19 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static function ($tableJson) {
                 $table = [];
 
-                if (isset($tableJson['tableHeader'])) {
-                    $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
+                if (empty($tableJson['tableHeader']) && !empty($tableJson['tableBody'])) {
+                    throw new NodeException(
+                        sprintf(
+                            'Table header is required when a table body is provided for the example on line %s.',
+                            $tableJson['location']['line'],
+                        )
+                    );
+                }
 
-                    foreach ($tableJson['tableBody'] as $bodyRow) {
-                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
-                    }
+                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
+
+                foreach ($tableJson['tableBody'] as $bodyRow) {
+                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
                 }
 
                 return new ExampleTableNode(
