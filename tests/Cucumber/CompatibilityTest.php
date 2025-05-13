@@ -211,7 +211,7 @@ class CompatibilityTest extends TestCase
             $stepNode->getKeyword(),
             $stepNode->getText(),
             // CucumberNDJsonParser does not currently parse tables / pystrings attached to a step
-            // See https://github.com/Behat/Gherkin/issues/320            
+            // See https://github.com/Behat/Gherkin/issues/320
             [],
             $stepNode->getLine(),
             // We cannot compare the keywordsType property on a StepNode because this concept
