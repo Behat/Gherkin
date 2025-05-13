@@ -20,9 +20,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     use TaggedNodeTrait;
 
     /**
-     * @var list<StepNode>
+     * @var list<StepNode>|null
      */
-    private array $steps;
+    private ?array $steps = null;
 
     /**
      * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
