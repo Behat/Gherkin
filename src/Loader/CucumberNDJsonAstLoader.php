@@ -69,7 +69,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json)
     {
         return array_map(
-            static fn(array $tag) => preg_replace('/^@/', '', $tag['name']),
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
             array_values($json['tags'] ?? [])
         );
     }
@@ -115,7 +115,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     {
         $backgrounds = array_filter(
             $json['children'] ?? [],
-            static fn($child) => isset($child['background']),
+            static fn ($child) => isset($child['background']),
         );
 
         if (count($backgrounds) !== 1) {
@@ -138,7 +138,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getSteps(array $items): array
     {
         return array_map(
-            static fn(array $item) => new StepNode(
+            static fn (array $item) => new StepNode(
                 trim($item['keyword']),
                 $item['text'],
                 [],
