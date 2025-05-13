@@ -40,6 +40,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                 'feature' => [
                     'location' => ['line' => 111],
                     'name' => 'Feature with a valid Scenario',
+                    'description' => '',
                     'keyword' => 'fea',
                     'language' => 'en',
                     'children' => [
@@ -53,14 +54,15 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                         [
                             'scenario' => [
                                 'location' => ['line' => 333],
-                                'keyword' => 'sce',
                                 'name' => 'Empty Scenario',
+                                'keyword' => 'sce',
                                 'examples' => [],
                             ],
                         ],
                         [
                             'scenario' => [
                                 'location' => ['line' => 444],
+                                'name' => 'Examples Scenario',
                                 'keyword' => 'out',
                                 'examples' => [
                                     [
@@ -108,7 +110,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                     new BackgroundNode('Empty Background', [], 'bac', 222),
                     [
                         new ScenarioNode('Empty Scenario', [], [], 'sce', 333),
-                        new OutlineNode(null, [], [], [
+                        new OutlineNode('Examples Scenario', [], [], [
                             new ExampleTableNode([
                                 666 => ['A', 'B'],
                                 777 => ['A1', 'B1'],
@@ -132,12 +134,15 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
             'gherkinDocument' => [
                 'feature' => [
                     'location' => ['line' => 1],
+                    'name' => 'Feature with an invalid example table',
+                    'description' => '',
                     'keyword' => 'feature',
                     'language' => 'en',
                     'children' => [
                         [
                             'scenario' => [
                                 'location' => ['line' => 2],
+                                'name' => 'Examples Scenario',
                                 'keyword' => 'outline',
                                 'examples' => [
                                     [
