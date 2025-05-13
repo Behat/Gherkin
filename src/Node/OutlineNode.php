@@ -183,21 +183,6 @@ class OutlineNode implements ScenarioInterface
     }
 
     /**
-     * Returns a copy of this outline, but with a different set of steps.
-     */
-    public function withSteps(array $steps): self
-    {
-        return new self(
-            $this->title,
-            $this->tags,
-            $steps,
-            $this->tables,
-            $this->keyword,
-            $this->line,
-        );
-    }
-
-    /**
      * Creates examples for this outline using examples table.
      *
      * @return ExampleNode[]

@@ -103,18 +103,4 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     {
         return $this->line;
     }
-
-    /**
-     * Returns a copy of this scenario, but with a different set of steps.
-     */
-    public function withSteps(array $steps): self
-    {
-        return new self(
-            $this->title,
-            $this->tags,
-            $steps,
-            $this->keyword,
-            $this->line,
-        );
-    }
 }

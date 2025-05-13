@@ -124,34 +124,4 @@ class StepNode implements NodeInterface
     {
         return $this->line;
     }
-
-    /**
-     * Returns a copy of this step, but with a different set of arguments.
-     *
-     * @param ArgumentInterface[] $arguments
-     */
-    public function withArguments(array $arguments): self
-    {
-        return new self(
-            $this->keyword,
-            $this->text,
-            $arguments,
-            $this->line,
-            $this->keywordType,
-        );
-    }
-
-    /**
-     * Returns a copy of this step, but with a different keyword type.
-     */
-    public function withKeywordType(string $keywordType): self
-    {
-        return new self(
-            $this->keyword,
-            $this->text,
-            $this->arguments,
-            $this->line,
-            $keywordType,
-        );
-    }
 }

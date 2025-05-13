@@ -17,12 +17,4 @@ namespace Behat\Gherkin\Node;
  */
 interface ScenarioInterface extends ScenarioLikeInterface, TaggedNodeInterface
 {
-    /**
-     * @todo Altering an interface feels like a BC break. What's the alternative?
-     *
-     * @param list<StepNode> $steps
-     *
-     * @return self
-     */
-    public function withSteps(array $steps);
 }

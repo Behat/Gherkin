@@ -191,24 +191,6 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     }
 
     /**
-     * Returns a copy of this feature, but with a different description.
-     */
-    public function withDescription(string $description): self
-    {
-        return new self(
-            $this->title,
-            $description,
-            $this->tags,
-            $this->background,
-            $this->scenarios,
-            $this->keyword,
-            $this->language,
-            $this->file,
-            $this->line,
-        );
-    }
-
-    /**
      * Returns whether the file path is an absolute path.
      *
      * @param string|null $file A file path

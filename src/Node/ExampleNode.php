@@ -20,6 +20,11 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     use TaggedNodeTrait;
 
     /**
+     * @var list<StepNode>
+     */
+    private array $steps;
+
+    /**
      * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
      * @param array<array-key, string> $tags
      * @param array<array-key, StepNode> $outlineSteps
@@ -27,7 +32,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      * @param int $line line number within the feature file
      * @param string|null $outlineTitle original title of the scenario outline
      * @param int|null $index the 1-based index of the row/example within the scenario outline
-     * @param list<StepNode>|null $steps
      */
     public function __construct(
         private readonly string $text,
@@ -37,7 +41,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
         private readonly int $line,
         private readonly ?string $outlineTitle = null,
         private readonly ?int $index = null,
-        private ?array $steps = null,
     ) {
     }
 
@@ -144,23 +147,6 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     public function getExampleText(): string
     {
         return $this->text;
-    }
-
-    /**
-     * Returns a copy of this example, but with a different set of steps.
-     */
-    public function withSteps(array $steps): self
-    {
-        return new self(
-            $this->text,
-            $this->tags,
-            $this->outlineSteps,
-            $this->tokens,
-            $this->line,
-            $this->outlineTitle,
-            $this->index,
-            $steps,
-        );
     }
 
     /**
