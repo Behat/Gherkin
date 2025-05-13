@@ -13,6 +13,7 @@ namespace Tests\Behat\Gherkin\Keywords;
 use Behat\Gherkin\Keywords\CucumberKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
+use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -44,22 +45,20 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     public function testYamlSourceFileIsAttachedToException(): void
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'test');
+        $root = vfsStream::setup();
+        $root->addChild(
+            $file = vfsStream::newFile('invalid.yaml')
+                ->setContent("invalid:\n\tinvalid:yaml")
+        );
 
-        try {
-            file_put_contents($tempFile, "invalid:\n\tinvalid:yaml");
+        $this->expectExceptionObject(new ParseException(
+            'YAML file cannot contain tabs as indentation',
+            2,
+            "\tinvalid:yaml",
+            $file->url(),
+        ));
 
-            $this->expectExceptionObject(new ParseException(
-                'YAML file cannot contain tabs as indentation',
-                2,
-                "\tinvalid:yaml",
-                $tempFile,
-            ));
-
-            new CucumberKeywords($tempFile);
-        } finally {
-            @unlink($tempFile);
-        }
+        new CucumberKeywords($file->url());
     }
 
     public function testYamlRootMustBeAnArray(): void
@@ -71,28 +70,19 @@ class CucumberKeywordsTest extends KeywordsTestCase
         new CucumberKeywords("a\nstring");
     }
 
-    /**
-     * @todo Use VFS
-     */
     public function testYamlFileMustBeReadable(): void
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'test');
+        $root = vfsStream::setup();
+        $root->addChild(
+            $file = vfsStream::newFile('unreadable.yaml')
+                ->setContent("aaa:\n  bbb: cccc")
+                ->chmod(0)
+        );
 
-        try {
-            file_put_contents($tempFile, "aaa:\n  bbb: cccc");
-            if (PHP_OS_FAMILY === 'Windows') {
-                exec('icacls ' . escapeshellarg($tempFile) . ' /deny Everyone:(R)');
-            } else {
-                chmod($tempFile, 0);
-            }
+        $this->expectExceptionObject(
+            new ParseException("Unable to parse \"{$file->url()}\" as the file is not readable.")
+        );
 
-            $this->expectExceptionObject(
-                new ParseException("Unable to parse \"$tempFile\" as the file is not readable.")
-            );
-
-            new CucumberKeywords($tempFile);
-        } finally {
-            @unlink($tempFile);
-        }
+        new CucumberKeywords($file->url());
     }
 }
