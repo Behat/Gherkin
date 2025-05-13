@@ -15,7 +15,7 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
-use Exception;
+use ErrorException;
 use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
@@ -303,12 +303,13 @@ class TagFilterTest extends TestCase
     private function expectDeprecationError(): void
     {
         set_error_handler(
-            static function ($errno, $errstr) {
+            static function (int $errNo, string $errStr, string $errFile, int $errLine) {
                 restore_error_handler();
-                throw new Exception($errstr, $errno);
+                throw new ErrorException($errStr, $errNo, filename: $errFile, line: $errLine);
             },
             E_ALL
         );
-        $this->expectException(Exception::class);
+
+        $this->expectException(ErrorException::class);
     }
 }

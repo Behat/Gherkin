@@ -159,7 +159,7 @@ class ParserExceptionsTest extends TestCase
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
     }
 
-    public function testAmbigiousLanguage(): void
+    public function testAmbiguousLanguage(): void
     {
         $feature = <<<'GHERKIN'
         # language: en
@@ -171,7 +171,10 @@ class ParserExceptionsTest extends TestCase
             Given something wrong
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Ambiguous language specifiers on lines: 1 and 3')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -183,7 +186,10 @@ class ParserExceptionsTest extends TestCase
             Scenario Outline:
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Outline should have examples table, but got none for outline "" on line: 3')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -198,7 +204,10 @@ class ParserExceptionsTest extends TestCase
                 Then some additional step
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Expected Scenario, Outline or Background, but got Step on line: 6')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -212,7 +221,10 @@ class ParserExceptionsTest extends TestCase
                 Given some step
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Background can not be tagged, but it is on line: 4')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -227,7 +239,10 @@ class ParserExceptionsTest extends TestCase
                     some text
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Expected PyStringOp token, but got EOS on line: 7')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -242,7 +257,10 @@ class ParserExceptionsTest extends TestCase
                 Aaand some step
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Expected Step, but got text: "        Aaand some step"')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -258,7 +276,10 @@ class ParserExceptionsTest extends TestCase
                 Aaand some step
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Each Feature could have only one Background, but found multiple on lines 3 and 6')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -270,7 +291,10 @@ class ParserExceptionsTest extends TestCase
         Feature:
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Expected Scenario, Outline or Background, but got Feature on line: 3')
+        );
+
         $this->gherkin->parse($feature);
     }
 
@@ -285,7 +309,10 @@ class ParserExceptionsTest extends TestCase
                 | 42  | 42
         GHERKIN;
 
-        $this->expectException(ParserException::class);
+        $this->expectExceptionObject(
+            new ParserException('Expected Step, but got text: "        | foo | bar"')
+        );
+
         $this->gherkin->parse($feature);
     }
 }

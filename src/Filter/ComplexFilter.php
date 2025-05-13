@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Abstract filter class.
@@ -26,25 +27,12 @@ abstract class ComplexFilter implements ComplexFilterInterface
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($feature, $scenario)) {
-                continue;
-            }
-
-            $scenarios[] = $scenario;
-        }
-
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
+        $scenarios = $feature->getScenarios();
+        $filteredScenarios = array_filter(
             $scenarios,
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine()
+            fn (ScenarioInterface $scenario) => $this->isScenarioMatch($feature, $scenario)
         );
+
+        return $scenarios === $filteredScenarios ? $feature : $feature->withScenarios($filteredScenarios);
     }
 }

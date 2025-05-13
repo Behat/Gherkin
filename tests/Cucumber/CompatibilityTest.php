@@ -42,13 +42,14 @@ class CompatibilityTest extends TestCase
         'rule_with_tag.feature' => 'Rule keyword not supported',
         'tags.feature' => 'Rule keyword not supported',
         'descriptions.feature' => 'Examples table descriptions not supported',
+        'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
+        'extra_table_content.feature' => 'Table without right border triggers a ParserException',
         'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
         'scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
         'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
-        'escaped_pipes.feature' => 'Feature description has wrong whitespace captured',
         'incomplete_scenario.feature' => 'Wrong background parsing when there are no steps',
         'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
     ];
@@ -111,6 +112,7 @@ class CompatibilityTest extends TestCase
         if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
             $this->expectDeprecationErrorMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
         } else {
+            // Note that the exception message is not part of compatibility testing and therefore cannot be checked.
             $this->expectException(ParserException::class);
         }
 
@@ -158,6 +160,15 @@ class CompatibilityTest extends TestCase
             return null;
         }
 
+        if ($featureNode->getDescription() !== null) {
+            // We currently handle whitespace in feature descriptions differently to cucumber
+            // https://github.com/Behat/Gherkin/issues/209
+            // We need to be able to ignore that difference so that we can still run cucumber tests that
+            // include a description but are covering other features.
+            $trimmedDescription = preg_replace('/^\s+/m', '', $featureNode->getDescription());
+            $this->setPrivateProperty($featureNode, 'description', $trimmedDescription);
+        }
+
         foreach ($featureNode->getScenarios() as $scenarioNode) {
             foreach ($scenarioNode->getSteps() as $step) {
                 $this->setPrivateProperty($step, 'keywordType', '');
@@ -184,7 +195,8 @@ class CompatibilityTest extends TestCase
             },
             E_ALL
         );
-        $this->expectException(RuntimeException::class);
+
         $this->expectExceptionMessageMatches($message);
+        $this->expectException(RuntimeException::class);
     }
 }

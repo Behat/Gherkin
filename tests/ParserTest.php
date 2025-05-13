@@ -29,7 +29,7 @@ final class ParserTest extends TestCase
      */
     public static function parserTestDataProvider(): iterable
     {
-        foreach (Filesystem::find(__DIR__ . '/Fixtures/etalons/*.yml') as $file) {
+        foreach (Filesystem::findFilesRecursively(__DIR__ . '/Fixtures/etalons', '*.yml') as $file) {
             $testname = basename($file, '.yml');
             yield $testname => ['fixtureName' => $testname];
         }
@@ -48,14 +48,19 @@ final class ParserTest extends TestCase
     {
         $parser = $this->createGherkinParser();
 
-        $parser->parse(
-            <<<'FEATURE'
-            Feature:
-            Scenario:
-            Given step
-            @skipped
-            FEATURE
-        );
+        try {
+            $parser->parse(
+                <<<'FEATURE'
+                Feature:
+                Scenario:
+                Given step
+                @skipped
+                FEATURE,
+            );
+        } catch (ParserException $e) {
+            // expected - features cannot end with tags
+            $this->assertSame('Unexpected end of file after tags on line 5', $e->getMessage());
+        }
         $feature2 = $parser->parse(
             <<<'FEATURE'
             Feature:

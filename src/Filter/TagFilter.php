@@ -14,8 +14,6 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
-use function strlen;
-
 /**
  * Filters scenarios by feature/scenario tag.
  *
@@ -64,30 +62,13 @@ class TagFilter extends ComplexFilter
                     }
                 }
 
-                $scenario = new OutlineNode(
-                    $scenario->getTitle(),
-                    $scenario->getTags(),
-                    $scenario->getSteps(),
-                    $exampleTables,
-                    $scenario->getKeyword(),
-                    $scenario->getLine()
-                );
+                $scenario = $scenario->withTables($exampleTables);
             }
 
             $scenarios[] = $scenario;
         }
 
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $scenarios,
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine()
-        );
+        return $feature->withScenarios($scenarios);
     }
 
     /**
@@ -134,10 +115,8 @@ class TagFilter extends ComplexFilter
      */
     protected function isTagsMatchCondition($tags)
     {
-        $satisfies = true;
-
-        if (strlen($this->filterString) === 0) {
-            return $satisfies;
+        if ($this->filterString === '') {
+            return true;
         }
 
         foreach (explode('&&', $this->filterString) as $andTags) {
@@ -148,15 +127,17 @@ class TagFilter extends ComplexFilter
 
                 if ($tag[0] === '~') {
                     $tag = mb_substr($tag, 1, mb_strlen($tag, 'utf8') - 1, 'utf8');
-                    $satisfiesComma = !in_array($tag, $tags) || $satisfiesComma;
+                    $satisfiesComma = !in_array($tag, $tags, true) || $satisfiesComma;
                 } else {
-                    $satisfiesComma = in_array($tag, $tags) || $satisfiesComma;
+                    $satisfiesComma = in_array($tag, $tags, true) || $satisfiesComma;
                 }
             }
 
-            $satisfies = $satisfiesComma && $satisfies;
+            if (!$satisfiesComma) {
+                return false;
+            }
         }
 
-        return $satisfies;
+        return true;
     }
 }

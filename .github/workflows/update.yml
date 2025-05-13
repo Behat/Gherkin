@@ -98,4 +98,4 @@ jobs:
           BRANCH_NAME: ${{ steps.check-existing-pr.outputs.commit_branch }}
           COMMIT_MSG: ${{ steps.cucumber.outputs.commit_msg }}
           PR_EXISTS: ${{ steps.check-existing-pr.outputs.exists }}
-          PR_TITLE: Update to cucumber/gherkin ${{ steps.cucumber.outputs.cucumber_version }}
+          PR_TITLE: "chore: Update to cucumber/gherkin ${{ steps.cucumber.outputs.cucumber_version }}"

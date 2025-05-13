@@ -134,9 +134,9 @@ class OutlineNode implements ScenarioInterface
      *
      * WARNING: it returns a merged table with tags lost.
      *
-     * @deprecated use getExampleTables instead
-     *
      * @return ExampleTableNode
+     *
+     * @deprecated use getExampleTables instead
      */
     public function getExampleTable()
     {
@@ -193,6 +193,21 @@ class OutlineNode implements ScenarioInterface
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * @param array<array-key, ExampleTableNode> $exampleTables
+     */
+    public function withTables(array $exampleTables): self
+    {
+        return new OutlineNode(
+            $this->title,
+            $this->tags,
+            $this->steps,
+            $exampleTables,
+            $this->keyword,
+            $this->line,
+        );
     }
 
     /**
