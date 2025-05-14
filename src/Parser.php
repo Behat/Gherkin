@@ -395,18 +395,8 @@ class Parser
 
             $node = $this->parseExpression();
 
-            if ($node instanceof StepNode) {
-                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
-                continue;
-            }
-
-            if ($node instanceof ExampleTableNode) {
-                $examples[] = $node;
-
-                continue;
-            }
-
-            if (count($steps) === 0 && is_string($node)) {
+            if ($steps === [] && is_string($node)) {
+                // Free text is only allowed before the first step (or when parsing Examples: which is done elsewhere)
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -416,7 +406,26 @@ class Parser
                 continue;
             }
 
-            throw new UnexpectedParserNodeException('Step or Examples table', $node, $this->file);
+            if ($examples === [] && $node instanceof StepNode) {
+                // Steps are only allowed before the first Examples table (if any)
+                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
+                continue;
+            }
+
+            if ($node instanceof ExampleTableNode) {
+                // NB: It is valid to have a Scenario with Examples: but no Steps
+                $examples[] = $node;
+                continue;
+            }
+
+            throw new UnexpectedParserNodeException(
+                match ($examples) {
+                    [] => 'Step, Examples table, or end of Scenario',
+                    default => 'Examples table or end of Scenario',
+                },
+                $node,
+                $this->file,
+            );
         }
 
         if ($examples !== []) {

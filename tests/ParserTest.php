@@ -146,7 +146,7 @@ final class ParserTest extends TestCase
         ];
 
         yield 'text content in outline' => [
-            'expectedException' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
+            'expectedException' => new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "    nope" in file: /fake.feature'),
             'featureText' => <<<'FEATURE'
             Feature:
               Scenario Outline:
