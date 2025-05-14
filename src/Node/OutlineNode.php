@@ -132,7 +132,7 @@ class OutlineNode implements ScenarioInterface
      */
     public function getExamples()
     {
-        return $this->examples ?? ($this->examples = $this->createExamples());
+        return $this->examples ??= $this->createExamples();
     }
 
     /**

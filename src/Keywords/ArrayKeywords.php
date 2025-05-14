@@ -52,7 +52,7 @@ class ArrayKeywords implements KeywordsInterface
     /**
      * Initializes holder with keywords.
      *
-     * @param TMultiLanguageKeywords $keywords Keywords array
+     * @phpstan-param TMultiLanguageKeywords $keywords Keywords array
      */
     public function __construct(
         private readonly array $keywords,

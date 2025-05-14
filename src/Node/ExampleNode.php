@@ -99,7 +99,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     public function getSteps()
     {
-        return $this->steps ?? ($this->steps = $this->createExampleSteps());
+        return $this->steps ??= $this->createExampleSteps();
     }
 
     /**
