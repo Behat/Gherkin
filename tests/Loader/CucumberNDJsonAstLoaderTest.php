@@ -99,6 +99,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                 ],
             ],
         ]);
+
         $features = $this->loader->load($file);
 
         $this->assertEquals(
@@ -128,7 +129,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         );
     }
 
-    public function testOutlineTableBodyRequiresTableHeader(): void
+    public function testNonEmptyOutlineTableBodyRequiresTableHeader(): void
     {
         $file = $this->serializeCucumberMessagesToFile([
             'gherkinDocument' => [
@@ -176,6 +177,58 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         $this->expectExceptionObject(new NodeException('Table header is required when a table body is provided for the example on line 3.'));
 
         $this->loader->load($file);
+    }
+
+    public function testEmptyOutlineTableBodyDoesNotRequireTableHeader(): void
+    {
+        $file = $this->serializeCucumberMessagesToFile([
+            'gherkinDocument' => [
+                'feature' => [
+                    'location' => ['line' => 1],
+                    'name' => 'Feature with an empty example table',
+                    'description' => '',
+                    'keyword' => 'feature',
+                    'language' => 'en',
+                    'children' => [
+                        [
+                            'scenario' => [
+                                'location' => ['line' => 2],
+                                'name' => 'Examples Scenario',
+                                'keyword' => 'outline',
+                                'examples' => [
+                                    [
+                                        'location' => ['line' => 3],
+                                        'keyword' => 'example',
+                                        'tableBody' => [],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $features = $this->loader->load($file);
+
+        $this->assertEquals(
+            [
+                new FeatureNode(
+                    'Feature with an empty example table',
+                    '',
+                    [],
+                    null,
+                    [
+                        new OutlineNode('Examples Scenario', [], [], [], 'outline', 2),
+                    ],
+                    'feature',
+                    'en',
+                    $file,
+                    1,
+                ),
+            ],
+            $features,
+        );
     }
 
     private function serializeCucumberMessagesToFile(mixed ...$messages): string

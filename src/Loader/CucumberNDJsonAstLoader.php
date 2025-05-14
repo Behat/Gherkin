@@ -154,32 +154,38 @@ class CucumberNDJsonAstLoader implements LoaderInterface
      */
     private static function getTables(array $items): array
     {
-        return array_map(
-            static function ($tableJson) {
-                $table = [];
+        return array_filter(
+            array_map(
+                static function ($tableJson): ?ExampleTableNode {
+                    if ($tableJson['tableBody'] === []) {
+                        return null;
+                    }
 
-                if (!isset($tableJson['tableHeader']) && $tableJson['tableBody'] !== []) {
-                    throw new NodeException(
-                        sprintf(
-                            'Table header is required when a table body is provided for the example on line %s.',
-                            $tableJson['location']['line'],
-                        )
+                    if (!isset($tableJson['tableHeader'])) {
+                        throw new NodeException(
+                            sprintf(
+                                'Table header is required when a table body is provided for the example on line %s.',
+                                $tableJson['location']['line'],
+                            )
+                        );
+                    }
+
+                    $table = [
+                        $tableJson['tableHeader']['location']['line'] => array_column($tableJson['tableHeader']['cells'], 'value'),
+                    ];
+
+                    foreach ($tableJson['tableBody'] as $bodyRow) {
+                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    }
+
+                    return new ExampleTableNode(
+                        $table,
+                        $tableJson['keyword'],
+                        self::getTags($tableJson)
                     );
-                }
-
-                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
-
-                foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
-                }
-
-                return new ExampleTableNode(
-                    $table,
-                    $tableJson['keyword'],
-                    self::getTags($tableJson)
-                );
-            },
-            array_values($items)
+                },
+                array_values($items)
+            )
         );
     }
 }
