@@ -437,15 +437,16 @@ class Parser
         try {
             while (true) {
                 $deferred[] = $next = $this->lexer->getAdvancedToken();
+                $nextType = $next['type'];
 
-                if (in_array($next['type'], ['Tag', 'Comment', 'Newline'], true)) {
+                if (in_array($nextType, ['Tag', 'Comment', 'Newline'], true)) {
                     // These are the only node types allowed between tag node(s) and the node they are tagging
                     continue;
                 }
 
-                if (in_array($next['type'], ['Feature', 'Examples', 'Scenario', 'Outline'], true)) {
+                if (in_array($nextType, ['Feature', 'Examples', 'Scenario', 'Outline'], true)) {
                     // These are the only taggable node types
-                    return $next['type'];
+                    return $nextType;
                 }
 
                 throw new UnexpectedTaggedNodeException($next, $this->file);
