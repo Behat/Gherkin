@@ -124,8 +124,8 @@ class CompatibilityTest extends TestCase
      */
     public static function goodCucumberFeatures(): iterable
     {
-        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH.'/good');
-        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH.'/good');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH . '/good');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH . '/good');
     }
 
     /**
@@ -133,8 +133,8 @@ class CompatibilityTest extends TestCase
      */
     public static function badCucumberFeatures(): iterable
     {
-        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH.'/bad');
-        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH.'/bad');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH . '/bad');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH . '/bad');
     }
 
     /**

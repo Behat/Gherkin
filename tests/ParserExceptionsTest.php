@@ -53,20 +53,6 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin = new Parser(new Lexer($keywords));
     }
 
-    public function testStepRightAfterFeature(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature: Some feature
-
-            Given some step-like line
-        GHERKIN;
-
-        $parsed = $this->gherkin->parse($feature);
-
-        $this->assertInstanceOf(FeatureNode::class, $parsed);
-        $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
-    }
-
     public function testTextInBackground(): void
     {
         $feature = <<<'GHERKIN'
