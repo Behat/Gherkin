@@ -1,0 +1,1 @@
+{"gherkinDocument":{"comments":[{"location":{"column":1,"line":3},"text":"# language: ru"}],"feature":{"children":[],"description":"    Given something wrong","keyword":"Feature","language":"en","location":{"column":1,"line":5},"name":"Some feature","tags":[]},"uri":"../good/multiple_language_comments.feature"}}

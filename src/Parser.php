@@ -42,7 +42,6 @@ class Parser
     private $input;
     private $file;
     private $tags = [];
-    private $languageSpecifierLine;
 
     /**
      * Initializes parser.
@@ -66,7 +65,6 @@ class Parser
      */
     public function parse($input, $file = null)
     {
-        $this->languageSpecifierLine = null;
         $this->input = $input;
         $this->file = $file;
         $this->tags = [];
@@ -618,17 +616,8 @@ class Parser
     {
         $token = $this->expectTokenType('Language');
 
-        if ($this->languageSpecifierLine === null) {
-            $this->lexer->analyse($this->input, $token['value']);
-            $this->languageSpecifierLine = $token['line'];
-        } elseif ($token['line'] !== $this->languageSpecifierLine) {
-            throw new ParserException(sprintf(
-                'Ambiguous language specifiers on lines: %d and %d%s',
-                $this->languageSpecifierLine,
-                $token['line'],
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-        }
+        // Switch the lexer to the specified language and tell it to treat any further language tags as comments
+        $this->lexer->analyse($this->input, $token['value'], true);
 
         return $this->parseExpression();
     }

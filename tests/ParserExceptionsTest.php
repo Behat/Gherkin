@@ -145,25 +145,6 @@ class ParserExceptionsTest extends TestCase
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
     }
 
-    public function testAmbiguousLanguage(): void
-    {
-        $feature = <<<'GHERKIN'
-        # language: en
-
-        # language: ru
-
-        Feature: Some feature
-
-            Given something wrong
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Ambiguous language specifiers on lines: 1 and 3')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
     public function testEmptyOutline(): void
     {
         $feature = <<<'GHERKIN'
