@@ -219,7 +219,14 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                     [],
                     null,
                     [
-                        new OutlineNode('Examples Scenario', [], [], [], 'outline', 2),
+                        new OutlineNode(
+                            'Examples Scenario',
+                            [],
+                            [],
+                            new ExampleTableNode([], 'example'),
+                            'outline',
+                            2,
+                        ),
                     ],
                     'feature',
                     'en',
