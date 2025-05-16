@@ -283,7 +283,7 @@ class Lexer
 
         $this->consumeLine();
 
-        // turn off language searching
+        // turn off language searching and feature detection
         if ($type === 'Feature') {
             $this->featureStarted = true;
         }
@@ -354,6 +354,11 @@ class Lexer
      */
     protected function scanFeature()
     {
+        if ($this->featureStarted) {
+            // The Feature: tag is only allowed once in a file, later in the file it may be part of a description node
+            return null;
+        }
+
         return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
     }
 

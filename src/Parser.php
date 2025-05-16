@@ -76,7 +76,7 @@ class Parser
         }
 
         $feature = null;
-        while ('EOS' !== ($predicted = $this->predictTokenType())) {
+        while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
 
             if ($node === "\n") {
@@ -88,29 +88,7 @@ class Parser
                 continue;
             }
 
-            if ($feature && $node instanceof FeatureNode) {
-                throw new ParserException(sprintf(
-                    'Only one feature is allowed per feature file. But %s got multiple.',
-                    $this->file
-                ));
-            }
-
-            if (is_string($node)) {
-                throw new ParserException(sprintf(
-                    'Expected Feature, but got text: "%s"%s',
-                    $node,
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            if (!$node instanceof FeatureNode) {
-                throw new ParserException(sprintf(
-                    'Expected Feature, but got %s on line: %d%s',
-                    $node->getKeyword(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new UnexpectedParserNodeException('Feature', $node, $this->file);
         }
 
         return $feature;

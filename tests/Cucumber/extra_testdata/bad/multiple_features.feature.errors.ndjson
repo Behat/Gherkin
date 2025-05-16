@@ -1,0 +1,1 @@
+{"parseError":{"message":"(5:1): expected: #EOF, #TableRow, #DocStringSeparator, #StepLine, #TagLine, #ExamplesLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'Feature: Two'","source":{"location":{"column":1,"line":5},"uri":"../bad/multiple_features.feature"}}}
