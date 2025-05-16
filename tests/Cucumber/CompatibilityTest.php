@@ -45,7 +45,6 @@ class CompatibilityTest extends TestCase
         'descriptions.feature' => 'Examples table descriptions not supported',
         'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
         'extra_table_content.feature' => 'Table without right border triggers a ParserException',
-        'incomplete_scenario_outline.feature' => 'Outline without Examples table triggers a ParserException',
         'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
@@ -169,6 +168,13 @@ class CompatibilityTest extends TestCase
             // include a description but are covering other features.
             $trimmedDescription = preg_replace('/^\s+/m', '', $featureNode->getDescription());
             $this->setPrivateProperty($featureNode, 'description', $trimmedDescription);
+        }
+
+        if ($featureNode->getBackground()) {
+            foreach ($featureNode->getBackground()->getSteps() as $step) {
+                $this->setPrivateProperty($step, 'keywordType', '');
+                $this->setPrivateProperty($step, 'arguments', []);
+            }
         }
 
         foreach ($featureNode->getScenarios() as $scenarioNode) {

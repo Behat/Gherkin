@@ -164,21 +164,6 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin->parse($feature);
     }
 
-    public function testEmptyOutline(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature: Some feature
-
-            Scenario Outline:
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Outline should have examples table, but got none for outline "" on line: 3')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
     public function testMultipleFeatures(): void
     {
         $feature = <<<'GHERKIN'
