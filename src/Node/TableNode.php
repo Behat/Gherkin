@@ -23,8 +23,6 @@ use ReturnTypeWillChange;
  */
 class TableNode implements ArgumentInterface, IteratorAggregate
 {
-    private array $table;
-
     /**
      * @var array<array-key, int>
      */
@@ -37,9 +35,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @throws NodeException If the given table is invalid
      */
-    public function __construct(array $table)
-    {
-        $this->table = $table;
+    public function __construct(
+        private array $table,
+    ) {
         $columnCount = null;
 
         foreach ($this->getRows() as $ridx => $row) {

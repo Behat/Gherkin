@@ -27,7 +27,6 @@ class Lexer
     private $trimmedLine;
     private $lineNumber;
     private $eos;
-    private $keywords;
     private $keywordsCache = [];
     private $stepKeywordTypesCache = [];
     private $deferredObjects = [];
@@ -40,14 +39,9 @@ class Lexer
     private $allowSteps = false;
     private $pyStringDelimiter;
 
-    /**
-     * Initializes lexer.
-     *
-     * @param KeywordsInterface $keywords Keywords holder
-     */
-    public function __construct(KeywordsInterface $keywords)
-    {
-        $this->keywords = $keywords;
+    public function __construct(
+        private readonly KeywordsInterface $keywords,
+    ) {
     }
 
     /**

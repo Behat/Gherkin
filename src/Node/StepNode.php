@@ -19,38 +19,18 @@ use Behat\Gherkin\Exception\NodeException;
  */
 class StepNode implements NodeInterface
 {
-    /**
-     * @var string
-     */
-    private $keyword;
-    /**
-     * @var string
-     */
-    private $keywordType;
-    /**
-     * @var string
-     */
-    private $text;
-    /**
-     * @var ArgumentInterface[]
-     */
-    private $arguments = [];
-    /**
-     * @var int
-     */
-    private $line;
+    private readonly string $keywordType;
 
     /**
-     * Initializes step.
-     *
-     * @param string $keyword
-     * @param string $text
      * @param ArgumentInterface[] $arguments
-     * @param int $line
-     * @param string $keywordType
      */
-    public function __construct($keyword, $text, array $arguments, $line, $keywordType = null)
-    {
+    public function __construct(
+        private readonly string $keyword,
+        private readonly string $text,
+        private readonly array $arguments,
+        private readonly int $line,
+        ?string $keywordType = null,
+    ) {
         if (count($arguments) > 1) {
             throw new NodeException(sprintf(
                 'Steps could have only one argument, but `%s %s` have %d.',
@@ -60,10 +40,6 @@ class StepNode implements NodeInterface
             ));
         }
 
-        $this->keyword = $keyword;
-        $this->text = $text;
-        $this->arguments = $arguments;
-        $this->line = $line;
         $this->keywordType = $keywordType ?: 'Given';
     }
 

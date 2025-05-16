@@ -20,19 +20,9 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class NarrativeFilter extends SimpleFilter
 {
-    /**
-     * @var string
-     */
-    private $regex;
-
-    /**
-     * Initializes filter.
-     *
-     * @param string $regex
-     */
-    public function __construct($regex)
-    {
-        $this->regex = $regex;
+    public function __construct(
+        private readonly string $regex,
+    ) {
     }
 
     public function isFeatureMatch(FeatureNode $feature)

@@ -20,11 +20,9 @@ use Symfony\Component\Yaml\Yaml;
  */
 class YamlFileLoader extends AbstractFileLoader
 {
-    private $loader;
-
-    public function __construct()
-    {
-        $this->loader = new ArrayLoader();
+    public function __construct(
+        private readonly LoaderInterface $loader = new ArrayLoader(),
+    ) {
     }
 
     /**
