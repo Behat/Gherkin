@@ -205,7 +205,29 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Scenario, Outline or Background, but got Step on line: 6')
+            new ParserException('Step can not be tagged, but it is on line: 6')
+        );
+
+        $this->gherkin->parse($feature);
+    }
+
+    public function testStepsAfterExamples(): void
+    {
+        $feature = <<<'GHERKIN'
+        Feature: Fail to parse step after examples
+
+          Scenario: there are some steps after the examples table
+            Given I have some <thing>
+
+            Examples:
+            | thing    |
+            | whatever |
+
+            When I write more steps
+        GHERKIN;
+
+        $this->expectExceptionObject(
+            new ParserException('Expected Examples table or end of Scenario, but got Step on line: 10'),
         );
 
         $this->gherkin->parse($feature);
@@ -258,7 +280,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        Aaand some step"')
+            new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "        Aaand some step"'),
         );
 
         $this->gherkin->parse($feature);
@@ -310,7 +332,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        | foo | bar"')
+            new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "        | foo | bar"'),
         );
 
         $this->gherkin->parse($feature);
