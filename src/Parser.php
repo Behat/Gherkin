@@ -388,7 +388,7 @@ class Parser
                 // The only thing inside a Scenario / Scenario Outline that can be tagged is an Examples table
                 // Scan on to see what the tags are attached to - if it's not Examples then we must have reached the
                 // end of this scenario and be about to start a new one.
-                if ($this->predictNextTaggedNodeType() !== 'Examples') {
+                if ($this->validateAndGetNextTaggedNodeType() !== 'Examples') {
                     break;
                 }
             }
@@ -440,7 +440,7 @@ class Parser
      *
      * @throws UnexpectedTaggedNodeException if there is not a taggable node
      */
-    private function predictNextTaggedNodeType(): string
+    private function validateAndGetNextTaggedNodeType(): string
     {
         $deferred = [];
         try {
@@ -566,7 +566,7 @@ class Parser
         $token = $this->expectTokenType('Tag');
 
         // Validate that the tags are followed by a node that can be tagged
-        $this->predictNextTaggedNodeType();
+        $this->validateAndGetNextTaggedNodeType();
 
         $this->guardTags($token['tags']);
 
