@@ -179,21 +179,6 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin->parse($feature);
     }
 
-    public function testMultipleFeatures(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature:
-
-        Feature:
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Expected Scenario, Outline or Background, but got Feature on line: 3')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
     public function testTableWithoutRightBorder(): void
     {
         $feature = <<<'GHERKIN'

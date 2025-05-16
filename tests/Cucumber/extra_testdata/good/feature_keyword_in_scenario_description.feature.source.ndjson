@@ -1,0 +1,1 @@
+{"source":{"data":"Feature: One\n  Scenario: Something\n\nFeature: Two","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/feature_keyword_in_scenario_description.feature"}}
