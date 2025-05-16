@@ -1,0 +1,2 @@
+{"parseError":{"message":"(6:5): expected: #EOF, #TableRow, #DocStringSeparator, #StepLine, #TagLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'Background:'","source":{"location":{"column":5,"line":6},"uri":"../testdata/bad/multiple_backgrounds.feature"}}}
+{"parseError":{"message":"(7:9): expected: #EOF, #TableRow, #DocStringSeparator, #StepLine, #TagLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'Aaand some step'","source":{"location":{"column":9,"line":7},"uri":"../testdata/bad/multiple_backgrounds.feature"}}}

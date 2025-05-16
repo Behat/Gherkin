@@ -1,0 +1,1 @@
+{"source":{"data":"Feature: Some feature\n\n    Given some step-like line","mediaType":"text/x.cucumber.gherkin+plain","uri":"../testdata/good/step_keyword_in_feature_description.feature"}}

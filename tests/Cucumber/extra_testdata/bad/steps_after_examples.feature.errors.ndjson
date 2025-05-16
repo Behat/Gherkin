@@ -1,0 +1,1 @@
+{"parseError":{"message":"(10:5): expected: #EOF, #TableRow, #TagLine, #ExamplesLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'When I write more steps'","source":{"location":{"column":5,"line":10},"uri":"../testdata/bad/steps_after_examples.feature"}}}

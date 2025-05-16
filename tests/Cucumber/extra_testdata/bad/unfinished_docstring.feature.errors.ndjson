@@ -1,0 +1,1 @@
+{"parseError":{"message":"(7:0): unexpected end of file, expected: #DocStringSeparator, #Other","source":{"location":{"line":7},"uri":"../testdata/bad/unfinished_docstring.feature"}}}
