@@ -35,6 +35,7 @@ class Lexer
     private $stashedToken;
     private $inPyString = false;
     private $pyStringSwallow = 0;
+    private $allowLanguageTag = true;
     private $featureStarted = false;
     private $allowMultilineArguments = false;
     private $allowSteps = false;
@@ -58,7 +59,7 @@ class Lexer
      *
      * @throws LexerException
      */
-    public function analyse($input, $language = 'en')
+    public function analyse($input, $language = 'en', $hasSeenLanguageTag = false)
     {
         // try to detect unsupported encoding
         if (mb_detect_encoding($input, 'UTF-8', true) !== 'UTF-8') {
@@ -80,6 +81,7 @@ class Lexer
         $this->inPyString = false;
         $this->pyStringSwallow = 0;
 
+        $this->allowLanguageTag = !$hasSeenLanguageTag;
         $this->featureStarted = false;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
@@ -289,9 +291,10 @@ class Lexer
 
         $this->consumeLine();
 
-        // turn off language searching
+        // turn off language searching and feature detection
         if ($type === 'Feature') {
             $this->featureStarted = true;
+            $this->allowLanguageTag = false;
         }
 
         // turn off PyString and Table searching
@@ -360,6 +363,11 @@ class Lexer
      */
     protected function scanFeature()
     {
+        if ($this->featureStarted) {
+            // The Feature: tag is only allowed once in a file, later in the file it may be part of a description node
+            return null;
+        }
+
         return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
     }
 
@@ -546,7 +554,7 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if ($this->featureStarted) {
+        if (!$this->allowLanguageTag) {
             return null;
         }
 

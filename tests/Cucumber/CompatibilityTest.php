@@ -45,6 +45,7 @@ class CompatibilityTest extends TestCase
         'descriptions.feature' => 'Examples table descriptions not supported',
         'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
         'extra_table_content.feature' => 'Table without right border triggers a ParserException',
+        'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
         'incomplete_scenario_outline.feature' => 'Outline without Examples table triggers a ParserException',
         'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
