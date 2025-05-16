@@ -34,6 +34,7 @@ class Lexer
     private $stashedToken;
     private $inPyString = false;
     private $pyStringSwallow = 0;
+    private $allowLanguageTag = true;
     private $featureStarted = false;
     private $allowMultilineArguments = false;
     private $allowSteps = false;
@@ -74,9 +75,23 @@ class Lexer
         $this->inPyString = false;
         $this->pyStringSwallow = 0;
 
+        $this->allowLanguageTag = true;
         $this->featureStarted = false;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
+
+        $this->setLanguage($language);
+    }
+
+    private function setLanguage(string $language): void
+    {
+        if ($this->stashedToken !== null) {
+            throw new LexerException('Cannot set gherkin language when there is already a stashed token');
+        }
+
+        if ($this->deferredObjects !== []) {
+            throw new LexerException('Cannot set gherkin language when there are already deferred tokens');
+        }
 
         $this->keywords->setLanguage($this->language = $language);
         $this->keywordsCache = [];
@@ -286,6 +301,7 @@ class Lexer
         // turn off language searching and feature detection
         if ($type === 'Feature') {
             $this->featureStarted = true;
+            $this->allowLanguageTag = false;
         }
 
         // turn off PyString and Table searching
@@ -545,7 +561,7 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if ($this->featureStarted) {
+        if (!$this->allowLanguageTag) {
             return null;
         }
 
@@ -557,7 +573,14 @@ class Lexer
             return null;
         }
 
-        return $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        $token = $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+
+        if ($token) {
+            $this->allowLanguageTag = false;
+            $this->setLanguage($token['value']);
+        }
+
+        return $token;
     }
 
     /**

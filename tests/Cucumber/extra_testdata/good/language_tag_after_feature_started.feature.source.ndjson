@@ -1,0 +1,1 @@
+{"source":{"data":"Feature: Some feature\n# language: ru\n\n    Given something wrong","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/language_tag_after_feature_started.feature"}}

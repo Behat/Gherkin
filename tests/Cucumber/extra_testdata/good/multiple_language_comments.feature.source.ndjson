@@ -1,0 +1,1 @@
+{"source":{"data":"# language: en\n\n# language: ru\n\nFeature: Some feature\n\n    Given something wrong","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/multiple_language_comments.feature"}}

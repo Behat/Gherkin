@@ -41,7 +41,6 @@ class Parser
     private $input;
     private $file;
     private $tags = [];
-    private $languageSpecifierLine;
 
     public function __construct(
         private readonly Lexer $lexer,
@@ -60,7 +59,6 @@ class Parser
      */
     public function parse($input, $file = null)
     {
-        $this->languageSpecifierLine = null;
         $this->input = $input;
         $this->file = $file;
         $this->tags = [];
@@ -591,27 +589,17 @@ class Parser
     }
 
     /**
-     * Parses language block and updates lexer configuration based on it.
+     * Skips over language tags (they are handled inside the Lexer).
      *
      * @phpstan-return TParsedExpressionResult
      *
      * @throws ParserException
+     *
+     * @deprecated language tags are handled inside the Lexer, they skipped over (like any other comment) in the Parser
      */
     protected function parseLanguage()
     {
-        $token = $this->expectTokenType('Language');
-
-        if ($this->languageSpecifierLine === null) {
-            $this->lexer->analyse($this->input, $token['value']);
-            $this->languageSpecifierLine = $token['line'];
-        } elseif ($token['line'] !== $this->languageSpecifierLine) {
-            throw new ParserException(sprintf(
-                'Ambiguous language specifiers on lines: %d and %d%s',
-                $this->languageSpecifierLine,
-                $token['line'],
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-        }
+        $this->expectTokenType('Language');
 
         return $this->parseExpression();
     }

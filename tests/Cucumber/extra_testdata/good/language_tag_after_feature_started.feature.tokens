@@ -1,0 +1,5 @@
+(1:1)FeatureLine:()Feature/Some feature/
+(2:1)Comment:/# language: ru/
+(3:1)Other://
+(4:1)Other:/    Given something wrong/
+EOF
