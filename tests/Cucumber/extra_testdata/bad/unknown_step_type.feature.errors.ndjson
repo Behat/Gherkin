@@ -1,0 +1,1 @@
+{"parseError":{"message":"(6:9): expected: #EOF, #TableRow, #DocStringSeparator, #StepLine, #TagLine, #ExamplesLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'Aaand some step'","source":{"location":{"column":9,"line":6},"uri":"../testdata/bad/unknown_step_type.feature"}}}

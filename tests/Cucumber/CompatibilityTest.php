@@ -35,7 +35,8 @@ use Tests\Behat\Gherkin\Filesystem;
  */
 class CompatibilityTest extends TestCase
 {
-    public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
+    private const GHERKIN_TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
+    private const EXTRA_TESTDATA_PATH = __DIR__ . '/extra_testdata';
 
     /**
      * @var array<string, string>
@@ -48,9 +49,8 @@ class CompatibilityTest extends TestCase
         'descriptions.feature' => 'Examples table descriptions not supported',
         'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
         'extra_table_content.feature' => 'Table without right border triggers a ParserException',
-        'incomplete_scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
-        'padded_example.feature' => 'Scenario and Scenario outline not yet synonyms',
-        'scenario_outline.feature' => 'Scenario and Scenario outline not yet synonyms',
+        'incomplete_scenario_outline.feature' => 'Outline without Examples table triggers a ParserException',
+        'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
         'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
@@ -128,7 +128,8 @@ class CompatibilityTest extends TestCase
      */
     public static function goodCucumberFeatures(): iterable
     {
-        return self::getCucumberFeatures('/good');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH . '/good');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH . '/good');
     }
 
     /**
@@ -136,7 +137,8 @@ class CompatibilityTest extends TestCase
      */
     public static function badCucumberFeatures(): iterable
     {
-        return self::getCucumberFeatures('/bad');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH . '/bad');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH . '/bad');
     }
 
     /**
@@ -144,7 +146,7 @@ class CompatibilityTest extends TestCase
      */
     private static function getCucumberFeatures(string $folder): iterable
     {
-        $fileIterator = new FilesystemIterator(self::TESTDATA_PATH . $folder);
+        $fileIterator = new FilesystemIterator($folder);
         /**
          * @var iterable<string, SplFileInfo> $fileIterator
          */

@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -153,23 +154,38 @@ class CucumberNDJsonAstLoader implements LoaderInterface
      */
     private static function getTables(array $items): array
     {
-        return array_map(
-            static function ($tableJson) {
-                $table = [];
+        return array_filter(
+            array_map(
+                static function ($tableJson): ?ExampleTableNode {
+                    if ($tableJson['tableBody'] === []) {
+                        return null;
+                    }
 
-                $table[$tableJson['tableHeader']['location']['line']] = array_column($tableJson['tableHeader']['cells'], 'value');
+                    if (!isset($tableJson['tableHeader'])) {
+                        throw new NodeException(
+                            sprintf(
+                                'Table header is required when a table body is provided for the example on line %s.',
+                                $tableJson['location']['line'],
+                            )
+                        );
+                    }
 
-                foreach ($tableJson['tableBody'] as $bodyRow) {
-                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
-                }
+                    $table = [
+                        $tableJson['tableHeader']['location']['line'] => array_column($tableJson['tableHeader']['cells'], 'value'),
+                    ];
 
-                return new ExampleTableNode(
-                    $table,
-                    $tableJson['keyword'],
-                    self::getTags($tableJson)
-                );
-            },
-            array_values($items)
+                    foreach ($tableJson['tableBody'] as $bodyRow) {
+                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                    }
+
+                    return new ExampleTableNode(
+                        $table,
+                        $tableJson['keyword'],
+                        self::getTags($tableJson)
+                    );
+                },
+                array_values($items)
+            )
         );
     }
 }

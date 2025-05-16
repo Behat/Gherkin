@@ -14,6 +14,7 @@ use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Exception\UnexpectedParserNodeException;
+use Behat\Gherkin\Exception\UnexpectedTaggedNodeException;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -42,11 +43,10 @@ class Parser
     private $tags = [];
     private $languageSpecifierLine;
 
-    private $passedNodesStack = [];
-
     public function __construct(
         private readonly Lexer $lexer,
     ) {
+        $this->lexer = $lexer;
     }
 
     /**
@@ -228,8 +228,6 @@ class Parser
         $file = $this->file;
         $line = $token['line'];
 
-        $this->passedNodesStack[] = 'Feature';
-
         // Parse description, background, scenarios & outlines
         while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
@@ -296,11 +294,8 @@ class Parser
         $line = $token['line'];
 
         if (count($this->popTags()) !== 0) {
-            throw new ParserException(sprintf(
-                'Background can not be tagged, but it is on line: %d%s',
-                $line,
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
+            // Should not be possible to happen, parseTags should have already picked this up.
+            throw new UnexpectedTaggedNodeException($token, $this->file);
         }
 
         // Parse description and steps
@@ -339,41 +334,7 @@ class Parser
      */
     protected function parseScenario()
     {
-        $token = $this->expectTokenType('Scenario');
-
-        $title = trim($token['value'] ?? '');
-        $tags = $this->popTags();
-        $keyword = $token['keyword'];
-        $line = $token['line'];
-
-        $this->passedNodesStack[] = 'Scenario';
-
-        // Parse description and steps
-        $steps = [];
-        while (in_array($this->predictTokenType(), ['Step', 'Newline', 'Text', 'Comment'])) {
-            $node = $this->parseExpression();
-
-            if ($node instanceof StepNode) {
-                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
-                continue;
-            }
-
-            if ($steps === [] && is_string($node)) {
-                $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                $title .= "\n" . $text;
-                continue;
-            }
-
-            if ($node === "\n") {
-                continue;
-            }
-
-            throw new UnexpectedParserNodeException('Step', $node, $this->file);
-        }
-
-        array_pop($this->passedNodesStack);
-
-        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
+        return $this->parseScenarioOrOutlineBody($this->expectTokenType('Scenario'));
     }
 
     /**
@@ -385,8 +346,22 @@ class Parser
      */
     protected function parseOutline()
     {
-        $token = $this->expectTokenType('Outline');
+        $node = $this->parseScenarioOrOutlineBody($this->expectTokenType('Outline'));
 
+        if (!($node instanceof OutlineNode && $node->hasExamples())) {
+            throw new ParserException(sprintf(
+                'Outline should have examples table, but got none for outline "%s" on line: %d%s',
+                $node->getTitle(),
+                $node->getLine(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ));
+        }
+
+        return $node;
+    }
+
+    private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
+    {
         $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
@@ -398,28 +373,25 @@ class Parser
         // Parse description, steps and examples
         $steps = [];
 
-        $this->passedNodesStack[] = 'Outline';
-
         while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
             if ($nextTokenType === 'Comment') {
                 $this->lexer->skipPredictedToken();
                 continue;
             }
 
+            if ($nextTokenType === 'Tag') {
+                // The only thing inside a Scenario / Scenario Outline that can be tagged is an Examples table
+                // Scan on to see what the tags are attached to - if it's not Examples then we must have reached the
+                // end of this scenario and be about to start a new one.
+                if ($this->validateAndGetNextTaggedNodeType() !== 'Examples') {
+                    break;
+                }
+            }
+
             $node = $this->parseExpression();
 
-            if ($node instanceof StepNode) {
-                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
-                continue;
-            }
-
-            if ($node instanceof ExampleTableNode) {
-                $examples[] = $node;
-
-                continue;
-            }
-
-            if (count($steps) === 0 && is_string($node)) {
+            if ($steps === [] && is_string($node)) {
+                // Free text is only allowed before the first step (or when parsing Examples: which is done elsewhere)
                 $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
                 $title .= "\n" . $text;
                 continue;
@@ -429,19 +401,66 @@ class Parser
                 continue;
             }
 
-            throw new UnexpectedParserNodeException('Step or Examples table', $node, $this->file);
+            if ($examples === [] && $node instanceof StepNode) {
+                // Steps are only allowed before the first Examples table (if any)
+                $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
+                continue;
+            }
+
+            if ($node instanceof ExampleTableNode) {
+                // NB: It is valid to have a Scenario with Examples: but no Steps
+                $examples[] = $node;
+                continue;
+            }
+
+            throw new UnexpectedParserNodeException(
+                match ($examples) {
+                    [] => 'Step, Examples table, or end of Scenario',
+                    default => 'Examples table or end of Scenario',
+                },
+                $node,
+                $this->file,
+            );
         }
 
-        if (count($examples) === 0) {
-            throw new ParserException(sprintf(
-                'Outline should have examples table, but got none for outline "%s" on line: %d%s',
-                rtrim($title),
-                $line,
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
+        if ($examples !== []) {
+            return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line);
         }
 
-        return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line);
+        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
+    }
+
+    /**
+     * Peek ahead to find the node that the current tags belong to.
+     *
+     * @throws UnexpectedTaggedNodeException if there is not a taggable node
+     */
+    private function validateAndGetNextTaggedNodeType(): string
+    {
+        $deferred = [];
+        try {
+            while (true) {
+                $deferred[] = $next = $this->lexer->getAdvancedToken();
+                $nextType = $next['type'];
+
+                if (in_array($nextType, ['Tag', 'Comment', 'Newline'], true)) {
+                    // These are the only node types allowed between tag node(s) and the node they are tagging
+                    continue;
+                }
+
+                if (in_array($nextType, ['Feature', 'Examples', 'Scenario', 'Outline'], true)) {
+                    // These are the only taggable node types
+                    return $nextType;
+                }
+
+                throw new UnexpectedTaggedNodeException($next, $this->file);
+            }
+        } finally {
+            // Rewind the lexer back to where it was when we started scanning ahead
+            foreach ($deferred as $token) {
+                $this->lexer->deferToken($token);
+            }
+        }
     }
 
     /**
@@ -458,8 +477,6 @@ class Parser
         $text = trim($token['text']);
         $line = $token['line'];
 
-        $this->passedNodesStack[] = 'Step';
-
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
             if ($predicted === 'Comment' || $predicted === 'Newline') {
@@ -473,8 +490,6 @@ class Parser
                 $arguments[] = $node;
             }
         }
-
-        array_pop($this->passedNodesStack);
 
         return new StepNode($keyword, $text, $arguments, $line, $keywordType);
     }
@@ -545,36 +560,12 @@ class Parser
     {
         $token = $this->expectTokenType('Tag');
 
+        // Validate that the tags are followed by a node that can be tagged
+        $this->validateAndGetNextTaggedNodeType();
+
         $this->guardTags($token['tags']);
 
         $this->tags = array_merge($this->tags, $token['tags']);
-
-        $possibleTransitions = [
-            'Outline' => [
-                'Examples',
-                'Step',
-            ],
-        ];
-
-        $currentType = '-1';
-        // check if that is ok to go inside:
-        if (!empty($this->passedNodesStack)) {
-            $currentType = $this->passedNodesStack[count($this->passedNodesStack) - 1];
-        }
-
-        $nextType = $this->predictTokenType();
-
-        if ($nextType === 'EOS') {
-            throw new ParserException(sprintf(
-                'Unexpected end of file after tags on line %d%s',
-                $token['line'],
-                $this->file ? ' in file: ' . $this->file : '',
-            ));
-        }
-
-        if (!isset($possibleTransitions[$currentType]) || in_array($nextType, $possibleTransitions[$currentType])) {
-            return $this->parseExpression();
-        }
 
         return "\n";
     }

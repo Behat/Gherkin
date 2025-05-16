@@ -59,7 +59,7 @@ final class ParserTest extends TestCase
             );
         } catch (ParserException $e) {
             // expected - features cannot end with tags
-            $this->assertSame('Unexpected end of file after tags on line 5', $e->getMessage());
+            $this->assertSame('Unexpected end of file after tags on line: 5', $e->getMessage());
         }
         $feature2 = $parser->parse(
             <<<'FEATURE'
@@ -146,7 +146,7 @@ final class ParserTest extends TestCase
         ];
 
         yield 'text content in outline' => [
-            'expectedException' => new ParserException('Expected Step or Examples table, but got text: "    nope" in file: /fake.feature'),
+            'expectedException' => new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "    nope" in file: /fake.feature'),
             'featureText' => <<<'FEATURE'
             Feature:
               Scenario Outline:

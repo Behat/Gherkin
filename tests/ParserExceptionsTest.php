@@ -53,20 +53,6 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin = new Parser(new Lexer($keywords));
     }
 
-    public function testStepRightAfterFeature(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature: Some feature
-
-            Given some step-like line
-        GHERKIN;
-
-        $parsed = $this->gherkin->parse($feature);
-
-        $this->assertInstanceOf(FeatureNode::class, $parsed);
-        $this->assertEquals("\n  Given some step-like line", $parsed->getDescription());
-    }
-
     public function testTextInBackground(): void
     {
         $feature = <<<'GHERKIN'
@@ -193,96 +179,6 @@ class ParserExceptionsTest extends TestCase
         $this->gherkin->parse($feature);
     }
 
-    public function testWrongTagPlacement(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature: Some feature
-
-            Scenario:
-                Given some step
-                @some_tag
-                Then some additional step
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Expected Scenario, Outline or Background, but got Step on line: 6')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
-    public function testBackgroundWithTag(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature: Some feature
-
-            @some_tag
-            Background:
-                Given some step
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Background can not be tagged, but it is on line: 4')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
-    public function testEndlessPyString(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature:
-
-            Scenario:
-                Given something with:
-                    """
-                    some text
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Expected PyStringOp token, but got EOS on line: 7')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
-    public function testWrongStepType(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature:
-
-            Scenario:
-                Given some step
-
-                Aaand some step
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        Aaand some step"')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
-    public function testMultipleBackgrounds(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature:
-
-            Background:
-                Given some step
-
-            Background:
-                Aaand some step
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Each Feature could have only one Background, but found multiple on lines 3 and 6')
-        );
-
-        $this->gherkin->parse($feature);
-    }
-
     public function testMultipleFeatures(): void
     {
         $feature = <<<'GHERKIN'
@@ -310,7 +206,7 @@ class ParserExceptionsTest extends TestCase
         GHERKIN;
 
         $this->expectExceptionObject(
-            new ParserException('Expected Step, but got text: "        | foo | bar"')
+            new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "        | foo | bar"'),
         );
 
         $this->gherkin->parse($feature);

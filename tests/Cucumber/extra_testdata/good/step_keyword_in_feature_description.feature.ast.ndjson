@@ -1,0 +1,1 @@
+{"gherkinDocument":{"comments":[],"feature":{"children":[],"description":"    Given some step-like line","keyword":"Feature","language":"en","location":{"column":1,"line":1},"name":"Some feature","tags":[]},"uri":"../testdata/good/step_keyword_in_feature_description.feature"}}
