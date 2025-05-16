@@ -1,0 +1,2 @@
+{"parseError":{"message":"(6:9): expected: #TagLine, #RuleLine, #Comment, #Empty, got 'Then some additional step'","source":{"location":{"column":9,"line":6},"uri":"../testdata/bad/tagged_step.feature"}}}
+{"parseError":{"message":"(7:0): unexpected end of file, expected: #TagLine, #RuleLine, #Comment, #Empty","source":{"location":{"line":7},"uri":"../testdata/bad/tagged_step.feature"}}}

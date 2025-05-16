@@ -31,7 +31,8 @@ use Tests\Behat\Gherkin\Filesystem;
  */
 class CompatibilityTest extends TestCase
 {
-    public const TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
+    private const GHERKIN_TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
+    private const EXTRA_TESTDATA_PATH = __DIR__ . '/extra_testdata';
 
     /**
      * @var array<string, string>
@@ -123,7 +124,8 @@ class CompatibilityTest extends TestCase
      */
     public static function goodCucumberFeatures(): iterable
     {
-        return self::getCucumberFeatures('/good');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH.'/good');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH.'/good');
     }
 
     /**
@@ -131,7 +133,8 @@ class CompatibilityTest extends TestCase
      */
     public static function badCucumberFeatures(): iterable
     {
-        return self::getCucumberFeatures('/bad');
+        yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH.'/bad');
+        yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH.'/bad');
     }
 
     /**
@@ -139,7 +142,7 @@ class CompatibilityTest extends TestCase
      */
     private static function getCucumberFeatures(string $folder): iterable
     {
-        $fileIterator = new FilesystemIterator(self::TESTDATA_PATH . $folder);
+        $fileIterator = new FilesystemIterator($folder);
         /**
          * @var iterable<string, SplFileInfo> $fileIterator
          */
