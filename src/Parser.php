@@ -46,7 +46,6 @@ class Parser
     public function __construct(
         private readonly Lexer $lexer,
     ) {
-        $this->lexer = $lexer;
     }
 
     /**
