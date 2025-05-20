@@ -174,12 +174,26 @@ class CompatibilityTest extends TestCase
             // include a description but are covering other features.
             $feature->getDescription() === null ? null : preg_replace('/^\s+/m', '', $feature->getDescription()),
             $feature->getTags(),
-            $feature->getBackground(),
+            $this->normaliseBackground($feature->getBackground()),
             array_map($this->normaliseScenario(...), $feature->getScenarios()),
             $feature->getKeyword(),
             $feature->getLanguage(),
             $feature->getFile(),
             $feature->getLine(),
+        );
+    }
+
+    private function normaliseBackground(?BackgroundNode $background): ?BackgroundNode
+    {
+        if ($background === null) {
+            return $background;
+        }
+
+        return new BackgroundNode(
+            $background->getTitle(),
+            array_map($this->normaliseStep(...), $background->getSteps()),
+            $background->getKeyword(),
+            $background->getLine(),
         );
     }
 
