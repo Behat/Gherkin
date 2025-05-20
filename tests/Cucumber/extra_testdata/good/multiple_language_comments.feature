@@ -4,4 +4,5 @@
 
 Feature: Some feature
 
-    Given something wrong
+    Scenario:
+      Then the second language tag should just be treated as a normal comment

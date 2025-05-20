@@ -1,4 +1,5 @@
 Feature: Some feature
 # language: ru
 
-    Given something wrong
+    Scenario:
+      Then the language tag above should be ignored

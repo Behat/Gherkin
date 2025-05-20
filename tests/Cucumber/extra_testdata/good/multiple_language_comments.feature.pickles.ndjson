@@ -1,0 +1,1 @@
+{"pickle":{"astNodeIds":["1"],"id":"3","language":"en","name":"","steps":[{"astNodeIds":["0"],"id":"2","text":"the second language tag should just be treated as a normal comment","type":"Outcome"}],"tags":[],"uri":"../good/multiple_language_comments.feature"}}
