@@ -14,6 +14,7 @@ use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
+use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
@@ -49,7 +50,6 @@ class CompatibilityTest extends TestCase
         'descriptions.feature' => 'Examples table descriptions not supported',
         'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
         'extra_table_content.feature' => 'Table without right border triggers a ParserException',
-        'incomplete_scenario_outline.feature' => 'Outline without Examples table triggers a ParserException',
         'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
