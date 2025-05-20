@@ -35,7 +35,7 @@ class Lexer
     private $inPyString = false;
     private $pyStringSwallow = 0;
     private $allowLanguageTag = true;
-    private $featureStarted = false;
+    private $allowFeature = true;
     private $allowMultilineArguments = false;
     private $allowSteps = false;
     private $pyStringDelimiter;
@@ -76,7 +76,7 @@ class Lexer
         $this->pyStringSwallow = 0;
 
         $this->allowLanguageTag = true;
-        $this->featureStarted = false;
+        $this->allowFeature = true;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
 
@@ -300,7 +300,7 @@ class Lexer
 
         // turn off language searching and feature detection
         if ($type === 'Feature') {
-            $this->featureStarted = true;
+            $this->allowFeature = false;
             $this->allowLanguageTag = false;
         }
 
@@ -370,7 +370,7 @@ class Lexer
      */
     protected function scanFeature()
     {
-        if ($this->featureStarted) {
+        if (!$this->allowFeature) {
             // The Feature: tag is only allowed once in a file, later in the file it may be part of a description node
             return null;
         }
