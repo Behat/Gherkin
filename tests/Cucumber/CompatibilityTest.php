@@ -15,11 +15,15 @@ use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\ScenarioInterface;
+use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
 use Tests\Behat\Gherkin\Filesystem;
@@ -156,36 +160,67 @@ class CompatibilityTest extends TestCase
     /**
      * Remove features that aren't present in the cucumber source.
      */
-    private function normaliseFeature(?FeatureNode $featureNode): ?FeatureNode
+    private function normaliseFeature(?FeatureNode $feature): ?FeatureNode
     {
-        if (is_null($featureNode)) {
+        if (is_null($feature)) {
             return null;
         }
 
-        if ($featureNode->getDescription() !== null) {
+        return new FeatureNode(
+            $feature->getTitle(),
             // We currently handle whitespace in feature descriptions differently to cucumber
             // https://github.com/Behat/Gherkin/issues/209
             // We need to be able to ignore that difference so that we can still run cucumber tests that
             // include a description but are covering other features.
-            $trimmedDescription = preg_replace('/^\s+/m', '', $featureNode->getDescription());
-            $this->setPrivateProperty($featureNode, 'description', $trimmedDescription);
-        }
-
-        foreach ($featureNode->getScenarios() as $scenarioNode) {
-            foreach ($scenarioNode->getSteps() as $step) {
-                $this->setPrivateProperty($step, 'keywordType', '');
-                $this->setPrivateProperty($step, 'arguments', []);
-            }
-        }
-
-        return $featureNode;
+            $feature->getDescription() === null ? null : preg_replace('/^\s+/m', '', $feature->getDescription()),
+            $feature->getTags(),
+            $feature->getBackground(),
+            array_map($this->normaliseScenario(...), $feature->getScenarios()),
+            $feature->getKeyword(),
+            $feature->getLanguage(),
+            $feature->getFile(),
+            $feature->getLine(),
+        );
     }
 
-    private function setPrivateProperty(object $object, string $propertyName, mixed $value): void
+    private function normaliseScenario(ScenarioInterface $scenario): ScenarioInterface
     {
-        $reflectionClass = new ReflectionClass($object);
-        $property = $reflectionClass->getProperty($propertyName);
-        $property->setValue($object, $value);
+        return match ($scenario::class) {
+            ScenarioNode::class => new ScenarioNode(
+                $scenario->getName(),
+                $scenario->getTags(),
+                array_map($this->normaliseStep(...), $scenario->getSteps()),
+                $scenario->getKeyword(),
+                $scenario->getLine(),
+            ),
+
+            OutlineNode::class => new OutlineNode(
+                $scenario->getTitle(),
+                $scenario->getTags(),
+                array_map($this->normaliseStep(...), $scenario->getSteps()),
+                $scenario->getExampleTables(),
+                $scenario->getKeyword(),
+                $scenario->getLine(),
+            ),
+
+            default => throw new InvalidArgumentException('Unsupported scenario class: ' . $scenario::class),
+        };
+    }
+
+    private function normaliseStep(StepNode $stepNode): StepNode
+    {
+        return new StepNode(
+            $stepNode->getKeyword(),
+            $stepNode->getText(),
+            // CucumberNDJsonParser does not currently parse tables / pystrings attached to a step
+            // See https://github.com/Behat/Gherkin/issues/320
+            [],
+            $stepNode->getLine(),
+            // We cannot compare the keywordsType property on a StepNode because this concept
+            // is specific to Behat/Gherkin and there is no equivalent value in the cucumber/gherkin
+            // test data.
+            ''
+        );
     }
 
     private function expectDeprecationErrorMatches(string $message): void

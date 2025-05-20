@@ -38,20 +38,14 @@ use Behat\Gherkin\Node\TableNode;
  */
 class Parser
 {
-    private $lexer;
     private $input;
     private $file;
     private $tags = [];
     private $languageSpecifierLine;
 
-    /**
-     * Initializes parser.
-     *
-     * @param Lexer $lexer Lexer instance
-     */
-    public function __construct(Lexer $lexer)
-    {
-        $this->lexer = $lexer;
+    public function __construct(
+        private readonly Lexer $lexer,
+    ) {
     }
 
     /**

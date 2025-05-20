@@ -18,24 +18,13 @@ namespace Behat\Gherkin\Node;
 class PyStringNode implements ArgumentInterface
 {
     /**
-     * @var array
-     */
-    private $strings = [];
-    /**
-     * @var int
-     */
-    private $line;
-
-    /**
-     * Initializes PyString.
-     *
      * @param array $strings String in form of [$stringLine]
      * @param int $line Line number where string been started
      */
-    public function __construct(array $strings, $line)
-    {
-        $this->strings = $strings;
-        $this->line = $line;
+    public function __construct(
+        private readonly array $strings,
+        private readonly int $line,
+    ) {
     }
 
     /**

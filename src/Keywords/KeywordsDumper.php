@@ -17,17 +17,11 @@ namespace Behat\Gherkin\Keywords;
  */
 class KeywordsDumper
 {
-    private $keywords;
     private $keywordsDumper;
 
-    /**
-     * Initializes dumper.
-     *
-     * @param KeywordsInterface $keywords Keywords instance
-     */
-    public function __construct(KeywordsInterface $keywords)
-    {
-        $this->keywords = $keywords;
+    public function __construct(
+        private readonly KeywordsInterface $keywords,
+    ) {
         $this->keywordsDumper = [$this, 'dumpKeywords'];
     }
 

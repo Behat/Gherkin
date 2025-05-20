@@ -22,7 +22,7 @@ use Composer\InstalledVersions;
  */
 class FileCache implements CacheInterface
 {
-    private $path;
+    private readonly string $path;
 
     /**
      * Used as part of the cache directory path to invalidate cache if the installed package version changes.
@@ -42,7 +42,7 @@ class FileCache implements CacheInterface
      *
      * @throws CacheException
      */
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::getGherkinVersionHash();
 
