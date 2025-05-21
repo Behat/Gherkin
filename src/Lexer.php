@@ -586,9 +586,11 @@ class Lexer
 
         $token = $this->takeToken('TableRow');
         $line = mb_substr($line, 1, mb_strlen($line, 'utf8') - 2, 'utf8');
+        $rawColumns = preg_split('/(?<!\\\)\|/u', $line);
+        \assert($rawColumns !== false);
         $columns = array_map(function ($column) {
             return trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column));
-        }, preg_split('/(?<!\\\)\|/u', $line));
+        }, $rawColumns);
         $token['columns'] = $columns;
 
         $this->consumeLine();
