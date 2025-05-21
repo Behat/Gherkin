@@ -1,0 +1,1 @@
+{"source":{"data":"# language: en\n\n# language: ru\n\nFeature: Some feature\n\n    Scenario:\n      Then the second language tag should just be treated as a normal comment\n","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/multiple_language_comments.feature"}}

@@ -41,7 +41,6 @@ class Parser
     private $input;
     private $file;
     private $tags = [];
-    private $languageSpecifierLine;
 
     public function __construct(
         private readonly Lexer $lexer,
@@ -60,7 +59,6 @@ class Parser
      */
     public function parse($input, $file = null)
     {
-        $this->languageSpecifierLine = null;
         $this->input = $input;
         $this->file = $file;
         $this->tags = [];
@@ -76,7 +74,7 @@ class Parser
         }
 
         $feature = null;
-        while ('EOS' !== ($predicted = $this->predictTokenType())) {
+        while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
 
             if ($node === "\n") {
@@ -88,29 +86,7 @@ class Parser
                 continue;
             }
 
-            if ($feature && $node instanceof FeatureNode) {
-                throw new ParserException(sprintf(
-                    'Only one feature is allowed per feature file. But %s got multiple.',
-                    $this->file
-                ));
-            }
-
-            if (is_string($node)) {
-                throw new ParserException(sprintf(
-                    'Expected Feature, but got text: "%s"%s',
-                    $node,
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            if (!$node instanceof FeatureNode) {
-                throw new ParserException(sprintf(
-                    'Expected Feature, but got %s on line: %d%s',
-                    $node->getKeyword(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
+            throw new UnexpectedParserNodeException('Feature', $node, $this->file);
         }
 
         return $feature;
@@ -247,21 +223,14 @@ class Parser
                 continue;
             }
 
-            if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
-                throw new ParserException(sprintf(
-                    'Each Feature could have only one Background, but found multiple on lines %d and %d%s',
-                    $background->getLine(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            throw new ParserException(sprintf(
-                'Expected Scenario, Outline or Background, but got %s on line: %d%s',
-                $node->getNodeType(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
+            throw new UnexpectedParserNodeException(
+                match ($background === null && $scenarios === []) {
+                    true => 'Background, Scenario or Outline',
+                    false => 'Scenario or Outline',
+                },
+                $node,
+                $this->file,
+            );
         }
 
         return new FeatureNode(
@@ -397,6 +366,7 @@ class Parser
 
             if ($node instanceof ExampleTableNode) {
                 // NB: It is valid to have a Scenario with Examples: but no Steps
+                // It is also valid to have an Examples: with no table rows (this produces no actual examples)
                 $examples[] = $node;
                 continue;
             }
@@ -613,27 +583,17 @@ class Parser
     }
 
     /**
-     * Parses language block and updates lexer configuration based on it.
+     * Skips over language tags (they are handled inside the Lexer).
      *
      * @phpstan-return TParsedExpressionResult
      *
      * @throws ParserException
+     *
+     * @deprecated language tags are handled inside the Lexer, they skipped over (like any other comment) in the Parser
      */
     protected function parseLanguage()
     {
-        $token = $this->expectTokenType('Language');
-
-        if ($this->languageSpecifierLine === null) {
-            $this->lexer->analyse($this->input, $token['value']);
-            $this->languageSpecifierLine = $token['line'];
-        } elseif ($token['line'] !== $this->languageSpecifierLine) {
-            throw new ParserException(sprintf(
-                'Ambiguous language specifiers on lines: %d and %d%s',
-                $this->languageSpecifierLine,
-                $token['line'],
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-        }
+        $this->expectTokenType('Language');
 
         return $this->parseExpression();
     }

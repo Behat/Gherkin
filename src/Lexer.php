@@ -12,6 +12,7 @@ namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
+use LogicException;
 
 /**
  * Gherkin lexer.
@@ -34,7 +35,8 @@ class Lexer
     private $stashedToken;
     private $inPyString = false;
     private $pyStringSwallow = 0;
-    private $featureStarted = false;
+    private $allowLanguageTag = true;
+    private $allowFeature = true;
     private $allowMultilineArguments = false;
     private $allowSteps = false;
     private $pyStringDelimiter;
@@ -74,9 +76,31 @@ class Lexer
         $this->inPyString = false;
         $this->pyStringSwallow = 0;
 
-        $this->featureStarted = false;
+        $this->allowLanguageTag = true;
+        $this->allowFeature = true;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
+
+        $this->setLanguage($language);
+    }
+
+    private function setLanguage(string $language): void
+    {
+        if (($this->stashedToken !== null) || ($this->deferredObjects !== [])) {
+            // @codeCoverageIgnoreStart
+            // It is not possible to trigger this condition using the public interface of this class.
+            // It may be possible if the end-user has extended the Lexer with custom functionality.
+            throw new LogicException(
+                <<<'STRING'
+                Cannot set gherkin language due to unexpected Lexer state.
+
+                Please open an issue at https://github.com/Behat/Gherkin with a copy of the current
+                feature file. If you are using a Lexer or Parser class that extends the ones provided
+                in behat/gherkin, please also provide details of these.
+                STRING,
+            );
+            // @codeCoverageIgnoreEnd
+        }
 
         $this->keywords->setLanguage($this->language = $language);
         $this->keywordsCache = [];
@@ -283,9 +307,10 @@ class Lexer
 
         $this->consumeLine();
 
-        // turn off language searching
+        // turn off language searching and feature detection
         if ($type === 'Feature') {
-            $this->featureStarted = true;
+            $this->allowFeature = false;
+            $this->allowLanguageTag = false;
         }
 
         // turn off PyString and Table searching
@@ -354,6 +379,11 @@ class Lexer
      */
     protected function scanFeature()
     {
+        if (!$this->allowFeature) {
+            // The Feature: tag is only allowed once in a file, later in the file it may be part of a description node
+            return null;
+        }
+
         return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
     }
 
@@ -540,7 +570,7 @@ class Lexer
      */
     protected function scanLanguage()
     {
-        if ($this->featureStarted) {
+        if (!$this->allowLanguageTag) {
             return null;
         }
 
@@ -552,7 +582,14 @@ class Lexer
             return null;
         }
 
-        return $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        $token = $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+
+        if ($token) {
+            $this->allowLanguageTag = false;
+            $this->setLanguage($token['value']);
+        }
+
+        return $token;
     }
 
     /**

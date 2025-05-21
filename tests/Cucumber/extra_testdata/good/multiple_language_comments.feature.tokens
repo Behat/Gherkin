@@ -1,0 +1,9 @@
+(1:1)Language:/en/
+(2:1)Empty://
+(3:1)Comment:/# language: ru/
+(4:1)Empty://
+(5:1)FeatureLine:()Feature/Some feature/
+(6:1)Empty://
+(7:5)ScenarioLine:()Scenario//
+(8:7)StepLine:(Outcome)Then /the second language tag should just be treated as a normal comment/
+EOF

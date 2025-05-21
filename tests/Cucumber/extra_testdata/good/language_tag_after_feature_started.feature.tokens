@@ -1,0 +1,6 @@
+(1:1)FeatureLine:()Feature/Some feature/
+(2:1)Comment:/# language: ru/
+(3:1)Other://
+(4:5)ScenarioLine:()Scenario//
+(5:7)StepLine:(Outcome)Then /the language tag above should be ignored/
+EOF
