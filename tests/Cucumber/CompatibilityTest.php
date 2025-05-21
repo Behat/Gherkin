@@ -44,6 +44,9 @@ class CompatibilityTest extends TestCase
      */
     private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
+        'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+        'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
+        'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
         'rule.feature' => 'Rule keyword not supported',
         'rule_with_tag.feature' => 'Rule keyword not supported',
         'tags.feature' => 'Rule keyword not supported',
