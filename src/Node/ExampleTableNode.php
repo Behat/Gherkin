@@ -20,8 +20,8 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
     use TaggedNodeTrait;
 
     /**
-     * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
-     * @param string[] $tags
+     * @param array<int, list<string>> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @param list<string> $tags
      */
     public function __construct(
         array $table,

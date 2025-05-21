@@ -17,12 +17,17 @@ namespace Behat\Gherkin\Loader;
  */
 abstract class AbstractFileLoader implements FileLoaderInterface
 {
+    /**
+     * @var string|null
+     */
     protected $basePath;
 
     /**
      * Sets base features path.
      *
      * @param string $path Base loader path
+     *
+     * @return void
      */
     public function setBasePath($path)
     {

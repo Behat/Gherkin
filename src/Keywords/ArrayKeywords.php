@@ -46,8 +46,11 @@ namespace Behat\Gherkin\Keywords;
  */
 class ArrayKeywords implements KeywordsInterface
 {
-    private $keywordString = [];
-    private $language;
+    /**
+     * @var array<string, string>
+     */
+    private array $keywordString = [];
+    private string $language = 'en';
 
     /**
      * Initializes holder with keywords.
@@ -63,6 +66,8 @@ class ArrayKeywords implements KeywordsInterface
      * Sets keywords holder language.
      *
      * @param string $language Language name
+     *
+     * @return void
      */
     public function setLanguage($language)
     {

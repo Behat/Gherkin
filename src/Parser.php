@@ -35,12 +35,17 @@ use Behat\Gherkin\Node\TableNode;
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
+ *
+ * @phpstan-import-type TToken from Lexer
  */
 class Parser
 {
-    private $input;
-    private $file;
-    private $tags = [];
+    private string $input;
+    private ?string $file = null;
+    /**
+     * @var list<string>
+     */
+    private array $tags = [];
 
     public function __construct(
         private readonly Lexer $lexer,
@@ -51,7 +56,7 @@ class Parser
      * Parses input & returns features array.
      *
      * @param string $input Gherkin string document
-     * @param string $file File name
+     * @param string|null $file File name
      *
      * @return FeatureNode|null
      *
@@ -99,6 +104,8 @@ class Parser
      *
      * @return array
      *
+     * @phpstan-return TToken
+     *
      * @throws ParserException
      */
     protected function expectTokenType($type)
@@ -125,6 +132,8 @@ class Parser
      * @param string $type Token type
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function acceptTokenType($type)
     {
@@ -317,6 +326,9 @@ class Parser
         return $this->parseScenarioOrOutlineBody($this->expectTokenType('Outline'));
     }
 
+    /**
+     * @phpstan-param TToken $token
+     */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
         $title = trim($token['value'] ?? '');
@@ -531,7 +543,7 @@ class Parser
     /**
      * Returns current set of tags and clears tag buffer.
      *
-     * @return array
+     * @return list<string>
      */
     protected function popTags()
     {
@@ -545,6 +557,8 @@ class Parser
      * Checks the tags fit the required format.
      *
      * @param string[] $tags
+     *
+     * @return void
      */
     protected function guardTags(array $tags)
     {

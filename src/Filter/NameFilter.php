@@ -20,6 +20,9 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class NameFilter extends SimpleFilter
 {
+    /**
+     * @var string
+     */
     protected $filterString;
 
     /**

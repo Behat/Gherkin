@@ -25,6 +25,8 @@ interface KeywordsInterface
      * Sets keywords holder language.
      *
      * @param string $language Language name
+     *
+     * @return void
      */
     public function setLanguage($language);
 

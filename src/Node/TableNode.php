@@ -31,7 +31,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Initializes table.
      *
-     * @param array $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @param array<int, array> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
      *
      * @throws NodeException If the given table is invalid
      */
@@ -181,7 +181,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table definition lines.
      *
-     * @return array
+     * @return list<int>
      */
     public function getLines()
     {
@@ -274,7 +274,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * Converts row into delimited string.
      *
      * @param int $rowNum Row number
-     * @param callable $wrapper Wrapper function
+     * @param callable(string, int): string $wrapper Wrapper function
      *
      * @return string
      */
@@ -340,6 +340,8 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Obtains and adds rows from another table to the current table.
      * The second table should have the same structure as the current one.
+     *
+     * @return void
      *
      * @deprecated remove together with OutlineNode::getExampleTable
      */

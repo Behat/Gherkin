@@ -21,6 +21,9 @@ use Behat\Gherkin\Node\ScenarioInterface;
  */
 class TagFilter extends ComplexFilter
 {
+    /**
+     * @var string
+     */
     protected $filterString;
 
     /**

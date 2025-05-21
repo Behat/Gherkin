@@ -119,7 +119,7 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @return iterable<array{expectedException: Exception, featureText: string|list<array<string, mixed>>}>
+     * @return iterable<array{expectedException: Exception, featureText: string}>
      */
     public static function parserErrorDataProvider(): iterable
     {

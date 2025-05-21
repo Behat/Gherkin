@@ -20,6 +20,9 @@ final class StepNodeComparator extends ObjectComparator
         return $expected instanceof StepNode && $actual instanceof StepNode;
     }
 
+    /**
+     * @return array<mixed>
+     */
     protected function toArray(object $object): array
     {
         $array = parent::toArray($object);
