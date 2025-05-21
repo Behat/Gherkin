@@ -29,25 +29,10 @@ class CucumberKeywords extends ArrayKeywords
      */
     public function __construct($yaml)
     {
-        // Handle filename explicitly for BC reasons, as Symfony Yaml 3.0 does not do it anymore
-        $file = null;
         if (!str_contains($yaml, "\n") && is_file($yaml)) {
-            if (!is_readable($yaml)) {
-                throw new ParseException(sprintf('Unable to parse "%s" as the file is not readable.', $yaml));
-            }
-
-            $file = $yaml;
-            $yaml = file_get_contents($file);
-        }
-
-        try {
+            $content = Yaml::parseFile($yaml);
+        } else {
             $content = Yaml::parse($yaml);
-        } catch (ParseException $e) {
-            if ($file) {
-                $e->setParsedFile($file);
-            }
-
-            throw $e;
         }
 
         if (!is_array($content)) {
