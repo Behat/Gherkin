@@ -1,0 +1,51 @@
+(1:1)Comment:/# TEMPORARY until we resume parsing the official `docstrings.feature`/
+(2:1)FeatureLine:()Feature/DocString variations/
+(3:1)Empty://
+(4:3)ScenarioLine:()Scenario/minimalistic/
+(5:5)StepLine:(Context)Given /a simple DocString/
+(6:7)DocStringSeparator:()"""//
+(7:1)Other:/first line (no indent)/
+(8:1)Other:/  second line (indented with two spaces)/
+(9:1)Other://
+(10:1)Other:/third line was empty/
+(11:7)DocStringSeparator:()"""//
+(12:5)StepLine:(Context)Given /a DocString with content type/
+(13:7)DocStringSeparator:()"""/xml/
+(14:1)Other:/<foo>/
+(15:1)Other:/  <bar />/
+(16:1)Other:/</foo>/
+(17:7)DocStringSeparator:()"""//
+(18:5)StepLine:(Conjunction)And /a DocString with wrong indentation/
+(19:7)DocStringSeparator:()"""//
+(20:1)Other:/wrongly indented line/
+(21:7)DocStringSeparator:()"""//
+(22:5)StepLine:(Conjunction)And /a DocString with alternative separator/
+(23:7)DocStringSeparator:()```//
+(24:1)Other:/first line/
+(25:1)Other:/second line/
+(26:7)DocStringSeparator:()```//
+(27:5)StepLine:(Conjunction)And /a DocString with normal separator inside/
+(28:7)DocStringSeparator:()```//
+(29:1)Other:/first line/
+(30:1)Other:/"""/
+(31:1)Other:/third line/
+(32:7)DocStringSeparator:()```//
+(33:5)StepLine:(Conjunction)And /a DocString with alternative separator inside/
+(34:7)DocStringSeparator:()"""//
+(35:1)Other:/first line/
+(36:1)Other:/```/
+(37:1)Other:/third line/
+(38:7)DocStringSeparator:()"""//
+(39:1)Comment:/    #And a DocString with escaped separator inside/
+(40:1)Comment:/    #  """/
+(41:1)Comment:/    #  first line/
+(42:1)Comment:/    #  \"\"\"/
+(43:1)Comment:/    #  third line/
+(44:1)Comment:/    #  """/
+(45:1)Comment:/    #And a DocString with an escaped alternative separator inside/
+(46:1)Comment:/    #  ```/
+(47:1)Comment:/    #  first line/
+(48:1)Comment:/    #  \`\`\`/
+(49:1)Comment:/    #  third line/
+(50:1)Comment:/    #  ```/
+EOF
