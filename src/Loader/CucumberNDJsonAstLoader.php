@@ -15,9 +15,11 @@ use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
+use Behat\Gherkin\Node\TableNode;
 
 /**
  * Loads a feature from cucumber's protobuf JSON format.
@@ -31,12 +33,16 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     public function load($resource)
     {
-        return array_values(array_filter(array_map(
-            static function ($line) use ($resource) {
-                return self::getFeature(json_decode($line, true), $resource);
-            },
-            file($resource)
-        )));
+        return array_values(
+            array_filter(
+                array_map(
+                    static function ($line) use ($resource) {
+                        return self::getFeature(json_decode($line, true), $resource);
+                    },
+                    file($resource)
+                )
+            )
+        );
     }
 
     /**
@@ -143,12 +149,34 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             static fn (array $item) => new StepNode(
                 trim($item['keyword']),
                 $item['text'],
-                [],
+                self::getStepArguments($item),
                 $item['location']['line'],
                 trim($item['keyword'])
             ),
             array_values($items)
         );
+    }
+
+    private static function getStepArguments(array $step): array
+    {
+        $args = [];
+
+        if (isset($step['docString'])) {
+            $args[] = new PyStringNode(
+                explode("\n", $step['docString']['content']),
+                $step['docString']['location']['line'],
+            );
+        }
+
+        if (isset($step['dataTable'])) {
+            $table = [];
+            foreach ($step['dataTable']['rows'] as $row) {
+                $table[$row['location']['line']] = array_column($row['cells'], 'value');
+            }
+            $args[] = new TableNode($table);
+        }
+
+        return $args;
     }
 
     /**
