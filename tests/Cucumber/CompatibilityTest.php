@@ -44,6 +44,9 @@ class CompatibilityTest extends TestCase
      */
     private array $notParsingCorrectly = [
         'complex_background.feature' => 'Rule keyword not supported',
+        'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+        'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
+        'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
         'rule.feature' => 'Rule keyword not supported',
         'rule_with_tag.feature' => 'Rule keyword not supported',
         'tags.feature' => 'Rule keyword not supported',
@@ -227,9 +230,7 @@ class CompatibilityTest extends TestCase
         return new StepNode(
             $stepNode->getKeyword(),
             $stepNode->getText(),
-            // CucumberNDJsonParser does not currently parse tables / pystrings attached to a step
-            // See https://github.com/Behat/Gherkin/issues/320
-            [],
+            $stepNode->getArguments(),
             $stepNode->getLine(),
             // We cannot compare the keywordsType property on a StepNode because this concept
             // is specific to Behat/Gherkin and there is no equivalent value in the cucumber/gherkin
