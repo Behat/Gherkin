@@ -223,21 +223,14 @@ class Parser
                 continue;
             }
 
-            if ($background instanceof BackgroundNode && $node instanceof BackgroundNode) {
-                throw new ParserException(sprintf(
-                    'Each Feature could have only one Background, but found multiple on lines %d and %d%s',
-                    $background->getLine(),
-                    $node->getLine(),
-                    $this->file ? ' in file: ' . $this->file : ''
-                ));
-            }
-
-            throw new ParserException(sprintf(
-                'Expected Scenario, Outline or Background, but got %s on line: %d%s',
-                $node->getNodeType(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
+            throw new UnexpectedParserNodeException(
+                match ($background === null && $scenarios === []) {
+                    true => 'Background, Scenario or Outline',
+                    false => 'Scenario or Outline',
+                },
+                $node,
+                $this->file,
+            );
         }
 
         return new FeatureNode(
@@ -373,6 +366,7 @@ class Parser
 
             if ($node instanceof ExampleTableNode) {
                 // NB: It is valid to have a Scenario with Examples: but no Steps
+                // It is also valid to have an Examples: with no table rows (this produces no actual examples)
                 $examples[] = $node;
                 continue;
             }
