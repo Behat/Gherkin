@@ -14,18 +14,13 @@ use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
-use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\OutlineNode;
-use Behat\Gherkin\Node\ScenarioInterface;
-use Behat\Gherkin\Node\ScenarioNode;
-use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use SebastianBergmann\Comparator\Factory;
 use SplFileInfo;
 use Tests\Behat\Gherkin\Filesystem;
 
@@ -79,6 +74,22 @@ class CompatibilityTest extends TestCase
     private Parser $parser;
 
     private CucumberNDJsonAstLoader $loader;
+
+    private static ?StepNodeComparator $stepNodeComparator = null;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$stepNodeComparator = new StepNodeComparator();
+        Factory::getInstance()->register(self::$stepNodeComparator);
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        if (self::$stepNodeComparator !== null) {
+            Factory::getInstance()->unregister(self::$stepNodeComparator);
+            self::$stepNodeComparator = null;
+        }
+    }
 
     protected function setUp(): void
     {
@@ -178,64 +189,12 @@ class CompatibilityTest extends TestCase
             // include a description but are covering other features.
             $feature->getDescription() === null ? null : preg_replace('/^\s+/m', '', $feature->getDescription()),
             $feature->getTags(),
-            $this->normaliseBackground($feature->getBackground()),
-            array_map($this->normaliseScenario(...), $feature->getScenarios()),
+            $feature->getBackground(),
+            $feature->getScenarios(),
             $feature->getKeyword(),
             $feature->getLanguage(),
             $feature->getFile(),
             $feature->getLine(),
-        );
-    }
-
-    private function normaliseBackground(?BackgroundNode $background): ?BackgroundNode
-    {
-        if ($background === null) {
-            return $background;
-        }
-
-        return new BackgroundNode(
-            $background->getTitle(),
-            array_map($this->normaliseStep(...), $background->getSteps()),
-            $background->getKeyword(),
-            $background->getLine(),
-        );
-    }
-
-    private function normaliseScenario(ScenarioInterface $scenario): ScenarioInterface
-    {
-        return match ($scenario::class) {
-            ScenarioNode::class => new ScenarioNode(
-                $scenario->getName(),
-                $scenario->getTags(),
-                array_map($this->normaliseStep(...), $scenario->getSteps()),
-                $scenario->getKeyword(),
-                $scenario->getLine(),
-            ),
-
-            OutlineNode::class => new OutlineNode(
-                $scenario->getTitle(),
-                $scenario->getTags(),
-                array_map($this->normaliseStep(...), $scenario->getSteps()),
-                $scenario->getExampleTables(),
-                $scenario->getKeyword(),
-                $scenario->getLine(),
-            ),
-
-            default => throw new InvalidArgumentException('Unsupported scenario class: ' . $scenario::class),
-        };
-    }
-
-    private function normaliseStep(StepNode $stepNode): StepNode
-    {
-        return new StepNode(
-            $stepNode->getKeyword(),
-            $stepNode->getText(),
-            $stepNode->getArguments(),
-            $stepNode->getLine(),
-            // We cannot compare the keywordsType property on a StepNode because this concept
-            // is specific to Behat/Gherkin and there is no equivalent value in the cucumber/gherkin
-            // test data.
-            ''
         );
     }
 
