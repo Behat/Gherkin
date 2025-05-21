@@ -652,6 +652,7 @@ class Lexer
         $token = $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
 
         if ($token) {
+            \assert(\is_string($token['value']));
             $this->allowLanguageTag = false;
             $this->setLanguage($token['value']);
         }
