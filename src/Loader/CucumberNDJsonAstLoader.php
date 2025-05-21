@@ -82,12 +82,14 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         return array_values(
             array_map(
                 static function ($child) {
-                    if ($child['scenario']['examples']) {
+                    $tables = self::getTables($child['scenario']['examples']);
+
+                    if ($tables) {
                         return new OutlineNode(
                             $child['scenario']['name'],
                             self::getTags($child['scenario']),
                             self::getSteps($child['scenario']['steps'] ?? []),
-                            self::getTables($child['scenario']['examples']),
+                            $tables,
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
                         );
@@ -154,38 +156,36 @@ class CucumberNDJsonAstLoader implements LoaderInterface
      */
     private static function getTables(array $items): array
     {
-        return array_filter(
-            array_map(
-                static function ($tableJson): ?ExampleTableNode {
-                    if ($tableJson['tableBody'] === []) {
-                        return null;
-                    }
+        return array_map(
+            static function ($tableJson): ExampleTableNode {
+                $headerRow = $tableJson['tableHeader'] ?? null;
+                $tableBody = $tableJson['tableBody'];
 
-                    if (!isset($tableJson['tableHeader'])) {
-                        throw new NodeException(
-                            sprintf(
-                                'Table header is required when a table body is provided for the example on line %s.',
-                                $tableJson['location']['line'],
-                            )
-                        );
-                    }
-
-                    $table = [
-                        $tableJson['tableHeader']['location']['line'] => array_column($tableJson['tableHeader']['cells'], 'value'),
-                    ];
-
-                    foreach ($tableJson['tableBody'] as $bodyRow) {
-                        $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
-                    }
-
-                    return new ExampleTableNode(
-                        $table,
-                        $tableJson['keyword'],
-                        self::getTags($tableJson)
+                if ($headerRow === null && ($tableBody !== [])) {
+                    throw new NodeException(
+                        sprintf(
+                            'Table header is required when a table body is provided for the example on line %s.',
+                            $tableJson['location']['line'],
+                        )
                     );
-                },
-                array_values($items)
-            )
+                }
+
+                $table = [];
+                if ($headerRow !== null) {
+                    $table[$headerRow['location']['line']] = array_column($headerRow['cells'], 'value');
+                }
+
+                foreach ($tableBody as $bodyRow) {
+                    $table[$bodyRow['location']['line']] = array_column($bodyRow['cells'], 'value');
+                }
+
+                return new ExampleTableNode(
+                    $table,
+                    $tableJson['keyword'],
+                    self::getTags($tableJson)
+                );
+            },
+            array_values($items)
         );
     }
 }

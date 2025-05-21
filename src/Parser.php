@@ -327,7 +327,7 @@ class Parser
     /**
      * Parses scenario token & returns it's node.
      *
-     * @return ScenarioNode
+     * @return OutlineNode|ScenarioNode
      *
      * @throws ParserException
      */
@@ -339,24 +339,13 @@ class Parser
     /**
      * Parses scenario outline token & returns it's node.
      *
-     * @return OutlineNode
+     * @return OutlineNode|ScenarioNode
      *
      * @throws ParserException
      */
     protected function parseOutline()
     {
-        $node = $this->parseScenarioOrOutlineBody($this->expectTokenType('Outline'));
-
-        if (!($node instanceof OutlineNode && $node->hasExamples())) {
-            throw new ParserException(sprintf(
-                'Outline should have examples table, but got none for outline "%s" on line: %d%s',
-                $node->getTitle(),
-                $node->getLine(),
-                $this->file ? ' in file: ' . $this->file : ''
-            ));
-        }
-
-        return $node;
+        return $this->parseScenarioOrOutlineBody($this->expectTokenType('Outline'));
     }
 
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
