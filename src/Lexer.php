@@ -12,6 +12,7 @@ namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
+use LogicException;
 
 /**
  * Gherkin lexer.
@@ -85,12 +86,20 @@ class Lexer
 
     private function setLanguage(string $language): void
     {
-        if ($this->stashedToken !== null) {
-            throw new LexerException('Cannot set gherkin language when there is already a stashed token');
-        }
+        if (($this->stashedToken !== null) || ($this->deferredObjects !== [])) {
+            // @codeCoverageIgnoreStart
+            // It is not possible to trigger this condition using the public interface of this class.
+            // It may be possible if the end-user has extended the Lexer with custom functionality.
+            throw new LogicException(
+                <<<'STRING'
+                Cannot set gherkin language due to unexpected Lexer state.
 
-        if ($this->deferredObjects !== []) {
-            throw new LexerException('Cannot set gherkin language when there are already deferred tokens');
+                Please open an issue at https://github.com/Behat/Gherkin with a copy of the current
+                feature file. If you are using a Lexer or Parser class that extends the ones provided
+                in behat/gherkin, please also provide details of these.
+                STRING,
+            );
+            // @codeCoverageIgnoreEnd
         }
 
         $this->keywords->setLanguage($this->language = $language);
