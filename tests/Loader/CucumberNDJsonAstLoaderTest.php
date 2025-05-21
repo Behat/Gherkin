@@ -19,6 +19,9 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @phpstan-import-type TEnvelope from CucumberNDJsonAstLoader
+ */
 final class CucumberNDJsonAstLoaderTest extends TestCase
 {
     private CucumberNDJsonAstLoader $loader;
@@ -43,52 +46,71 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                     'description' => '',
                     'keyword' => 'fea',
                     'language' => 'en',
+                    'tags' => [],
                     'children' => [
                         [
                             'background' => [
                                 'location' => ['line' => 222],
                                 'keyword' => 'bac',
                                 'name' => 'Empty Background',
+                                'description' => '',
+                                'steps' => [],
+                                'id' => '',
                             ],
                         ],
                         [
                             'scenario' => [
                                 'location' => ['line' => 333],
                                 'name' => 'Empty Scenario',
+                                'description' => '',
                                 'keyword' => 'sce',
+                                'tags' => [],
+                                'steps' => [],
                                 'examples' => [],
+                                'id' => '',
                             ],
                         ],
                         [
                             'scenario' => [
                                 'location' => ['line' => 444],
                                 'name' => 'Examples Scenario',
+                                'description' => '',
+                                'tags' => [],
+                                'steps' => [],
+                                'id' => '',
                                 'keyword' => 'out',
                                 'examples' => [
                                     [
                                         'location' => ['line' => 555],
                                         'keyword' => 'exa',
+                                        'name' => '',
+                                        'description' => '',
+                                        'id' => '',
+                                        'tags' => [],
                                         'tableHeader' => [
                                             'location' => ['line' => 666],
                                             'cells' => [
-                                                ['value' => 'A'],
-                                                ['value' => 'B'],
+                                                ['location' => ['line' => 666], 'value' => 'A'],
+                                                ['location' => ['line' => 666], 'value' => 'B'],
                                             ],
+                                            'id' => '',
                                         ],
                                         'tableBody' => [
                                             [
                                                 'location' => ['line' => 777],
                                                 'cells' => [
-                                                    ['value' => 'A1'],
-                                                    ['value' => 'B1'],
+                                                    ['location' => ['line' => 777], 'value' => 'A1'],
+                                                    ['location' => ['line' => 777], 'value' => 'B1'],
                                                 ],
+                                                'id' => '',
                                             ],
                                             [
                                                 'location' => ['line' => 888],
                                                 'cells' => [
-                                                    ['value' => 'A2'],
-                                                    ['value' => 'B2'],
+                                                    ['location' => ['line' => 888], 'value' => 'A2'],
+                                                    ['location' => ['line' => 888], 'value' => 'B2'],
                                                 ],
+                                                'id' => '',
                                             ],
                                         ],
                                     ],
@@ -97,6 +119,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                         ],
                     ],
                 ],
+                'comments' => [],
             ],
         ]);
 
@@ -139,30 +162,41 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                     'description' => '',
                     'keyword' => 'feature',
                     'language' => 'en',
+                    'tags' => [],
                     'children' => [
                         [
                             'scenario' => [
                                 'location' => ['line' => 2],
                                 'name' => 'Examples Scenario',
+                                'description' => '',
                                 'keyword' => 'outline',
+                                'steps' => [],
+                                'tags' => [],
+                                'id' => '',
                                 'examples' => [
                                     [
                                         'location' => ['line' => 3],
                                         'keyword' => 'example',
+                                        'name' => '',
+                                        'description' => '',
+                                        'id' => '',
+                                        'tags' => [],
                                         'tableBody' => [
                                             [
                                                 'location' => ['line' => 777],
                                                 'cells' => [
-                                                    ['value' => 'A1'],
-                                                    ['value' => 'B1'],
+                                                    ['location' => ['line' => 777], 'value' => 'A1'],
+                                                    ['location' => ['line' => 777], 'value' => 'B1'],
                                                 ],
+                                                'id' => '',
                                             ],
                                             [
                                                 'location' => ['line' => 888],
                                                 'cells' => [
-                                                    ['value' => 'A2'],
-                                                    ['value' => 'B2'],
+                                                    ['location' => ['line' => 888], 'value' => 'A2'],
+                                                    ['location' => ['line' => 888], 'value' => 'B2'],
                                                 ],
+                                                'id' => '',
                                             ],
                                         ],
                                     ],
@@ -171,6 +205,7 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                         ],
                     ],
                 ],
+                'comments' => [],
             ],
         ]);
 
@@ -189,23 +224,33 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
                     'description' => '',
                     'keyword' => 'feature',
                     'language' => 'en',
+                    'tags' => [],
                     'children' => [
                         [
                             'scenario' => [
                                 'location' => ['line' => 2],
                                 'name' => 'Examples Scenario',
+                                'description' => '',
                                 'keyword' => 'outline',
+                                'tags' => [],
+                                'steps' => [],
                                 'examples' => [
                                     [
                                         'location' => ['line' => 3],
                                         'keyword' => 'example',
                                         'tableBody' => [],
+                                        'tags' => [],
+                                        'name' => '',
+                                        'description' => '',
+                                        'id' => '',
                                     ],
                                 ],
+                                'id' => '',
                             ],
                         ],
                     ],
                 ],
+                'comments' => [],
             ],
         ]);
 
@@ -238,6 +283,9 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
         );
     }
 
+    /**
+     * @phpstan-param TEnvelope ...$messages
+     */
     private function serializeCucumberMessagesToFile(mixed ...$messages): string
     {
         return 'data://application/x-ndjson;base64,'
