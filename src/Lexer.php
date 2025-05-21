@@ -19,7 +19,7 @@ use LogicException;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-type TToken array{type: string, line: int, value: int|string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
+ * @phpstan-type TToken array{type: string, line: int, value: string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
  */
 class Lexer
 {
@@ -188,7 +188,7 @@ class Lexer
      * Constructs token with specified parameters.
      *
      * @param string $type Token type
-     * @param int|string|null $value Token value
+     * @param string|null $value Token value
      *
      * @return array
      *
@@ -694,7 +694,7 @@ class Lexer
             return null;
         }
 
-        $token = $this->takeToken('Newline', mb_strlen($this->line, 'utf8'));
+        $token = $this->takeToken('Newline');
         $this->consumeLine();
 
         return $token;
