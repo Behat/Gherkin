@@ -279,6 +279,20 @@ class TableNodeTest extends TestCase
         $this->assertEquals($expected, $table);
     }
 
+    public function testFromListWithLineNumbers(): void
+    {
+        $table = TableNode::fromList([
+            12 => 'everzet',
+            15 => 'antono',
+        ]);
+
+        $expected = new TableNode([
+            12 => ['everzet'],
+            15 => ['antono'],
+        ]);
+        $this->assertEquals($expected, $table);
+    }
+
     public function testMergeRowsFromTablePassSeveralTablesShouldBeMerged(): void
     {
         $table = new TableNode([
@@ -334,8 +348,8 @@ class TableNodeTest extends TestCase
         );
 
         TableNode::fromList([
-            [1, 2, 3],
-            [4, 5, 6],
+            ['1', '2', '3'],
+            ['4', '5', '6'],
         ]);
     }
 
