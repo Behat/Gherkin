@@ -52,8 +52,7 @@ class CompatibilityTest extends TestCase
         'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
         'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
-        'incomplete_scenario.feature' => 'Wrong background parsing when there are no steps',
-        'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
+        'incomplete_background_2.feature' => 'Background descriptions not supported',
     ];
 
     /**
