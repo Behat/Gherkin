@@ -29,7 +29,7 @@ class OutlineNode implements ScenarioInterface
     private array $examples;
 
     /**
-     * @param string[] $tags
+     * @param list<string> $tags
      * @param StepNode[] $steps
      * @param ExampleTableNode|array<array-key, ExampleTableNode> $tables
      */

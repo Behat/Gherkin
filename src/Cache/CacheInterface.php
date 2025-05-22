@@ -43,6 +43,8 @@ interface CacheInterface
      *
      * @param string $path Feature path
      * @param FeatureNode $feature Feature instance
+     *
+     * @return void
      */
     public function write($path, FeatureNode $feature);
 }

@@ -15,6 +15,7 @@ use Behat\Gherkin\Filter\LineFilter;
 use Behat\Gherkin\Filter\LineRangeFilter;
 use Behat\Gherkin\Loader\FileLoaderInterface;
 use Behat\Gherkin\Loader\LoaderInterface;
+use Behat\Gherkin\Node\FeatureNode;
 
 /**
  * Gherkin manager.
@@ -43,6 +44,8 @@ class Gherkin
      * Adds loader to manager.
      *
      * @param LoaderInterface $loader Feature loader
+     *
+     * @return void
      */
     public function addLoader(LoaderInterface $loader)
     {
@@ -53,6 +56,8 @@ class Gherkin
      * Adds filter to manager.
      *
      * @param FeatureFilterInterface $filter Feature filter
+     *
+     * @return void
      */
     public function addFilter(FeatureFilterInterface $filter)
     {
@@ -63,6 +68,8 @@ class Gherkin
      * Sets filters to the parser.
      *
      * @param array<array-key, FeatureFilterInterface> $filters
+     *
+     * @return void
      */
     public function setFilters(array $filters)
     {
@@ -74,6 +81,8 @@ class Gherkin
      * Sets base features path.
      *
      * @param string $path Loaders base path
+     *
+     * @return void
      */
     public function setBasePath($path)
     {
@@ -90,7 +99,7 @@ class Gherkin
      * @param mixed $resource Resource to load
      * @param array<array-key, FeatureFilterInterface> $filters Additional filters
      *
-     * @return array
+     * @return list<FeatureNode>
      */
     public function load($resource, array $filters = [])
     {

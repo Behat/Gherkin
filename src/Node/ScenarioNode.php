@@ -21,6 +21,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
 
     /**
      * @param StepNode[] $steps
+     * @param list<string> $tags
      */
     public function __construct(
         private readonly ?string $title,

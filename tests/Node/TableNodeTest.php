@@ -35,6 +35,7 @@ class TableNodeTest extends TestCase
             new NodeException("Table row '0' is expected to be array, got string")
         );
 
+        // @phpstan-ignore argument.type (we are explicitly testing an invalid instantiation)
         new TableNode([
             'everzet', 'antono',
         ]);

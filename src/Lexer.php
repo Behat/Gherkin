@@ -18,28 +18,45 @@ use LogicException;
  * Gherkin lexer.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-type TToken array{type: string, line: int, value: int|string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
  */
 class Lexer
 {
-    private $language;
-    private $lines;
-    private $linesCount;
-    private $line;
-    private $trimmedLine;
-    private $lineNumber;
-    private $eos;
-    private $keywordsCache = [];
-    private $stepKeywordTypesCache = [];
-    private $deferredObjects = [];
-    private $deferredObjectsCount = 0;
-    private $stashedToken;
-    private $inPyString = false;
-    private $pyStringSwallow = 0;
-    private $allowLanguageTag = true;
-    private $allowFeature = true;
-    private $allowMultilineArguments = false;
-    private $allowSteps = false;
-    private $pyStringDelimiter;
+    private string $language;
+    /**
+     * @var list<string>
+     */
+    private array $lines;
+    private int $linesCount;
+    private string $line;
+    private ?string $trimmedLine = null;
+    private int $lineNumber;
+    private bool $eos;
+    /**
+     * @var array<string, string>
+     */
+    private array $keywordsCache = [];
+    /**
+     * @var array<string, list<string>>
+     */
+    private array $stepKeywordTypesCache = [];
+    /**
+     * @phpstan-var list<TToken>
+     */
+    private array $deferredObjects = [];
+    private int $deferredObjectsCount = 0;
+    /**
+     * @phpstan-var TToken|null
+     */
+    private ?array $stashedToken = null;
+    private bool $inPyString = false;
+    private int $pyStringSwallow = 0;
+    private bool $allowLanguageTag = true;
+    private bool $allowFeature = true;
+    private bool $allowMultilineArguments = false;
+    private bool $allowSteps = false;
+    private ?string $pyStringDelimiter = null;
 
     public function __construct(
         private readonly KeywordsInterface $keywords,
@@ -51,6 +68,8 @@ class Lexer
      *
      * @param string $input Input string
      * @param string $language Language name
+     *
+     * @return void
      *
      * @throws LexerException
      */
@@ -121,6 +140,8 @@ class Lexer
      * Returns next token or previously stashed one.
      *
      * @return array
+     *
+     * @phpstan-return TToken
      */
     public function getAdvancedToken()
     {
@@ -130,7 +151,9 @@ class Lexer
     /**
      * Defers token.
      *
-     * @param array $token Token to defer
+     * @phpstan-param TToken $token Token to defer
+     *
+     * @return void
      */
     public function deferToken(array $token)
     {
@@ -143,6 +166,8 @@ class Lexer
      * Predicts the upcoming token without passing over it.
      *
      * @return array
+     *
+     * @phpstan-return TToken
      */
     public function predictToken()
     {
@@ -166,6 +191,8 @@ class Lexer
      * @param int|string|null $value Token value
      *
      * @return array
+     *
+     * @phpstan-return TToken
      */
     public function takeToken($type, $value = null)
     {
@@ -179,6 +206,8 @@ class Lexer
 
     /**
      * Consumes line from input & increments line counter.
+     *
+     * @return void
      */
     protected function consumeLine()
     {
@@ -196,6 +225,8 @@ class Lexer
 
     /**
      * Consumes first part of line from input without incrementing the line number.
+     *
+     * @return void
      */
     protected function consumeLineUntil(int $trimmedOffset)
     {
@@ -217,6 +248,8 @@ class Lexer
      * Returns stashed token or null if hasn't.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function getStashedToken()
     {
@@ -230,6 +263,8 @@ class Lexer
      * Returns deferred token or null if hasn't.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function getDeferredToken()
     {
@@ -246,6 +281,8 @@ class Lexer
      * Returns next token from input.
      *
      * @return array
+     *
+     * @phpstan-return TToken
      */
     protected function getNextToken()
     {
@@ -274,6 +311,8 @@ class Lexer
      * @param string $type Expected token type
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanInput($regex, $type)
     {
@@ -294,6 +333,8 @@ class Lexer
      * @param string $type Expected token type
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanInputForKeywords($keywords, $type)
     {
@@ -332,6 +373,8 @@ class Lexer
      * Scans EOS from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanEOS()
     {
@@ -376,6 +419,8 @@ class Lexer
      * Scans Feature from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanFeature()
     {
@@ -391,6 +436,8 @@ class Lexer
      * Scans Background from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanBackground()
     {
@@ -401,6 +448,8 @@ class Lexer
      * Scans Scenario from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanScenario()
     {
@@ -411,6 +460,8 @@ class Lexer
      * Scans Scenario Outline from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanOutline()
     {
@@ -421,6 +472,8 @@ class Lexer
      * Scans Scenario Outline Examples from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanExamples()
     {
@@ -431,6 +484,8 @@ class Lexer
      * Scans Step from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanStep()
     {
@@ -458,6 +513,8 @@ class Lexer
      * Scans PyString from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanPyStringOp()
     {
@@ -493,6 +550,8 @@ class Lexer
      * Scans PyString content.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanPyStringContent()
     {
@@ -511,6 +570,8 @@ class Lexer
      * Scans Table Row from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanTableRow()
     {
@@ -539,6 +600,8 @@ class Lexer
      * Scans Tags from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanTags()
     {
@@ -567,6 +630,8 @@ class Lexer
      * Scans Language specifier from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanLanguage()
     {
@@ -596,6 +661,8 @@ class Lexer
      * Scans Comment from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanComment()
     {
@@ -618,6 +685,8 @@ class Lexer
      * Scans Newline from input & returns it if found.
      *
      * @return array|null
+     *
+     * @phpstan-return TToken|null
      */
     protected function scanNewline()
     {
@@ -634,7 +703,9 @@ class Lexer
     /**
      * Scans text from input & returns it if found.
      *
-     * @return array|null
+     * @return array
+     *
+     * @phpstan-return TToken
      */
     protected function scanText()
     {

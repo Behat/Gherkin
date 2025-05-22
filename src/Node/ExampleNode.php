@@ -26,7 +26,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 
     /**
      * @param string $text The entire row as a string, e.g. "| 1 | 2 | 3 |"
-     * @param array<array-key, string> $tags
+     * @param list<string> $tags
      * @param array<array-key, StepNode> $outlineSteps
      * @param array<string, string> $tokens
      * @param int $line line number within the feature file
@@ -125,7 +125,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Returns outline title.
      *
-     * @return string
+     * @return string|null
      */
     public function getOutlineTitle()
     {

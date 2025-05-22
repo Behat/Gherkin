@@ -17,6 +17,9 @@ namespace Behat\Gherkin\Keywords;
  */
 class KeywordsDumper
 {
+    /**
+     * @var callable(list<string>, bool): string
+     */
     private $keywordsDumper;
 
     public function __construct(
@@ -30,7 +33,9 @@ class KeywordsDumper
      *
      * Callable should accept 2 arguments (array $keywords and bool $isShort)
      *
-     * @param callable $mapper Mapper function
+     * @param callable(list<string>, bool): string $mapper Mapper function
+     *
+     * @return void
      */
     public function setKeywordsDumperFunction($mapper)
     {
@@ -40,7 +45,7 @@ class KeywordsDumper
     /**
      * Defaults keywords dumper.
      *
-     * @param array $keywords Keywords list
+     * @param list<string> $keywords Keywords list
      * @param bool $isShort Is short version
      *
      * @return string
@@ -64,6 +69,8 @@ class KeywordsDumper
      * @param bool $excludeAsterisk
      *
      * @return string|array String for short version and array of features for extended
+     *
+     * @phpstan-return ($short is true ? string : list<string>)
      */
     public function dump($language, $short = true, $excludeAsterisk = false)
     {
@@ -95,6 +102,7 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
+     * @param bool $excludeAsterisk
      *
      * @return string
      */
@@ -151,6 +159,7 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
+     * @param bool $excludeAsterisk
      *
      * @return string
      */
@@ -185,6 +194,7 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
+     * @param bool $excludeAsterisk
      *
      * @return string
      */
@@ -243,6 +253,7 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
+     * @param bool $excludeAsterisk
      *
      * @return string
      */
@@ -317,6 +328,7 @@ class KeywordsDumper
      * @param string $keywords Item keyword
      * @param string $text Step text
      * @param bool $short Dump short version?
+     * @param bool $excludeAsterisk
      *
      * @return string
      */

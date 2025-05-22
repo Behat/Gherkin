@@ -24,7 +24,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
     use TaggedNodeTrait;
 
     /**
-     * @param string[] $tags
+     * @param list<string> $tags
      * @param ScenarioInterface[] $scenarios
      * @param string|null $file the absolute path to the feature file
      */

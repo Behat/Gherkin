@@ -22,6 +22,9 @@ use RecursiveIteratorIterator;
  */
 class DirectoryLoader extends AbstractFileLoader
 {
+    /**
+     * @var Gherkin
+     */
     protected $gherkin;
 
     /**
