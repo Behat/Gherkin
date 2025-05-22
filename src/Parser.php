@@ -201,6 +201,8 @@ class Parser
     protected function parseFeature()
     {
         $token = $this->expectTokenType('Feature');
+        \assert(\array_key_exists('keyword', $token));
+        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $description = null;
@@ -265,6 +267,8 @@ class Parser
     protected function parseBackground()
     {
         $token = $this->expectTokenType('Background');
+        \assert(\array_key_exists('keyword', $token));
+        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $keyword = $token['keyword'];
@@ -331,6 +335,8 @@ class Parser
      */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
+        \assert(\array_key_exists('keyword', $token));
+        \assert(\array_key_exists('indent', $token));
         $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
@@ -441,6 +447,9 @@ class Parser
     protected function parseStep()
     {
         $token = $this->expectTokenType('Step');
+        \assert(\is_string($token['value']));
+        \assert(\array_key_exists('keyword_type', $token));
+        \assert(\array_key_exists('text', $token));
 
         $keyword = $token['value'];
         $keywordType = $token['keyword_type'];
@@ -471,7 +480,9 @@ class Parser
      */
     protected function parseExamples()
     {
-        $keyword = $this->expectTokenType('Examples')['keyword'];
+        $token = $this->expectTokenType('Examples');
+        \assert(\array_key_exists('keyword', $token));
+        $keyword = $token['keyword'];
         $tags = empty($this->tags) ? [] : $this->popTags();
         $table = $this->parseTableRows();
 
@@ -512,6 +523,7 @@ class Parser
         $strings = [];
         while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && $predicted === 'Text') {
             $token = $this->expectTokenType('Text');
+            \assert(\is_string($token['value']));
 
             $strings[] = $token['value'];
         }
@@ -529,6 +541,7 @@ class Parser
     protected function parseTags()
     {
         $token = $this->expectTokenType('Tag');
+        \assert(\array_key_exists('tags', $token));
 
         // Validate that the tags are followed by a node that can be tagged
         $this->validateAndGetNextTaggedNodeType();
@@ -580,6 +593,7 @@ class Parser
     protected function parseText()
     {
         $token = $this->expectTokenType('Text');
+        \assert(\is_string($token['value']));
 
         return $token['value'];
     }
@@ -627,6 +641,7 @@ class Parser
             }
 
             $token = $this->expectTokenType('TableRow');
+            \assert(\array_key_exists('columns', $token));
 
             $table[$token['line']] = $token['columns'];
         }
