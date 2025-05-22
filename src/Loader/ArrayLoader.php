@@ -23,6 +23,18 @@ use Behat\Gherkin\Node\TableNode;
  * From-array loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-type TFeatureHash array{title?: string|null, description?: string|null, tags?: list<string>, keyword?: string, language?: string, line?: int, background?: TBackgroundHash|null, scenarios?: array<int, TScenarioHash|TOutlineHash>}
+ * @phpstan-type TBackgroundHash array{title?: string|null, keyword?: string, line?: int, steps?: array<int, TStepHash>}
+ * @phpstan-type TScenarioHash array{type?: 'scenario', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>}
+ * @phpstan-type TOutlineHash array{type: 'outline', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>, examples?: TExampleTableHash|array<array-key, TExampleHash>}
+ * @phpstan-type TExampleHash array{table: TExampleTableHash, tags?: list<string>}|TExampleTableHash
+ * @phpstan-type TExampleTableHash array<int<1, max>, list<string>>
+ * @phpstan-type TStepHash array{keyword_type?: string, type?: string, text: string, keyword?: string, line?: int, arguments?: array<array-key, TArgumentHash>}
+ * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPySstringHash
+ * @phpstan-type TTableHash array<int, list<string|int>>
+ * @phpstan-type TPySstringHash array{type: 'pystring', line?: int, text: string}
+ * @phpstan-type TArrayResource array{feature: TFeatureHash}|array{features: array<int, TFeatureHash>}
  */
 class ArrayLoader implements LoaderInterface
 {
@@ -44,6 +56,8 @@ class ArrayLoader implements LoaderInterface
      * @param mixed $resource Resource to load
      *
      * @return list<FeatureNode>
+     *
+     * @phpstan-param TArrayResource $resource
      */
     public function load($resource)
     {
@@ -65,12 +79,11 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads feature from provided feature hash.
      *
-     * @param array $hash Feature hash
-     * @param int $line
+     * @phpstan-param TFeatureHash $hash
      *
      * @return FeatureNode
      */
-    protected function loadFeatureHash(array $hash, $line = 0)
+    protected function loadFeatureHash(array $hash, int $line = 0)
     {
         $hash = array_merge(
             [
@@ -101,7 +114,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads background from provided hash.
      *
-     * @param array $hash Background hash
+     * @phpstan-param TBackgroundHash $hash
      *
      * @return BackgroundNode
      */
@@ -125,12 +138,11 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads scenario from provided scenario hash.
      *
-     * @param array $hash Scenario hash
-     * @param int $line Scenario definition line
+     * @phpstan-param TScenarioHash $hash
      *
      * @return ScenarioNode
      */
-    protected function loadScenarioHash(array $hash, $line = 0)
+    protected function loadScenarioHash(array $hash, int $line = 0)
     {
         $hash = array_merge(
             [
@@ -151,12 +163,11 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads outline from provided outline hash.
      *
-     * @param array $hash Outline hash
-     * @param int $line Outline definition line
+     * @phpstan-param TOutlineHash $hash
      *
      * @return OutlineNode
      */
-    protected function loadOutlineHash(array $hash, $line = 0)
+    protected function loadOutlineHash(array $hash, int $line = 0)
     {
         $hash = array_merge(
             [
@@ -187,6 +198,8 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads steps from provided hash.
      *
+     * @phpstan-param array<int, TStepHash> $hash
+     *
      * @return list<StepNode>
      */
     private function loadStepsHash(array $hash)
@@ -202,12 +215,11 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads step from provided hash.
      *
-     * @param array $hash Step hash
-     * @param int $line Step definition line
+     * @phpstan-param TStepHash $hash
      *
      * @return StepNode
      */
-    protected function loadStepHash(array $hash, $line = 0)
+    protected function loadStepHash(array $hash, int $line = 0)
     {
         $hash = array_merge(
             [
@@ -236,7 +248,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads table from provided hash.
      *
-     * @param array $hash Table hash
+     * @phpstan-param TTableHash $hash
      *
      * @return TableNode
      */
@@ -248,12 +260,11 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads PyString from provided hash.
      *
-     * @param array $hash PyString hash
-     * @param int $line
+     * @phpstan-param TPySstringHash $hash
      *
      * @return PyStringNode
      */
-    protected function loadPyStringHash(array $hash, $line = 0)
+    protected function loadPyStringHash(array $hash, int $line = 0)
     {
         $line = $hash['line'] ?? $line;
 
@@ -269,12 +280,11 @@ class ArrayLoader implements LoaderInterface
      * Processes cases when examples are in the form of array of arrays
      * OR in the form of array of objects.
      *
-     * @param array $examplesHash
-     * @param string $examplesKeyword
+     * @phpstan-param TExampleHash|array<array-key, TExampleHash> $examplesHash
      *
      * @return list<ExampleTableNode>
      */
-    private function loadExamplesHash($examplesHash, $examplesKeyword)
+    private function loadExamplesHash(array $examplesHash, string $examplesKeyword): array
     {
         if (!isset($examplesHash[0])) {
             // examples as a single table - create a list with the one element
