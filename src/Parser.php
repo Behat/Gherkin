@@ -49,7 +49,13 @@ class Parser
 
     public function __construct(
         private readonly Lexer $lexer,
+        private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY,
     ) {
+    }
+
+    public function setGherkinCompatibilityMode(GherkinCompatibilityMode $mode): void
+    {
+        $this->compatibilityMode = $mode;
     }
 
     /**
