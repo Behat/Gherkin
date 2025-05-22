@@ -80,7 +80,7 @@ class CucumberKeywordsTest extends KeywordsTestCase
         );
 
         $this->expectExceptionObject(
-            new ParseException("Unable to parse \"{$file->url()}\" as the file is not readable.")
+            new ParseException("File \"{$file->url()}\" cannot be read.")
         );
 
         new CucumberKeywords($file->url());
