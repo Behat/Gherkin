@@ -14,7 +14,6 @@ use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
-use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -74,10 +73,14 @@ class CompatibilityTest extends TestCase
 
     private static ?StepNodeComparator $stepNodeComparator = null;
 
+    private static ?FeatureNodeComparator $featureNodeComparator = null;
+
     public static function setUpBeforeClass(): void
     {
         self::$stepNodeComparator = new StepNodeComparator();
         Factory::getInstance()->register(self::$stepNodeComparator);
+        self::$featureNodeComparator = new FeatureNodeComparator();
+        Factory::getInstance()->register(self::$featureNodeComparator);
     }
 
     public static function tearDownAfterClass(): void
@@ -85,6 +88,10 @@ class CompatibilityTest extends TestCase
         if (self::$stepNodeComparator !== null) {
             Factory::getInstance()->unregister(self::$stepNodeComparator);
             self::$stepNodeComparator = null;
+        }
+        if (self::$featureNodeComparator !== null) {
+            Factory::getInstance()->unregister(self::$featureNodeComparator);
+            self::$featureNodeComparator = null;
         }
     }
 
@@ -110,9 +117,9 @@ class CompatibilityTest extends TestCase
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
         $this->assertEquals(
-            $this->normaliseFeature($expected),
-            $this->normaliseFeature($actual),
-            Filesystem::readFile($gherkinFile)
+            $expected,
+            $actual,
+            Filesystem::readFile($gherkinFile),
         );
     }
 
@@ -167,32 +174,6 @@ class CompatibilityTest extends TestCase
                 yield $file->getFilename() => ['file' => $file];
             }
         }
-    }
-
-    /**
-     * Remove features that aren't present in the cucumber source.
-     */
-    private function normaliseFeature(?FeatureNode $feature): ?FeatureNode
-    {
-        if (is_null($feature)) {
-            return null;
-        }
-
-        return new FeatureNode(
-            $feature->getTitle(),
-            // We currently handle whitespace in feature descriptions differently to cucumber
-            // https://github.com/Behat/Gherkin/issues/209
-            // We need to be able to ignore that difference so that we can still run cucumber tests that
-            // include a description but are covering other features.
-            $feature->getDescription() === null ? null : preg_replace('/^\s+/m', '', $feature->getDescription()),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $feature->getScenarios(),
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine(),
-        );
     }
 
     private function expectDeprecationErrorMatches(string $message): void
