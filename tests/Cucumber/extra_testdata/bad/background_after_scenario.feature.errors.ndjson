@@ -1,0 +1,1 @@
+{"parseError":{"message":"(6:5): expected: #EOF, #TableRow, #DocStringSeparator, #StepLine, #TagLine, #ExamplesLine, #ScenarioLine, #RuleLine, #Comment, #Empty, got 'Background:'","source":{"location":{"column":5,"line":6},"uri":"../bad/background_after_scenario.feature"}}}
