@@ -224,7 +224,9 @@ class Parser
                 continue;
             }
 
-            if (!$background && $node instanceof BackgroundNode) {
+            $isBackgroundAllowed = ($background === null && $scenarios === []);
+
+            if ($isBackgroundAllowed && $node instanceof BackgroundNode) {
                 $background = $node;
                 continue;
             }
@@ -235,7 +237,7 @@ class Parser
             }
 
             throw new UnexpectedParserNodeException(
-                match ($background === null && $scenarios === []) {
+                match ($isBackgroundAllowed) {
                     true => 'Background, Scenario or Outline',
                     false => 'Scenario or Outline',
                 },
