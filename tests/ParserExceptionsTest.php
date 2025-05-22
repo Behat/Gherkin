@@ -10,7 +10,6 @@
 
 namespace Tests\Behat\Gherkin;
 
-use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Node\BackgroundNode;
@@ -143,23 +142,5 @@ class ParserExceptionsTest extends TestCase
         d
         TEXT;
         $this->assertEquals($secondTitle, $scenarios[1]->getTitle());
-    }
-
-    public function testTableWithoutRightBorder(): void
-    {
-        $feature = <<<'GHERKIN'
-        Feature:
-
-            Scenario:
-                Given something with:
-                | foo | bar
-                | 42  | 42
-        GHERKIN;
-
-        $this->expectExceptionObject(
-            new ParserException('Expected Step, Examples table, or end of Scenario, but got text: "        | foo | bar"'),
-        );
-
-        $this->gherkin->parse($feature);
     }
 }

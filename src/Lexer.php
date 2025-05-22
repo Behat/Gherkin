@@ -14,6 +14,8 @@ use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use LogicException;
 
+use function assert;
+
 /**
  * Gherkin lexer.
  *
@@ -23,6 +25,12 @@ use LogicException;
  */
 class Lexer
 {
+    /**
+     * Splits a string around | char, only if it's not preceded by an odd number of \.
+     *
+     * @see https://github.com/cucumber/gherkin/blob/679a87e21263699c15ea635159c6cda60f64af3b/php/src/StringGherkinLine.php#L14
+     */
+    private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
     private string $language;
     /**
      * @var list<string>
@@ -580,14 +588,20 @@ class Lexer
         }
 
         $line = $this->getTrimmedLine();
-        if ($line === '' || !str_starts_with($line, '|') || !str_ends_with($line, '|')) {
+        if (!str_starts_with($line, '|')) {
+            // Strictly speaking, a table row only has to begin with a pipe - content to the right
+            // of the final pipe will be ignored after we split the cells.
             return null;
         }
 
+        $rawColumns = preg_split(self::CELL_PATTERN, $line);
+        assert($rawColumns !== false);
+
+        // Safely remove elements before the first and last separators
+        array_shift($rawColumns);
+        array_pop($rawColumns);
+
         $token = $this->takeToken('TableRow');
-        $line = mb_substr($line, 1, mb_strlen($line, 'utf8') - 2, 'utf8');
-        $rawColumns = preg_split('/(?<!\\\)\|/u', $line);
-        \assert($rawColumns !== false);
         $columns = array_map(function ($column) {
             return trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column));
         }, $rawColumns);
