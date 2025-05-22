@@ -47,6 +47,7 @@ class TableNodeTest extends TestCase
             new NodeException("Table cell at row '0', col '0' is expected to be scalar, got array")
         );
 
+        // @phpstan-ignore argument.type (we are explicitly testing an invalid instantiation)
         new TableNode([
             [['everzet', 'antono']],
         ]);
@@ -279,6 +280,20 @@ class TableNodeTest extends TestCase
         $this->assertEquals($expected, $table);
     }
 
+    public function testFromListWithLineNumbers(): void
+    {
+        $table = TableNode::fromList([
+            12 => 'everzet',
+            15 => 'antono',
+        ]);
+
+        $expected = new TableNode([
+            12 => ['everzet'],
+            15 => ['antono'],
+        ]);
+        $this->assertEquals($expected, $table);
+    }
+
     public function testMergeRowsFromTablePassSeveralTablesShouldBeMerged(): void
     {
         $table = new TableNode([
@@ -333,9 +348,10 @@ class TableNodeTest extends TestCase
             new NodeException('List is not a one-dimensional array.')
         );
 
+        // @phpstan-ignore argument.type (we are explicitly testing an invalid instantiation)
         TableNode::fromList([
-            [1, 2, 3],
-            [4, 5, 6],
+            ['1', '2', '3'],
+            ['4', '5', '6'],
         ]);
     }
 

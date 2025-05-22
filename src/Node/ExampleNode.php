@@ -198,14 +198,16 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
      */
     protected function replaceTableArgumentTokens(TableNode $argument)
     {
-        $table = $argument->getTable();
-        foreach ($table as $line => $row) {
-            foreach (array_keys($row) as $col) {
-                $table[$line][$col] = $this->replaceTextTokens($table[$line][$col]);
+        $replacedTable = [];
+        foreach ($argument->getTable() as $line => $row) {
+            $replacedRow = [];
+            foreach ($row as $value) {
+                $replacedRow[] = $this->replaceTextTokens($value);
             }
+            $replacedTable[$line] = $replacedRow;
         }
 
-        return new TableNode($table);
+        return new TableNode($replacedTable);
     }
 
     /**

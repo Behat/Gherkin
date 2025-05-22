@@ -20,6 +20,8 @@ use ReturnTypeWillChange;
  * Represents Gherkin Table argument.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template-implements IteratorAggregate<int, array<string, string>>
  */
 class TableNode implements ArgumentInterface, IteratorAggregate
 {
@@ -31,7 +33,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Initializes table.
      *
-     * @param array<int, array> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     * @param array<int, list<string>> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
      *
      * @throws NodeException If the given table is invalid
      */
@@ -84,7 +86,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Creates a table from a given list.
      *
-     * @param array $list One-dimensional array
+     * @param array<int, string> $list One-dimensional array
      *
      * @return TableNode
      *
@@ -96,11 +98,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
             throw new NodeException('List is not a one-dimensional array.');
         }
 
-        array_walk($list, function (&$item) {
-            $item = [$item];
-        });
+        $table = array_map(fn ($item) => [$item], $list);
 
-        return new self($list);
+        return new self($table);
     }
 
     /**
@@ -116,7 +116,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table hash, formed by columns (ColumnsHash).
      *
-     * @return array
+     * @return list<array<string, string>>
      */
     public function getHash()
     {
@@ -126,7 +126,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table hash, formed by columns.
      *
-     * @return array
+     * @return list<array<string, string>>
      */
     public function getColumnsHash()
     {
@@ -135,6 +135,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
 
         $hash = [];
         foreach ($rows as $row) {
+            \assert($keys !== null); // If there is no first row due to an empty table, we won't enter this loop either.
             $hash[] = array_combine($keys, $row);
         }
 
@@ -144,7 +145,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table hash, formed by rows.
      *
-     * @return array
+     * @return array<string, string|list<string>>
      */
     public function getRowsHash()
     {
@@ -161,7 +162,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      * Returns numerated table lines.
      * Line numbers are keys, lines are values.
      *
-     * @return array
+     * @return array<int, list<string>>
      */
     public function getTable()
     {
@@ -171,7 +172,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns table rows.
      *
-     * @return array
+     * @return list<list<string>>
      */
     public function getRows()
     {
@@ -193,7 +194,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @param int $index Row number
      *
-     * @return array
+     * @return list<string>
      *
      * @throws NodeException If row with specified index does not exist
      */
@@ -213,7 +214,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @param int $index Column number
      *
-     * @return array
+     * @return list<string>
      *
      * @throws NodeException If column with specified index does not exist
      */
