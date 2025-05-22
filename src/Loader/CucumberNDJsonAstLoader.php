@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Exception\NodeException;
+use Behat\Gherkin\Node\ArgumentInterface;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -22,7 +23,28 @@ use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
 
 /**
- * Loads a feature from cucumber's protobuf JSON format.
+ * Loads a feature from cucumber's messages JSON format.
+ *
+ * Lines in the ndjson file are expected to match the Cucumber Messages JSON schema defined at https://github.com/cucumber/messages/tree/main/jsonschema
+ *
+ * @phpstan-type TLocation array{line: int, column?: int}
+ * @phpstan-type TBackground array{location: TLocation, keyword: string, name: string, description: string, steps: list<TStep>, id: string}
+ * @phpstan-type TComment array{location: TLocation, text: string}
+ * @phpstan-type TDataTable array{location: TLocation, rows: list<TTableRow>}
+ * @phpstan-type TDocString array{location: TLocation, content: string, delimiter: string, mediaType?: string}
+ * @phpstan-type TExamples array{location: TLocation, tags: list<TTag>, keyword: string, name: string, description: string, tableHeader?: TTableRow, tableBody: list<TTableRow>, id: string}
+ * @phpstan-type TFeature array{location: TLocation, tags: list<TTag>, language: string, keyword: string, name: string, description: string, children: list<TFeatureChild>}
+ * @phpstan-type TFeatureChild array{background?: TBackground, scenario?: TScenario, rule?: TRule}
+ * @phpstan-type TRule array{location: TLocation, tags: list<TTag>, keyword: string, name: string, description: string, children: list<TRuleChild>, id: string}
+ * @phpstan-type TRuleChild array{background?: TBackground, scenario?: TScenario}
+ * @phpstan-type TScenario array{location: TLocation, tags: list<TTag>, keyword: string, name: string, description: string, steps: list<TStep>, examples: list<TExamples>, id: string}
+ * @phpstan-type TStep array{location: TLocation, keyword: string, keywordType?: 'Unknown'|'Context'|'Action'|'Outcome'|'Conjunction', text: string, docString?: TDocString, dataTable?: TDataTable, id: string}
+ * @phpstan-type TTableCell array{location: TLocation, value: string}
+ * @phpstan-type TTableRow array{location: TLocation, cells: list<TTableCell>, id: string}
+ * @phpstan-type TTag array{location: TLocation, name: string, id: string}
+ * @phpstan-type TGherkinDocument array{uri?: string, feature?: TFeature, comments: list<TComment>}
+ * // We only care about the gherkinDocument messages for our use case, so this does not describe the envelope fully
+ * @phpstan-type TEnvelope array{gherkinDocument?: TGherkinDocument, ...}
  */
 class CucumberNDJsonAstLoader implements LoaderInterface
 {
@@ -37,7 +59,8 @@ class CucumberNDJsonAstLoader implements LoaderInterface
             array_filter(
                 array_map(
                     static function ($line) use ($resource) {
-                        return self::getFeature(json_decode($line, true), $resource);
+                        // As we load data from the official Cucumber project, we assume the data matches the JSON schema.
+                        return self::getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
                     },
                     file($resource)
                 )
@@ -46,9 +69,9 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return FeatureNode|null
+     * @phpstan-param TEnvelope $json
      */
-    private static function getFeature(array $json, $filePath)
+    private static function getFeature(array $json, string $filePath): ?FeatureNode
     {
         if (!isset($json['gherkinDocument']['feature'])) {
             return null;
@@ -70,20 +93,24 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
+     * @phpstan-param array{tags: list<TTag>, ...} $json
+     *
      * @return list<string>
      */
-    private static function getTags(array $json)
+    private static function getTags(array $json): array
     {
         return array_map(
             static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
-            array_values($json['tags'] ?? [])
+            $json['tags']
         );
     }
 
     /**
+     * @phpstan-param TFeature $json
+     *
      * @return list<ScenarioInterface>
      */
-    private static function getScenarios(array $json)
+    private static function getScenarios(array $json): array
     {
         return array_values(
             array_map(
@@ -94,7 +121,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                         return new OutlineNode(
                             $child['scenario']['name'],
                             self::getTags($child['scenario']),
-                            self::getSteps($child['scenario']['steps'] ?? []),
+                            self::getSteps($child['scenario']['steps']),
                             $tables,
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line']
@@ -104,13 +131,13 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     return new ScenarioNode(
                         $child['scenario']['name'],
                         self::getTags($child['scenario']),
-                        self::getSteps($child['scenario']['steps'] ?? []),
+                        self::getSteps($child['scenario']['steps']),
                         $child['scenario']['keyword'],
                         $child['scenario']['location']['line']
                     );
                 },
                 array_filter(
-                    $json['children'] ?? [],
+                    $json['children'],
                     static function ($child) {
                         return isset($child['scenario']);
                     }
@@ -119,10 +146,13 @@ class CucumberNDJsonAstLoader implements LoaderInterface
         );
     }
 
+    /**
+     * @phpstan-param TFeature $json
+     */
     private static function getBackground(array $json): ?BackgroundNode
     {
         $backgrounds = array_filter(
-            $json['children'] ?? [],
+            $json['children'],
             static fn ($child) => isset($child['background']),
         );
 
@@ -134,13 +164,15 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
         return new BackgroundNode(
             $background['background']['name'],
-            self::getSteps($background['background']['steps'] ?? []),
+            self::getSteps($background['background']['steps']),
             $background['background']['keyword'],
             $background['background']['location']['line']
         );
     }
 
     /**
+     * @phpstan-param list<TStep> $items
+     *
      * @return list<StepNode>
      */
     private static function getSteps(array $items): array
@@ -153,10 +185,15 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                 $item['location']['line'],
                 trim($item['keyword'])
             ),
-            array_values($items)
+            $items
         );
     }
 
+    /**
+     * @phpstan-param TStep $step
+     *
+     * @return list<ArgumentInterface>
+     */
     private static function getStepArguments(array $step): array
     {
         $args = [];
@@ -180,7 +217,9 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     }
 
     /**
-     * @return ExampleTableNode[]
+     * @phpstan-param list<TExamples> $items
+     *
+     * @return list<ExampleTableNode>
      */
     private static function getTables(array $items): array
     {
@@ -213,7 +252,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
                     self::getTags($tableJson)
                 );
             },
-            array_values($items)
+            $items
         );
     }
 }
