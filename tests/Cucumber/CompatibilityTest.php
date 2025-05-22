@@ -51,10 +51,8 @@ class CompatibilityTest extends TestCase
         'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
         'padded_example.feature' => 'Table padding is not trimmed as aggressively',
         'spaces_in_language.feature' => 'Whitespace not supported around language selector',
-        'incomplete_feature_3.feature' => 'file with no feature keyword not handled correctly',
         'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
-        'incomplete_scenario.feature' => 'Wrong background parsing when there are no steps',
-        'incomplete_background_2.feature' => 'Wrong background parsing when there are no steps',
+        'incomplete_background_2.feature' => 'Background descriptions not supported',
     ];
 
     /**

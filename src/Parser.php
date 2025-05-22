@@ -82,7 +82,7 @@ class Parser
         while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
 
-            if ($node === "\n") {
+            if ($node === "\n" || $node === '') {
                 continue;
             }
 
