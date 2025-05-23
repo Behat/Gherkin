@@ -10,7 +10,11 @@
 
 namespace Behat\Gherkin;
 
+use Behat\Gherkin\Dialect\DialectProviderInterface;
+use Behat\Gherkin\Dialect\GherkinDialect;
+use Behat\Gherkin\Dialect\KeywordsDialectProvider;
 use Behat\Gherkin\Exception\LexerException;
+use Behat\Gherkin\Exception\NoSuchLanguageException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use LogicException;
 
@@ -31,7 +35,8 @@ class Lexer
      * @see https://github.com/cucumber/gherkin/blob/679a87e21263699c15ea635159c6cda60f64af3b/php/src/StringGherkinLine.php#L14
      */
     private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
-    private string $language;
+    private readonly DialectProviderInterface $dialectProvider;
+    private GherkinDialect $currentDialect;
     /**
      * @var list<string>
      */
@@ -42,13 +47,11 @@ class Lexer
     private int $lineNumber;
     private bool $eos;
     /**
-     * @var array<string, string>
+     * A cache of keyword types associated with each keyword.
+     *
+     * @var array<string, non-empty-list<string>>|null
      */
-    private array $keywordsCache = [];
-    /**
-     * @var array<string, list<string>>
-     */
-    private array $stepKeywordTypesCache = [];
+    private ?array $stepKeywordTypesCache = null;
     /**
      * @phpstan-var list<TToken>
      */
@@ -67,8 +70,14 @@ class Lexer
     private ?string $pyStringDelimiter = null;
 
     public function __construct(
-        private readonly KeywordsInterface $keywords,
+        DialectProviderInterface|KeywordsInterface $dialectProvider,
     ) {
+        if ($dialectProvider instanceof KeywordsInterface) {
+            // TODO trigger deprecation
+            $dialectProvider = new KeywordsDialectProvider($dialectProvider);
+        }
+
+        $this->dialectProvider = $dialectProvider;
     }
 
     /**
@@ -108,9 +117,21 @@ class Lexer
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
 
-        $this->setLanguage($language);
+        if (\func_num_args() > 1) {
+            // @codeCoverageIgnoreStart
+            \assert($language !== '');
+            // TODO trigger deprecation (the Parser does not use this code path)
+            $this->setLanguage($language);
+        // @codeCoverageIgnoreEnd
+        } else {
+            $this->currentDialect = $this->dialectProvider->getDefaultDialect();
+            $this->stepKeywordTypesCache = null;
+        }
     }
 
+    /**
+     * @param non-empty-string $language
+     */
     private function setLanguage(string $language): void
     {
         if (($this->stashedToken !== null) || ($this->deferredObjects !== [])) {
@@ -129,9 +150,12 @@ class Lexer
             // @codeCoverageIgnoreEnd
         }
 
-        $this->keywords->setLanguage($this->language = $language);
-        $this->keywordsCache = [];
-        $this->stepKeywordTypesCache = [];
+        try {
+            $this->currentDialect = $this->dialectProvider->getDialect($language);
+        } catch (NoSuchLanguageException) {
+            // TODO rethrow the exception when introducing the compatibility mode for invalid languages.
+        }
+        $this->stepKeywordTypesCache = null;
     }
 
     /**
@@ -141,7 +165,7 @@ class Lexer
      */
     public function getLanguage()
     {
-        return $this->language;
+        return $this->currentDialect->getLanguage();
     }
 
     /**
@@ -343,9 +367,12 @@ class Lexer
      * @return array|null
      *
      * @phpstan-return TToken|null
+     *
+     * @deprecated
      */
     protected function scanInputForKeywords(string $keywords, string $type)
     {
+        // @codeCoverageIgnoreStart
         if (!preg_match('/^(\s*)(' . $keywords . '):\s*(.*)/u', $this->line, $matches)) {
             return null;
         }
@@ -375,6 +402,33 @@ class Lexer
         }
 
         return $token;
+        // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * @param list<string> $keywords
+     *
+     * @phpstan-return TToken|null
+     */
+    private function scanTitleLine(array $keywords, string $type): ?array
+    {
+        $trimmedLine = $this->getTrimmedLine();
+
+        foreach ($keywords as $keyword) {
+            if (str_starts_with($trimmedLine, $keyword . ':')) {
+                $title = trim(mb_substr($trimmedLine, mb_strlen($keyword) + 1));
+
+                $token = $this->takeToken($type, $title);
+                $token['keyword'] = $keyword;
+                $token['indent'] = mb_strlen($this->line, 'utf8') - mb_strlen(ltrim($this->line), 'utf8');
+
+                $this->consumeLine();
+
+                return $token;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -394,33 +448,40 @@ class Lexer
     }
 
     /**
-     * Returns keywords for provided type.
+     * Returns a regex matching the keywords for the provided type.
      *
      * @param string $type Keyword type
      *
      * @return string
+     *
+     * @deprecated
      */
     protected function getKeywords(string $type)
     {
-        if (!isset($this->keywordsCache[$type])) {
-            $getter = 'get' . $type . 'Keywords';
-            $keywords = $this->keywords->$getter();
+        // @codeCoverageIgnoreStart
+        $keywords = match ($type) {
+            'Feature' => $this->currentDialect->getFeatureKeywords(),
+            'Background' => $this->currentDialect->getBackgroundKeywords(),
+            'Scenario' => $this->currentDialect->getScenarioKeywords(),
+            'Outline' => $this->currentDialect->getScenarioOutlineKeywords(),
+            'Examples' => $this->currentDialect->getExamplesKeywords(),
+            'Step' => $this->currentDialect->getStepKeywords(),
+            'Given' => $this->currentDialect->getGivenKeywords(),
+            'When' => $this->currentDialect->getWhenKeywords(),
+            'Then' => $this->currentDialect->getThenKeywords(),
+            'And' => $this->currentDialect->getAndKeywords(),
+            'But' => $this->currentDialect->getButKeywords(),
+            default => throw new \InvalidArgumentException(sprintf('Unknown keyword type "%s"', $type)),
+        };
 
-            if ($type === 'Step') {
-                $padded = [];
-                foreach (explode('|', $keywords) as $keyword) {
-                    $padded[] = str_contains($keyword, '<')
-                        ? preg_quote(mb_substr($keyword, 0, -1, 'utf8'), '/') . '\s*'
-                        : preg_quote($keyword, '/') . '\s+';
-                }
+        $keywordsRegex = implode('|', array_map(fn ($keyword) => preg_quote($keyword, '/'), $keywords));
 
-                $keywords = implode('|', $padded);
-            }
-
-            $this->keywordsCache[$type] = $keywords;
+        if ($type === 'Step') {
+            $keywordsRegex = '(?:' . $keywordsRegex . ')\s*';
         }
 
-        return $this->keywordsCache[$type];
+        return $keywordsRegex;
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -437,7 +498,17 @@ class Lexer
             return null;
         }
 
-        return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
+        $token = $this->scanTitleLine($this->currentDialect->getFeatureKeywords(), 'Feature');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowFeature = false;
+        $this->allowLanguageTag = false;
+        $this->allowMultilineArguments = false;
+
+        return $token;
     }
 
     /**
@@ -449,7 +520,15 @@ class Lexer
      */
     protected function scanBackground()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
+        $token = $this->scanTitleLine($this->currentDialect->getBackgroundKeywords(), 'Background');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -461,7 +540,16 @@ class Lexer
      */
     protected function scanScenario()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Scenario'), 'Scenario');
+        $token = $this->scanTitleLine($this->currentDialect->getScenarioKeywords(), 'Scenario');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = false;
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -473,7 +561,16 @@ class Lexer
      */
     protected function scanOutline()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Outline'), 'Outline');
+        $token = $this->scanTitleLine($this->currentDialect->getScenarioOutlineKeywords(), 'Outline');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = false;
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -485,7 +582,15 @@ class Lexer
      */
     protected function scanExamples()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Examples'), 'Examples');
+        $token = $this->scanTitleLine($this->currentDialect->getExamplesKeywords(), 'Examples');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = true;
+
+        return $token;
     }
 
     /**
@@ -501,15 +606,27 @@ class Lexer
             return null;
         }
 
-        $keywords = $this->getKeywords('Step');
-        if (!preg_match('/^\s*(' . $keywords . ')([^\s].*)/u', $this->line, $matches)) {
+        $trimmedLine = $this->getTrimmedLine();
+        $matchedKeyword = null;
+
+        foreach ($this->currentDialect->getStepKeywords() as $keyword) {
+            if (str_starts_with($trimmedLine, $keyword)) {
+                $matchedKeyword = $keyword;
+                break;
+            }
+        }
+
+        if ($matchedKeyword === null) {
             return null;
         }
 
-        $keyword = trim($matches[1]);
-        $token = $this->takeToken('Step', $keyword);
-        $token['keyword_type'] = $this->getStepKeywordType($keyword);
-        $token['text'] = $matches[2];
+        $text = ltrim(mb_substr($trimmedLine, mb_strlen($matchedKeyword)));
+
+        // cucumber/gherkin reports the keyword text with its final space when it is part of it, but we keep trimming it for BC reasons
+        // TODO remove the trimming when opting for the cucumber-compatible parsing in the future
+        $token = $this->takeToken('Step', trim($matchedKeyword));
+        $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
+        $token['text'] = $text;
 
         $this->consumeLine();
         $this->allowMultilineArguments = true;
@@ -665,6 +782,7 @@ class Lexer
 
         if ($token) {
             \assert(\is_string($token['value']));
+            \assert($token['value'] !== ''); // the regex can only match a non-empty value.
             $this->allowLanguageTag = false;
             $this->setLanguage($token['value']);
         }
@@ -737,27 +855,36 @@ class Lexer
      */
     private function getStepKeywordType(string $native): string
     {
-        // Consider "*" as a AND keyword so that it is normalized to the previous step type
-        if ($native === '*') {
-            return 'And';
+        if ($this->stepKeywordTypesCache === null) {
+            $this->stepKeywordTypesCache = [];
+            $this->addStepKeywordTypes($this->currentDialect->getGivenKeywords(), 'Given');
+            $this->addStepKeywordTypes($this->currentDialect->getWhenKeywords(), 'When');
+            $this->addStepKeywordTypes($this->currentDialect->getThenKeywords(), 'Then');
+            $this->addStepKeywordTypes($this->currentDialect->getAndKeywords(), 'And');
+            $this->addStepKeywordTypes($this->currentDialect->getButKeywords(), 'But');
         }
 
-        if (empty($this->stepKeywordTypesCache)) {
-            $this->stepKeywordTypesCache = [
-                'Given' => explode('|', $this->keywords->getGivenKeywords()),
-                'When' => explode('|', $this->keywords->getWhenKeywords()),
-                'Then' => explode('|', $this->keywords->getThenKeywords()),
-                'And' => explode('|', $this->keywords->getAndKeywords()),
-                'But' => explode('|', $this->keywords->getButKeywords()),
-            ];
+        if (!isset($this->stepKeywordTypesCache[$native])) { // should not happen when the native keyword belongs to the dialect
+            return 'Given'; // cucumber/gherkin has an UNKNOWN type, but we don't have it.
         }
 
-        foreach ($this->stepKeywordTypesCache as $type => $keywords) {
-            if (in_array($native, $keywords, true) || in_array($native . '<', $keywords, true)) {
-                return $type;
-            }
+        if (\count($this->stepKeywordTypesCache[$native]) === 1) {
+            return $this->stepKeywordTypesCache[$native][0];
         }
 
-        return 'Given';
+        // Consider ambiguous keywords as AND keywords so that they are normalized to the previous step type.
+        // This happens in English for the `* ` keyword for instance.
+        // cucumber/gherkin returns that as an UNKNOWN type, but we don't have it.
+        return 'And';
+    }
+
+    /**
+     * @param list<string> $keywords
+     */
+    private function addStepKeywordTypes(array $keywords, string $type): void
+    {
+        foreach ($keywords as $keyword) {
+            $this->stepKeywordTypesCache[$keyword][] = $type;
+        }
     }
 }

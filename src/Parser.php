@@ -75,7 +75,7 @@ class Parser
         $this->tags = [];
 
         try {
-            $this->lexer->analyse($this->input, 'en');
+            $this->lexer->analyse($this->input);
         } catch (LexerException $e) {
             throw new ParserException(
                 sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),

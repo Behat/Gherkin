@@ -11,7 +11,7 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
-use Behat\Gherkin\Keywords\CucumberKeywords;
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
@@ -24,8 +24,7 @@ class GherkinFileLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        $keywords = new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
-        $parser = new Parser(new Lexer($keywords));
+        $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
         $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/features');
