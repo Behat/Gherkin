@@ -10,8 +10,8 @@
 
 namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
-use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Node\FeatureNode;
@@ -57,13 +57,6 @@ class CompatibilityTest extends TestCase
     /**
      * @var array<string, string>
      */
-    private array $parsedButShouldNotBe = [
-        'invalid_language.feature' => 'Invalid language is silently ignored',
-    ];
-
-    /**
-     * @var array<string, string>
-     */
     private array $deprecatedInsteadOfParseError = [
         'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
     ];
@@ -90,8 +83,7 @@ class CompatibilityTest extends TestCase
 
     protected function setUp(): void
     {
-        $arrKeywords = include __DIR__ . '/../../i18n.php';
-        $lexer = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
+        $lexer = new Lexer(new CucumberDialectProvider());
         $this->parser = new Parser($lexer);
         $this->loader = new CucumberNDJsonAstLoader();
     }
@@ -119,10 +111,6 @@ class CompatibilityTest extends TestCase
     #[DataProvider('badCucumberFeatures')]
     public function testBadFeaturesDoNotParse(SplFileInfo $file): void
     {
-        if (isset($this->parsedButShouldNotBe[$file->getFilename()])) {
-            $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
-        }
-
         $gherkinFile = $file->getPathname();
 
         if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
