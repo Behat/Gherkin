@@ -81,6 +81,9 @@ jobs:
       - run: composer update
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
 
+      - run: cp vendor/cucumber/gherkin-monorepo/gherkin-languages.json resources/
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+
       - run: bin/update_i18n
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
 
