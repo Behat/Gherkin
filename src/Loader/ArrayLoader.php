@@ -55,9 +55,9 @@ class ArrayLoader implements LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
-     * @return list<FeatureNode>
-     *
      * @phpstan-param TArrayResource $resource
+     *
+     * @return list<FeatureNode>
      */
     public function load($resource)
     {

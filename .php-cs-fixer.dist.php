@@ -26,6 +26,17 @@ return (new PhpCsFixer\Config())
         ],
         'concat_space' => ['spacing' => 'one'],
         'phpdoc_align' => ['align' => 'left'],
+        'phpdoc_order' => [
+            'order' => [
+                'phpstan-import-type',
+                'phpstan-type',
+                'param',
+                'phpstan-param',
+                'return',
+                'phpstan-return',
+                'throws',
+            ],
+        ],
         'heredoc_to_nowdoc' => true,
         'heredoc_indentation' => ['indentation' => 'same_as_start'],
         'single_line_throw' => false,
