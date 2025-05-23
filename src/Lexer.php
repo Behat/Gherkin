@@ -27,7 +27,17 @@ use function assert;
  *
  * @final since 4.15.0
  *
- * @phpstan-type TToken array{type: string, line: int, value: string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
+ * @phpstan-type TStepKeywordsType 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
+ * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
+ * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|TGeneralKeywordsType
+ * @phpstan-type TToken TStringValueToken|TNullValueToken|TKeywordToken|TStepToken|TTagToken|TTableRowToken
+ * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
+ * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
+ * @phpstan-type TKeywordToken array{type: TTokenType, value: null|string, line: int, deferred: bool, keyword: string, indent: int}
+ * @phpstan-type TStepToken array{type: TTokenType, value: string, line: int, deferred: bool, keyword_type: string, text: string}
+ * @phpstan-type TTagToken array{type: TTokenType, value: null, line: int, deferred: bool, tags: list<string>}
+ * @phpstan-type TTableRowToken array{type: TTokenType, value: null, line: int, deferred: bool, columns: list<string>}
  */
 class Lexer
 {
@@ -37,6 +47,7 @@ class Lexer
      * @see https://github.com/cucumber/gherkin/blob/679a87e21263699c15ea635159c6cda60f64af3b/php/src/StringGherkinLine.php#L14
      */
     private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
+
     private readonly DialectProviderInterface $dialectProvider;
     private GherkinDialect $currentDialect;
     private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY;
@@ -52,7 +63,7 @@ class Lexer
     /**
      * A cache of keyword types associated with each keyword.
      *
-     * @var array<string, non-empty-list<string>>|null
+     * @phpstan-var array<string, non-empty-list<TStepKeywordsType>>|null
      */
     private ?array $stepKeywordTypesCache = null;
     /**
@@ -232,12 +243,13 @@ class Lexer
     /**
      * Constructs token with specified parameters.
      *
-     * @param string $type Token type
      * @param string|null $value Token value
+     *
+     * @phpstan-param TTokenType $type Token type
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return ($value is non-empty-string ? TStringValueToken : TNullValueToken)
      */
     public function takeToken(string $type, ?string $value = null)
     {
@@ -290,7 +302,7 @@ class Lexer
     }
 
     /**
-     * Returns stashed token or null if hasn't.
+     * Returns stashed token or null if there isn't one.
      *
      * @return array|null
      *
@@ -305,7 +317,7 @@ class Lexer
     }
 
     /**
-     * Returns deferred token or null if hasn't.
+     * Returns deferred token or null if there isn't one.
      *
      * @return array|null
      *
@@ -353,11 +365,12 @@ class Lexer
      * Scans for token with specified regex.
      *
      * @param string $regex Regular expression
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanInput(string $regex, string $type)
     {
@@ -375,11 +388,12 @@ class Lexer
      * Scans for token with specified keywords.
      *
      * @param string $keywords Keywords (separated by "|")
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      *
      * @deprecated
      */
@@ -421,7 +435,9 @@ class Lexer
     /**
      * @param list<string> $keywords
      *
-     * @phpstan-return TToken|null
+     * @phpstan-param TTokenType $type
+     *
+     * @phpstan-return TKeywordToken|null
      */
     private function scanTitleLine(array $keywords, string $type): ?array
     {
@@ -449,7 +465,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanEOS()
     {
@@ -463,7 +479,7 @@ class Lexer
     /**
      * Returns a regex matching the keywords for the provided type.
      *
-     * @param string $type Keyword type
+     * @phpstan-param TKeywordsType $type Keyword type
      *
      * @return string
      *
@@ -502,7 +518,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      */
     protected function scanFeature()
     {
@@ -529,7 +545,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      */
     protected function scanBackground()
     {
@@ -549,7 +565,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      */
     protected function scanScenario()
     {
@@ -570,7 +586,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      */
     protected function scanOutline()
     {
@@ -591,7 +607,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TKeywordToken|null
      */
     protected function scanExamples()
     {
@@ -611,7 +627,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStepToken|null
      */
     protected function scanStep()
     {
@@ -652,7 +668,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanPyStringOp()
     {
@@ -689,7 +705,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanPyStringContent()
     {
@@ -709,7 +725,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTableRowToken|null
      */
     protected function scanTableRow()
     {
@@ -749,7 +765,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTagToken|null
      */
     protected function scanTags()
     {
@@ -779,7 +795,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanLanguage()
     {
@@ -816,7 +832,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanComment()
     {
@@ -840,7 +856,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanNewline()
     {
@@ -859,7 +875,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return TStringValueToken
      */
     protected function scanText()
     {
@@ -873,6 +889,8 @@ class Lexer
      * Returns step type keyword (Given, When, Then, etc.).
      *
      * @param string $native Step keyword in provided language
+     *
+     * @phpstan-return TStepKeywordsType
      */
     private function getStepKeywordType(string $native): string
     {
@@ -901,6 +919,8 @@ class Lexer
 
     /**
      * @param list<string> $keywords
+     *
+     * @phpstan-param TStepKeywordsType $type
      */
     private function addStepKeywordTypes(array $keywords, string $type): void
     {

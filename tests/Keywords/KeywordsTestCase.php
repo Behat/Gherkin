@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin\Keywords;
 
+use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsDumper;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
@@ -24,7 +25,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @phpstan-import-type TMultiLanguageKeywords from KeywordsInterface
+ * @phpstan-import-type TMultiLanguageKeywords from ArrayKeywords
  */
 abstract class KeywordsTestCase extends TestCase
 {
