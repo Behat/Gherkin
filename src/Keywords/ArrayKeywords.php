@@ -77,6 +77,14 @@ class ArrayKeywords implements KeywordsInterface
     }
 
     /**
+     * @internal
+     */
+    public function getLanguage(): string
+    {
+        return $this->language;
+    }
+
+    /**
      * Returns Feature keywords (separated by "|").
      *
      * @return string
