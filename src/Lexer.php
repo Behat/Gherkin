@@ -121,7 +121,7 @@ class Lexer
             \assert($language !== '');
             // TODO trigger deprecation (the Parser does not use this code path)
             $this->setLanguage($language);
-            // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
         } else {
             $this->currentDialect = $this->dialectProvider->getDefaultDialect();
             $this->stepKeywordTypesCache = null;
