@@ -110,8 +110,7 @@ class Parser
      */
     protected function expectTokenType($type)
     {
-        $types = (array) $type;
-        if (in_array($this->predictTokenType(), $types)) {
+        if ($this->predictTokenType() === $type) {
             return $this->lexer->getAdvancedToken();
         }
 
@@ -119,7 +118,7 @@ class Parser
 
         throw new ParserException(sprintf(
             'Expected %s token, but got %s on line: %d%s',
-            implode(' or ', $types),
+            $type,
             $this->predictTokenType(),
             $token['line'],
             $this->file ? ' in file: ' . $this->file : ''
@@ -453,11 +452,6 @@ class Parser
         \assert(\array_key_exists('keyword_type', $token));
         \assert(\array_key_exists('text', $token));
 
-        $keyword = $token['value'];
-        $keywordType = $token['keyword_type'];
-        $text = trim($token['text']);
-        $line = $token['line'];
-
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
             if ($predicted === 'Comment' || $predicted === 'Newline') {
@@ -472,7 +466,7 @@ class Parser
             }
         }
 
-        return new StepNode($keyword, $text, $arguments, $line, $keywordType);
+        return new StepNode($token['value'], trim($token['text']), $arguments, $token['line'], $token['keyword_type']);
     }
 
     /**
@@ -633,7 +627,7 @@ class Parser
      *
      * @return array<int, list<string>>
      */
-    private function parseTableRows()
+    private function parseTableRows(): array
     {
         $table = [];
         while (in_array($predicted = $this->predictTokenType(), ['TableRow', 'Newline', 'Comment'])) {
@@ -655,10 +649,8 @@ class Parser
      * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
      * @param StepNode[] $steps
-     *
-     * @return StepNode
      */
-    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = [])
+    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = []): StepNode
     {
         if (!in_array($node->getKeywordType(), ['And', 'But'])) {
             return $node;
