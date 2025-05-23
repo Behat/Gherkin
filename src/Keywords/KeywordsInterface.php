@@ -18,6 +18,10 @@ namespace Behat\Gherkin\Keywords;
  * @phpstan-type TLanguage string
  * @phpstan-type TKeywordsArray array{feature: string, background: string, scenario: string, scenario_outline: string, examples: string, given: string, when: string, then: string, and: string, but: string}
  * @phpstan-type TMultiLanguageKeywords array<TLanguage, TKeywordsArray>
+ * @phpstan-type TKeywordsString string
+ * @phpstan-type TStepKeywordsType 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
+ * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
  */
 interface KeywordsInterface
 {
@@ -32,6 +36,8 @@ interface KeywordsInterface
      * Returns Feature keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getFeatureKeywords();
 
@@ -39,6 +45,8 @@ interface KeywordsInterface
      * Returns Background keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getBackgroundKeywords();
 
@@ -46,6 +54,8 @@ interface KeywordsInterface
      * Returns Scenario keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getScenarioKeywords();
 
@@ -53,6 +63,8 @@ interface KeywordsInterface
      * Returns Scenario Outline keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getOutlineKeywords();
 
@@ -60,6 +72,8 @@ interface KeywordsInterface
      * Returns Examples keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getExamplesKeywords();
 
@@ -67,6 +81,8 @@ interface KeywordsInterface
      * Returns Given keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getGivenKeywords();
 
@@ -74,6 +90,8 @@ interface KeywordsInterface
      * Returns When keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getWhenKeywords();
 
@@ -81,6 +99,8 @@ interface KeywordsInterface
      * Returns Then keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getThenKeywords();
 
@@ -88,6 +108,8 @@ interface KeywordsInterface
      * Returns And keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getAndKeywords();
 
@@ -95,6 +117,8 @@ interface KeywordsInterface
      * Returns But keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getButKeywords();
 
@@ -102,6 +126,8 @@ interface KeywordsInterface
      * Returns all step keywords (separated by "|").
      *
      * @return string
+     *
+     * @phpstan-return TKeywordsString
      */
     public function getStepKeywords();
 }
