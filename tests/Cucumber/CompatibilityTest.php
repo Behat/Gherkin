@@ -57,6 +57,22 @@ class CompatibilityTest extends TestCase
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
             'incomplete_background_2.feature' => 'Background descriptions not supported',
         ],
+        'gherkin-32' => [
+            'complex_background.feature' => 'Rule keyword not supported',
+            'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+            'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
+            'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
+            'rule.feature' => 'Rule keyword not supported',
+            'rule_with_tag.feature' => 'Rule keyword not supported',
+            'tags.feature' => 'Rule keyword not supported',
+            'descriptions.feature' => 'Examples table descriptions not supported',
+            'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
+            'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
+            'padded_example.feature' => 'Table padding is not trimmed as aggressively',
+            'spaces_in_language.feature' => 'Whitespace not supported around language selector',
+            'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
+            'incomplete_background_2.feature' => 'Background descriptions not supported',
+        ],
     ];
 
     /**
@@ -66,6 +82,9 @@ class CompatibilityTest extends TestCase
         'legacy' => [
             'invalid_language.feature' => 'Invalid language is silently ignored',
         ],
+        'gherkin-32' => [
+            'invalid_language.feature' => 'Invalid language is silently ignored',
+        ],
     ];
 
     /**
@@ -73,6 +92,9 @@ class CompatibilityTest extends TestCase
      */
     private array $deprecatedInsteadOfParseError = [
         'legacy' => [
+            'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
+        ],
+        'gherkin-32' => [
             'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
     ];
@@ -120,6 +142,8 @@ class CompatibilityTest extends TestCase
             $this->markTestIncomplete($this->notParsingCorrectly[$mode->value][$file->getFilename()]);
         }
 
+        assert(self::$featureNodeComparator instanceof FeatureNodeComparator);
+        self::$featureNodeComparator->setGherkinCompatibilityMode($mode);
         $this->parser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();

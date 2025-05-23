@@ -13,4 +13,22 @@ namespace Behat\Gherkin;
 enum GherkinCompatibilityMode: string
 {
     case LEGACY = 'legacy';
+
+    /**
+     * Note: The gherkin-32 parsing mode is not yet complete, and further behaviour changes are expected.
+     *
+     * @see https://github.com/Behat/Gherkin/issues?q=is%3Aissue%20state%3Aopen%20label%3Acucumber-parity
+     */
+    case GHERKIN_32 = 'gherkin-32';
+
+    /**
+     * @internal
+     */
+    public function shouldRemoveFeatureDescriptionPadding(): bool
+    {
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
 }
