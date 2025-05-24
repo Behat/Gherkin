@@ -153,7 +153,7 @@ class Lexer
      */
     public function getAdvancedToken()
     {
-        return $this->getStashedToken() ?: $this->getNextToken();
+        return $this->getStashedToken() ?? $this->getNextToken();
     }
 
     /**
@@ -295,21 +295,21 @@ class Lexer
     protected function getNextToken()
     {
         return $this->getDeferredToken()
-            ?: $this->scanEOS()
-            ?: $this->scanLanguage()
-            ?: $this->scanComment()
-            ?: $this->scanPyStringOp()
-            ?: $this->scanPyStringContent()
-            ?: $this->scanStep()
-            ?: $this->scanScenario()
-            ?: $this->scanBackground()
-            ?: $this->scanOutline()
-            ?: $this->scanExamples()
-            ?: $this->scanFeature()
-            ?: $this->scanTags()
-            ?: $this->scanTableRow()
-            ?: $this->scanNewline()
-            ?: $this->scanText();
+            ?? $this->scanEOS()
+            ?? $this->scanLanguage()
+            ?? $this->scanComment()
+            ?? $this->scanPyStringOp()
+            ?? $this->scanPyStringContent()
+            ?? $this->scanStep()
+            ?? $this->scanScenario()
+            ?? $this->scanBackground()
+            ?? $this->scanOutline()
+            ?? $this->scanExamples()
+            ?? $this->scanFeature()
+            ?? $this->scanTags()
+            ?? $this->scanTableRow()
+            ?? $this->scanNewline()
+            ?? $this->scanText();
     }
 
     /**
@@ -602,9 +602,7 @@ class Lexer
         array_pop($rawColumns);
 
         $token = $this->takeToken('TableRow');
-        $columns = array_map(function ($column) {
-            return trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column));
-        }, $rawColumns);
+        $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
         $token['columns'] = $columns;
 
         $this->consumeLine();
@@ -636,7 +634,7 @@ class Lexer
 
         $token = $this->takeToken('Tag');
         $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
-        $tags = array_map('trim', $tags);
+        $tags = array_map(trim(...), $tags);
         $token['tags'] = $tags;
 
         return $token;

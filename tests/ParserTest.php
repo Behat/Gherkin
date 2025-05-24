@@ -21,6 +21,7 @@ use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class ParserTest extends TestCase
 {
@@ -99,7 +100,7 @@ final class ParserTest extends TestCase
 
         $oldMaxNestingLevel = ini_set('xdebug.max_nesting_level', 256);
         if ($oldMaxNestingLevel === false) {
-            throw new \RuntimeException('Could not set INI setting value');
+            throw new RuntimeException('Could not set INI setting value');
         }
 
         try {
