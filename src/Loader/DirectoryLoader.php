@@ -29,8 +29,6 @@ class DirectoryLoader extends AbstractFileLoader
 
     /**
      * Initializes loader.
-     *
-     * @param Gherkin $gherkin Gherkin manager
      */
     public function __construct(Gherkin $gherkin)
     {
@@ -44,7 +42,7 @@ class DirectoryLoader extends AbstractFileLoader
      *
      * @return bool
      */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource)
             && ($path = $this->findAbsolutePath($resource)) !== false
@@ -58,7 +56,7 @@ class DirectoryLoader extends AbstractFileLoader
      *
      * @return list<FeatureNode>
      */
-    public function load($resource)
+    public function load(mixed $resource)
     {
         $path = $this->getAbsolutePath($resource);
         $iterator = new RecursiveIteratorIterator(

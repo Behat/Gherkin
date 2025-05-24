@@ -37,7 +37,7 @@ class KeywordsDumper
      *
      * @return void
      */
-    public function setKeywordsDumperFunction($mapper)
+    public function setKeywordsDumperFunction(callable $mapper)
     {
         $this->keywordsDumper = $mapper;
     }
@@ -50,7 +50,7 @@ class KeywordsDumper
      *
      * @return string
      */
-    public function dumpKeywords(array $keywords, $isShort)
+    public function dumpKeywords(array $keywords, bool $isShort)
     {
         if ($isShort) {
             return count($keywords) > 1
@@ -66,13 +66,12 @@ class KeywordsDumper
      *
      * @param string $language Keywords language
      * @param bool $short Dump short version
-     * @param bool $excludeAsterisk
      *
      * @return string|array String for short version and array of features for extended
      *
      * @phpstan-return ($short is true ? string : list<string>)
      */
-    public function dump($language, $short = true, $excludeAsterisk = false)
+    public function dump(string $language, bool $short = true, bool $excludeAsterisk = false)
     {
         $this->keywords->setLanguage($language);
         $languageComment = '';
@@ -102,11 +101,10 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
-     * @param bool $excludeAsterisk
      *
      * @return string
      */
-    protected function dumpFeature($keyword, $short = true, $excludeAsterisk = false)
+    protected function dumpFeature(string $keyword, bool $short = true, bool $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
         {$keyword}: Internal operations
@@ -159,11 +157,10 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
-     * @param bool $excludeAsterisk
      *
      * @return string
      */
-    protected function dumpBackground($keyword, $short = true, $excludeAsterisk = false)
+    protected function dumpBackground(string $keyword, bool $short = true, bool $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
           {$keyword}:
@@ -194,11 +191,10 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
-     * @param bool $excludeAsterisk
      *
      * @return string
      */
-    protected function dumpScenario($keyword, $short = true, $excludeAsterisk = false)
+    protected function dumpScenario(string $keyword, bool $short = true, bool $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
           {$keyword}: Erasing agent memory
@@ -253,11 +249,10 @@ class KeywordsDumper
      *
      * @param string $keyword Item keyword
      * @param bool $short Dump short version?
-     * @param bool $excludeAsterisk
      *
      * @return string
      */
-    protected function dumpOutline($keyword, $short = true, $excludeAsterisk = false)
+    protected function dumpOutline(string $keyword, bool $short = true, bool $excludeAsterisk = false)
     {
         $dump = <<<GHERKIN
           {$keyword}: Erasing other agents' memory
@@ -328,11 +323,10 @@ class KeywordsDumper
      * @param string $keywords Item keyword
      * @param string $text Step text
      * @param bool $short Dump short version?
-     * @param bool $excludeAsterisk
      *
      * @return string
      */
-    protected function dumpStep($keywords, $text, $short = true, $excludeAsterisk = false)
+    protected function dumpStep(string $keywords, string $text, bool $short = true, bool $excludeAsterisk = false)
     {
         $dump = '';
 

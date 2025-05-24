@@ -65,11 +65,9 @@ class ArrayKeywords implements KeywordsInterface
     /**
      * Sets keywords holder language.
      *
-     * @param string $language Language name
-     *
      * @return void
      */
-    public function setLanguage($language)
+    public function setLanguage(string $language)
     {
         if (!isset($this->keywords[$language])) {
             $this->language = 'en';

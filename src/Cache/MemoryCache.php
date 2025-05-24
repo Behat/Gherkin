@@ -37,7 +37,7 @@ class MemoryCache implements CacheInterface
      *
      * @return bool
      */
-    public function isFresh($path, $timestamp)
+    public function isFresh(string $path, int $timestamp)
     {
         if (!isset($this->features[$path])) {
             return false;
@@ -53,7 +53,7 @@ class MemoryCache implements CacheInterface
      *
      * @return FeatureNode
      */
-    public function read($path)
+    public function read(string $path)
     {
         return $this->features[$path];
     }
@@ -62,11 +62,10 @@ class MemoryCache implements CacheInterface
      * Caches feature node.
      *
      * @param string $path Feature path
-     * @param FeatureNode $feature Feature instance
      *
      * @return void
      */
-    public function write($path, FeatureNode $feature)
+    public function write(string $path, FeatureNode $feature)
     {
         $this->features[$path] = $feature;
         $this->timestamps[$path] = time();

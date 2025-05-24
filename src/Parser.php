@@ -62,7 +62,7 @@ class Parser
      *
      * @throws ParserException
      */
-    public function parse($input, $file = null)
+    public function parse(string $input, ?string $file = null)
     {
         $this->input = $input;
         $this->file = $file;
@@ -108,7 +108,7 @@ class Parser
      *
      * @throws ParserException
      */
-    protected function expectTokenType($type)
+    protected function expectTokenType(string $type)
     {
         $types = (array) $type;
         if (in_array($this->predictTokenType(), $types)) {
@@ -135,7 +135,7 @@ class Parser
      *
      * @phpstan-return TToken|null
      */
-    protected function acceptTokenType($type)
+    protected function acceptTokenType(string $type)
     {
         if ($type !== $this->predictTokenType()) {
             return null;
@@ -655,10 +655,8 @@ class Parser
      * Changes step node type for types But, And to type of previous step if it exists else sets to Given.
      *
      * @param StepNode[] $steps
-     *
-     * @return StepNode
      */
-    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = [])
+    private function normalizeStepNodeKeywordType(StepNode $node, array $steps = []): StepNode
     {
         if (!in_array($node->getKeywordType(), ['And', 'But'])) {
             return $node;

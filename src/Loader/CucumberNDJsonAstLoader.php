@@ -48,12 +48,12 @@ use Behat\Gherkin\Node\TableNode;
  */
 class CucumberNDJsonAstLoader implements LoaderInterface
 {
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource);
     }
 
-    public function load($resource)
+    public function load(mixed $resource)
     {
         return array_values(
             array_filter(

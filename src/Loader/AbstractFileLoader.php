@@ -25,11 +25,9 @@ abstract class AbstractFileLoader implements FileLoaderInterface
     /**
      * Sets base features path.
      *
-     * @param string $path Base loader path
-     *
      * @return void
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path)
     {
         $this->basePath = realpath($path);
     }
@@ -41,7 +39,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @return string
      */
-    protected function findRelativePath($path)
+    protected function findRelativePath(string $path)
     {
         if ($this->basePath !== null) {
             return strtr($path, [$this->basePath . DIRECTORY_SEPARATOR => '']);
@@ -57,7 +55,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @return false|string
      */
-    protected function findAbsolutePath($path)
+    protected function findAbsolutePath(string $path)
     {
         if (is_file($path) || is_dir($path)) {
             return realpath($path);

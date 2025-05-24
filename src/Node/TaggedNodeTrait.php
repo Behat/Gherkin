@@ -23,11 +23,9 @@ trait TaggedNodeTrait
     abstract public function getTags();
 
     /**
-     * @param string $tag
-     *
      * @return bool
      */
-    public function hasTag($tag)
+    public function hasTag(string $tag)
     {
         return in_array($tag, $this->getTags(), true);
     }

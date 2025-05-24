@@ -25,12 +25,7 @@ class NameFilter extends SimpleFilter
      */
     protected $filterString;
 
-    /**
-     * Initializes filter.
-     *
-     * @param string $filterString Name filter string
-     */
-    public function __construct($filterString)
+    public function __construct(string $filterString)
     {
         $this->filterString = trim($filterString);
     }

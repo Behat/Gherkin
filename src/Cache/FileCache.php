@@ -63,7 +63,7 @@ class FileCache implements CacheInterface
      *
      * @return bool
      */
-    public function isFresh($path, $timestamp)
+    public function isFresh(string $path, int $timestamp)
     {
         $cachePath = $this->getCachePathFor($path);
 
@@ -83,7 +83,7 @@ class FileCache implements CacheInterface
      *
      * @throws CacheException
      */
-    public function read($path)
+    public function read(string $path)
     {
         $cachePath = $this->getCachePathFor($path);
         $feature = unserialize(file_get_contents($cachePath));
@@ -99,11 +99,10 @@ class FileCache implements CacheInterface
      * Caches feature node.
      *
      * @param string $path Feature path
-     * @param FeatureNode $feature Feature instance
      *
      * @return void
      */
-    public function write($path, FeatureNode $feature)
+    public function write(string $path, FeatureNode $feature)
     {
         file_put_contents($this->getCachePathFor($path), serialize($feature));
     }
@@ -115,7 +114,7 @@ class FileCache implements CacheInterface
      *
      * @return string
      */
-    protected function getCachePathFor($path)
+    protected function getCachePathFor(string $path)
     {
         return $this->path . '/' . md5($path) . '.feature.cache';
     }

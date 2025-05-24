@@ -199,7 +199,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      *
      * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php
      */
-    protected function isAbsolutePath($file)
+    protected function isAbsolutePath(?string $file)
     {
         if ($file === null) {
             throw new InvalidArgumentException('The provided file path must not be null.');
