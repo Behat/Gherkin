@@ -15,7 +15,6 @@ use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Exception\UnexpectedParserNodeException;
 use Behat\Gherkin\Exception\UnexpectedTaggedNodeException;
-use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -43,7 +42,7 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-import-type TStepToken from Lexer
  * @phpstan-import-type TKeywordToken from Lexer
  * @phpstan-import-type TTableRowToken from Lexer
- * @phpstan-import-type TGeneralKeywordsType from KeywordsInterface
+ * @phpstan-import-type TGeneralKeywordsType from Lexer
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */

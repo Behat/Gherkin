@@ -21,10 +21,9 @@ use function assert;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-import-type TKeywordsType from KeywordsInterface
- * @phpstan-import-type TStepKeywordsType from KeywordsInterface
- * @phpstan-import-type TGeneralKeywordsType from KeywordsInterface
- *
+ * @phpstan-type TStepKeywordsType 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
+ * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
  * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|TGeneralKeywordsType
  * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
  * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
