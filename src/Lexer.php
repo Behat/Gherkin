@@ -57,13 +57,7 @@ class Lexer
      */
     private array $keywordsCache = [];
     /**
-     * @var array{}|array{
-     *     Given: list<string>,
-     *     When: list<string>,
-     *     Then: list<string>,
-     *     And: list<string>,
-     *     But: list<string>,
-     * }
+     * @var array{}|array<TKeywordsType, list<string>>
      */
     private array $stepKeywordTypesCache = [];
     /**
@@ -163,6 +157,8 @@ class Lexer
 
     /**
      * Returns next token or previously stashed one.
+     *
+     * @return array
      *
      * @phpstan-return TToken
      */
