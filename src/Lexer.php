@@ -57,7 +57,7 @@ class Lexer
      */
     private array $keywordsCache = [];
     /**
-     * @var array{}|array<TKeywordsType, list<string>>
+     * @var array<string, list<string>>
      */
     private array $stepKeywordTypesCache = [];
     /**

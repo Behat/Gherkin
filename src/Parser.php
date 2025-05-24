@@ -572,7 +572,7 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param list<string> $tags
+     * @param array<array-key, string> $tags
      *
      * @return void
      */
