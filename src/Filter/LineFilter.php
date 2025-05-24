@@ -32,7 +32,7 @@ class LineFilter implements FilterInterface
      *
      * @param int|numeric-string $filterLine Line of the scenario to filter on
      */
-    public function __construct($filterLine)
+    public function __construct(int|string $filterLine)
     {
         $this->filterLine = (int) $filterLine;
     }

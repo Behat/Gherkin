@@ -45,7 +45,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @return bool
      */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_array($resource) && (isset($resource['features']) || isset($resource['feature']));
     }
@@ -59,7 +59,7 @@ class ArrayLoader implements LoaderInterface
      *
      * @return list<FeatureNode>
      */
-    public function load($resource)
+    public function load(mixed $resource)
     {
         $features = [];
 

@@ -198,7 +198,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @throws NodeException If row with specified index does not exist
      */
-    public function getRow($index)
+    public function getRow(int $index)
     {
         $rows = $this->getRows();
 
@@ -218,7 +218,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @throws NodeException If column with specified index does not exist
      */
-    public function getColumn($index)
+    public function getColumn(int $index)
     {
         if ($index >= count($this->getRow(0))) {
             throw new NodeException(sprintf('Column #%d does not exist in table.', $index));
@@ -237,13 +237,11 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Returns line number at which specific row was defined.
      *
-     * @param int $index
-     *
      * @return int
      *
      * @throws NodeException If row with specified index does not exist
      */
-    public function getRowLine($index)
+    public function getRowLine(int $index)
     {
         $lines = array_keys($this->table);
 
@@ -261,7 +259,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @return string
      */
-    public function getRowAsString($rowNum)
+    public function getRowAsString(int $rowNum)
     {
         $values = [];
         foreach ($this->getRow($rowNum) as $column => $value) {
@@ -279,7 +277,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
      *
      * @return string
      */
-    public function getRowAsStringWithWrappedValues($rowNum, $wrapper)
+    public function getRowAsStringWithWrappedValues(int $rowNum, callable $wrapper)
     {
         $values = [];
         foreach ($this->getRow($rowNum) as $column => $value) {
@@ -366,12 +364,9 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     /**
      * Pads string right.
      *
-     * @param string $text Text to pad
-     * @param int $length Length
-     *
      * @return string
      */
-    protected function padRight($text, $length)
+    protected function padRight(string $text, int $length)
     {
         while ($length > mb_strlen($text, 'utf8')) {
             $text .= ' ';

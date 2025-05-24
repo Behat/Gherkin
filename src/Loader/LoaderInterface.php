@@ -26,7 +26,7 @@ interface LoaderInterface
      *
      * @return bool
      */
-    public function supports($resource);
+    public function supports(mixed $resource);
 
     /**
      * Loads features from provided resource.
@@ -35,5 +35,5 @@ interface LoaderInterface
      *
      * @return list<FeatureNode>
      */
-    public function load($resource);
+    public function load(mixed $resource);
 }

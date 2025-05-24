@@ -81,7 +81,7 @@ class Lexer
      *
      * @throws LexerException
      */
-    public function analyse($input, $language = 'en')
+    public function analyse(string $input, string $language = 'en')
     {
         // try to detect unsupported encoding
         if (mb_detect_encoding($input, 'UTF-8', true) !== 'UTF-8') {
@@ -202,7 +202,7 @@ class Lexer
      *
      * @phpstan-return TToken
      */
-    public function takeToken($type, $value = null)
+    public function takeToken(string $type, ?string $value = null)
     {
         return [
             'type' => $type,
@@ -322,7 +322,7 @@ class Lexer
      *
      * @phpstan-return TToken|null
      */
-    protected function scanInput($regex, $type)
+    protected function scanInput(string $regex, string $type)
     {
         if (!preg_match($regex, $this->line, $matches)) {
             return null;
@@ -344,7 +344,7 @@ class Lexer
      *
      * @phpstan-return TToken|null
      */
-    protected function scanInputForKeywords($keywords, $type)
+    protected function scanInputForKeywords(string $keywords, string $type)
     {
         if (!preg_match('/^(\s*)(' . $keywords . '):\s*(.*)/u', $this->line, $matches)) {
             return null;
@@ -400,7 +400,7 @@ class Lexer
      *
      * @return string
      */
-    protected function getKeywords($type)
+    protected function getKeywords(string $type)
     {
         if (!isset($this->keywordsCache[$type])) {
             $getter = 'get' . $type . 'Keywords';
@@ -734,10 +734,8 @@ class Lexer
      * Returns step type keyword (Given, When, Then, etc.).
      *
      * @param string $native Step keyword in provided language
-     *
-     * @return string
      */
-    private function getStepKeywordType($native)
+    private function getStepKeywordType(string $native): string
     {
         // Consider "*" as a AND keyword so that it is normalized to the previous step type
         if ($native === '*') {

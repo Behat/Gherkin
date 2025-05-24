@@ -37,7 +37,7 @@ class LineRangeFilter implements FilterInterface
      * @param int|numeric-string $filterMinLine Minimum line of a scenario to filter on
      * @param int|numeric-string|'*' $filterMaxLine Maximum line of a scenario to filter on
      */
-    public function __construct($filterMinLine, $filterMaxLine)
+    public function __construct(int|string $filterMinLine, int|string $filterMaxLine)
     {
         $this->filterMinLine = (int) $filterMinLine;
         $this->filterMaxLine = $filterMaxLine === '*' ? PHP_INT_MAX : (int) $filterMaxLine;

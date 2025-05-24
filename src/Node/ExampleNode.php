@@ -134,7 +134,7 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 
     public function getName(): ?string
     {
-        return "{$this->replaceTextTokens($this->outlineTitle)} #{$this->index}";
+        return "{$this->replaceTextTokens($this->outlineTitle ?? '')} #{$this->index}";
     }
 
     /**
@@ -228,11 +228,9 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
     /**
      * Replaces tokens in text with row values.
      *
-     * @param string $text
-     *
      * @return string
      */
-    protected function replaceTextTokens($text)
+    protected function replaceTextTokens(string $text)
     {
         foreach ($this->tokens as $key => $val) {
             $text = str_replace('<' . $key . '>', $val, $text);

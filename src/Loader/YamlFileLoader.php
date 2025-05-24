@@ -32,7 +32,7 @@ class YamlFileLoader extends AbstractFileLoader
      *
      * @return bool
      */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource)
             && ($path = $this->findAbsolutePath($resource)) !== false
@@ -47,7 +47,7 @@ class YamlFileLoader extends AbstractFileLoader
      *
      * @return FeatureNode[]
      */
-    public function load($resource)
+    public function load(mixed $resource)
     {
         $path = $this->getAbsolutePath($resource);
         $hash = Yaml::parseFile($path);

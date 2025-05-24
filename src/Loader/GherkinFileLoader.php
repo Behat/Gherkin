@@ -45,8 +45,6 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Sets cache layer.
      *
-     * @param CacheInterface $cache Cache layer
-     *
      * @return void
      */
     public function setCache(CacheInterface $cache)
@@ -61,7 +59,7 @@ class GherkinFileLoader extends AbstractFileLoader
      *
      * @return bool
      */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource)
             && ($path = $this->findAbsolutePath($resource)) !== false
@@ -76,7 +74,7 @@ class GherkinFileLoader extends AbstractFileLoader
      *
      * @return list<FeatureNode>
      */
-    public function load($resource)
+    public function load(mixed $resource)
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {
@@ -99,7 +97,7 @@ class GherkinFileLoader extends AbstractFileLoader
      *
      * @return FeatureNode|null
      */
-    protected function parseFeature($path)
+    protected function parseFeature(string $path)
     {
         $content = file_get_contents($path);
 

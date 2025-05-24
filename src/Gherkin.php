@@ -84,7 +84,7 @@ class Gherkin
      *
      * @return void
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path)
     {
         foreach ($this->loaders as $loader) {
             if ($loader instanceof FileLoaderInterface) {
@@ -143,7 +143,7 @@ class Gherkin
      *
      * @return LoaderInterface|null
      */
-    public function resolveLoader($resource)
+    public function resolveLoader(mixed $resource)
     {
         foreach ($this->loaders as $loader) {
             if ($loader->supports($resource)) {

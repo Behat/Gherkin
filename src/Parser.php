@@ -62,7 +62,7 @@ class Parser
      *
      * @throws ParserException
      */
-    public function parse($input, $file = null)
+    public function parse(string $input, ?string $file = null)
     {
         $this->input = $input;
         $this->file = $file;
@@ -108,7 +108,7 @@ class Parser
      *
      * @throws ParserException
      */
-    protected function expectTokenType($type)
+    protected function expectTokenType(string $type)
     {
         if ($this->predictTokenType() === $type) {
             return $this->lexer->getAdvancedToken();
@@ -134,7 +134,7 @@ class Parser
      *
      * @phpstan-return TToken|null
      */
-    protected function acceptTokenType($type)
+    protected function acceptTokenType(string $type)
     {
         if ($type !== $this->predictTokenType()) {
             return null;
