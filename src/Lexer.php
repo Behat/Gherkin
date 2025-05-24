@@ -586,7 +586,7 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', (string) ($token['value'] ?? ''));
+        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
 
         return $token;
     }
