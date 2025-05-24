@@ -25,6 +25,7 @@ use function assert;
  * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
  * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
  * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|TGeneralKeywordsType
+ * @phpstan-type TToken TStringValueToken|TNullValueToken|TKeywordToken|TStepToken|TTagToken|TTableRowToken
  * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
  * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
  * @phpstan-type TKeywordToken array{type: TTokenType, value: null|string, line: int, deferred: bool, keyword: string, indent: int}
@@ -66,12 +67,12 @@ class Lexer
      */
     private array $stepKeywordTypesCache = [];
     /**
-     * @phpstan-var list<TNullValueToken|TStringValueToken>
+     * @phpstan-var list<TToken>
      */
     private array $deferredObjects = [];
     private int $deferredObjectsCount = 0;
     /**
-     * @phpstan-var TNullValueToken|TStringValueToken|null
+     * @phpstan-var TToken|null
      */
     private ?array $stashedToken = null;
     private bool $inPyString = false;
@@ -163,7 +164,7 @@ class Lexer
     /**
      * Returns next token or previously stashed one.
      *
-     * @phpstan-return TNullValueToken|TStringValueToken
+     * @phpstan-return TToken
      */
     public function getAdvancedToken()
     {
@@ -173,7 +174,7 @@ class Lexer
     /**
      * Defers token.
      *
-     * @phpstan-param TNullValueToken|TStringValueToken $token Token to defer
+     * @phpstan-param TToken $token Token to defer
      *
      * @return void
      */
@@ -189,7 +190,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TNullValueToken|TStringValueToken
+     * @phpstan-return TToken
      */
     public function predictToken()
     {
@@ -272,7 +273,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TNullValueToken|TStringValueToken|null
+     * @phpstan-return TToken|null
      */
     protected function getStashedToken()
     {
@@ -287,7 +288,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TNullValueToken|TStringValueToken|null
+     * @phpstan-return TToken|null
      */
     protected function getDeferredToken()
     {
@@ -305,7 +306,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TNullValueToken|TStringValueToken
+     * @phpstan-return TToken
      */
     protected function getNextToken()
     {

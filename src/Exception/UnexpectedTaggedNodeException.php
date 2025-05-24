@@ -13,13 +13,12 @@ namespace Behat\Gherkin\Exception;
 use Behat\Gherkin\Lexer;
 
 /**
- * @phpstan-import-type TNullValueToken from Lexer
- * @phpstan-import-type TStringValueToken from Lexer
+ * @phpstan-import-type TToken from Lexer
  */
 class UnexpectedTaggedNodeException extends ParserException
 {
     /**
-     * @phpstan-param TNullValueToken|TStringValueToken $taggedToken
+     * @phpstan-param TToken $taggedToken
      */
     public function __construct(
         public readonly array $taggedToken,

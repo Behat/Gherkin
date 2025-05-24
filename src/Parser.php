@@ -36,6 +36,7 @@ use Behat\Gherkin\Node\TableNode;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
+ * @phpstan-import-type TToken from Lexer
  * @phpstan-import-type TNullValueToken from Lexer
  * @phpstan-import-type TStringValueToken from Lexer
  * @phpstan-import-type TTagToken from Lexer
@@ -152,7 +153,7 @@ class Parser
      *
      * @return array|null
      *
-     * @phpstan-return TNullValueToken|TStringValueToken|null
+     * @phpstan-return TToken|null
      */
     protected function acceptTokenType(string $type)
     {
