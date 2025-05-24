@@ -120,10 +120,12 @@ class Parser
      *             ? TTagToken
      *             : ($type is 'Step'
      *                 ? TStepToken
-     *                 : ($type is TGeneralKeywordsType
-     *                     ? TKeywordToken
-     *                     : TNullValueToken|TStringValueToken)))
-     * )
+     *                 : ($type is 'Text'
+     *                     ? TStringValueToken
+     *                     : ($type is TGeneralKeywordsType
+     *                         ? TKeywordToken
+     *                         : TNullValueToken|TStringValueToken
+     * )))))
      *
      * @throws ParserException
      */
@@ -527,10 +529,7 @@ class Parser
 
         $strings = [];
         while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && $predicted === 'Text') {
-            $token = $this->expectTokenType('Text');
-            \assert(\is_string($token['value']));
-
-            $strings[] = $token['value'];
+            $strings[] = $this->expectTokenType('Text')['value'];
         }
 
         $this->expectTokenType('PyStringOp');

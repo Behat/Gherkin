@@ -21,8 +21,6 @@ use function assert;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-import-type TLanguage from KeywordsInterface
- * @phpstan-import-type TKeywordsString from KeywordsInterface
  * @phpstan-import-type TKeywordsType from KeywordsInterface
  * @phpstan-import-type TStepKeywordsType from KeywordsInterface
  * @phpstan-import-type TGeneralKeywordsType from KeywordsInterface
@@ -55,7 +53,7 @@ class Lexer
     private int $lineNumber;
     private bool $eos;
     /**
-     * @phpstan-var array<TKeywordsType, TKeywordsString>
+     * @phpstan-var array<TKeywordsType, string>
      */
     private array $keywordsCache = [];
     /**
@@ -96,8 +94,6 @@ class Lexer
      * @param string $input Input string
      * @param string $language Language name
      *
-     * @phpstan-param TLanguage $language
-     *
      * @return void
      *
      * @throws LexerException
@@ -132,9 +128,6 @@ class Lexer
         $this->setLanguage($language);
     }
 
-    /**
-     * @phpstan-param TLanguage $language
-     */
     private function setLanguage(string $language): void
     {
         if (($this->stashedToken !== null) || ($this->deferredObjects !== [])) {
@@ -162,8 +155,6 @@ class Lexer
      * Returns current lexer language.
      *
      * @return string
-     *
-     * @phpstan-return TLanguage
      */
     public function getLanguage()
     {
@@ -219,7 +210,6 @@ class Lexer
     /**
      * Constructs token with specified parameters.
      *
-     * @param string $type
      * @param string|null $value Token value
      *
      * @phpstan-param TTokenType $type Token type
@@ -342,7 +332,6 @@ class Lexer
      * Scans for token with specified regex.
      *
      * @param string $regex Regular expression
-     * @param string $type
      *
      * @phpstan-param TTokenType $type Expected token type
      *
@@ -365,10 +354,8 @@ class Lexer
     /**
      * Scans for token with specified keywords.
      *
-     * @param string $keywords
-     * @param string $type
+     * @param string $keywords Keywords (separated by "|")
      *
-     * @phpstan-param TKeywordsString $keywords Keywords (separated by "|")
      * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
@@ -427,13 +414,9 @@ class Lexer
     /**
      * Returns keywords for provided type.
      *
-     * @param string $type
-     *
      * @phpstan-param TKeywordsType $type Keyword type
      *
      * @return string
-     *
-     * @phpstan-return TKeywordsString
      */
     protected function getKeywords(string $type)
     {
