@@ -10,7 +10,7 @@
 
 namespace Tests\Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
@@ -22,20 +22,7 @@ abstract class FilterTestCase extends TestCase
     {
         return new Parser(
             new Lexer(
-                new ArrayKeywords([
-                    'en' => [
-                        'feature' => 'Feature',
-                        'background' => 'Background',
-                        'scenario' => 'Scenario',
-                        'scenario_outline' => 'Scenario Outline|Scenario Template',
-                        'examples' => 'Examples|Scenarios',
-                        'given' => 'Given',
-                        'when' => 'When',
-                        'then' => 'Then',
-                        'and' => 'And',
-                        'but' => 'But',
-                    ],
-                ])
+                new CucumberDialectProvider()
             )
         );
     }
@@ -64,7 +51,7 @@ abstract class FilterTestCase extends TestCase
               | action | outcome |
               | act#1  | out#1   |
               | act#2  | out#2   |
-              
+
             @etag2
             Examples:
               | action | outcome |
