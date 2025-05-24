@@ -28,13 +28,22 @@ use Behat\Gherkin\Node\TableNode;
 /**
  * Gherkin parser.
  *
+ * ```
  * $lexer  = new Behat\Gherkin\Lexer($keywords);
  * $parser = new Behat\Gherkin\Parser($lexer);
  * $featuresArray = $parser->parse('/path/to/feature.feature');
+ * ```
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * @phpstan-import-type TToken from Lexer
+ * @phpstan-import-type TNullValueToken from Lexer
+ * @phpstan-import-type TStringValueToken from Lexer
+ * @phpstan-import-type TTagToken from Lexer
+ * @phpstan-import-type TStepToken from Lexer
+ * @phpstan-import-type TKeywordToken from Lexer
+ * @phpstan-import-type TTableRowToken from Lexer
+ * @phpstan-import-type TGeneralKeywordsType from Lexer
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */
@@ -104,7 +113,19 @@ class Parser
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return (
+     *     $type is 'TableRow'
+     *         ? TTableRowToken
+     *         : ($type is 'Tag'
+     *             ? TTagToken
+     *             : ($type is 'Step'
+     *                 ? TStepToken
+     *                 : ($type is 'Text'
+     *                     ? TStringValueToken
+     *                     : ($type is TGeneralKeywordsType
+     *                         ? TKeywordToken
+     *                         : TNullValueToken|TStringValueToken
+     * )))))
      *
      * @throws ParserException
      */
@@ -200,8 +221,6 @@ class Parser
     protected function parseFeature()
     {
         $token = $this->expectTokenType('Feature');
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $description = null;
@@ -268,8 +287,6 @@ class Parser
     protected function parseBackground()
     {
         $token = $this->expectTokenType('Background');
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $keyword = $token['keyword'];
@@ -332,12 +349,10 @@ class Parser
     }
 
     /**
-     * @phpstan-param TToken $token
+     * @phpstan-param TKeywordToken $token
      */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
         $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
@@ -448,9 +463,6 @@ class Parser
     protected function parseStep()
     {
         $token = $this->expectTokenType('Step');
-        \assert(\is_string($token['value']));
-        \assert(\array_key_exists('keyword_type', $token));
-        \assert(\array_key_exists('text', $token));
 
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
@@ -477,7 +489,6 @@ class Parser
     protected function parseExamples()
     {
         $token = $this->expectTokenType('Examples');
-        \assert(\array_key_exists('keyword', $token));
         $keyword = $token['keyword'];
         $tags = empty($this->tags) ? [] : $this->popTags();
         $table = $this->parseTableRows();
@@ -518,10 +529,7 @@ class Parser
 
         $strings = [];
         while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && $predicted === 'Text') {
-            $token = $this->expectTokenType('Text');
-            \assert(\is_string($token['value']));
-
-            $strings[] = $token['value'];
+            $strings[] = $this->expectTokenType('Text')['value'];
         }
 
         $this->expectTokenType('PyStringOp');
@@ -537,7 +545,6 @@ class Parser
     protected function parseTags()
     {
         $token = $this->expectTokenType('Tag');
-        \assert(\array_key_exists('tags', $token));
 
         // Validate that the tags are followed by a node that can be tagged
         $this->validateAndGetNextTaggedNodeType();
@@ -565,7 +572,7 @@ class Parser
     /**
      * Checks the tags fit the required format.
      *
-     * @param string[] $tags
+     * @param array<array-key, string> $tags
      *
      * @return void
      */
@@ -637,7 +644,6 @@ class Parser
             }
 
             $token = $this->expectTokenType('TableRow');
-            \assert(\array_key_exists('columns', $token));
 
             $table[$token['line']] = $token['columns'];
         }

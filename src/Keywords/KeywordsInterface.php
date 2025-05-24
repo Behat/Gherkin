@@ -15,9 +15,19 @@ namespace Behat\Gherkin\Keywords;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-type TLanguage string
- * @phpstan-type TKeywordsArray array{feature: string, background: string, scenario: string, scenario_outline: string, examples: string, given: string, when: string, then: string, and: string, but: string}
- * @phpstan-type TMultiLanguageKeywords array<TLanguage, TKeywordsArray>
+ * @phpstan-type TKeywordsArray array{
+ *     feature: string,
+ *     background: string,
+ *     scenario: string,
+ *     scenario_outline: string,
+ *     examples: string,
+ *     given: string,
+ *     when: string,
+ *     then: string,
+ *     and: string,
+ *     but: string,
+ * }
+ * @phpstan-type TMultiLanguageKeywords array<string, TKeywordsArray>
  */
 interface KeywordsInterface
 {
