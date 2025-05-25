@@ -21,6 +21,8 @@ use function assert;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
+ * @final since 4.15.0
+ *
  * @phpstan-type TToken array{type: string, line: int, value: string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
  */
 class Lexer
