@@ -27,10 +27,9 @@ use function assert;
  *
  * @final since 4.15.0
  *
- * @phpstan-type TStepKeywordsType 'Given'|'When'|'Then'|'And'|'But'
- * @phpstan-type TGeneralKeywordsType 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
- * @phpstan-type TKeywordsType TGeneralKeywordsType|TStepKeywordsType
- * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|TGeneralKeywordsType
+ * @phpstan-type TStepKeyword 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TTitleKeyword 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Step'
+ * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|TTitleKeyword
  * @phpstan-type TToken TStringValueToken|TNullValueToken|TKeywordToken|TStepToken|TTagToken|TTableRowToken
  * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
  * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
@@ -63,7 +62,7 @@ class Lexer
     /**
      * A cache of keyword types associated with each keyword.
      *
-     * @phpstan-var array<string, non-empty-list<TStepKeywordsType>>|null
+     * @phpstan-var array<string, non-empty-list<TStepKeyword>>|null
      */
     private ?array $stepKeywordTypesCache = null;
     /**
@@ -378,6 +377,8 @@ class Lexer
             return null;
         }
 
+        assert($matches[1] !== '');
+
         $token = $this->takeToken($type, $matches[1]);
         $this->consumeLine();
 
@@ -479,7 +480,7 @@ class Lexer
     /**
      * Returns a regex matching the keywords for the provided type.
      *
-     * @phpstan-param TKeywordsType $type Keyword type
+     * @phpstan-param TTitleKeyword|TStepKeyword $type Keyword type
      *
      * @return string
      *
@@ -652,6 +653,7 @@ class Lexer
         $text = ltrim(mb_substr($trimmedLine, mb_strlen($matchedKeyword)));
 
         $nodeKeyword = $this->compatibilityMode->shouldRemoveStepKeywordSpace() ? trim($matchedKeyword) : $matchedKeyword;
+        assert($nodeKeyword !== '');
 
         $token = $this->takeToken('Step', $nodeKeyword);
         $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
@@ -715,7 +717,7 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+        $token['value'] = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
 
         return $token;
     }
@@ -875,7 +877,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TStringValueToken
+     * @phpstan-return TStringValueToken|TNullValueToken
      */
     protected function scanText()
     {
@@ -890,7 +892,7 @@ class Lexer
      *
      * @param string $native Step keyword in provided language
      *
-     * @phpstan-return TStepKeywordsType
+     * @phpstan-return TStepKeyword
      */
     private function getStepKeywordType(string $native): string
     {
@@ -920,7 +922,7 @@ class Lexer
     /**
      * @param list<string> $keywords
      *
-     * @phpstan-param TStepKeywordsType $type
+     * @phpstan-param TStepKeyword $type
      */
     private function addStepKeywordTypes(array $keywords, string $type): void
     {

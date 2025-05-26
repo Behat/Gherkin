@@ -45,7 +45,7 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-import-type TStepToken from Lexer
  * @phpstan-import-type TKeywordToken from Lexer
  * @phpstan-import-type TTableRowToken from Lexer
- * @phpstan-import-type TGeneralKeywordsType from Lexer
+ * @phpstan-import-type TTitleKeyword from Lexer
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */
@@ -121,7 +121,7 @@ class Parser implements ParserInterface
      *                 ? TStepToken
      *                 : ($type is 'Text'
      *                     ? TStringValueToken
-     *                     : ($type is TGeneralKeywordsType
+     *                     : ($type is TTitleKeyword
      *                         ? TKeywordToken
      *                         : TNullValueToken|TStringValueToken
      * )))))
