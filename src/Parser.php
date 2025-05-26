@@ -43,7 +43,7 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-import-type TStringValueToken from Lexer
  * @phpstan-import-type TTagToken from Lexer
  * @phpstan-import-type TStepToken from Lexer
- * @phpstan-import-type TKeywordToken from Lexer
+ * @phpstan-import-type TTitleToken from Lexer
  * @phpstan-import-type TTableRowToken from Lexer
  * @phpstan-import-type TTitleKeyword from Lexer
  *
@@ -122,7 +122,7 @@ class Parser implements ParserInterface
      *                 : ($type is 'Text'
      *                     ? TStringValueToken
      *                     : ($type is TTitleKeyword
-     *                         ? TKeywordToken
+     *                         ? TTitleToken
      *                         : TNullValueToken|TStringValueToken
      * )))))
      *
@@ -364,7 +364,7 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @phpstan-param TKeywordToken $token
+     * @phpstan-param TTitleToken $token
      */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
