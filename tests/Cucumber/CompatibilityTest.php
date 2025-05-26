@@ -68,7 +68,6 @@ class CompatibilityTest extends TestCase
             'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
             'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
             'padded_example.feature' => 'Table padding is not trimmed as aggressively',
-            'spaces_in_language.feature' => 'Whitespace not supported around language selector',
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
             'incomplete_background_2.feature' => 'Background descriptions not supported',
         ],

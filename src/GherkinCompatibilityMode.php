@@ -42,4 +42,15 @@ enum GherkinCompatibilityMode: string
             default => false,
         };
     }
+
+    /**
+     * @internal
+     */
+    public function allowWhitespaceInLanguageTag(): bool
+    {
+        return match ($this) {
+            self::LEGACY => false,
+            default => true,
+        };
+    }
 }
