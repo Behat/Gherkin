@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Behat\Gherkin\Loader;
+namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\ArgumentInterface;
@@ -26,8 +26,6 @@ use Behat\Gherkin\Node\TableNode;
  * Loads a feature from cucumber's messages JSON format.
  *
  * Lines in the ndjson file are expected to match the Cucumber Messages JSON schema defined at https://github.com/cucumber/messages/tree/main/jsonschema
- *
- * @deprecated This loader is deprecated and will be removed in 5.0
  *
  * @phpstan-type TLocation array{line: int, column?: int}
  * @phpstan-type TBackground array{location: TLocation, keyword: string, name: string, description: string, steps: list<TStep>, id: string}
@@ -48,14 +46,12 @@ use Behat\Gherkin\Node\TableNode;
  * // We only care about the gherkinDocument messages for our use case, so this does not describe the envelope fully
  * @phpstan-type TEnvelope array{gherkinDocument?: TGherkinDocument, ...}
  */
-class CucumberNDJsonAstLoader implements LoaderInterface
+class NDJsonAstParser
 {
-    public function supports(mixed $resource)
-    {
-        return is_string($resource);
-    }
-
-    public function load(mixed $resource)
+    /**
+     * @return list<FeatureNode>
+     */
+    public function load(string $resource): array
     {
         return array_values(
             array_filter(
