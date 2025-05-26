@@ -73,6 +73,7 @@ class Parser
         $this->input = $input;
         $this->file = $file;
         $this->tags = [];
+        $this->lexer->setCompatibilityMode($this->compatibilityMode);
 
         try {
             $this->lexer->analyse($this->input);

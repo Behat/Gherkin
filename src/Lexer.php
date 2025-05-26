@@ -37,6 +37,7 @@ class Lexer
     private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
     private readonly DialectProviderInterface $dialectProvider;
     private GherkinDialect $currentDialect;
+    private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY;
     /**
      * @var list<string>
      */
@@ -78,6 +79,14 @@ class Lexer
         }
 
         $this->dialectProvider = $dialectProvider;
+    }
+
+    /**
+     * @internal
+     */
+    public function setCompatibilityMode(GherkinCompatibilityMode $compatibilityMode): void
+    {
+        $this->compatibilityMode = $compatibilityMode;
     }
 
     /**
@@ -152,8 +161,10 @@ class Lexer
 
         try {
             $this->currentDialect = $this->dialectProvider->getDialect($language);
-        } catch (NoSuchLanguageException) {
-            // TODO rethrow the exception when introducing the compatibility mode for invalid languages.
+        } catch (NoSuchLanguageException $e) {
+            if (!$this->compatibilityMode->shouldIgnoreInvalidLanguage()) {
+                throw $e;
+            }
         }
         $this->stepKeywordTypesCache = null;
     }
