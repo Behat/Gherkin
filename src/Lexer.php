@@ -789,7 +789,11 @@ class Lexer
             return null;
         }
 
-        $token = $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        $pattern = $this->compatibilityMode->allowWhitespaceInLanguageTag()
+            ? '/^\s*#\s*language\s*:\s*([\w_\-]+)\s*$/u'
+            : '/^\s*#\s*language:\s*([\w_\-]+)\s*$/';
+
+        $token = $this->scanInput($pattern, 'Language');
 
         if ($token) {
             \assert(\is_string($token['value']));
