@@ -28,15 +28,24 @@ use Behat\Gherkin\Node\TableNode;
 /**
  * Gherkin parser.
  *
+ * ```
  * $lexer  = new Behat\Gherkin\Lexer($keywords);
  * $parser = new Behat\Gherkin\Parser($lexer);
  * $featuresArray = $parser->parse('/path/to/feature.feature');
+ * ```
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
  * @final since 4.15.0
  *
  * @phpstan-import-type TToken from Lexer
+ * @phpstan-import-type TNullValueToken from Lexer
+ * @phpstan-import-type TStringValueToken from Lexer
+ * @phpstan-import-type TTagToken from Lexer
+ * @phpstan-import-type TStepToken from Lexer
+ * @phpstan-import-type TTitleToken from Lexer
+ * @phpstan-import-type TTableRowToken from Lexer
+ * @phpstan-import-type TTitleKeyword from Lexer
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */
@@ -103,7 +112,19 @@ class Parser implements ParserInterface
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return (
+     *     $type is 'TableRow'
+     *         ? TTableRowToken
+     *         : ($type is 'Tag'
+     *             ? TTagToken
+     *             : ($type is 'Step'
+     *                 ? TStepToken
+     *                 : ($type is 'Text'
+     *                     ? TStringValueToken
+     *                     : ($type is TTitleKeyword
+     *                         ? TTitleToken
+     *                         : TNullValueToken|TStringValueToken
+     * )))))
      *
      * @throws ParserException
      */
@@ -199,8 +220,6 @@ class Parser implements ParserInterface
     protected function parseFeature()
     {
         $token = $this->expectTokenType('Feature');
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $description = null;
@@ -283,8 +302,6 @@ class Parser implements ParserInterface
     protected function parseBackground()
     {
         $token = $this->expectTokenType('Background');
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
 
         $title = trim($token['value'] ?? '');
         $keyword = $token['keyword'];
@@ -347,12 +364,10 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @phpstan-param TToken $token
+     * @phpstan-param TTitleToken $token
      */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
-        \assert(\array_key_exists('keyword', $token));
-        \assert(\array_key_exists('indent', $token));
         $title = trim($token['value'] ?? '');
         $tags = $this->popTags();
         $keyword = $token['keyword'];
@@ -463,9 +478,6 @@ class Parser implements ParserInterface
     protected function parseStep()
     {
         $token = $this->expectTokenType('Step');
-        \assert(\is_string($token['value']));
-        \assert(\array_key_exists('keyword_type', $token));
-        \assert(\array_key_exists('text', $token));
 
         $arguments = [];
         while (in_array($predicted = $this->predictTokenType(), ['PyStringOp', 'TableRow', 'Newline', 'Comment'])) {
@@ -492,7 +504,6 @@ class Parser implements ParserInterface
     protected function parseExamples()
     {
         $token = $this->expectTokenType('Examples');
-        \assert(\array_key_exists('keyword', $token));
         $keyword = $token['keyword'];
         $tags = empty($this->tags) ? [] : $this->popTags();
         $table = $this->parseTableRows();
@@ -533,10 +544,7 @@ class Parser implements ParserInterface
 
         $strings = [];
         while ('PyStringOp' !== ($predicted = $this->predictTokenType()) && $predicted === 'Text') {
-            $token = $this->expectTokenType('Text');
-            \assert(\is_string($token['value']));
-
-            $strings[] = $token['value'];
+            $strings[] = $this->expectTokenType('Text')['value'];
         }
 
         $this->expectTokenType('PyStringOp');
@@ -552,7 +560,6 @@ class Parser implements ParserInterface
     protected function parseTags()
     {
         $token = $this->expectTokenType('Tag');
-        \assert(\array_key_exists('tags', $token));
 
         // Validate that the tags are followed by a node that can be tagged
         $this->validateAndGetNextTaggedNodeType();
@@ -580,7 +587,7 @@ class Parser implements ParserInterface
     /**
      * Checks the tags fit the required format.
      *
-     * @param string[] $tags
+     * @param array<array-key, string> $tags
      *
      * @return void
      */
@@ -652,7 +659,6 @@ class Parser implements ParserInterface
             }
 
             $token = $this->expectTokenType('TableRow');
-            \assert(\array_key_exists('columns', $token));
 
             $table[$token['line']] = $token['columns'];
         }

@@ -27,7 +27,16 @@ use function assert;
  *
  * @final since 4.15.0
  *
- * @phpstan-type TToken array{type: string, line: int, value: string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
+ * @phpstan-type TStepKeyword 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TTitleKeyword 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'
+ * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|'Step'|TTitleKeyword
+ * @phpstan-type TToken TStringValueToken|TNullValueToken|TTitleToken|TStepToken|TTagToken|TTableRowToken
+ * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
+ * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
+ * @phpstan-type TTitleToken array{type: TTitleKeyword, value: null|non-empty-string, line: int, deferred: bool, keyword: string, indent: int}
+ * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string}
+ * @phpstan-type TTagToken array{type: 'Tag', value: null, line: int, deferred: bool, tags: list<string>}
+ * @phpstan-type TTableRowToken array{type: 'TableRow', value: null, line: int, deferred: bool, columns: list<string>}
  */
 class Lexer
 {
@@ -37,6 +46,7 @@ class Lexer
      * @see https://github.com/cucumber/gherkin/blob/679a87e21263699c15ea635159c6cda60f64af3b/php/src/StringGherkinLine.php#L14
      */
     private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
+
     private readonly DialectProviderInterface $dialectProvider;
     private GherkinDialect $currentDialect;
     private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY;
@@ -52,7 +62,7 @@ class Lexer
     /**
      * A cache of keyword types associated with each keyword.
      *
-     * @var array<string, non-empty-list<string>>|null
+     * @phpstan-var array<string, non-empty-list<TStepKeyword>>|null
      */
     private ?array $stepKeywordTypesCache = null;
     /**
@@ -232,12 +242,13 @@ class Lexer
     /**
      * Constructs token with specified parameters.
      *
-     * @param string $type Token type
      * @param string|null $value Token value
+     *
+     * @phpstan-param TTokenType $type Token type
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return ($value is non-empty-string ? TStringValueToken : TNullValueToken)
      */
     public function takeToken(string $type, ?string $value = null)
     {
@@ -290,7 +301,7 @@ class Lexer
     }
 
     /**
-     * Returns stashed token or null if hasn't.
+     * Returns stashed token or null if there isn't one.
      *
      * @return array|null
      *
@@ -305,7 +316,7 @@ class Lexer
     }
 
     /**
-     * Returns deferred token or null if hasn't.
+     * Returns deferred token or null if there isn't one.
      *
      * @return array|null
      *
@@ -353,17 +364,20 @@ class Lexer
      * Scans for token with specified regex.
      *
      * @param string $regex Regular expression
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanInput(string $regex, string $type)
     {
         if (!preg_match($regex, $this->line, $matches)) {
             return null;
         }
+
+        assert($matches[1] !== '');
 
         $token = $this->takeToken($type, $matches[1]);
         $this->consumeLine();
@@ -375,11 +389,12 @@ class Lexer
      * Scans for token with specified keywords.
      *
      * @param string $keywords Keywords (separated by "|")
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      *
      * @deprecated
      */
@@ -421,7 +436,9 @@ class Lexer
     /**
      * @param list<string> $keywords
      *
-     * @phpstan-return TToken|null
+     * @phpstan-param TTokenType $type
+     *
+     * @phpstan-return TTitleToken|null
      */
     private function scanTitleLine(array $keywords, string $type): ?array
     {
@@ -449,7 +466,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanEOS()
     {
@@ -463,7 +480,7 @@ class Lexer
     /**
      * Returns a regex matching the keywords for the provided type.
      *
-     * @param string $type Keyword type
+     * @phpstan-param 'Step'|TTitleKeyword|TStepKeyword $type Keyword type
      *
      * @return string
      *
@@ -502,7 +519,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanFeature()
     {
@@ -529,7 +546,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanBackground()
     {
@@ -549,7 +566,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanScenario()
     {
@@ -570,7 +587,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanOutline()
     {
@@ -591,7 +608,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanExamples()
     {
@@ -611,7 +628,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStepToken|null
      */
     protected function scanStep()
     {
@@ -636,6 +653,7 @@ class Lexer
         $text = ltrim(mb_substr($trimmedLine, mb_strlen($matchedKeyword)));
 
         $nodeKeyword = $this->compatibilityMode->shouldRemoveStepKeywordSpace() ? trim($matchedKeyword) : $matchedKeyword;
+        assert($nodeKeyword !== '');
 
         $token = $this->takeToken('Step', $nodeKeyword);
         $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
@@ -652,7 +670,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanPyStringOp()
     {
@@ -689,7 +707,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanPyStringContent()
     {
@@ -699,7 +717,7 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+        $token['value'] = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
 
         return $token;
     }
@@ -709,7 +727,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTableRowToken|null
      */
     protected function scanTableRow()
     {
@@ -749,7 +767,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTagToken|null
      */
     protected function scanTags()
     {
@@ -779,7 +797,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanLanguage()
     {
@@ -816,7 +834,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanComment()
     {
@@ -840,7 +858,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanNewline()
     {
@@ -859,7 +877,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return TStringValueToken|TNullValueToken
      */
     protected function scanText()
     {
@@ -873,6 +891,8 @@ class Lexer
      * Returns step type keyword (Given, When, Then, etc.).
      *
      * @param string $native Step keyword in provided language
+     *
+     * @phpstan-return TStepKeyword
      */
     private function getStepKeywordType(string $native): string
     {
@@ -901,6 +921,8 @@ class Lexer
 
     /**
      * @param list<string> $keywords
+     *
+     * @phpstan-param TStepKeyword $type
      */
     private function addStepKeywordTypes(array $keywords, string $type): void
     {
