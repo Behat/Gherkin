@@ -57,4 +57,16 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
     {
         return $this->keyword;
     }
+
+    /**
+     * @param array<int, list<string>> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     */
+    public function withTable(array $table): self
+    {
+        return new self(
+            $table,
+            $this->keyword,
+            $this->tags,
+        );
+    }
 }
