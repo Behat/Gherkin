@@ -177,7 +177,7 @@ class NDJsonAstParser
     {
         return array_map(
             static fn (array $item) => new StepNode(
-                trim($item['keyword']),
+                $item['keyword'],
                 $item['text'],
                 self::getStepArguments($item),
                 $item['location']['line'],

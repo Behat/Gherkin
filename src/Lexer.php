@@ -633,9 +633,9 @@ class Lexer
 
         $text = ltrim(mb_substr($trimmedLine, mb_strlen($matchedKeyword)));
 
-        // cucumber/gherkin reports the keyword text with its final space when it is part of it, but we keep trimming it for BC reasons
-        // TODO remove the trimming when opting for the cucumber-compatible parsing in the future
-        $token = $this->takeToken('Step', trim($matchedKeyword));
+        $nodeKeyword = $this->compatibilityMode->shouldRemoveStepKeywordSpace() ? trim($matchedKeyword) : $matchedKeyword;
+
+        $token = $this->takeToken('Step', $nodeKeyword);
         $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
         $token['text'] = $text;
 

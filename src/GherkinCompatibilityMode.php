@@ -24,6 +24,17 @@ enum GherkinCompatibilityMode: string
     /**
      * @internal
      */
+    public function shouldRemoveStepKeywordSpace(): bool
+    {
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
+
+    /**
+     * @internal
+     */
     public function shouldRemoveFeatureDescriptionPadding(): bool
     {
         return match ($this) {
