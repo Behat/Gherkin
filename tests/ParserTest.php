@@ -75,9 +75,8 @@ final class ParserTest extends TestCase
         $this->assertSame([], $feature2->getTags());
     }
 
-    public function testParserIgnoresInvalidLanguage(): void
+    public function testParserIgnoresInvalidLanguageInLegacyMode(): void
     {
-        // TODO skip this test for the compatibility mode with cucumber/gherkin
         $feature = $this->createGherkinParser()->parse(
             <<<'FEATURE'
             #language:no-such
@@ -93,9 +92,8 @@ final class ParserTest extends TestCase
         $this->assertCount(1, $feature->getScenarios());
     }
 
-    public function testParserIgnoresInvalidLanguageWithDialectProvider(): void
+    public function testParserIgnoresInvalidLanguageInLegacyModeWithDialectProvider(): void
     {
-        // TODO skip this test for the compatibility mode with cucumber/gherkin
         $feature = $this->createGherkinParser(new Lexer(new CucumberDialectProvider()))->parse(
             <<<'FEATURE'
             #language:no-such

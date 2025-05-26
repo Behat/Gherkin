@@ -82,7 +82,6 @@ class CompatibilityTest extends TestCase
             'invalid_language.feature' => 'Invalid language is silently ignored',
         ],
         'gherkin-32' => [
-            'invalid_language.feature' => 'Invalid language is silently ignored',
         ],
     ];
 

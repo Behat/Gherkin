@@ -31,4 +31,15 @@ enum GherkinCompatibilityMode: string
             default => false,
         };
     }
+
+    /**
+     * @internal
+     */
+    public function shouldIgnoreInvalidLanguage(): bool
+    {
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
 }
