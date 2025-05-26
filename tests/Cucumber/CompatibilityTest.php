@@ -14,7 +14,6 @@ use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
-use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -101,7 +100,7 @@ class CompatibilityTest extends TestCase
 
     private Parser $parser;
 
-    private CucumberNDJsonAstLoader $loader;
+    private NDJsonAstParser $ndJsonAstParser;
 
     private static ?StepNodeComparator $stepNodeComparator = null;
 
@@ -132,7 +131,7 @@ class CompatibilityTest extends TestCase
         $arrKeywords = include __DIR__ . '/../../i18n.php';
         $lexer = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
         $this->parser = new Parser($lexer);
-        $this->loader = new CucumberNDJsonAstLoader();
+        $this->ndJsonAstParser = new NDJsonAstParser();
     }
 
     #[DataProvider('goodCucumberFeatures')]
@@ -148,7 +147,7 @@ class CompatibilityTest extends TestCase
 
         $gherkinFile = $file->getPathname();
         $actual = $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
-        $cucumberFeatures = $this->loader->load($gherkinFile . '.ast.ndjson');
+        $cucumberFeatures = $this->ndJsonAstParser->load($gherkinFile . '.ast.ndjson');
 
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
