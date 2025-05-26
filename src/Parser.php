@@ -675,7 +675,7 @@ class Parser implements ParserInterface
             $text = match ($token['type']) {
                 'Newline' => '',
                 'Text' => $token['value'],
-                default => throw new LogicException('Unexpected token type: ' . $token['type'])
+                default => throw new LogicException('Unexpected token type: ' . $token['type']),
             };
 
             if ($this->compatibilityMode->shouldRemoveDescriptionPadding()) {

@@ -1,0 +1,1 @@
+{"source":{"data":"Feature: Examples keyword in feature description\n    The description can contain some example content\n    Examples:\n    | any   |\n    | thing |\n","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/examples_keyword_in_feature_description.feature"}}
