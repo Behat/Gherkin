@@ -524,7 +524,7 @@ class Parser implements ParserInterface
     /**
      * Parses tags.
      *
-     * @phpstan-return TParsedExpressionResult
+     * @return string
      */
     protected function parseTags()
     {
