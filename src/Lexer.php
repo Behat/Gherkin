@@ -730,7 +730,11 @@ class Lexer
         array_pop($rawColumns);
 
         $token = $this->takeToken('TableRow');
-        $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
+        if ($this->compatibilityMode->shouldSupportNewlineEscapeSequenceInTableCell()) {
+            $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\n', '\\\\'], ['|', "\n", '\\'], $column), ' '), $rawColumns);
+        } else {
+            $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
+        }
         $token['columns'] = $columns;
 
         $this->consumeLine();
