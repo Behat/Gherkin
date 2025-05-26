@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
@@ -72,6 +73,42 @@ final class ParserTest extends TestCase
 
         $this->assertInstanceOf(FeatureNode::class, $feature2);
         $this->assertSame([], $feature2->getTags());
+    }
+
+    public function testParserIgnoresInvalidLanguage(): void
+    {
+        // TODO skip this test for the compatibility mode with cucumber/gherkin
+        $feature = $this->createGherkinParser()->parse(
+            <<<'FEATURE'
+            #language:no-such
+
+            Feature: Minimal
+
+              Scenario: minimalistic
+                Given the minimalism
+            FEATURE,
+        );
+
+        $this->assertInstanceOf(FeatureNode::class, $feature);
+        $this->assertCount(1, $feature->getScenarios());
+    }
+
+    public function testParserIgnoresInvalidLanguageWithDialectProvider(): void
+    {
+        // TODO skip this test for the compatibility mode with cucumber/gherkin
+        $feature = $this->createGherkinParser(new Lexer(new CucumberDialectProvider()))->parse(
+            <<<'FEATURE'
+            #language:no-such
+
+            Feature: Minimal
+
+              Scenario: minimalistic
+                Given the minimalism
+            FEATURE,
+        );
+
+        $this->assertInstanceOf(FeatureNode::class, $feature);
+        $this->assertCount(1, $feature->getScenarios());
     }
 
     public function testSingleCharacterStepSupport(): void

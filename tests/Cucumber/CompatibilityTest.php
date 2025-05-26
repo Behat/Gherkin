@@ -10,9 +10,9 @@
 
 namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\GherkinCompatibilityMode;
-use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
@@ -128,8 +128,7 @@ class CompatibilityTest extends TestCase
 
     protected function setUp(): void
     {
-        $arrKeywords = include __DIR__ . '/../../i18n.php';
-        $lexer = new Lexer(new Keywords\ArrayKeywords($arrKeywords));
+        $lexer = new Lexer(new CucumberDialectProvider());
         $this->parser = new Parser($lexer);
         $this->ndJsonAstParser = new NDJsonAstParser();
     }
