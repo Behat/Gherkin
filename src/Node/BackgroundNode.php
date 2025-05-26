@@ -27,6 +27,7 @@ class BackgroundNode implements ScenarioLikeInterface
         private readonly array $steps,
         private readonly string $keyword,
         private readonly int $line,
+        private readonly ?string $description = null,
     ) {
     }
 
@@ -48,6 +49,11 @@ class BackgroundNode implements ScenarioLikeInterface
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     /**

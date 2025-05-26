@@ -42,6 +42,7 @@ class OutlineNode implements ScenarioInterface
         array|ExampleTableNode $tables,
         private readonly string $keyword,
         private readonly int $line,
+        private readonly ?string $description = null,
     ) {
         $this->tables = is_array($tables) ? $tables : [$tables];
     }
@@ -64,6 +65,11 @@ class OutlineNode implements ScenarioInterface
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function getTags()
@@ -104,7 +110,7 @@ class OutlineNode implements ScenarioInterface
     /**
      * Builds and returns examples table for the outline.
      *
-     * WARNING: it returns a merged table with tags lost.
+     * WARNING: it returns a merged table with tags, names & descriptions lost.
      *
      * @return ExampleTableNode
      *
@@ -181,6 +187,7 @@ class OutlineNode implements ScenarioInterface
             $exampleTables,
             $this->keyword,
             $this->line,
+            $this->description,
         );
     }
 
