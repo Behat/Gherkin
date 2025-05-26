@@ -11,10 +11,10 @@
 namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Keywords;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\CucumberNDJsonAstLoader;
-use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,6 +28,9 @@ use Tests\Behat\Gherkin\Filesystem;
  * Tests the parser against the upstream cucumber/gherkin test data.
  *
  * @group cucumber-compatibility
+ *
+ * @phpstan-type TCucumberParsingTestCase array{mode: GherkinCompatibilityMode, file: SplFileInfo}
+ * @phpstan-type TKnownIncompatibilityMap array<value-of<GherkinCompatibilityMode>, array<string,string>>
  */
 class CompatibilityTest extends TestCase
 {
@@ -35,37 +38,65 @@ class CompatibilityTest extends TestCase
     private const EXTRA_TESTDATA_PATH = __DIR__ . '/extra_testdata';
 
     /**
-     * @var array<string, string>
+     * @phpstan-var TKnownIncompatibilityMap
      */
     private array $notParsingCorrectly = [
-        'complex_background.feature' => 'Rule keyword not supported',
-        'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
-        'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
-        'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
-        'rule.feature' => 'Rule keyword not supported',
-        'rule_with_tag.feature' => 'Rule keyword not supported',
-        'tags.feature' => 'Rule keyword not supported',
-        'descriptions.feature' => 'Examples table descriptions not supported',
-        'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
-        'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
-        'padded_example.feature' => 'Table padding is not trimmed as aggressively',
-        'spaces_in_language.feature' => 'Whitespace not supported around language selector',
-        'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
-        'incomplete_background_2.feature' => 'Background descriptions not supported',
+        'legacy' => [
+            'complex_background.feature' => 'Rule keyword not supported',
+            'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+            'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
+            'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
+            'rule.feature' => 'Rule keyword not supported',
+            'rule_with_tag.feature' => 'Rule keyword not supported',
+            'tags.feature' => 'Rule keyword not supported',
+            'descriptions.feature' => 'Examples table descriptions not supported',
+            'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
+            'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
+            'padded_example.feature' => 'Table padding is not trimmed as aggressively',
+            'spaces_in_language.feature' => 'Whitespace not supported around language selector',
+            'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
+            'incomplete_background_2.feature' => 'Background descriptions not supported',
+        ],
+        'gherkin-32' => [
+            'complex_background.feature' => 'Rule keyword not supported',
+            'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+            'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
+            'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
+            'rule.feature' => 'Rule keyword not supported',
+            'rule_with_tag.feature' => 'Rule keyword not supported',
+            'tags.feature' => 'Rule keyword not supported',
+            'descriptions.feature' => 'Examples table descriptions not supported',
+            'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
+            'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
+            'padded_example.feature' => 'Table padding is not trimmed as aggressively',
+            'spaces_in_language.feature' => 'Whitespace not supported around language selector',
+            'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
+            'incomplete_background_2.feature' => 'Background descriptions not supported',
+        ],
     ];
 
     /**
-     * @var array<string, string>
+     * @phpstan-var TKnownIncompatibilityMap
      */
     private array $parsedButShouldNotBe = [
-        'invalid_language.feature' => 'Invalid language is silently ignored',
+        'legacy' => [
+            'invalid_language.feature' => 'Invalid language is silently ignored',
+        ],
+        'gherkin-32' => [
+            'invalid_language.feature' => 'Invalid language is silently ignored',
+        ],
     ];
 
     /**
-     * @var array<string, string>
+     * @phpstan-var TKnownIncompatibilityMap
      */
     private array $deprecatedInsteadOfParseError = [
-        'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
+        'legacy' => [
+            'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
+        ],
+        'gherkin-32' => [
+            'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
+        ],
     ];
 
     private Parser $parser;
@@ -74,10 +105,14 @@ class CompatibilityTest extends TestCase
 
     private static ?StepNodeComparator $stepNodeComparator = null;
 
+    private static ?FeatureNodeComparator $featureNodeComparator = null;
+
     public static function setUpBeforeClass(): void
     {
         self::$stepNodeComparator = new StepNodeComparator();
         Factory::getInstance()->register(self::$stepNodeComparator);
+        self::$featureNodeComparator = new FeatureNodeComparator();
+        Factory::getInstance()->register(self::$featureNodeComparator);
     }
 
     public static function tearDownAfterClass(): void
@@ -85,6 +120,10 @@ class CompatibilityTest extends TestCase
         if (self::$stepNodeComparator !== null) {
             Factory::getInstance()->unregister(self::$stepNodeComparator);
             self::$stepNodeComparator = null;
+        }
+        if (self::$featureNodeComparator !== null) {
+            Factory::getInstance()->unregister(self::$featureNodeComparator);
+            self::$featureNodeComparator = null;
         }
     }
 
@@ -97,11 +136,15 @@ class CompatibilityTest extends TestCase
     }
 
     #[DataProvider('goodCucumberFeatures')]
-    public function testFeaturesParseTheSameAsCucumber(SplFileInfo $file): void
+    public function testFeaturesParseTheSameAsCucumber(GherkinCompatibilityMode $mode, SplFileInfo $file): void
     {
-        if (isset($this->notParsingCorrectly[$file->getFilename()])) {
-            $this->markTestIncomplete($this->notParsingCorrectly[$file->getFilename()]);
+        if (isset($this->notParsingCorrectly[$mode->value][$file->getFilename()])) {
+            $this->markTestIncomplete($this->notParsingCorrectly[$mode->value][$file->getFilename()]);
         }
+
+        assert(self::$featureNodeComparator instanceof FeatureNodeComparator);
+        self::$featureNodeComparator->setGherkinCompatibilityMode($mode);
+        $this->parser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
         $actual = $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
@@ -110,23 +153,26 @@ class CompatibilityTest extends TestCase
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
 
         $this->assertEquals(
-            $this->normaliseFeature($expected),
-            $this->normaliseFeature($actual),
-            Filesystem::readFile($gherkinFile)
+            $expected,
+            $actual,
+            Filesystem::readFile($gherkinFile),
         );
     }
 
     #[DataProvider('badCucumberFeatures')]
-    public function testBadFeaturesDoNotParse(SplFileInfo $file): void
+    public function testBadFeaturesDoNotParse(GherkinCompatibilityMode $mode, SplFileInfo $file): void
     {
-        if (isset($this->parsedButShouldNotBe[$file->getFilename()])) {
-            $this->markTestIncomplete($this->parsedButShouldNotBe[$file->getFilename()]);
+        if (isset($this->parsedButShouldNotBe[$mode->value][$file->getFilename()])) {
+            $this->markTestIncomplete($this->parsedButShouldNotBe[$mode->value][$file->getFilename()]);
         }
 
         $gherkinFile = $file->getPathname();
+        $this->parser->setGherkinCompatibilityMode($mode);
 
-        if (isset($this->deprecatedInsteadOfParseError[$file->getFilename()])) {
-            $this->expectDeprecationErrorMatches($this->deprecatedInsteadOfParseError[$file->getFilename()]);
+        if (isset($this->deprecatedInsteadOfParseError[$mode->value][$file->getFilename()])) {
+            $this->expectDeprecationErrorMatches(
+                $this->deprecatedInsteadOfParseError[$mode->value][$file->getFilename()],
+            );
         } else {
             // Note that the exception message is not part of compatibility testing and therefore cannot be checked.
             $this->expectException(ParserException::class);
@@ -136,7 +182,7 @@ class CompatibilityTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{file: SplFileInfo}>
+     * @phpstan-return iterable<string, TCucumberParsingTestCase>
      */
     public static function goodCucumberFeatures(): iterable
     {
@@ -145,7 +191,7 @@ class CompatibilityTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{file: SplFileInfo}>
+     * @phpstan-return iterable<string, TCucumberParsingTestCase>
      */
     public static function badCucumberFeatures(): iterable
     {
@@ -154,7 +200,7 @@ class CompatibilityTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{file: SplFileInfo}>
+     * @phpstan-return iterable<string, TCucumberParsingTestCase>
      */
     private static function getCucumberFeatures(string $folder): iterable
     {
@@ -164,35 +210,14 @@ class CompatibilityTest extends TestCase
          */
         foreach ($fileIterator as $file) {
             if ($file->isFile() && $file->getExtension() === 'feature') {
-                yield $file->getFilename() => ['file' => $file];
+                foreach (GherkinCompatibilityMode::cases() as $mode) {
+                    yield $file->getFilename() . ' (' . $mode->value . ')' => [
+                        'mode' => $mode,
+                        'file' => $file,
+                    ];
+                }
             }
         }
-    }
-
-    /**
-     * Remove features that aren't present in the cucumber source.
-     */
-    private function normaliseFeature(?FeatureNode $feature): ?FeatureNode
-    {
-        if (is_null($feature)) {
-            return null;
-        }
-
-        return new FeatureNode(
-            $feature->getTitle(),
-            // We currently handle whitespace in feature descriptions differently to cucumber
-            // https://github.com/Behat/Gherkin/issues/209
-            // We need to be able to ignore that difference so that we can still run cucumber tests that
-            // include a description but are covering other features.
-            $feature->getDescription() === null ? null : preg_replace('/^\s+/m', '', $feature->getDescription()),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $feature->getScenarios(),
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            $feature->getFile(),
-            $feature->getLine(),
-        );
     }
 
     private function expectDeprecationErrorMatches(string $message): void
