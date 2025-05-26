@@ -25,6 +25,7 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use LogicException;
 
 /**
  * Gherkin parser.
@@ -234,8 +235,7 @@ class Parser implements ParserInterface
     {
         $token = $this->expectTokenType('Feature');
 
-        $title = trim($token['value'] ?? '');
-        $description = null;
+        ['title' => $title, 'description' => $description] = $this->parseTitleAndDescription($token);
         $tags = $this->popTags();
         $background = null;
         $scenarios = [];
@@ -248,25 +248,7 @@ class Parser implements ParserInterface
         while ($this->predictTokenType() !== 'EOS') {
             $node = $this->parseExpression();
 
-            if (is_string($node)) {
-                if ($this->compatibilityMode->shouldRemoveFeatureDescriptionPadding()) {
-                    $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                    $description .= ($description !== null ? "\n" : '') . $text;
-                    continue;
-                }
-
-                if ($node === "\n" && $description === null) {
-                    // Ignore empty lines before the start of the description
-                    continue;
-                }
-
-                // It must be part of the feature description (text & newlines later in the document will be consumed as
-                // part of parsing Background / Scenario before execution returns to this loop).
-                $description .= $node;
-                if ($node !== "\n") {
-                    // Text nodes do not end with a newline, add one. The final trailing newline is rtrimmed below.
-                    $description .= "\n";
-                }
+            if ($node === "\n") {
                 continue;
             }
 
@@ -293,8 +275,8 @@ class Parser implements ParserInterface
         }
 
         return new FeatureNode(
-            rtrim($title) ?: null,
-            rtrim($description ?? '') ?: null,
+            $title,
+            $description,
             $tags,
             $background,
             $scenarios,
@@ -316,9 +298,9 @@ class Parser implements ParserInterface
     {
         $token = $this->expectTokenType('Background');
 
-        $title = trim($token['value'] ?? '');
         $keyword = $token['keyword'];
         $line = $token['line'];
+        ['title' => $title, 'description' => $description] = $this->parseTitleAndDescription($token);
 
         if (count($this->popTags()) !== 0) {
             // Should not be possible to happen, parseTags should have already picked this up.
@@ -329,16 +311,14 @@ class Parser implements ParserInterface
         $steps = [];
         $allowedTokenTypes = ['Step', 'Newline', 'Text', 'Comment'];
         while (in_array($this->predictTokenType(), $allowedTokenTypes)) {
+            // NB: Technically, we do not support `Text` inside this loop. However, there is no situation where `Text`
+            // can be a direct child or immediately following a Scenario. Therefore, we consume it here as the most
+            // logical context for throwing an UnexpectedParserNodeException.
+
             $node = $this->parseExpression();
 
             if ($node instanceof StepNode) {
                 $steps[] = $this->normalizeStepNodeKeywordType($node, $steps);
-                continue;
-            }
-
-            if ($steps === [] && is_string($node)) {
-                $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                $title .= "\n" . $text;
                 continue;
             }
 
@@ -349,7 +329,7 @@ class Parser implements ParserInterface
             throw new UnexpectedParserNodeException('Step', $node, $this->file);
         }
 
-        return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line, null);
+        return new BackgroundNode($title, $steps, $keyword, $line, $description);
     }
 
     /**
@@ -381,18 +361,20 @@ class Parser implements ParserInterface
      */
     private function parseScenarioOrOutlineBody(array $token): OutlineNode|ScenarioNode
     {
-        $title = trim($token['value'] ?? '');
+        ['title' => $title, 'description' => $description] = $this->parseTitleAndDescription($token);
         $tags = $this->popTags();
         $keyword = $token['keyword'];
 
         /** @var list<ExampleTableNode> $examples */
         $examples = [];
         $line = $token['line'];
-
-        // Parse description, steps and examples
         $steps = [];
 
         while (in_array($nextTokenType = $this->predictTokenType(), ['Step', 'Examples', 'Newline', 'Text', 'Comment', 'Tag'])) {
+            // NB: Technically, we do not support `Text` inside this loop. However, there is no situation where `Text`
+            // can be a direct child or immediately following a Scenario. Therefore, we consume it here as the most
+            // logical context for throwing an UnexpectedParserNodeException.
+
             if ($nextTokenType === 'Comment') {
                 $this->lexer->skipPredictedToken();
                 continue;
@@ -408,13 +390,6 @@ class Parser implements ParserInterface
             }
 
             $node = $this->parseExpression();
-
-            if ($steps === [] && is_string($node)) {
-                // Free text is only allowed before the first step (or when parsing Examples: which is done elsewhere)
-                $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                $title .= "\n" . $text;
-                continue;
-            }
 
             if ($node === "\n") {
                 continue;
@@ -444,10 +419,10 @@ class Parser implements ParserInterface
         }
 
         if ($examples !== []) {
-            return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line, null);
+            return new OutlineNode($title, $tags, $steps, $examples, $keyword, $line, $description);
         }
 
-        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line, null);
+        return new ScenarioNode($title, $tags, $steps, $keyword, $line, $description);
     }
 
     /**
@@ -519,10 +494,11 @@ class Parser implements ParserInterface
         $token = $this->expectTokenType('Examples');
         $keyword = $token['keyword'];
         $tags = empty($this->tags) ? [] : $this->popTags();
+        ['title' => $title, 'description' => $description] = $this->parseTitleAndDescription($token);
         $table = $this->parseTableRows();
 
         try {
-            return new ExampleTableNode($table, $keyword, $tags, null, null);
+            return new ExampleTableNode($table, $keyword, $tags, $title, $description);
         } catch (NodeException $e) {
             $this->rethrowNodeException($e);
         }
@@ -677,6 +653,64 @@ class Parser implements ParserInterface
         }
 
         return $table;
+    }
+
+    /**
+     * @param TToken $keywordToken
+     *
+     * @return array{title:string|null, description:string|null}
+     */
+    private function parseTitleAndDescription(array $keywordToken): array
+    {
+        $originalTitle = trim($keywordToken['value'] ?? '');
+        $textLines = [];
+
+        while (in_array($predicted = $this->predictTokenType(), ['Newline', 'Text', 'Comment'])) {
+            $token = $this->expectTokenType($predicted);
+
+            if ($token['type'] === 'Comment') {
+                continue;
+            }
+
+            $text = match ($token['type']) {
+                'Newline' => '',
+                'Text' => $token['value'],
+                default => throw new LogicException('Unexpected token type: ' . $token['type'])
+            };
+
+            if ($this->compatibilityMode->shouldRemoveDescriptionPadding()) {
+                $text = preg_replace('/^\s{0,' . ($keywordToken['indent'] + 2) . '}|\s*$/', '', $text);
+            }
+
+            $textLines[] = $text;
+        }
+
+        if ($this->compatibilityMode->allowAllNodeDescriptions()) {
+            // Gherkin-compatible format - title is the original keyword value, description is all following lines.
+            // Blank lines between title and description are removed, as are any after the description.
+            return [
+                'title' => $originalTitle ?: null,
+                'description' => trim(implode("\n", $textLines), "\n") ?: null,
+            ];
+        }
+
+        if ($keywordToken['type'] === 'Feature') {
+            // Legacy format always supported a title & description for a Feature
+            // But kept blank lines between title and description as the start of the description.
+            return [
+                'title' => $originalTitle ?: null,
+                'description' => rtrim(implode("\n", $textLines), "\n") ?: null,
+            ];
+        }
+
+        // Legacy format for nodes without description support - the full text block (title & description) is parsed
+        // as the title.
+        array_unshift($textLines, $originalTitle);
+
+        return [
+            'title' => rtrim(implode("\n", $textLines)) ?: null,
+            'description' => null,
+        ];
     }
 
     /**

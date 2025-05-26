@@ -35,11 +35,22 @@ enum GherkinCompatibilityMode: string
     /**
      * @internal
      */
-    public function shouldRemoveFeatureDescriptionPadding(): bool
+    public function shouldRemoveDescriptionPadding(): bool
     {
         return match ($this) {
             self::LEGACY => true,
             default => false,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function allowAllNodeDescriptions(): bool
+    {
+        return match ($this) {
+            self::LEGACY => false,
+            default => true,
         };
     }
 
