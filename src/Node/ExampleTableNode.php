@@ -29,6 +29,8 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
         array $table,
         private readonly string $keyword,
         private readonly array $tags = [],
+        private readonly ?string $name = null,
+        private readonly ?string $description = null,
     ) {
         parent::__construct($table);
     }
@@ -41,6 +43,16 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
     public function getNodeType()
     {
         return 'ExampleTable';
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function getTags()
@@ -67,6 +79,8 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
             $table,
             $this->keyword,
             $this->tags,
+            $this->name,
+            $this->description,
         );
     }
 }

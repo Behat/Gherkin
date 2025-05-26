@@ -349,7 +349,7 @@ class Parser implements ParserInterface
             throw new UnexpectedParserNodeException('Step', $node, $this->file);
         }
 
-        return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line);
+        return new BackgroundNode(rtrim($title) ?: null, $steps, $keyword, $line, null);
     }
 
     /**
@@ -444,10 +444,10 @@ class Parser implements ParserInterface
         }
 
         if ($examples !== []) {
-            return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line);
+            return new OutlineNode(rtrim($title) ?: null, $tags, $steps, $examples, $keyword, $line, null);
         }
 
-        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line);
+        return new ScenarioNode(rtrim($title) ?: null, $tags, $steps, $keyword, $line, null);
     }
 
     /**
@@ -522,7 +522,7 @@ class Parser implements ParserInterface
         $table = $this->parseTableRows();
 
         try {
-            return new ExampleTableNode($table, $keyword, $tags);
+            return new ExampleTableNode($table, $keyword, $tags, null, null);
         } catch (NodeException $e) {
             $this->rethrowNodeException($e);
         }
