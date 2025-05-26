@@ -51,7 +51,13 @@ class Parser implements ParserInterface
 
     public function __construct(
         private readonly Lexer $lexer,
+        private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY,
     ) {
+    }
+
+    public function setGherkinCompatibilityMode(GherkinCompatibilityMode $mode): void
+    {
+        $this->compatibilityMode = $mode;
     }
 
     public function parse(string $input, ?string $file = null)
@@ -210,8 +216,24 @@ class Parser implements ParserInterface
             $node = $this->parseExpression();
 
             if (is_string($node)) {
-                $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
-                $description .= ($description !== null ? "\n" : '') . $text;
+                if ($this->compatibilityMode->shouldRemoveFeatureDescriptionPadding()) {
+                    $text = preg_replace('/^\s{0,' . ($token['indent'] + 2) . '}|\s*$/', '', $node);
+                    $description .= ($description !== null ? "\n" : '') . $text;
+                    continue;
+                }
+
+                if ($node === "\n" && $description === null) {
+                    // Ignore empty lines before the start of the description
+                    continue;
+                }
+
+                // It must be part of the feature description (text & newlines later in the document will be consumed as
+                // part of parsing Background / Scenario before execution returns to this loop).
+                $description .= $node;
+                if ($node !== "\n") {
+                    // Text nodes do not end with a newline, add one. The final trailing newline is rtrimmed below.
+                    $description .= "\n";
+                }
                 continue;
             }
 
