@@ -10,11 +10,19 @@
 
 namespace Tests\Behat\Gherkin\Cucumber;
 
+use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Node\StepNode;
 use SebastianBergmann\Comparator\ObjectComparator;
 
 final class StepNodeComparator extends ObjectComparator
 {
+    private GherkinCompatibilityMode $compatibilityMode;
+
+    public function setGherkinCompatibilityMode(GherkinCompatibilityMode $mode): void
+    {
+        $this->compatibilityMode = $mode;
+    }
+
     public function accepts(mixed $expected, mixed $actual): bool
     {
         return $expected instanceof StepNode && $actual instanceof StepNode;
@@ -32,6 +40,10 @@ final class StepNodeComparator extends ObjectComparator
         // test data.
         // cucumber/gherkin has the equivalent concept in their pickle steps instead.
         unset($array['keywordType']);
+
+        if ($this->compatibilityMode->shouldRemoveStepKeywordSpace()) {
+            $array['keyword'] = trim($array['keyword']);
+        }
 
         return $array;
     }

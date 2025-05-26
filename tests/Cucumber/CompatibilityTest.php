@@ -139,7 +139,9 @@ class CompatibilityTest extends TestCase
         }
 
         assert(self::$featureNodeComparator instanceof FeatureNodeComparator);
+        assert(self::$stepNodeComparator instanceof StepNodeComparator);
         self::$featureNodeComparator->setGherkinCompatibilityMode($mode);
+        self::$stepNodeComparator->setGherkinCompatibilityMode($mode);
         $this->parser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
