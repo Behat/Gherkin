@@ -34,11 +34,13 @@ use Behat\Gherkin\Node\TableNode;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
+ * @final since 4.15.0
+ *
  * @phpstan-import-type TToken from Lexer
  *
  * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
  */
-class Parser
+class Parser implements ParserInterface
 {
     private string $input;
     private ?string $file = null;
@@ -58,16 +60,6 @@ class Parser
         $this->compatibilityMode = $mode;
     }
 
-    /**
-     * Parses input & returns features array.
-     *
-     * @param string $input Gherkin string document
-     * @param string|null $file File name
-     *
-     * @return FeatureNode|null
-     *
-     * @throws ParserException
-     */
     public function parse(string $input, ?string $file = null)
     {
         $this->input = $input;
@@ -555,7 +547,7 @@ class Parser
     /**
      * Parses tags.
      *
-     * @phpstan-return TParsedExpressionResult
+     * @return string
      */
     protected function parseTags()
     {

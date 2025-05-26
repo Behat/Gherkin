@@ -12,7 +12,7 @@ namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Parser;
+use Behat\Gherkin\ParserInterface;
 
 /**
  * Gherkin *.feature files loader.
@@ -22,7 +22,7 @@ use Behat\Gherkin\Parser;
 class GherkinFileLoader extends AbstractFileLoader
 {
     /**
-     * @var Parser
+     * @var ParserInterface
      */
     protected $parser;
     /**
@@ -30,13 +30,7 @@ class GherkinFileLoader extends AbstractFileLoader
      */
     protected $cache;
 
-    /**
-     * Initializes loader.
-     *
-     * @param Parser $parser Parser
-     * @param CacheInterface|null $cache Cache layer
-     */
-    public function __construct(Parser $parser, ?CacheInterface $cache = null)
+    public function __construct(ParserInterface $parser, ?CacheInterface $cache = null)
     {
         $this->parser = $parser;
         $this->cache = $cache;

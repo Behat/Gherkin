@@ -14,6 +14,8 @@ namespace Behat\Gherkin\Node;
  * Represents Gherkin Scenario.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
 {

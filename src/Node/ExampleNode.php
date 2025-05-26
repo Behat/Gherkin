@@ -14,6 +14,8 @@ namespace Behat\Gherkin\Node;
  * Represents Gherkin Outline Example.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class ExampleNode implements ScenarioInterface, NamedScenarioInterface
 {
@@ -132,6 +134,11 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
         return $this->outlineTitle;
     }
 
+    /**
+     * @todo Return type should become `string` in 5.0 when the class is actually `final`
+     *
+     * @phpstan-ignore return.unusedType
+     */
     public function getName(): ?string
     {
         return "{$this->replaceTextTokens($this->outlineTitle ?? '')} #{$this->index}";

@@ -18,6 +18,8 @@ use function strlen;
  * Represents Gherkin Feature.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
 {
