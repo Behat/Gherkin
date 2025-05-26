@@ -55,6 +55,7 @@ class CompatibilityTest extends TestCase
             'spaces_in_language.feature' => 'Whitespace not supported around language selector',
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
             'incomplete_background_2.feature' => 'Background descriptions not supported',
+            'examples_keyword_in_background_description.feature' => 'Background descriptions not supported',
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',
