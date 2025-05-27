@@ -94,10 +94,8 @@ class GherkinFileLoader extends AbstractFileLoader
      */
     protected function parseFeature(string $path)
     {
-        $content = file_get_contents($path);
-
-        if ($content === false) {
-            throw new RuntimeException('Unable to read file: ' . $path);
+        if (($content = file_get_contents($path)) === false) {
+            throw new RuntimeException("Cannot load feature from file; file could not be read: $path");
         }
 
         return $this->parser->parse($content, $path);

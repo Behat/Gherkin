@@ -13,7 +13,6 @@ namespace Behat\Gherkin\Cache;
 use Behat\Gherkin\Exception\CacheException;
 use Behat\Gherkin\Node\FeatureNode;
 use Composer\InstalledVersions;
-use RuntimeException;
 
 /**
  * File cache.
@@ -31,7 +30,7 @@ class FileCache implements CacheInterface
     private static function getGherkinVersionHash(): string
     {
         $version = InstalledVersions::getVersion('behat/gherkin')
-            ?? throw new RuntimeException('Cannot detect behat/gherkin package version');
+            ?? throw new CacheException('Cannot detect behat/gherkin package version');
 
         // Composer version strings can contain arbitrary content so hash for filesystem safety
         return md5($version);

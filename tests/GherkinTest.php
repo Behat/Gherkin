@@ -18,9 +18,11 @@ use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\ParserInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class GherkinTest extends TestCase
 {
@@ -235,6 +237,20 @@ class GherkinTest extends TestCase
             'expectedResource' => 'example4.feature',
             'expectedFeatures' => [$feature1, $feature2, $feature3, $feature4],
         ];
+    }
+
+    public function testThatFileMustBeReadable(): void
+    {
+        $gherkin = new class($this->createMock(ParserInterface::class)) extends GherkinFileLoader {
+            public function parseInexistentFile(): void
+            {
+                $this->parseFeature('inexistent-file');
+            }
+        };
+
+        $this->expectExceptionObject(new RuntimeException('Cannot load feature from file; file could not be read: inexistent-file'));
+
+        $gherkin->parseInexistentFile();
     }
 
     protected function getLoaderMock(): MockObject&GherkinFileLoader
