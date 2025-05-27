@@ -38,6 +38,7 @@ use Behat\Gherkin\Node\TableNode;
  *
  * @final since 4.15.0
  *
+ * @phpstan-import-type TTokenType from Lexer
  * @phpstan-import-type TToken from Lexer
  * @phpstan-import-type TNullValueToken from Lexer
  * @phpstan-import-type TStringValueToken from Lexer
@@ -108,7 +109,7 @@ class Parser implements ParserInterface
     /**
      * Returns next token if it's type equals to expected.
      *
-     * @param string $type Token type
+     * @phpstan-param TTokenType $type
      *
      * @return array
      *
@@ -167,6 +168,8 @@ class Parser implements ParserInterface
      * Returns next token type without real input reading (prediction).
      *
      * @return string
+     *
+     * @phpstan-return TTokenType
      */
     protected function predictTokenType()
     {

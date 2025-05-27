@@ -240,15 +240,17 @@ class Lexer
     }
 
     /**
-     * Constructs token with specified parameters.
+     * Constructs a token with specified parameters.
+     *
+     * @template T of TTokenType
      *
      * @param string|null $value Token value
      *
-     * @phpstan-param TTokenType $type Token type
+     * @phpstan-param T $type Token type
      *
      * @return array
      *
-     * @phpstan-return ($value is non-empty-string ? TStringValueToken : TNullValueToken)
+     * @phpstan-return ($value is non-empty-string ? array{type: T, value: non-empty-string, line: int, deferred: bool} : array{type: T, value: null, line: int, deferred: bool})
      */
     public function takeToken(string $type, ?string $value = null)
     {
@@ -390,7 +392,7 @@ class Lexer
      *
      * @param string $keywords Keywords (separated by "|")
      *
-     * @phpstan-param TTokenType $type Expected token type
+     * @phpstan-param TTitleKeyword $type Expected token type
      *
      * @return array|null
      *
@@ -436,7 +438,7 @@ class Lexer
     /**
      * @param list<string> $keywords
      *
-     * @phpstan-param TTokenType $type
+     * @phpstan-param TTitleKeyword $type
      *
      * @phpstan-return TTitleToken|null
      */
