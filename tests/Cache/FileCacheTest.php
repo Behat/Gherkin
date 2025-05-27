@@ -51,7 +51,7 @@ class FileCacheTest extends TestCase
     public function testCacheAndRead(): void
     {
         $cache = $this->createCache();
-        $scenarios = [new ScenarioNode('Some scenario', [], [], '', 1)];
+        $scenarios = [new ScenarioNode('Some scenario', [], [], '', 1, 'Which covers some behaviour')];
         $feature = new FeatureNode('Some feature', 'some description', [], null, $scenarios, '', '', null, 1);
 
         $cache->write('some_feature', $feature);
