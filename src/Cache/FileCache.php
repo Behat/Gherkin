@@ -29,7 +29,8 @@ class FileCache implements CacheInterface
      */
     private static function getGherkinVersionHash(): string
     {
-        $version = InstalledVersions::getVersion('behat/gherkin');
+        $version = InstalledVersions::getVersion('behat/gherkin')
+            ?? throw new CacheException('Cannot detect behat/gherkin package version');
 
         // Composer version strings can contain arbitrary content so hash for filesystem safety
         return md5($version);
@@ -46,11 +47,11 @@ class FileCache implements CacheInterface
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::getGherkinVersionHash();
 
-        if (!is_dir($this->path)) {
-            @mkdir($this->path, 0777, true);
+        if (!is_dir($this->path) && !mkdir($this->path, 0777, true) && !is_dir($this->path)) {
+            throw new CacheException(sprintf('Cache directory "%s" could not be created.', $this->path));
         }
 
-        if (!is_writeable($this->path)) {
+        if (!is_writable($this->path)) {
             throw new CacheException(sprintf('Cache path "%s" is not writeable. Check your filesystem permissions or disable Gherkin file cache.', $this->path));
         }
     }
@@ -86,7 +87,11 @@ class FileCache implements CacheInterface
     public function read(string $path)
     {
         $cachePath = $this->getCachePathFor($path);
-        $feature = unserialize(file_get_contents($cachePath));
+        $feature = unserialize(
+            @file_get_contents($cachePath)
+                ?: throw new CacheException(sprintf('Cache could not be loaded from file "%s".', $path)),
+            ['allowed_classes' => true],
+        );
 
         if (!$feature instanceof FeatureNode) {
             throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath));

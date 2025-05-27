@@ -13,6 +13,7 @@ namespace Behat\Gherkin\Loader;
 use Behat\Gherkin\Cache\CacheInterface;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\ParserInterface;
+use RuntimeException;
 
 /**
  * Gherkin *.feature files loader.
@@ -72,7 +73,7 @@ class GherkinFileLoader extends AbstractFileLoader
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {
-            if ($this->cache->isFresh($path, filemtime($path))) {
+            if (($lastModified = filemtime($path)) !== false && $this->cache->isFresh($path, $lastModified)) {
                 $feature = $this->cache->read($path);
             } elseif (null !== $feature = $this->parseFeature($path)) {
                 $this->cache->write($path, $feature);
@@ -93,7 +94,9 @@ class GherkinFileLoader extends AbstractFileLoader
      */
     protected function parseFeature(string $path)
     {
-        $content = file_get_contents($path);
+        if (($content = @file_get_contents($path)) === false) {
+            throw new RuntimeException("Cannot load feature from file; file could not be read: $path");
+        }
 
         return $this->parser->parse($content, $path);
     }

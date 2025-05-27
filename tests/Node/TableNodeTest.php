@@ -44,7 +44,7 @@ class TableNodeTest extends TestCase
     public function testConstructorExpectsScalarCellValue(): void
     {
         $this->expectExceptionObject(
-            new NodeException("Table cell at row '0', col '0' is expected to be scalar, got array")
+            new NodeException("Table cell at row '0', column '0' is expected to be scalar, got array")
         );
 
         // @phpstan-ignore argument.type (we are explicitly testing an invalid instantiation)
