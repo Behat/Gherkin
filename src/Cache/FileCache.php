@@ -88,7 +88,7 @@ class FileCache implements CacheInterface
     {
         $cachePath = $this->getCachePathFor($path);
         $feature = unserialize(
-            file_get_contents($cachePath)
+            @file_get_contents($cachePath)
                 ?: throw new CacheException(sprintf('Cache could not be loaded from file "%s".', $path)),
             ['allowed_classes' => true],
         );
