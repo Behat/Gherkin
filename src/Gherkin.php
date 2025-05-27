@@ -106,12 +106,14 @@ class Gherkin
         $filters = array_merge($this->filters, $filters);
 
         $matches = [];
-        if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', $resource, $matches)) {
-            $resource = $matches[1];
-            $filters[] = new LineRangeFilter($matches[2], $matches[3]);
-        } elseif (preg_match('/^(.*):(\d+)$/', $resource, $matches)) {
-            $resource = $matches[1];
-            $filters[] = new LineFilter($matches[2]);
+        if (is_scalar($resource) || $resource instanceof \Stringable) {
+            if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', (string) $resource, $matches)) {
+                $resource = $matches[1];
+                $filters[] = new LineRangeFilter($matches[2], $matches[3]);
+            } elseif (preg_match('/^(.*):(\d+)$/', (string) $resource, $matches)) {
+                $resource = $matches[1];
+                $filters[] = new LineFilter($matches[2]);
+            }
         }
 
         $loader = $this->resolveLoader($resource);
