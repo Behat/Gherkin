@@ -31,6 +31,7 @@ class CachedArrayKeywords extends ArrayKeywords
      */
     public function __construct(string $file)
     {
+        // @phpstan-ignore argument.type
         parent::__construct(require $file);
     }
 }

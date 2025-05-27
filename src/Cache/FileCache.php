@@ -98,7 +98,7 @@ class FileCache implements CacheInterface
     {
         $cachePath = $this->getCachePathFor($path);
         try {
-            $feature = unserialize(Filesystem::readFile($cachePath));
+            $feature = unserialize(Filesystem::readFile($cachePath), ['allowed_classes' => true]);
         } catch (FilesystemException $ex) {
             throw new CacheException("Can not load cache: {$ex->getMessage()}", previous: $ex);
         }

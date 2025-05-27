@@ -71,7 +71,7 @@ class {
      */
     private function findComposerGherkinVersion(string $composerFile): array
     {
-        $composerConfig = Behat\Gherkin\Filesystem::readJsonFileArray($composerFile);
+        $composerConfig = Behat\Gherkin\Filesystem::readJsonFileHash($composerFile);
         assert(
             is_array($composerConfig['repositories'] ?? null)
             && is_array($composerConfig['repositories'][0] ?? null),
@@ -116,7 +116,7 @@ class {
     {
         // GitHub requires API requests to send a user_agent header for tracing
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
-        $releases = Behat\Gherkin\Filesystem::readJsonFileArray("https://api.github.com/repos/$repo/releases");
+        $releases = Behat\Gherkin\Filesystem::readJsonFileHash('https://api.github.com/repos/$repo/releases');
 
         assert($releases !== [], 'github should have returned at least one release');
 

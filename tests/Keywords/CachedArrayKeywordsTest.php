@@ -24,6 +24,7 @@ class CachedArrayKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
+        // @phpstan-ignore return.type
         return require __DIR__ . '/../../i18n.php';
     }
 

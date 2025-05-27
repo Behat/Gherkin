@@ -314,6 +314,7 @@ class ArrayLoaderTest extends TestCase
 
     public function testLoadStepArguments(): void
     {
+        // @phpstan-ignore argument.type
         $features = $this->loader->load([
             'features' => [
                 [
