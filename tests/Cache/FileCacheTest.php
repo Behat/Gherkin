@@ -12,12 +12,12 @@ namespace Tests\Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Cache\FileCache;
 use Behat\Gherkin\Exception\CacheException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-use Tests\Behat\Gherkin\Filesystem;
 
 class FileCacheTest extends TestCase
 {

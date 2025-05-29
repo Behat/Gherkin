@@ -8,15 +8,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Tests\Behat\Gherkin;
+namespace Behat\Gherkin;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SplFileInfo;
 
-class Filesystem
+/**
+ * @internal
+ */
+final class Filesystem
 {
+    /**
+     * @throws RuntimeException
+     */
     public static function readFile(string $fileName): string
     {
         $data = @file_get_contents($fileName);
@@ -25,6 +31,14 @@ class Filesystem
         }
 
         return $data;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    public static function readJsonFile(string $fileName, bool $assoc = false): mixed
+    {
+        return json_decode(self::readFile($fileName), $assoc, flags: JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;

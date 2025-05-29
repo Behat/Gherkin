@@ -11,10 +11,10 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\DialectKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
-use Tests\Behat\Gherkin\Filesystem;
 
 class DialectKeywordsTest extends KeywordsTestCase
 {
@@ -35,7 +35,7 @@ class DialectKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = json_decode(Filesystem::readFile(__DIR__ . '/../../resources/gherkin-languages.json'), true, flags: \JSON_THROW_ON_ERROR);
+        $data = Filesystem::readJsonFile(__DIR__ . '/../../resources/gherkin-languages.json', true);
 
         $keywordsArray = [];
 

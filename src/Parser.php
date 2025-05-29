@@ -24,6 +24,7 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use RuntimeException;
 
 /**
  * Gherkin parser.
@@ -104,6 +105,15 @@ class Parser implements ParserInterface
         }
 
         return $feature;
+    }
+
+    public function parseFile(string $file): ?FeatureNode
+    {
+        try {
+            return $this->parse(Filesystem::readFile($file), $file);
+        } catch (RuntimeException $ex) {
+            throw new ParserException("Cannot parse file: {$ex->getMessage()}", previous: $ex);
+        }
     }
 
     /**

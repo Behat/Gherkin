@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
@@ -21,7 +22,6 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SebastianBergmann\Comparator\Factory;
 use SplFileInfo;
-use Tests\Behat\Gherkin\Filesystem;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
