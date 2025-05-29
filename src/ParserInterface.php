@@ -26,4 +26,11 @@ interface ParserInterface
      * @throws ParserException
      */
     public function parse(string $input, ?string $file = null);
+
+    /**
+     * Parses a Gherkin file and returns features array.
+     *
+     * @throws ParserException
+     */
+    public function parseFile(string $file): ?FeatureNode;
 }

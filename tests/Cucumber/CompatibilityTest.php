@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
@@ -21,7 +22,6 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SebastianBergmann\Comparator\Factory;
 use SplFileInfo;
-use Tests\Behat\Gherkin\Filesystem;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -144,7 +144,7 @@ class CompatibilityTest extends TestCase
         $this->parser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
-        $actual = $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
+        $actual = $this->parser->parseFile($gherkinFile);
         $cucumberFeatures = $this->ndJsonAstParser->load($gherkinFile . '.ast.ndjson');
 
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
@@ -175,7 +175,7 @@ class CompatibilityTest extends TestCase
             $this->expectException(ParserException::class);
         }
 
-        $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
+        $this->parser->parseFile($gherkinFile);
     }
 
     /**

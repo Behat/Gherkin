@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin;
 
+use Behat\Gherkin\Exception\FilesystemException;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
@@ -104,6 +105,15 @@ class Parser implements ParserInterface
         }
 
         return $feature;
+    }
+
+    public function parseFile(string $file): ?FeatureNode
+    {
+        try {
+            return $this->parse(Filesystem::readFile($file), $file);
+        } catch (FilesystemException $ex) {
+            throw new ParserException("Cannot parse file: {$ex->getMessage()}", previous: $ex);
+        }
     }
 
     /**
