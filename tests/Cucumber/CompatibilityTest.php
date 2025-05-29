@@ -144,7 +144,7 @@ class CompatibilityTest extends TestCase
         $this->parser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
-        $actual = $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
+        $actual = $this->parser->parseFile($gherkinFile);
         $cucumberFeatures = $this->ndJsonAstParser->load($gherkinFile . '.ast.ndjson');
 
         $expected = $cucumberFeatures ? $cucumberFeatures[0] : null;
@@ -175,7 +175,7 @@ class CompatibilityTest extends TestCase
             $this->expectException(ParserException::class);
         }
 
-        $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
+        $this->parser->parseFile($gherkinFile);
     }
 
     /**

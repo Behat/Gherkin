@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin;
 
+use Behat\Gherkin\Exception\FilesystemException;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
@@ -24,7 +25,6 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
-use RuntimeException;
 
 /**
  * Gherkin parser.
@@ -111,7 +111,7 @@ class Parser implements ParserInterface
     {
         try {
             return $this->parse(Filesystem::readFile($file), $file);
-        } catch (RuntimeException $ex) {
+        } catch (FilesystemException $ex) {
             throw new ParserException("Cannot parse file: {$ex->getMessage()}", previous: $ex);
         }
     }

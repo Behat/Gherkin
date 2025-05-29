@@ -11,10 +11,10 @@
 namespace Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Exception\CacheException;
+use Behat\Gherkin\Exception\FilesystemException;
 use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Composer\InstalledVersions;
-use RuntimeException;
 
 /**
  * File cache.
@@ -90,7 +90,7 @@ class FileCache implements CacheInterface
         $cachePath = $this->getCachePathFor($path);
         try {
             $feature = unserialize(Filesystem::readFile($cachePath));
-        } catch (RuntimeException $ex) {
+        } catch (FilesystemException $ex) {
             throw new CacheException("Can not load cache: {$ex->getMessage()}", previous: $ex);
         }
 
