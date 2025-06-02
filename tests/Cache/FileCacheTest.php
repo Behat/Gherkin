@@ -76,7 +76,8 @@ class FileCacheTest extends TestCase
         // Now simulate the file being corrupted and attempt to read it
         file_put_contents($files[0], '');
 
-        $this->expectExceptionObject(new CacheException('Can not load cache for a feature "broken_feature" from '));
+        $this->expectException(CacheException::class);
+        $this->expectExceptionMessageMatches('/^Can not load cache for a feature "broken_feature" from (.+)$/');
 
         $cache->read('broken_feature');
     }
@@ -85,7 +86,8 @@ class FileCacheTest extends TestCase
     {
         $cache = $this->createCache();
 
-        $this->expectExceptionObject(new CacheException('Can not load cache: Failed to read file: '));
+        $this->expectException(CacheException::class);
+        $this->expectExceptionMessageMatches('/^Can not load cache: Failed to read file: (.+)$/');
 
         $cache->read('missing_file');
     }

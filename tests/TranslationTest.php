@@ -57,7 +57,7 @@ class TranslationTest extends TestCase
     {
         $dumper = new KeywordsDumper(new DialectKeywords(new CucumberDialectProvider()));
         /** @var non-empty-array<non-empty-string, TDialectData> $keywordsArray */
-        $keywordsArray = Filesystem::readJsonFile(__DIR__ . '/../resources/gherkin-languages.json', true);
+        $keywordsArray = Filesystem::readJsonFileArray(__DIR__ . '/../resources/gherkin-languages.json');
 
         foreach ($keywordsArray as $lang => $i18nKeywords) {
             $features = [];

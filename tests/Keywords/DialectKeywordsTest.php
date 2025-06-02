@@ -35,7 +35,7 @@ class DialectKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = Filesystem::readJsonFile(__DIR__ . '/../../resources/gherkin-languages.json', true);
+        $data = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
 
         $keywordsArray = [];
 

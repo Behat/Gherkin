@@ -33,7 +33,7 @@ final class CucumberDialectProvider implements DialectProviderInterface
          *
          * @var non-empty-array<non-empty-string, TDialectData> $data
          */
-        $data = Filesystem::readJsonFile(__DIR__ . '/../../resources/gherkin-languages.json', true);
+        $data = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
         $this->dialects = $data;
     }
 
