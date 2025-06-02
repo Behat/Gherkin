@@ -16,7 +16,7 @@ use Behat\Gherkin\Node\FeatureNode;
 interface ParserInterface
 {
     /**
-     * Parses input & returns features array.
+     * Parses a Gherkin document string and returns feature (or null when none found).
      *
      * @param string $input Gherkin string document
      * @param string|null $file File name
@@ -28,7 +28,7 @@ interface ParserInterface
     public function parse(string $input, ?string $file = null);
 
     /**
-     * Parses a Gherkin file and returns features array.
+     * Parses a Gherkin file and feature (or null when none found).
      *
      * @throws ParserException
      */
