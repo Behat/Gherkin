@@ -8,23 +8,44 @@
  * file that was distributed with this source code.
  */
 
-namespace Tests\Behat\Gherkin;
+namespace Behat\Gherkin;
 
+use Behat\Gherkin\Exception\FilesystemException;
+use JsonException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use RuntimeException;
 use SplFileInfo;
 
-class Filesystem
+/**
+ * @internal
+ */
+final class Filesystem
 {
+    /**
+     * @throws FilesystemException
+     */
     public static function readFile(string $fileName): string
     {
         $data = @file_get_contents($fileName);
         if ($data === false) {
-            throw new RuntimeException("Failed to read file: $fileName");
+            throw new FilesystemException("Failed to read file: $fileName");
         }
 
         return $data;
+    }
+
+    /**
+     * @return array<array-key, mixed>
+     *
+     * @throws JsonException|FilesystemException
+     */
+    public static function readJsonFileArray(string $fileName): array
+    {
+        $result = json_decode(self::readFile($fileName), true, flags: JSON_THROW_ON_ERROR);
+
+        \assert(is_array($result), 'File must contain JSON with an array at its root');
+
+        return $result;
     }
 
     /**

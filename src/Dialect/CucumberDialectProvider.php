@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Dialect;
 
 use Behat\Gherkin\Exception\NoSuchLanguageException;
+use Behat\Gherkin\Filesystem;
 
 /**
  * A dialect provider that loads the dialects based on the gherkin-languages.json file copied from the Cucumber project.
@@ -26,15 +27,13 @@ final class CucumberDialectProvider implements DialectProviderInterface
 
     public function __construct()
     {
-        $json = file_get_contents(__DIR__ . '/../../resources/gherkin-languages.json');
-        \assert($json !== false);
         /**
          * Here we force the type checker to assume the decoded JSON has the correct
          * structure, rather than validating it. This is safe because it's not dynamic.
          *
          * @var non-empty-array<non-empty-string, TDialectData> $data
          */
-        $data = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+        $data = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
         $this->dialects = $data;
     }
 

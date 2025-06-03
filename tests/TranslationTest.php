@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Dialect\GherkinDialect;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\DialectKeywords;
 use Behat\Gherkin\Keywords\KeywordsDumper;
 use Behat\Gherkin\Lexer;
@@ -56,7 +57,7 @@ class TranslationTest extends TestCase
     {
         $dumper = new KeywordsDumper(new DialectKeywords(new CucumberDialectProvider()));
         /** @var non-empty-array<non-empty-string, TDialectData> $keywordsArray */
-        $keywordsArray = json_decode(Filesystem::readFile(__DIR__ . '/../resources/gherkin-languages.json'), true, flags: \JSON_THROW_ON_ERROR);
+        $keywordsArray = Filesystem::readJsonFileArray(__DIR__ . '/../resources/gherkin-languages.json');
 
         foreach ($keywordsArray as $lang => $i18nKeywords) {
             $features = [];

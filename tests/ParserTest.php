@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
@@ -154,6 +155,13 @@ final class ParserTest extends TestCase
         $this->createGherkinParser()->parse($featureText, '/fake.feature');
     }
 
+    public function testInexistentFileParserError(): void
+    {
+        $this->expectExceptionObject(new ParserException('Cannot parse file: Failed to read file: inexistent-file.feature'));
+
+        $this->createGherkinParser()->parseFile('inexistent-file.feature');
+    }
+
     /**
      * @return iterable<array{expectedException: Exception, featureText: string}>
      */
@@ -258,9 +266,7 @@ final class ParserTest extends TestCase
 
     private function parseFixture(string $fixture): ?FeatureNode
     {
-        $file = __DIR__ . "/Fixtures/features/$fixture";
-
-        return $this->createGherkinParser()->parse(Filesystem::readFile($file), $file);
+        return $this->createGherkinParser()->parseFile(__DIR__ . "/Fixtures/features/$fixture");
     }
 
     private function parseEtalon(string $etalon): FeatureNode

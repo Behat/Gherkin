@@ -27,9 +27,8 @@ class {
     public function update(string $composerFile, string $outputVarsFile): void
     {
         assert(is_file($composerFile), "'$composerFile' should be a file");
-        $composerConfigStr = $this->getContents($composerFile);
 
-        $currentVersion = $this->findComposerGherkinVersion($composerConfigStr);
+        $currentVersion = $this->findComposerGherkinVersion($composerFile);
         echo "Current local version is {$currentVersion['hash']} (tagged {$currentVersion['tag_name']})\n";
 
         $releases = $this->listGitHubReleases('cucumber/gherkin');
@@ -45,7 +44,7 @@ class {
         }
 
         echo "Next upstream version is {$nextVersion['hash']} (tagged {$nextVersion['tag_name']})\n";
-        $this->updateComposerJsonFile($composerFile, $composerConfigStr, $currentVersion, $nextVersion);
+        $this->updateComposerJsonFile($composerFile, $currentVersion, $nextVersion);
         $this->writeGitHubOutputs($outputVarsFile, [
             'cucumber_updated' => 'yes',
             'cucumber_version' => $nextVersion['tag_name'],
@@ -54,7 +53,7 @@ class {
         echo "Updated composer.json\n";
 
         // Sanity check that the update has applied correctly and the composer.json still parses as expected
-        $updatedVersion = $this->findComposerGherkinVersion($this->getContents($composerFile));
+        $updatedVersion = $this->findComposerGherkinVersion($composerFile);
         assert(
             ($updatedVersion['hash'] === $nextVersion['hash'])
             && ($updatedVersion['tag_name'] === $nextVersion['tag_name']),
@@ -65,9 +64,9 @@ class {
     /**
      * @phpstan-return TCurrentVersionArray
      */
-    private function findComposerGherkinVersion(string $composerConfigStr): array
+    private function findComposerGherkinVersion(string $composerFile): array
     {
-        $composerConfig = $this->jsonDecodeArray($composerConfigStr);
+        $composerConfig = Behat\Gherkin\Filesystem::readJsonFileArray($composerFile);
         assert(
             is_array($composerConfig['repositories'] ?? null)
             && is_array($composerConfig['repositories'][0] ?? null),
@@ -106,24 +105,13 @@ class {
     }
 
     /**
-     * @return array<array-key, mixed>
-     */
-    private function jsonDecodeArray(string $json): array
-    {
-        $result = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
-        assert(is_array($result), "'$json' should be a JSON array");
-
-        return $result;
-    }
-
-    /**
      * @phpstan-return non-empty-list<TGitHubReleaseArray>
      */
     private function listGitHubReleases(string $repo): array
     {
         // GitHub requires API requests to send a user_agent header for tracing
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
-        $releases = $this->jsonDecodeArray($this->getContents("https://api.github.com/repos/$repo/releases"));
+        $releases = Behat\Gherkin\Filesystem::readJsonFileArray('https://api.github.com/repos/$repo/releases');
 
         assert($releases !== [], 'github should have returned at least one release');
 
@@ -246,13 +234,16 @@ class {
      * @phpstan-param TCurrentVersionArray $currentVersion
      * @phpstan-param TGitHubReleaseArray $nextVersion
      */
-    private function updateComposerJsonFile(string $composerFile, string $composerConfigStr, array $currentVersion, array $nextVersion): void
+    private function updateComposerJsonFile(string $composerFile, array $currentVersion, array $nextVersion): void
     {
         // Use string replacement rather than json_encode so that we preserve the existing composer.json format
-        $newJSON = strtr($composerConfigStr, [
-            $currentVersion['composer_version'] => 'dev-gherkin-' . $nextVersion['tag_name'],
-            $currentVersion['hash'] => $nextVersion['hash'],
-        ]);
+        $newJSON = strtr(
+            Behat\Gherkin\Filesystem::readFile($composerFile),
+            [
+                $currentVersion['composer_version'] => 'dev-gherkin-' . $nextVersion['tag_name'],
+                $currentVersion['hash'] => $nextVersion['hash'],
+            ],
+        );
 
         assert((bool) file_put_contents($composerFile, $newJSON), 'Updated composer.json');
     }
@@ -273,14 +264,6 @@ class {
 
             assert((bool) file_put_contents($outputVarsFile, $var, FILE_APPEND), "Wrote output var $name");
         }
-    }
-
-    private function getContents(string $filenameOrUrl): string
-    {
-        $content = file_get_contents($filenameOrUrl);
-        assert($content !== false, 'Should be able to read ' . $filenameOrUrl);
-
-        return $content;
     }
 };
 

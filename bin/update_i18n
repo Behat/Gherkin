@@ -10,8 +10,7 @@
  */
 
 $gherkinFile = __DIR__ . '/../vendor/cucumber/gherkin-monorepo/gherkin-languages.json';
-$gherkinLanguages = json_decode(file_get_contents($gherkinFile) ?: '', true, 512, JSON_THROW_ON_ERROR);
-assert(is_array($gherkinLanguages));
+$gherkinLanguages = Behat\Gherkin\Filesystem::readJsonFileArray($gherkinFile);
 $array = [];
 
 foreach ($gherkinLanguages as $lang => $keywords) {

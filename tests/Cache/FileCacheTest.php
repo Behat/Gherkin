@@ -12,12 +12,12 @@ namespace Tests\Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Cache\FileCache;
 use Behat\Gherkin\Exception\CacheException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-use Tests\Behat\Gherkin\Filesystem;
 
 class FileCacheTest extends TestCase
 {
@@ -77,8 +77,19 @@ class FileCacheTest extends TestCase
         file_put_contents($files[0], '');
 
         $this->expectException(CacheException::class);
+        $this->expectExceptionMessageMatches('/^Can not load cache for a feature "broken_feature" from (.+)$/');
 
         $cache->read('broken_feature');
+    }
+
+    public function testMissingCacheFileRead(): void
+    {
+        $cache = $this->createCache();
+
+        $this->expectException(CacheException::class);
+        $this->expectExceptionMessageMatches('/^Can not load cache: Failed to read file: (.+)$/');
+
+        $cache->read('missing_file');
     }
 
     public function testUnwriteableCacheDir(): void
