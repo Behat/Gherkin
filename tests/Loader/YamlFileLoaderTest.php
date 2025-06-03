@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +40,10 @@ class YamlFileLoaderTest extends TestCase
         $features = $this->loader->load('etalons/addition.yml');
 
         $this->assertCount(1, $features);
-        $this->assertEquals(realpath($basePath . DIRECTORY_SEPARATOR . 'etalons' . DIRECTORY_SEPARATOR . 'addition.yml'), $features[0]->getFile());
+        $this->assertEquals(
+            Filesystem::getRealPath($basePath . DIRECTORY_SEPARATOR . 'etalons' . DIRECTORY_SEPARATOR . 'addition.yml'),
+            $features[0]->getFile(),
+        );
         $this->assertEquals('Addition', $features[0]->getTitle());
         $this->assertEquals(2, $features[0]->getLine());
         $this->assertEquals('en', $features[0]->getLanguage());
