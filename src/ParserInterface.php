@@ -28,7 +28,7 @@ interface ParserInterface
     public function parse(string $input, ?string $file = null);
 
     /**
-     * Parses a Gherkin file and feature (or null when none found).
+     * Parses a Gherkin file and returns feature (or null when none found).
      *
      * @throws ParserException
      */
