@@ -71,10 +71,10 @@ class TableNode implements ArgumentInterface, IteratorAggregate
 
                 if (!is_scalar($cellValue)) {
                     throw new NodeException(sprintf(
-                        "Table cell at row '%s', col '%s' is expected to be scalar, got %s",
+                        "Table cell at row '%s', column '%s' is expected to be scalar, got %s",
                         $rowIndex,
                         $columnIndex,
-                        gettype($cellValue)
+                        get_debug_type($cellValue)
                     ));
                 }
 
