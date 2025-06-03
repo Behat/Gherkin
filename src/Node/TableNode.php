@@ -64,21 +64,21 @@ class TableNode implements ArgumentInterface, IteratorAggregate
                 ));
             }
 
-            foreach ($row as $columnIndex => $cell) {
+            foreach ($row as $columnIndex => $cellValue) {
                 if (!isset($this->maxLineLength[$columnIndex])) {
                     $this->maxLineLength[$columnIndex] = 0;
                 }
 
-                if (!is_scalar($cell)) {
+                if (!is_scalar($cellValue)) {
                     throw new NodeException(sprintf(
                         "Table cell at row '%s', column '%s' is expected to be scalar, got %s",
                         $rowIndex,
                         $columnIndex,
-                        gettype($cell)
+                        get_debug_type($cellValue)
                     ));
                 }
 
-                $this->maxLineLength[$columnIndex] = max($this->maxLineLength[$columnIndex], mb_strlen($cell, 'utf8'));
+                $this->maxLineLength[$columnIndex] = max($this->maxLineLength[$columnIndex], mb_strlen($cellValue, 'utf8'));
             }
         }
     }
