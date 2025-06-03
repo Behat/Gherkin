@@ -109,7 +109,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json): array
     {
         return array_map(
-            static fn (array $tag) => (string) preg_replace('/^@/', '', $tag['name']),
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
             $json['tags']
         );
     }

@@ -73,7 +73,7 @@ class FileCache implements CacheInterface
             return false;
         }
 
-        return filemtime($cachePath) > $timestamp;
+        return Filesystem::getLastModified($cachePath) > $timestamp;
     }
 
     /**

@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Filter;
 
+use Behat\Gherkin\Exception\FilesystemException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
@@ -33,21 +35,26 @@ class PathsFilter extends SimpleFilter
     public function __construct(array $paths)
     {
         foreach ($paths as $path) {
-            if (($realpath = realpath($path)) === false) {
-                continue;
+            try {
+                $realpath = Filesystem::getRealPath($path);
+                $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
+                    . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
+            } catch (FilesystemException) {
+                // skip invalid path
             }
-            $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
-                . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
         }
     }
 
     public function isFeatureMatch(FeatureNode $feature)
     {
-        foreach ($this->filterPaths as $path) {
-            if (($filePath = $feature->getFile()) !== null
-                && ($realPath = realpath($filePath)) !== false
-                && str_starts_with($realPath, $path)
-            ) {
+        try {
+            $realFeatureFilePath = Filesystem::getRealPath($feature->getFile());
+        } catch (FilesystemException) {
+            return false;
+        }
+
+        foreach ($this->filterPaths as $filterPath) {
+            if (str_starts_with($realFeatureFilePath, $filterPath)) {
                 return true;
             }
         }
