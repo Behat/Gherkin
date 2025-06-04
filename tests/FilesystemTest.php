@@ -18,19 +18,10 @@ final class FilesystemTest extends TestCase
 {
     public function testInexistentFileCannotHaveModificationTime(): void
     {
-        $this->expectExceptionObject(
-            new FilesystemException('Cannot retrieve last modification time of file: inexistent-file.txt'),
-        );
+        $this->expectExceptionObject(new FilesystemException(
+            'Last modification time of file "inexistent-file.txt" cannot be found: filemtime(): stat failed for inexistent-file.txt',
+        ));
 
         Filesystem::getLastModified('inexistent-file.txt');
-    }
-
-    public function testRealPathExpectsStringParameter(): void
-    {
-        $this->expectExceptionObject(
-            new FilesystemException('Path must not be null'),
-        );
-
-        Filesystem::getRealPath(null);
     }
 }

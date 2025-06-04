@@ -28,7 +28,11 @@ final class Filesystem
     {
         $data = @file_get_contents($fileName);
         if ($data === false) {
-            throw new FilesystemException("Failed to read file: $fileName");
+            throw new FilesystemException(sprintf(
+                'File "%s" cannot be read: %s',
+                $fileName,
+                error_get_last()['message'] ?? 'unknown reason (this should never happen)'
+            ));
         }
 
         return $data;
@@ -68,23 +72,23 @@ final class Filesystem
         return $found;
     }
 
-    public static function getLastModified(string $path): int
+    public static function getLastModified(string $fileName): int
     {
-        $result = @filemtime($path);
+        $result = @filemtime($fileName);
 
         if ($result === false) {
-            throw new FilesystemException("Cannot retrieve last modification time of file: $path");
+            throw new FilesystemException(sprintf(
+                'Last modification time of file "%s" cannot be found: %s',
+                $fileName,
+                error_get_last()['message'] ?? 'unknown reason (this should never happen)'
+            ));
         }
 
         return $result;
     }
 
-    public static function getRealPath(?string $path): string
+    public static function getRealPath(string $path): string
     {
-        if ($path === null) {
-            throw new FilesystemException('Path must not be null');
-        }
-
         $result = realpath($path);
 
         if ($result === false) {

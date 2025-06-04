@@ -37,11 +37,12 @@ class PathsFilter extends SimpleFilter
         foreach ($paths as $path) {
             try {
                 $realpath = Filesystem::getRealPath($path);
-                $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
-                    . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
             } catch (FilesystemException) {
-                // skip invalid path
+                continue;
             }
+
+            $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
+                . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
         }
     }
 
