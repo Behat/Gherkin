@@ -31,7 +31,7 @@ class FileCache implements CacheInterface
      */
     private static function getGherkinVersionHash(): string
     {
-        $version = InstalledVersions::getVersion('behat/gherkin');
+        $version = InstalledVersions::getVersion('behat/gherkin') ?? 'unknown';
 
         // Composer version strings can contain arbitrary content so hash for filesystem safety
         return md5($version);

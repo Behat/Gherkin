@@ -35,26 +35,29 @@ class DialectKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
+        $result = [];
 
-        $keywordsArray = [];
+        $dialects = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
 
-        foreach ($data as $lang => $dialect) {
-            $keywordsArray[$lang] = [
-                'feature' => implode('|', $dialect['feature']),
-                'background' => implode('|', $dialect['background']),
-                'scenario' => implode('|', $dialect['scenario']),
-                'scenario_outline' => implode('|', $dialect['scenarioOutline']),
-                'examples' => implode('|', $dialect['examples']),
-                'given' => implode('|', $dialect['given']),
-                'when' => implode('|', $dialect['when']),
-                'then' => implode('|', $dialect['then']),
-                'and' => implode('|', $dialect['and']),
-                'but' => implode('|', $dialect['but']),
+        foreach ($dialects as $language => $dialect) {
+            assert(is_string($language));
+            assert(is_array($dialect));
+
+            $result[$language] = [
+                'feature' => implode('|', (array) ($dialect['feature'] ?? [])),
+                'background' => implode('|', (array) ($dialect['background'] ?? [])),
+                'scenario' => implode('|', (array) ($dialect['scenario'] ?? [])),
+                'scenario_outline' => implode('|', (array) ($dialect['scenarioOutline'] ?? [])),
+                'examples' => implode('|', (array) ($dialect['examples'] ?? [])),
+                'given' => implode('|', (array) ($dialect['given'] ?? [])),
+                'when' => implode('|', (array) ($dialect['when'] ?? [])),
+                'then' => implode('|', (array) ($dialect['then'] ?? [])),
+                'and' => implode('|', (array) ($dialect['and'] ?? [])),
+                'but' => implode('|', (array) ($dialect['but'] ?? [])),
             ];
         }
 
-        return $keywordsArray;
+        return $result;
     }
 
     protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array

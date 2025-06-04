@@ -42,6 +42,7 @@ class FeatureNodeComparator extends ObjectComparator
             // We need to be able to ignore that difference so that we can still run cucumber tests that
             // include a description but are covering other features.
             if ($array['description'] !== null) {
+                assert(is_string($array['description']));
                 $array['description'] = preg_replace('/^\s+/m', '', $array['description']);
             }
         }

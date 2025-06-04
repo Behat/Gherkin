@@ -44,7 +44,9 @@ class PathsFilter extends SimpleFilter
     public function isFeatureMatch(FeatureNode $feature)
     {
         foreach ($this->filterPaths as $path) {
-            if (str_starts_with(realpath($feature->getFile()), $path)) {
+            if ($feature->getFile() !== null
+                && str_starts_with(realpath($feature->getFile()) ?: throw new \RuntimeException('This is handled in FS static class'), $path)
+            ) {
                 return true;
             }
         }

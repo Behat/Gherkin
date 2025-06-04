@@ -29,7 +29,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      */
     public function setBasePath(string $path)
     {
-        $this->basePath = realpath($path);
+        $this->basePath = realpath($path) ?: throw new \RuntimeException('This is handled in FS static class');
     }
 
     /**
