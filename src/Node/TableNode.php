@@ -42,11 +42,11 @@ class TableNode implements ArgumentInterface, IteratorAggregate
     ) {
         $columnCount = null;
 
-        foreach ($this->getRows() as $ridx => $row) {
+        foreach ($this->getRows() as $rowIndex => $row) {
             if (!is_array($row)) {
                 throw new NodeException(sprintf(
                     "Table row '%s' is expected to be array, got %s",
-                    $ridx,
+                    $rowIndex,
                     gettype($row)
                 ));
             }
@@ -58,27 +58,27 @@ class TableNode implements ArgumentInterface, IteratorAggregate
             if (count($row) !== $columnCount) {
                 throw new NodeException(sprintf(
                     "Table row '%s' is expected to have %s columns, got %s",
-                    $ridx,
+                    $rowIndex,
                     $columnCount,
                     count($row)
                 ));
             }
 
-            foreach ($row as $column => $string) {
-                if (!isset($this->maxLineLength[$column])) {
-                    $this->maxLineLength[$column] = 0;
+            foreach ($row as $columnIndex => $cellValue) {
+                if (!isset($this->maxLineLength[$columnIndex])) {
+                    $this->maxLineLength[$columnIndex] = 0;
                 }
 
-                if (!is_scalar($string)) {
+                if (!is_scalar($cellValue)) {
                     throw new NodeException(sprintf(
-                        "Table cell at row '%s', col '%s' is expected to be scalar, got %s",
-                        $ridx,
-                        $column,
-                        gettype($string)
+                        "Table cell at row '%s', column '%s' is expected to be scalar, got %s",
+                        $rowIndex,
+                        $columnIndex,
+                        get_debug_type($cellValue)
                     ));
                 }
 
-                $this->maxLineLength[$column] = max($this->maxLineLength[$column], mb_strlen($string, 'utf8'));
+                $this->maxLineLength[$columnIndex] = max($this->maxLineLength[$columnIndex], mb_strlen($cellValue, 'utf8'));
             }
         }
     }
