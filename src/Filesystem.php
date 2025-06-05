@@ -11,10 +11,12 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\FilesystemException;
+use ErrorException;
 use JsonException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
+use function assert;
 
 /**
  * @internal
@@ -26,16 +28,20 @@ final class Filesystem
      */
     public static function readFile(string $fileName): string
     {
-        $data = @file_get_contents($fileName);
-        if ($data === false) {
-            throw new FilesystemException(sprintf(
-                'File "%s" cannot be read: %s',
-                $fileName,
-                error_get_last()['message'] ?? 'unknown reason (this should never happen)'
-            ));
+        try {
+            $result = self::callSafely(static fn () => file_get_contents($fileName));
+        } catch (ErrorException $e) {
+            throw new FilesystemException(
+                sprintf('File "%s" cannot be read: %s', $fileName, $e->getMessage()),
+                previous: $e,
+            );
         }
 
-        return $data;
+        if ($result === false) {
+            throw new FilesystemException(sprintf('File "%s" cannot be read.', $fileName));
+        }
+
+        return $result;
     }
 
     /**
@@ -47,7 +53,7 @@ final class Filesystem
     {
         $result = json_decode(self::readFile($fileName), true, flags: JSON_THROW_ON_ERROR);
 
-        \assert(is_array($result), 'File must contain JSON with an array at its root');
+        assert(is_array($result), 'File must contain JSON with an array at its root');
 
         return $result;
     }
@@ -74,14 +80,17 @@ final class Filesystem
 
     public static function getLastModified(string $fileName): int
     {
-        $result = @filemtime($fileName);
+        try {
+            $result = self::callSafely(static fn () => filemtime($fileName));
+        } catch (ErrorException $e) {
+            throw new FilesystemException(
+                sprintf('Last modification time of file "%s" cannot be found: %s', $fileName, $e->getMessage()),
+                previous: $e,
+            );
+        }
 
         if ($result === false) {
-            throw new FilesystemException(sprintf(
-                'Last modification time of file "%s" cannot be found: %s',
-                $fileName,
-                error_get_last()['message'] ?? 'unknown reason (this should never happen)'
-            ));
+            throw new FilesystemException(sprintf('Last modification time of file "%s" cannot be found.', $fileName));
         }
 
         return $result;
@@ -96,5 +105,27 @@ final class Filesystem
         }
 
         return $result;
+    }
+
+    /**
+     * @template TResult
+     *
+     * @param (callable(): TResult) $callback
+     *
+     * @return TResult
+     *
+     * @throws ErrorException
+     */
+    private static function callSafely(callable $callback): mixed
+    {
+        set_error_handler(
+            static fn (int $severity, string $message, string $file, int $line) => throw new ErrorException($message, 0, $severity, $file, $line)
+        );
+
+        try {
+            return $callback();
+        } finally {
+            restore_error_handler();
+        }
     }
 }
