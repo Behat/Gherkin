@@ -22,7 +22,7 @@ jobs:
       - run: composer validate --strict --no-check-lock
 
   check_code:
-    name: Check code style
+    name: Analyse code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
