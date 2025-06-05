@@ -25,7 +25,8 @@ final class StepNodeComparator extends ObjectComparator
 
     public function accepts(mixed $expected, mixed $actual): bool
     {
-        return $expected instanceof StepNode && $actual instanceof StepNode;
+        return $expected instanceof StepNode
+            && $actual instanceof StepNode;
     }
 
     /**
@@ -41,6 +42,7 @@ final class StepNodeComparator extends ObjectComparator
         // cucumber/gherkin has the equivalent concept in their pickle steps instead.
         unset($array['keywordType']);
 
+        assert(isset($array['keyword']) && is_string($array['keyword']));
         if ($this->compatibilityMode->shouldRemoveStepKeywordSpace()) {
             $array['keyword'] = trim($array['keyword']);
         }

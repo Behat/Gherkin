@@ -57,14 +57,17 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     public function load(mixed $resource)
     {
+        assert(is_string($resource));
+
         return array_values(
             array_filter(
                 array_map(
                     static function ($line) use ($resource) {
                         // As we load data from the official Cucumber project, we assume the data matches the JSON schema.
+                        // @phpstan-ignore argument.type
                         return self::getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
                     },
-                    file($resource)
+                    file($resource) ?: throw new \RuntimeException('This is handled in FS static class')
                 )
             )
         );
@@ -102,7 +105,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json): array
     {
         return array_map(
-            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
             $json['tags']
         );
     }

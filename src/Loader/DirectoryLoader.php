@@ -59,6 +59,7 @@ class DirectoryLoader extends AbstractFileLoader
     public function load(mixed $resource)
     {
         $path = $this->getAbsolutePath($resource);
+        /** @var \Traversable<\SplFileInfo> $iterator */
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
         );

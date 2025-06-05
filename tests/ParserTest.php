@@ -176,7 +176,10 @@ final class ParserTest extends TestCase
 
         yield 'invalid content encoding' => [
             'expectedException' => new ParserException('Lexer exception "Feature file is not in UTF8 encoding" thrown for file /fake.feature'),
-            'featureText' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8'),
+            'featureText' => mb_convert_encoding('🔥 Все буде добре 🔥', 'EUC-JP', 'UTF-8')
+                ?: throw new \LogicException(
+                    'This should never happen, but PHPStan does yet recognize that. See: https://github.com/phpstan/phpstan/issues/13064',
+                ),
         ];
 
         yield 'text content in background' => [

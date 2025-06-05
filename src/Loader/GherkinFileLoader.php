@@ -72,7 +72,7 @@ class GherkinFileLoader extends AbstractFileLoader
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {
-            if ($this->cache->isFresh($path, filemtime($path))) {
+            if ($this->cache->isFresh($path, filemtime($path) ?: throw new \RuntimeException('This is handled in FS static class'))) {
                 $feature = $this->cache->read($path);
             } elseif (null !== $feature = $this->parseFeature($path)) {
                 $this->cache->write($path, $feature);
