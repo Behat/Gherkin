@@ -12,7 +12,6 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
-use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
@@ -28,7 +27,7 @@ class GherkinFileLoaderTest extends TestCase
         $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
-        $this->featuresPath = Filesystem::getRealPath(__DIR__ . '/../Fixtures/features');
+        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
     }
 
     public function testSupports(): void

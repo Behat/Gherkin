@@ -10,7 +10,6 @@
 
 namespace Tests\Behat\Gherkin\Loader;
 
-use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Loader\DirectoryLoader;
 use Behat\Gherkin\Loader\GherkinFileLoader;
@@ -28,7 +27,7 @@ class DirectoryLoaderTest extends TestCase
         $this->gherkin = $this->createGherkinMock();
         $this->loader = new DirectoryLoader($this->gherkin);
 
-        $this->featuresPath = Filesystem::getRealPath(__DIR__ . '/../Fixtures/directories');
+        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'directories';
     }
 
     protected function createGherkinMock(): MockObject&Gherkin
