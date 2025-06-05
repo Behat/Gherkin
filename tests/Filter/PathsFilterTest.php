@@ -77,13 +77,13 @@ class PathsFilterTest extends FilterTestCase
         $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 
-    public function testInvalidFeatureFileDoesNotCauseError(): void
+    public function testMissingFileShouldBeSkipped(): void
     {
         $fixtures = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR;
-
-        $feature = new FeatureNode(null, null, [], null, [], '', '', '/definitely-inexistent-feature-file.feature', 1);
+        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
 
         $filter = new PathsFilter([$fixtures . 'full']);
+
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 }

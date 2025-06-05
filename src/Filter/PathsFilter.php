@@ -48,11 +48,11 @@ class PathsFilter extends SimpleFilter
 
     public function isFeatureMatch(FeatureNode $feature)
     {
-        try {
-            $realFeatureFilePath = Filesystem::getRealPath($feature->getFile());
-        } catch (FilesystemException) {
+        if (($filePath = $feature->getFile()) === null) {
             return false;
         }
+
+        $realFeatureFilePath = Filesystem::getRealPath($filePath);
 
         foreach ($this->filterPaths as $filterPath) {
             if (str_starts_with($realFeatureFilePath, $filterPath)) {

@@ -60,18 +60,18 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      */
     protected function findAbsolutePath(string $path)
     {
-        try {
+        if (file_exists($path)) {
             return Filesystem::getRealPath($path);
-        } catch (FilesystemException) {
-            if ($this->basePath === null) {
-                return false;
-            }
+        }
 
-            try {
-                return Filesystem::getRealPath($this->basePath . DIRECTORY_SEPARATOR . $path);
-            } catch (FilesystemException) {
-                return false;
-            }
+        if ($this->basePath === null) {
+            return false;
+        }
+
+        try {
+            return Filesystem::getRealPath($this->basePath . DIRECTORY_SEPARATOR . $path);
+        } catch (FilesystemException) {
+            return false;
         }
     }
 
