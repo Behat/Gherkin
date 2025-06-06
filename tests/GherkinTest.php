@@ -10,14 +10,17 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Filter\FilterInterface;
 use Behat\Gherkin\Filter\NameFilter;
 use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Gherkin;
+use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Parser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -235,6 +238,21 @@ class GherkinTest extends TestCase
             'expectedResource' => 'example4.feature',
             'expectedFeatures' => [$feature1, $feature2, $feature3, $feature4],
         ];
+    }
+
+    public function testThatFileMustBeReadable(): void
+    {
+        $parser = new Parser($this->createMock(Lexer::class));
+        $gherkin = new class($parser) extends GherkinFileLoader {
+            public function parseInexistentFile(): void
+            {
+                $this->parseFeature('inexistent-file');
+            }
+        };
+
+        $this->expectExceptionObject(new ParserException('Cannot parse file: Failed to read file: inexistent-file'));
+
+        $gherkin->parseInexistentFile();
     }
 
     protected function getLoaderMock(): MockObject&GherkinFileLoader

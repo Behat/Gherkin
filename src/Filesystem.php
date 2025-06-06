@@ -67,4 +67,30 @@ final class Filesystem
 
         return $found;
     }
+
+    public static function getLastModified(string $path): int
+    {
+        $result = @filemtime($path);
+
+        if ($result === false) {
+            throw new FilesystemException("Cannot retrieve last modification time of file: $path");
+        }
+
+        return $result;
+    }
+
+    public static function getRealPath(?string $path): string
+    {
+        if ($path === null) {
+            throw new FilesystemException('Path must not be null');
+        }
+
+        $result = realpath($path);
+
+        if ($result === false) {
+            throw new FilesystemException("Cannot retrieve the real path of $path");
+        }
+
+        return $result;
+    }
 }
