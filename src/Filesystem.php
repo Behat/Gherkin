@@ -38,9 +38,7 @@ final class Filesystem
             );
         }
 
-        if ($result === false) {
-            throw new FilesystemException(sprintf('File "%s" cannot be read.', $fileName));
-        }
+        assert($result !== false);
 
         return $result;
     }
@@ -90,9 +88,7 @@ final class Filesystem
             );
         }
 
-        if ($result === false) {
-            throw new FilesystemException(sprintf('Last modification time of file "%s" cannot be found.', $fileName));
-        }
+        assert($result !== false);
 
         return $result;
     }
