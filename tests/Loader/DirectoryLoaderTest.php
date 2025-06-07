@@ -27,7 +27,7 @@ class DirectoryLoaderTest extends TestCase
         $this->gherkin = $this->createGherkinMock();
         $this->loader = new DirectoryLoader($this->gherkin);
 
-        $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/directories');
+        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'directories';
     }
 
     protected function createGherkinMock(): MockObject&Gherkin

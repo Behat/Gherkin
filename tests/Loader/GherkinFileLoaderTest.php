@@ -27,7 +27,7 @@ class GherkinFileLoaderTest extends TestCase
         $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
-        $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/features');
+        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
     }
 
     public function testSupports(): void
@@ -106,12 +106,12 @@ class GherkinFileLoaderTest extends TestCase
         $features = $this->loader->load('features/pystring.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());
-        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature'), $features[0]->getFile());
+        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
 
         $this->loader->setBasePath($this->featuresPath);
         $features = $this->loader->load('multiline_name.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
-        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
+        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
     }
 }
