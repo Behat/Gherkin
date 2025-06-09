@@ -10,7 +10,6 @@
 
 namespace Behat\Gherkin\Loader;
 
-use Behat\Gherkin\Exception\FilesystemException;
 use Behat\Gherkin\Filesystem;
 
 /**
@@ -68,11 +67,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
             return false;
         }
 
-        try {
-            return Filesystem::getRealPath($this->basePath . DIRECTORY_SEPARATOR . $path);
-        } catch (FilesystemException) {
-            return false;
-        }
+        return realpath($this->basePath . DIRECTORY_SEPARATOR . $path);
     }
 
     /**

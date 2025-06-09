@@ -88,7 +88,7 @@ final class Filesystem
             );
         }
 
-        assert($result !== false, 'realpath() should not return false without emitting a PHP warning');
+        assert($result !== false, 'filemtime() should not return false without emitting a PHP warning');
 
         return $result;
     }
