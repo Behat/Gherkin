@@ -31,9 +31,9 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-type TExampleHash array{table: TExampleTableHash, tags?: list<string>}|TExampleTableHash
  * @phpstan-type TExampleTableHash array<int<1, max>, list<string>>
  * @phpstan-type TStepHash array{keyword_type?: string, type?: string, text: string, keyword?: string, line?: int, arguments?: array<array-key, TArgumentHash>}
- * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPySstringHash
+ * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPyStringHash
  * @phpstan-type TTableHash array<int, list<string|int>>
- * @phpstan-type TPySstringHash array{type: 'pystring', line?: int, text: string}
+ * @phpstan-type TPyStringHash array{type: 'pystring', line?: int, text: string}
  * @phpstan-type TArrayResource array{feature: TFeatureHash}|array{features: array<int, TFeatureHash>}
  */
 class ArrayLoader implements LoaderInterface
@@ -260,7 +260,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads PyString from provided hash.
      *
-     * @phpstan-param TPySstringHash $hash
+     * @phpstan-param TPyStringHash $hash
      *
      * @return PyStringNode
      */
