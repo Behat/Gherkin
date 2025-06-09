@@ -61,7 +61,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
     protected function findAbsolutePath(string $path)
     {
         if (file_exists($path)) {
-            return Filesystem::getRealPath($path);
+            return realpath($path);
         }
 
         if ($this->basePath === null) {

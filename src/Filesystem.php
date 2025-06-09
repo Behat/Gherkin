@@ -38,7 +38,7 @@ final class Filesystem
             );
         }
 
-        assert($result !== false);
+        assert($result !== false, 'file_get_contents() should not return false without emitting a PHP warning');
 
         return $result;
     }
@@ -88,7 +88,7 @@ final class Filesystem
             );
         }
 
-        assert($result !== false);
+        assert($result !== false, 'realpath() should not return false without emitting a PHP warning');
 
         return $result;
     }
