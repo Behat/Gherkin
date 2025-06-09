@@ -157,9 +157,13 @@ final class ParserTest extends TestCase
 
     public function testInexistentFileParserError(): void
     {
-        $this->expectExceptionObject(new ParserException('Cannot parse file: Failed to read file: inexistent-file.feature'));
+        $parser = $this->createGherkinParser();
 
-        $this->createGherkinParser()->parseFile('inexistent-file.feature');
+        $this->expectExceptionObject(new ParserException(
+            'Cannot parse file: File "inexistent-file.feature" cannot be read: file_get_contents(inexistent-file.feature): Failed to open stream: No such file or directory',
+        ));
+
+        $parser->parseFile('inexistent-file.feature');
     }
 
     /**

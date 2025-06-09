@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\ParserInterface;
 
@@ -72,7 +73,7 @@ class GherkinFileLoader extends AbstractFileLoader
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {
-            if ($this->cache->isFresh($path, filemtime($path))) {
+            if ($this->cache->isFresh($path, Filesystem::getLastModified($path))) {
                 $feature = $this->cache->read($path);
             } elseif (null !== $feature = $this->parseFeature($path)) {
                 $this->cache->write($path, $feature);
