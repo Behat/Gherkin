@@ -10,7 +10,6 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
@@ -111,7 +110,7 @@ class LineRangeFilter implements FilterInterface
                     }
 
                     if (count($filteredTable) > 1) {
-                        $exampleTableNodes[] = new ExampleTableNode($filteredTable, $exampleTable->getKeyword(), $exampleTable->getTags());
+                        $exampleTableNodes[] = $exampleTable->withTable($filteredTable);
                     }
                 }
 

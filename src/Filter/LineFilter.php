@@ -10,7 +10,6 @@
 
 namespace Behat\Gherkin\Filter;
 
-use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
@@ -95,9 +94,7 @@ class LineFilter implements FilterInterface
                             $filteredTable[$this->filterLine] = $table[$this->filterLine];
                         }
 
-                        $scenario = $scenario->withTables(
-                            [new ExampleTableNode($filteredTable, $exampleTable->getKeyword(), $exampleTable->getTags())],
-                        );
+                        $scenario = $scenario->withTables([$exampleTable->withTable($filteredTable)]);
                     }
                 }
             }
