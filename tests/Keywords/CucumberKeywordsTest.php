@@ -26,6 +26,7 @@ class CucumberKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
+        // @phpstan-ignore return.type
         return Yaml::parseFile(__DIR__ . '/../Fixtures/i18n.yml');
     }
 

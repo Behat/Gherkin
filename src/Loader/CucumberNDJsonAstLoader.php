@@ -21,6 +21,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use RuntimeException;
+use Stringable;
 
 /**
  * Loads a feature from cucumber's messages JSON format.
@@ -57,14 +59,20 @@ class CucumberNDJsonAstLoader implements LoaderInterface
 
     public function load(mixed $resource)
     {
+        if (!(is_string($resource) || $resource instanceof Stringable)) {
+            return [];
+        }
+
         return array_values(
             array_filter(
                 array_map(
                     static function ($line) use ($resource) {
                         // As we load data from the official Cucumber project, we assume the data matches the JSON schema.
+                        // @phpstan-ignore argument.type
                         return self::getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
                     },
                     file($resource)
+                        ?: throw new RuntimeException("Could not load Cucumber json file: $resource."),
                 )
             )
         );
@@ -102,7 +110,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json): array
     {
         return array_map(
-            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
             $json['tags']
         );
     }
