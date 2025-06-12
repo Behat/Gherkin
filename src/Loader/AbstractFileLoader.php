@@ -16,8 +16,14 @@ use Behat\Gherkin\Filesystem;
  * Abstract filesystem loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TResourceType of mixed
+ *
+ * @extends AbstractLoader<TResourceType>
+ *
+ * @implements FileLoaderInterface<TResourceType>
  */
-abstract class AbstractFileLoader implements FileLoaderInterface
+abstract class AbstractFileLoader extends AbstractLoader implements FileLoaderInterface
 {
     /**
      * @var string|null

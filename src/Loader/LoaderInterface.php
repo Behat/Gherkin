@@ -15,7 +15,9 @@ use Behat\Gherkin\Node\FeatureNode;
 /**
  * Loader interface.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TResourceType of mixed
  */
 interface LoaderInterface
 {
@@ -24,6 +26,8 @@ interface LoaderInterface
      *
      * @param mixed $resource Resource to load
      *
+     * @phpstan-assert-if-true LoaderInterface<TResourceType> $this
+     *
      * @return bool
      */
     public function supports(mixed $resource);
@@ -31,7 +35,7 @@ interface LoaderInterface
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @param TResourceType $resource Resource to load
      *
      * @return list<FeatureNode>
      */

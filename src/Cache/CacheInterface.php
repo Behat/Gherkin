@@ -15,7 +15,7 @@ use Behat\Gherkin\Node\FeatureNode;
 /**
  * Parser cache interface.
  *
- * @author     Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
 interface CacheInterface
 {

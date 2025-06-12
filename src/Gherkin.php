@@ -32,7 +32,7 @@ class Gherkin
     public const VERSION = '4.8.0';
 
     /**
-     * @var list<LoaderInterface>
+     * @var list<LoaderInterface<*>>
      */
     protected $loaders = [];
     /**
@@ -43,7 +43,7 @@ class Gherkin
     /**
      * Adds loader to manager.
      *
-     * @param LoaderInterface $loader Feature loader
+     * @param LoaderInterface<*> $loader Feature loader
      *
      * @return void
      */
@@ -139,9 +139,11 @@ class Gherkin
     /**
      * Resolves loader by resource.
      *
-     * @param mixed $resource Resource to load
+     * @template TResourceType of mixed
      *
-     * @return LoaderInterface|null
+     * @param TResourceType $resource Resource to load
+     *
+     * @return LoaderInterface<TResourceType>|null
      */
     public function resolveLoader(mixed $resource)
     {

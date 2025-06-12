@@ -14,6 +14,10 @@ namespace Behat\Gherkin\Loader;
  * File Loader interface.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TResourceType of mixed
+ *
+ * @extends LoaderInterface<TResourceType>
  */
 interface FileLoaderInterface extends LoaderInterface
 {
