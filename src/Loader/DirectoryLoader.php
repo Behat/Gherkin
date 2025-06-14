@@ -11,7 +11,6 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Gherkin;
-use Behat\Gherkin\Node\FeatureNode;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -19,6 +18,8 @@ use RecursiveIteratorIterator;
  * Directory contents loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @extends AbstractFileLoader<string>
  */
 class DirectoryLoader extends AbstractFileLoader
 {
@@ -35,13 +36,6 @@ class DirectoryLoader extends AbstractFileLoader
         $this->gherkin = $gherkin;
     }
 
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
     public function supports(mixed $resource)
     {
         return is_string($resource)
@@ -49,14 +43,7 @@ class DirectoryLoader extends AbstractFileLoader
             && is_dir($path);
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param string $resource Resource to load
-     *
-     * @return list<FeatureNode>
-     */
-    public function load(mixed $resource)
+    protected function doLoad(mixed $resource): array
     {
         $path = $this->getAbsolutePath($resource);
         $iterator = new RecursiveIteratorIterator(

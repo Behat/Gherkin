@@ -37,6 +37,16 @@ class ArrayLoaderTest extends TestCase
         $this->assertTrue($this->loader->supports(['feature' => []]));
     }
 
+    public function testLoadUnsupported(): void
+    {
+        $this->expectExceptionObject(new \LogicException(
+            'Behat\Gherkin\Loader\ArrayLoader::load() was called with unsupported resource `"invalid resource type"`.'
+        ));
+
+        // @phpstan-ignore argument.type
+        $this->loader->load('invalid resource type');
+    }
+
     public function testLoadEmpty(): void
     {
         $this->assertEquals([], $this->loader->load(['features' => []]));

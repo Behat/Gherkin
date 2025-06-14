@@ -47,15 +47,17 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-type TGherkinDocument array{uri?: string, feature?: TFeature, comments: list<TComment>}
  * // We only care about the gherkinDocument messages for our use case, so this does not describe the envelope fully
  * @phpstan-type TEnvelope array{gherkinDocument?: TGherkinDocument, ...}
+ *
+ * @extends AbstractLoader<string>
  */
-class CucumberNDJsonAstLoader implements LoaderInterface
+class CucumberNDJsonAstLoader extends AbstractLoader
 {
     public function supports(mixed $resource)
     {
         return is_string($resource);
     }
 
-    public function load(mixed $resource)
+    protected function doLoad(mixed $resource): array
     {
         return array_values(
             array_filter(

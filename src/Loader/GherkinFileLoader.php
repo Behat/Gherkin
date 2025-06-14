@@ -19,6 +19,8 @@ use Behat\Gherkin\ParserInterface;
  * Gherkin *.feature files loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @extends AbstractFileLoader<string>
  */
 class GherkinFileLoader extends AbstractFileLoader
 {
@@ -47,13 +49,6 @@ class GherkinFileLoader extends AbstractFileLoader
         $this->cache = $cache;
     }
 
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
     public function supports(mixed $resource)
     {
         return is_string($resource)
@@ -62,14 +57,7 @@ class GherkinFileLoader extends AbstractFileLoader
             && pathinfo($path, PATHINFO_EXTENSION) === 'feature';
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param string $resource Resource to load
-     *
-     * @return list<FeatureNode>
-     */
-    public function load(mixed $resource)
+    protected function doLoad(mixed $resource): array
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {

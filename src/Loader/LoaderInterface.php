@@ -15,14 +15,20 @@ use Behat\Gherkin\Node\FeatureNode;
 /**
  * Loader interface.
  *
- * @author      Konstantin Kudryashov <ever.zet@gmail.com>
+ * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TResourceType
  */
 interface LoaderInterface
 {
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @template TSupportedResourceType
+     *
+     * @param TSupportedResourceType $resource Resource to load
+     *
+     * @phpstan-assert-if-true =LoaderInterface<TSupportedResourceType> $this
      *
      * @return bool
      */
@@ -31,7 +37,7 @@ interface LoaderInterface
     /**
      * Loads features from provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @param TResourceType $resource Resource to load
      *
      * @return list<FeatureNode>
      */
