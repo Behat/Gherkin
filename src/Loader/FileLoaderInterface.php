@@ -15,7 +15,7 @@ namespace Behat\Gherkin\Loader;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @template TResourceType of mixed
+ * @template TResourceType
  *
  * @extends LoaderInterface<TResourceType>
  */

@@ -17,7 +17,7 @@ use Behat\Gherkin\Filesystem;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @template TResourceType of mixed
+ * @template TResourceType
  *
  * @extends AbstractLoader<TResourceType>
  *

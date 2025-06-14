@@ -103,6 +103,7 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports('tables.feature'));
         $this->assertTrue($this->loader->supports('features/tables.feature'));
 
+        $this->assertTrue($this->loader->supports('features/pystring.feature'));
         $features = $this->loader->load('features/pystring.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());

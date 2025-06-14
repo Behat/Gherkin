@@ -13,7 +13,7 @@ namespace Behat\Gherkin\Loader;
 use Behat\Gherkin\Node\FeatureNode;
 
 /**
- * @template TResourceType of mixed
+ * @template TResourceType
  *
  * @implements LoaderInterface<TResourceType>
  */

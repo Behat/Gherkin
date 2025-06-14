@@ -17,16 +17,18 @@ use Behat\Gherkin\Node\FeatureNode;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @template TResourceType of mixed
+ * @template TResourceType
  */
 interface LoaderInterface
 {
     /**
      * Checks if current loader supports provided resource.
      *
-     * @param mixed $resource Resource to load
+     * @template TSupportedResourceType
      *
-     * @phpstan-assert-if-true LoaderInterface<TResourceType> $this
+     * @param TSupportedResourceType $resource Resource to load
+     *
+     * @phpstan-assert-if-true =LoaderInterface<TSupportedResourceType> $this
      *
      * @return bool
      */

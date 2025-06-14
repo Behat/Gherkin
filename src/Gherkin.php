@@ -139,7 +139,7 @@ class Gherkin
     /**
      * Resolves loader by resource.
      *
-     * @template TResourceType of mixed
+     * @template TResourceType
      *
      * @param TResourceType $resource Resource to load
      *
