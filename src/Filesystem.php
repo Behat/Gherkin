@@ -104,6 +104,23 @@ final class Filesystem
         return $result;
     }
 
+    public static function ensureDirectoryExists(string $path): void
+    {
+        try {
+            if (!is_dir($path)
+                && !self::callSafely(static fn () => mkdir($path, 0777, true))
+                && !is_dir($path)
+            ) {
+                throw new FilesystemException(sprintf('Path "%s" cannot be created.', $path));
+            }
+        } catch (ErrorException $e) {
+            throw new FilesystemException(
+                sprintf('Path at "%s" cannot be created: %s', $path, $e->getMessage()),
+                previous: $e,
+            );
+        }
+    }
+
     /**
      * @template TResult
      *

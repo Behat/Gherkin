@@ -15,7 +15,9 @@ use Behat\Gherkin\Exception\CacheException;
 use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Composer\InstalledVersions;
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
@@ -87,19 +89,48 @@ class FileCacheTest extends TestCase
         $cache = $this->createCache();
 
         $this->expectException(CacheException::class);
-        $this->expectExceptionMessageMatches('/^Can not load cache: File "[^"]+" cannot be read: .+$/');
+        $this->expectExceptionMessageMatches('/^Can not load cache: File ".+" cannot be read: .+$/');
 
         $cache->read('missing_file');
     }
 
-    public function testUnwriteableCacheDir(): void
+    public function testUnwritableCachePath(): void
+    {
+        $root = vfsStream::setup();
+        $root->addChild(new vfsStreamDirectory($this->getCacheDirName(), 0));
+
+        $this->expectExceptionMessageMatches('/^Cache path ".+" is not writeable\. Check your filesystem permissions or disable Gherkin file cache\.$/');
+        $this->expectException(CacheException::class);
+
+        new FileCache($root->url());
+    }
+
+    public function testUncreatableCachePath(): void
     {
         $root = vfsStream::setup();
         $root->chmod(0);
 
+        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: .+ cannot be created\.$/');
         $this->expectException(CacheException::class);
 
         new FileCache($root->url());
+    }
+
+    public function testNonDirectoryCachePath(): void
+    {
+        $root = vfsStream::setup();
+        $directory = new class('some-dir', 0777) extends vfsStreamDirectory {
+            public function addChild(vfsStreamContent $child): void
+            {
+                trigger_error('Test warning', E_USER_WARNING);
+            }
+        };
+        $root->addChild($directory);
+
+        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: Path at .+ cannot be created: Test warning$/');
+        $this->expectException(CacheException::class);
+
+        new FileCache($root->url() . '/some-dir');
     }
 
     private function createRoot(): vfsStreamDirectory
@@ -112,5 +143,14 @@ class FileCacheTest extends TestCase
         return new FileCache(
             ($root ?? $this->createRoot())->url()
         );
+    }
+
+    /**
+     * Some tests require knowing upfront the directory name of where the cache will end up, which is an implementation
+     * detail found at {@see FileCache::getGherkinVersionHash()}. This function should replicate that behaviour.
+     */
+    private function getCacheDirName(): string
+    {
+        return md5(InstalledVersions::getVersion('behat/gherkin') ?? 'unknown');
     }
 }
