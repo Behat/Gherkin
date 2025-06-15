@@ -15,11 +15,11 @@ use Behat\Gherkin\Exception\CacheException;
 use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
-use Composer\InstalledVersions;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class FileCacheTest extends TestCase
 {
@@ -96,8 +96,9 @@ class FileCacheTest extends TestCase
 
     public function testUnwritableCachePath(): void
     {
-        $root = vfsStream::setup();
-        $root->addChild(new vfsStreamDirectory($this->getCacheDirName(), 0));
+        $root = $this->createRoot();
+        mkdir($root->url() . '/' . $this->getCacheDirName($root), 0);
+        clearstatcache();
 
         $this->expectExceptionMessageMatches('/^Cache path ".+" is not writeable\. Check your filesystem permissions or disable Gherkin file cache\.$/');
         $this->expectException(CacheException::class);
@@ -107,8 +108,8 @@ class FileCacheTest extends TestCase
 
     public function testUncreatableCachePath(): void
     {
-        $root = vfsStream::setup();
-        $root->chmod(0);
+        $root = $this->createRoot();
+        chmod($root->url(), 0);
 
         $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: .+ cannot be created\.$/');
         $this->expectException(CacheException::class);
@@ -118,7 +119,7 @@ class FileCacheTest extends TestCase
 
     public function testNonDirectoryCachePath(): void
     {
-        $root = vfsStream::setup();
+        $root = $this->createRoot();
         $directory = new class('some-dir', 0777) extends vfsStreamDirectory {
             public function addChild(vfsStreamContent $child): void
             {
@@ -145,12 +146,13 @@ class FileCacheTest extends TestCase
         );
     }
 
-    /**
-     * Some tests require knowing upfront the directory name of where the cache will end up, which is an implementation
-     * detail found at {@see FileCache::getGherkinVersionHash()}. This function should replicate that behaviour.
-     */
-    private function getCacheDirName(): string
+    private function getCacheDirName(vfsStreamDirectory $root): string
     {
-        return md5(InstalledVersions::getVersion('behat/gherkin') ?? 'unknown');
+        $this->createCache($root);
+
+        $cacheDirName = ($root->getChildren()[0] ?: throw new RuntimeException('Cache directory not created'))->getName();
+        $root->removeChild($cacheDirName);
+
+        return $cacheDirName;
     }
 }
