@@ -16,7 +16,6 @@ use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -110,6 +109,7 @@ class FileCacheTest extends TestCase
     {
         $root = $this->createRoot();
         chmod($root->url(), 0);
+        clearstatcache();
 
         $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: .+ cannot be created\.$/');
         $this->expectException(CacheException::class);
@@ -120,18 +120,13 @@ class FileCacheTest extends TestCase
     public function testNonDirectoryCachePath(): void
     {
         $root = $this->createRoot();
-        $directory = new class('some-dir', 0777) extends vfsStreamDirectory {
-            public function addChild(vfsStreamContent $child): void
-            {
-                trigger_error('Test warning', E_USER_WARNING);
-            }
-        };
-        $root->addChild($directory);
+        touch($root->url() . '/' . $this->getCacheDirName($root));
+        clearstatcache();
 
-        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: Path at .+ cannot be created: Test warning$/');
+        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: Path at .+ cannot be created: mkdir\(\): Path .+ exists$/');
         $this->expectException(CacheException::class);
 
-        new FileCache($root->url() . '/some-dir');
+        new FileCache($root->url());
     }
 
     private function createRoot(): vfsStreamDirectory
