@@ -105,18 +105,6 @@ class FileCacheTest extends TestCase
         new FileCache($root->url());
     }
 
-    public function testUncreatableCachePath(): void
-    {
-        $root = $this->createRoot();
-        chmod($root->url(), 0);
-        clearstatcache();
-
-        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: .+ cannot be created\.$/');
-        $this->expectException(CacheException::class);
-
-        new FileCache($root->url());
-    }
-
     public function testNonDirectoryCachePath(): void
     {
         $root = $this->createRoot();

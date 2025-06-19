@@ -106,14 +106,22 @@ final class Filesystem
 
     public static function ensureDirectoryExists(string $path): void
     {
+        if (is_dir($path)) {
+            return;
+        }
+
         try {
-            if (!is_dir($path)
-                && !self::callSafely(static fn () => mkdir($path, 0777, true))
-                && !is_dir($path)
-            ) {
-                throw new FilesystemException(sprintf('Path "%s" cannot be created.', $path));
-            }
+            $result = self::callSafely(static fn () => mkdir($path, 0777, true));
+
+            assert($result !== false, 'mkdir() should not return false without emitting a PHP warning');
         } catch (ErrorException $e) {
+            // @codeCoverageIgnoreStart
+            if (is_dir($path)) {
+                // Some other concurrent process created the directory.
+                return;
+            }
+            // @codeCoverageIgnoreEnd
+
             throw new FilesystemException(
                 sprintf('Path at "%s" cannot be created: %s', $path, $e->getMessage()),
                 previous: $e,
