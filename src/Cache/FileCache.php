@@ -48,11 +48,20 @@ class FileCache implements CacheInterface
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::getGherkinVersionHash();
 
-        if (!is_dir($this->path)) {
-            @mkdir($this->path, 0777, true);
+        try {
+            Filesystem::ensureDirectoryExists($this->path);
+        } catch (FilesystemException $ex) {
+            throw new CacheException(
+                sprintf(
+                    'Cache path "%s" cannot be created or is not a directory: %s',
+                    $this->path,
+                    $ex->getMessage(),
+                ),
+                previous: $ex
+            );
         }
 
-        if (!is_writeable($this->path)) {
+        if (!is_writable($this->path)) {
             throw new CacheException(sprintf('Cache path "%s" is not writeable. Check your filesystem permissions or disable Gherkin file cache.', $this->path));
         }
     }
