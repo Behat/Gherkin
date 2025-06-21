@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
+class ScenarioNode implements ScenarioInterface, NamedScenarioInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 

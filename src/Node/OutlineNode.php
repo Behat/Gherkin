@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class OutlineNode implements ScenarioInterface
+class OutlineNode implements ScenarioInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 

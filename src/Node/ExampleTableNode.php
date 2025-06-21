@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class ExampleTableNode extends TableNode implements TaggedNodeInterface
+class ExampleTableNode extends TableNode implements TaggedNodeInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 

@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class BackgroundNode implements ScenarioLikeInterface
+class BackgroundNode implements ScenarioLikeInterface, DescribableNodeInterface
 {
     /**
      * @param StepNode[] $steps
