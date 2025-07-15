@@ -18,6 +18,7 @@ use Behat\Gherkin\Node\ScenarioNode;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class FileCacheTest extends TestCase
 {
@@ -87,16 +88,30 @@ class FileCacheTest extends TestCase
         $cache = $this->createCache();
 
         $this->expectException(CacheException::class);
-        $this->expectExceptionMessageMatches('/^Can not load cache: File "[^"]+" cannot be read: .+$/');
+        $this->expectExceptionMessageMatches('/^Can not load cache: File ".+" cannot be read: .+$/');
 
         $cache->read('missing_file');
     }
 
-    public function testUnwriteableCacheDir(): void
+    public function testUnwritableCachePath(): void
     {
-        $root = vfsStream::setup();
-        $root->chmod(0);
+        $root = $this->createRoot();
+        mkdir($root->url() . '/' . $this->getCacheDirName($root), 0);
+        clearstatcache();
 
+        $this->expectExceptionMessageMatches('/^Cache path ".+" is not writeable\. Check your filesystem permissions or disable Gherkin file cache\.$/');
+        $this->expectException(CacheException::class);
+
+        new FileCache($root->url());
+    }
+
+    public function testNonDirectoryCachePath(): void
+    {
+        $root = $this->createRoot();
+        touch($root->url() . '/' . $this->getCacheDirName($root));
+        clearstatcache();
+
+        $this->expectExceptionMessageMatches('/^Cache path ".+" cannot be created or is not a directory: Path at .+ cannot be created: mkdir\(\): Path .+ exists$/');
         $this->expectException(CacheException::class);
 
         new FileCache($root->url());
@@ -112,5 +127,15 @@ class FileCacheTest extends TestCase
         return new FileCache(
             ($root ?? $this->createRoot())->url()
         );
+    }
+
+    private function getCacheDirName(vfsStreamDirectory $root): string
+    {
+        $this->createCache($root);
+
+        $cacheDirName = ($root->getChildren()[0] ?: throw new RuntimeException('Cache directory not created'))->getName();
+        $root->removeChild($cacheDirName);
+
+        return $cacheDirName;
     }
 }
