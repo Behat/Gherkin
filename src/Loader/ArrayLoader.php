@@ -35,31 +35,17 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-type TTableHash array<int, list<string|int>>
  * @phpstan-type TPyStringHash array{type: 'pystring', line?: int, text: string}
  * @phpstan-type TArrayResource array{feature: TFeatureHash}|array{features: array<int, TFeatureHash>}
+ *
+ * @phpstan-extends AbstractLoader<TArrayResource>
  */
-class ArrayLoader implements LoaderInterface
+class ArrayLoader extends AbstractLoader
 {
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
     public function supports(mixed $resource)
     {
         return is_array($resource) && (isset($resource['features']) || isset($resource['feature']));
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @phpstan-param TArrayResource $resource
-     *
-     * @return list<FeatureNode>
-     */
-    public function load(mixed $resource)
+    protected function doLoad(mixed $resource): array
     {
         $features = [];
 
