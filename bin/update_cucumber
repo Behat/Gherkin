@@ -20,6 +20,8 @@ if (ini_get('zend.assertions') !== '1') {
 
 // This script runs before composer install (because it updates composer.json) therefore cannot autoload our files.
 require_once __DIR__ . '/../src/Filesystem.php';
+require_once __DIR__ . '/../src/Exception/Exception.php';
+require_once __DIR__ . '/../src/Exception/FilesystemException.php';
 
 $updater = new
 /**
@@ -114,7 +116,7 @@ class {
     {
         // GitHub requires API requests to send a user_agent header for tracing
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
-        $releases = Behat\Gherkin\Filesystem::readJsonFileArray('https://api.github.com/repos/$repo/releases');
+        $releases = Behat\Gherkin\Filesystem::readJsonFileArray("https://api.github.com/repos/$repo/releases");
 
         assert($releases !== [], 'github should have returned at least one release');
 
