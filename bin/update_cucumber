@@ -18,6 +18,9 @@ if (ini_get('zend.assertions') !== '1') {
     exit(1);
 }
 
+// This script runs before composer install (because it updates composer.json) therefore cannot autoload our files.
+require_once __DIR__ . '/../src/Filesystem.php';
+
 $updater = new
 /**
  * @phpstan-type TCurrentVersionArray array{tag_name: string, hash: string, composer_version: string}
