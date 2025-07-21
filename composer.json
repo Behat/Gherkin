@@ -22,7 +22,7 @@
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/gherkin-monorepo": "dev-gherkin-v33.0.0",
-        "friendsofphp/php-cs-fixer": "^3.65",
+        "friendsofphp/php-cs-fixer": "^3.77",
         "phpstan/phpstan": "^2",
         "phpstan/extension-installer": "^1",
         "phpstan/phpstan-phpunit": "^2",
