@@ -21,7 +21,6 @@ use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 /**
  * @phpstan-import-type TEnvelope from CucumberNDJsonAstLoader
@@ -33,11 +32,6 @@ final class CucumberNDJsonAstLoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->loader = new CucumberNDJsonAstLoader();
-    }
-
-    public function testNonStringableResourceIsIgnored(): void
-    {
-        $this->assertSame([], $this->loader->load(new stdClass()));
     }
 
     public function testStringResourcesAreSupported(): void

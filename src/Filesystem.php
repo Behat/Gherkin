@@ -55,7 +55,7 @@ final class Filesystem
         assert(is_array($result), 'File must contain JSON with an array or object at its root');
         assert(
             $result === array_filter($result, is_string(...), ARRAY_FILTER_USE_KEY),
-            'File must contain JSON an object at its root',
+            'File must contain a JSON object at its root',
         );
 
         return $result;
