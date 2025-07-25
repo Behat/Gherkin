@@ -314,7 +314,6 @@ class ArrayLoaderTest extends TestCase
 
     public function testLoadStepArguments(): void
     {
-        // @phpstan-ignore argument.type
         $features = $this->loader->load([
             'features' => [
                 [
@@ -327,8 +326,8 @@ class ArrayLoaderTest extends TestCase
                                         'type' => 'table',
                                         'rows' => [
                                             ['key', 'val'],
-                                            [1, 2],
-                                            [3, 4],
+                                            ['1', '2'],
+                                            ['3', '4'],
                                         ],
                                     ],
                                 ],

@@ -26,11 +26,10 @@ use Behat\Gherkin\Node\TableNode;
  *
  * @phpstan-type TFeatureHash array{title?: string|null, description?: string|null, tags?: list<string>, keyword?: string, language?: string, line?: int, background?: TBackgroundHash|null, scenarios?: array<int, TScenarioHash|TOutlineHash>}
  * @phpstan-type TBackgroundHash array{title?: string|null, keyword?: string, line?: int, steps?: array<int, TStepHash>}
- * @phpstan-type TScenarioHash array{type?: 'scenario', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>}
+ * @phpstan-type TScenarioHash array{title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>}
  * @phpstan-type TOutlineHash array{type: 'outline', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>, examples?: TExampleTableHash|array<array-key, TExampleHash>}
- * @phpstan-type TExampleHash TTaggedExampleTableHash|TExampleTableHash
+ * @phpstan-type TExampleHash array{table: TExampleTableHash, tags?: list<string>}|TExampleTableHash
  * @phpstan-type TExampleTableHash array<int<1, max>, list<string>>
- * @phpstan-type TTaggedExampleTableHash array{table: TExampleTableHash, tags?: list<string>}
  * @phpstan-type TStepHash array{keyword_type?: string, type?: string, text: string, keyword?: string, line?: int, arguments?: array<array-key, TArgumentHash>}
  * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPyStringHash
  * @phpstan-type TTableHash array<int, list<string>>
@@ -88,7 +87,7 @@ class ArrayLoader extends AbstractLoader
 
         $scenarios = [];
         foreach ((array) $hash['scenarios'] as $scenarioIterator => $scenarioHash) {
-            if ($this->isScenarioOutlineHash($scenarioHash)) {
+            if (isset($scenarioHash['type']) && $scenarioHash['type'] === 'outline') {
                 $scenarios[] = $this->loadOutlineHash($scenarioHash, $scenarioIterator);
             } else {
                 $scenarios[] = $this->loadScenarioHash($scenarioHash, $scenarioIterator);
@@ -170,14 +169,13 @@ class ArrayLoader extends AbstractLoader
 
         $steps = $this->loadStepsHash($hash['steps']);
 
-        if (isset($hash['examples']['keyword']) && is_string($hash['examples']['keyword'])) {
+        if (isset($hash['examples']['keyword'])) {
             $examplesKeyword = $hash['examples']['keyword'];
+            assert(is_string($examplesKeyword));
             unset($hash['examples']['keyword']);
         } else {
             $examplesKeyword = 'Examples';
         }
-
-        assert($this->isExampleTableHash($hash['examples']));
 
         $examples = $this->loadExamplesHash($hash['examples'], $examplesKeyword);
 
@@ -269,73 +267,33 @@ class ArrayLoader extends AbstractLoader
      * Processes cases when examples are in the form of array of arrays
      * OR in the form of array of objects.
      *
-     * @phpstan-param TExampleHash|list<TExampleHash> $examplesHash
+     * @phpstan-param TExampleHash|array<array-key, TExampleHash> $examplesHash
      *
      * @return list<ExampleTableNode>
      */
     private function loadExamplesHash(array $examplesHash, string $examplesKeyword): array
     {
-        if ($this->isSingleExampleHash($examplesHash)) {
+        if (!isset($examplesHash[0])) {
             // examples as a single table - create a list with the one element
-            return $this->loadExamplesHash([$examplesHash], $examplesKeyword);
+            // @phpstan-ignore argument.type
+            return [new ExampleTableNode($examplesHash, $examplesKeyword)];
         }
 
         $examples = [];
 
         foreach ($examplesHash as $exampleHash) {
-            if ($this->isTaggedExampleTableHash($exampleHash)) {
+            if (isset($exampleHash['table'])) {
                 // we have examples as objects, hence there could be tags
-                $examples[] = new ExampleTableNode(
-                    $exampleHash['table'],
-                    $examplesKeyword,
-                    $exampleHash['tags'] ?? [],
-                );
-            } elseif ($this->isExampleTableHash($exampleHash)) {
+                $exHashTags = $exampleHash['tags'] ?? [];
+                // @phpstan-ignore argument.type,argument.type
+                $examples[] = new ExampleTableNode($exampleHash['table'], $examplesKeyword, $exHashTags);
+            } else {
                 // we have examples as arrays
+                // @phpstan-ignore argument.type
                 $examples[] = new ExampleTableNode($exampleHash, $examplesKeyword);
             }
         }
 
         return $examples;
-    }
-
-    /**
-     * @param array<array-key, mixed> $exampleHash
-     *
-     * @phpstan-assert-if-true TTaggedExampleTableHash $exampleHash
-     */
-    private function isTaggedExampleTableHash(array $exampleHash): bool
-    {
-        return isset($exampleHash['table']);
-    }
-
-    /**
-     * @param array<array-key, mixed> $exampleHash
-     *
-     * @phpstan-assert-if-true TExampleTableHash $exampleHash
-     */
-    private function isExampleTableHash(array $exampleHash): bool
-    {
-        return !$this->isTaggedExampleTableHash($exampleHash);
-    }
-
-    /**
-     * @phpstan-param TExampleHash|list<TExampleHash> $examplesHash
-     *
-     * @phpstan-assert-if-true TExampleHash $examplesHash
-     */
-    private function isSingleExampleHash(array $examplesHash): bool
-    {
-        return !isset($examplesHash[0]);
-    }
-
-    /**
-     * @param array<string, mixed> $scenarioHash
-     *
-     * @phpstan-assert-if-true TOutlineHash $scenarioHash
-     */
-    private function isScenarioOutlineHash(array $scenarioHash): bool
-    {
-        return isset($scenarioHash['type']) && $scenarioHash['type'] === 'outline';
     }
 }

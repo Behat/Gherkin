@@ -22,7 +22,6 @@ use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
 use RuntimeException;
-use Stringable;
 
 /**
  * Loads a feature from cucumber's messages JSON format.
@@ -61,10 +60,6 @@ class CucumberNDJsonAstLoader extends AbstractLoader
 
     protected function doLoad(mixed $resource): array
     {
-        if (!(is_string($resource) || $resource instanceof Stringable)) {
-            return [];
-        }
-
         return array_values(
             array_filter(
                 array_map(
