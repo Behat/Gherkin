@@ -42,6 +42,7 @@ final class StepNodeComparator extends ObjectComparator
         unset($array['keywordType']);
 
         if ($this->compatibilityMode->shouldRemoveStepKeywordSpace()) {
+            assert(is_string($array['keyword']));
             $array['keyword'] = trim($array['keyword']);
         }
 

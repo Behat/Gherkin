@@ -11,11 +11,15 @@
 namespace Tests\Behat\Gherkin\Keywords;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
+use Behat\Gherkin\Dialect\GherkinDialect;
 use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\DialectKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Node\StepNode;
 
+/**
+ * @phpstan-import-type TDialectData from GherkinDialect
+ */
 class DialectKeywordsTest extends KeywordsTestCase
 {
     public function testFailsForEmptyLanguage(): void
@@ -35,26 +39,28 @@ class DialectKeywordsTest extends KeywordsTestCase
 
     protected static function getKeywordsArray(): array
     {
-        $data = Filesystem::readJsonFileArray(__DIR__ . '/../../resources/gherkin-languages.json');
+        /**
+         * @var array<string, TDialectData> $languageData
+         */
+        $languageData = Filesystem::readJsonFileHash(__DIR__ . '/../../resources/gherkin-languages.json');
 
-        $keywordsArray = [];
-
-        foreach ($data as $lang => $dialect) {
-            $keywordsArray[$lang] = [
-                'feature' => implode('|', $dialect['feature']),
-                'background' => implode('|', $dialect['background']),
-                'scenario' => implode('|', $dialect['scenario']),
-                'scenario_outline' => implode('|', $dialect['scenarioOutline']),
-                'examples' => implode('|', $dialect['examples']),
-                'given' => implode('|', $dialect['given']),
-                'when' => implode('|', $dialect['when']),
-                'then' => implode('|', $dialect['then']),
-                'and' => implode('|', $dialect['and']),
-                'but' => implode('|', $dialect['but']),
-            ];
-        }
-
-        return $keywordsArray;
+        return array_map(
+            static function ($dialect) {
+                return [
+                    'feature' => implode('|', $dialect['feature']),
+                    'background' => implode('|', $dialect['background']),
+                    'scenario' => implode('|', $dialect['scenario']),
+                    'scenario_outline' => implode('|', $dialect['scenarioOutline']),
+                    'examples' => implode('|', $dialect['examples']),
+                    'given' => implode('|', $dialect['given']),
+                    'when' => implode('|', $dialect['when']),
+                    'then' => implode('|', $dialect['then']),
+                    'and' => implode('|', $dialect['and']),
+                    'but' => implode('|', $dialect['but']),
+                ];
+            },
+            $languageData,
+        );
     }
 
     protected static function getSteps(string $keywords, string $text, int &$line, ?string $keywordType): array

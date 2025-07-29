@@ -13,6 +13,8 @@ namespace Behat\Gherkin\Loader;
 use Behat\Gherkin\Gherkin;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SplFileInfo;
+use Traversable;
 
 /**
  * Directory contents loader.
@@ -46,6 +48,7 @@ class DirectoryLoader extends AbstractFileLoader
     protected function doLoad(mixed $resource): array
     {
         $path = $this->getAbsolutePath($resource);
+        /** @var Traversable<SplFileInfo> $iterator */
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS)
         );

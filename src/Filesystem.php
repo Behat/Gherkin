@@ -44,15 +44,19 @@ final class Filesystem
     }
 
     /**
-     * @return array<array-key, mixed>
+     * @return array<string, mixed>
      *
      * @throws JsonException|FilesystemException
      */
-    public static function readJsonFileArray(string $fileName): array
+    public static function readJsonFileHash(string $fileName): array
     {
         $result = json_decode(self::readFile($fileName), true, flags: JSON_THROW_ON_ERROR);
 
-        assert(is_array($result), 'File must contain JSON with an array at its root');
+        assert(is_array($result), 'File must contain JSON with an array or object at its root');
+        assert(
+            $result === array_filter($result, is_string(...), ARRAY_FILTER_USE_KEY),
+            'File must contain a JSON object at its root',
+        );
 
         return $result;
     }

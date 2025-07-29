@@ -326,8 +326,8 @@ class ArrayLoaderTest extends TestCase
                                         'type' => 'table',
                                         'rows' => [
                                             ['key', 'val'],
-                                            [1, 2],
-                                            [3, 4],
+                                            ['1', '2'],
+                                            ['3', '4'],
                                         ],
                                     ],
                                 ],
