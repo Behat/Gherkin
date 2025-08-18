@@ -70,7 +70,7 @@ jobs:
               core.setOutput('commit_branch', newBranch)
             }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ steps.check-existing-pr.outputs.checkout_branch }}
           persist-credentials: 'false'
