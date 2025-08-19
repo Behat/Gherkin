@@ -36,7 +36,7 @@ return array (
     'given' => 'Gegewe|*',
     'name' => 'Afrikaans',
     'native' => 'Afrikaans',
-    'rule' => 'Regel',
+    'rule' => 'Reel|Reël',
     'scenario' => 'Voorbeeld|Situasie',
     'scenario_outline' => 'Situasie Uiteensetting',
     'then' => 'Dan|*',
