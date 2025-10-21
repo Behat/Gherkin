@@ -125,7 +125,8 @@ class NDJsonAstParser
                             self::getSteps($child['scenario']['steps']),
                             $tables,
                             $child['scenario']['keyword'],
-                            $child['scenario']['location']['line']
+                            $child['scenario']['location']['line'],
+                            $child['scenario']['description']
                         );
                     }
 
@@ -134,7 +135,8 @@ class NDJsonAstParser
                         self::getTags($child['scenario']),
                         self::getSteps($child['scenario']['steps']),
                         $child['scenario']['keyword'],
-                        $child['scenario']['location']['line']
+                        $child['scenario']['location']['line'],
+                        $child['scenario']['description']
                     );
                 },
                 array_filter(
@@ -167,7 +169,8 @@ class NDJsonAstParser
             $background['background']['name'],
             self::getSteps($background['background']['steps']),
             $background['background']['keyword'],
-            $background['background']['location']['line']
+            $background['background']['location']['line'],
+            $background['background']['description'],
         );
     }
 
@@ -250,7 +253,9 @@ class NDJsonAstParser
                 return new ExampleTableNode(
                     $table,
                     $tableJson['keyword'],
-                    self::getTags($tableJson)
+                    self::getTags($tableJson),
+                    $tableJson['name'],
+                    $tableJson['description'],
                 );
             },
             $items

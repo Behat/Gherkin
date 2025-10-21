@@ -1,0 +1,1 @@
+{"source":{"data":"Feature: Examples keyword in Background description\n\n    Background: The description can contain some example content\n        Examples:\n        | any   |\n        | thing |\n","mediaType":"text/x.cucumber.gherkin+plain","uri":"../good/examples_keyword_in_background_description.feature"}}

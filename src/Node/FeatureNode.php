@@ -21,7 +21,7 @@ use function strlen;
  *
  * @final since 4.15.0
  */
-class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
+class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 
