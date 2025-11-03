@@ -19,8 +19,8 @@ This project follows the [Behat release and version support policies]
 * Introduce a DialectProviderInterface matching the modern cucumber API. This will replace the existing Keywords API in
   a future major release. By @stof in [#350](https://github.com/Behat/Gherkin/pull/350)
 * Introduce configurable `GherkinCompatibilityMode` to control how gherkin files are parsed. In the default `legacy` mode,
-  there is no change to parsing. In the new **experimental** `gherkin-32` mode, files will be parsed consistently with the
-  official cucumber/gherkin parsers. In this first release of the new mode:
+  there is no change to parsing. In the new **experimental** `gherkin-32` mode, files will in future be parsed
+  consistently with the official cucumber/gherkin parsers. This mode is not yet complete - in this first release:
   - Whitespace within description nodes will not be trimmed by @acoulton in [#349](https://github.com/Behat/Gherkin/pull/349)
   - Invalid language tags will cause an exception by @stof in [#357](https://github.com/Behat/Gherkin/pull/357)
   - Step keywords will not be trimmed by @stof in [#360](https://github.com/Behat/Gherkin/pull/360)
