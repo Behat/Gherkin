@@ -43,6 +43,21 @@ final class Filesystem
         return $result;
     }
 
+    public static function writeFile(string $fileName, string $content): void
+    {
+        self::ensureDirectoryExists(dirname($fileName));
+        try {
+            $result = self::callSafely(static fn () => file_put_contents($fileName, $content));
+        } catch (ErrorException $e) {
+            throw new FilesystemException(
+                sprintf('File "%s" cannot be written: %s', $fileName, $e->getMessage()),
+                previous: $e,
+            );
+        }
+
+        assert($result !== false, 'file_put_contents() should not return false without emitting a PHP warning');
+    }
+
     /**
      * @return array<mixed>
      *

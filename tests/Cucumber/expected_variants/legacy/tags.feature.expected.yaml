@@ -1,0 +1,3 @@
+Behat\Gherkin\Exception\UnexpectedTaggedNodeException:
+    message: 'Text can not be tagged, but it is on line: 36 in file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/tags.feature'
+    code: 0

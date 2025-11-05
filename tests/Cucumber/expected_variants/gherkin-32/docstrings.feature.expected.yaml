@@ -1,0 +1,127 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'DocString variations'
+    description: ~
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: minimalistic
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'Given '
+                            text: 'a simple DocString'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line (no indent)'
+                                            - '  second line (indented with two spaces)'
+                                            - ''
+                                            - 'third line was empty'
+                                        line: 5
+                            line: 4
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'Given '
+                            text: 'a DocString with content type'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - '<foo>'
+                                            - '  <bar />'
+                                            - '</foo>'
+                                        line: 12
+                            line: 11
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with wrong indentation'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'wrongly indented line'
+                                        line: 18
+                            line: 17
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with alternative separator'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line'
+                                            - 'second line'
+                                        line: 22
+                            line: 21
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with normal separator inside'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line'
+                                            - '"""'
+                                            - 'third line'
+                                        line: 27
+                            line: 26
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with alternative separator inside'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line'
+                                            - '```'
+                                            - 'third line'
+                                        line: 33
+                            line: 32
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with escaped separator inside'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line'
+                                            - '\"\"\"'
+                                            - 'third line'
+                                        line: 39
+                            line: 38
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'And '
+                            text: 'a DocString with an escaped alternative separator inside'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'first line'
+                                            - \`\`\`
+                                            - 'third line'
+                                        line: 45
+                            line: 44
+                keyword: Scenario
+                line: 3
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/docstrings.feature
+    line: 1

@@ -1,0 +1,24 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: Minimal
+    description: ~
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: minimalistic
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 6
+                keyword: Scenario
+                line: 5
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/bad/invalid_language.feature
+    line: 3
