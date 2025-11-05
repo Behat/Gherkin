@@ -1,0 +1,24 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: ~
+    description: '  Rule:'
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: ~
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: 'Given '
+                            text: text
+                            arguments: []
+                            line: 5
+                keyword: Scenario
+                line: 4
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/rule_without_name_and_description.feature
+    line: 1
