@@ -21,11 +21,14 @@ use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
+use RuntimeException;
 
 /**
  * Loads a feature from cucumber's messages JSON format.
  *
  * Lines in the ndjson file are expected to match the Cucumber Messages JSON schema defined at https://github.com/cucumber/messages/tree/main/jsonschema
+ *
+ * @deprecated This loader is deprecated and will be removed in 5.0
  *
  * @phpstan-type TLocation array{line: int, column?: int}
  * @phpstan-type TBackground array{location: TLocation, keyword: string, name: string, description: string, steps: list<TStep>, id: string}
@@ -45,24 +48,28 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-type TGherkinDocument array{uri?: string, feature?: TFeature, comments: list<TComment>}
  * // We only care about the gherkinDocument messages for our use case, so this does not describe the envelope fully
  * @phpstan-type TEnvelope array{gherkinDocument?: TGherkinDocument, ...}
+ *
+ * @extends AbstractLoader<string>
  */
-class CucumberNDJsonAstLoader implements LoaderInterface
+class CucumberNDJsonAstLoader extends AbstractLoader
 {
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource);
     }
 
-    public function load($resource)
+    protected function doLoad(mixed $resource): array
     {
         return array_values(
             array_filter(
                 array_map(
                     static function ($line) use ($resource) {
                         // As we load data from the official Cucumber project, we assume the data matches the JSON schema.
+                        // @phpstan-ignore argument.type
                         return self::getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
                     },
                     file($resource)
+                        ?: throw new RuntimeException("Could not load Cucumber json file: $resource."),
                 )
             )
         );
@@ -100,7 +107,7 @@ class CucumberNDJsonAstLoader implements LoaderInterface
     private static function getTags(array $json): array
     {
         return array_map(
-            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']),
+            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
             $json['tags']
         );
     }

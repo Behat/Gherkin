@@ -10,7 +10,9 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
@@ -21,6 +23,7 @@ use Behat\Gherkin\Parser;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 final class ParserTest extends TestCase
 {
@@ -73,6 +76,40 @@ final class ParserTest extends TestCase
         $this->assertSame([], $feature2->getTags());
     }
 
+    public function testParserIgnoresInvalidLanguageInLegacyMode(): void
+    {
+        $feature = $this->createGherkinParser()->parse(
+            <<<'FEATURE'
+            #language:no-such
+
+            Feature: Minimal
+
+              Scenario: minimalistic
+                Given the minimalism
+            FEATURE,
+        );
+
+        $this->assertInstanceOf(FeatureNode::class, $feature);
+        $this->assertCount(1, $feature->getScenarios());
+    }
+
+    public function testParserIgnoresInvalidLanguageInLegacyModeWithDialectProvider(): void
+    {
+        $feature = $this->createGherkinParser(new Lexer(new CucumberDialectProvider()))->parse(
+            <<<'FEATURE'
+            #language:no-such
+
+            Feature: Minimal
+
+              Scenario: minimalistic
+                Given the minimalism
+            FEATURE,
+        );
+
+        $this->assertInstanceOf(FeatureNode::class, $feature);
+        $this->assertCount(1, $feature->getScenarios());
+    }
+
     public function testSingleCharacterStepSupport(): void
     {
         $feature = $this->createGherkinParser()->parse(
@@ -99,7 +136,7 @@ final class ParserTest extends TestCase
 
         $oldMaxNestingLevel = ini_set('xdebug.max_nesting_level', 256);
         if ($oldMaxNestingLevel === false) {
-            throw new \RuntimeException('Could not set INI setting value');
+            throw new RuntimeException('Could not set INI setting value');
         }
 
         try {
@@ -116,6 +153,17 @@ final class ParserTest extends TestCase
         $this->expectExceptionObject($expectedException);
 
         $this->createGherkinParser()->parse($featureText, '/fake.feature');
+    }
+
+    public function testInexistentFileParserError(): void
+    {
+        $parser = $this->createGherkinParser();
+
+        $this->expectExceptionObject(new ParserException(
+            'Cannot parse file: File "inexistent-file.feature" cannot be read: file_get_contents(inexistent-file.feature): Failed to open stream: No such file or directory',
+        ));
+
+        $parser->parseFile('inexistent-file.feature');
     }
 
     /**
@@ -222,9 +270,7 @@ final class ParserTest extends TestCase
 
     private function parseFixture(string $fixture): ?FeatureNode
     {
-        $file = __DIR__ . "/Fixtures/features/$fixture";
-
-        return $this->createGherkinParser()->parse(Filesystem::readFile($file), $file);
+        return $this->createGherkinParser()->parseFile(__DIR__ . "/Fixtures/features/$fixture");
     }
 
     private function parseEtalon(string $etalon): FeatureNode

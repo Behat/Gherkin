@@ -11,18 +11,21 @@
 namespace Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Parser;
+use Behat\Gherkin\ParserInterface;
 
 /**
  * Gherkin *.feature files loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @extends AbstractFileLoader<string>
  */
 class GherkinFileLoader extends AbstractFileLoader
 {
     /**
-     * @var Parser
+     * @var ParserInterface
      */
     protected $parser;
     /**
@@ -30,13 +33,7 @@ class GherkinFileLoader extends AbstractFileLoader
      */
     protected $cache;
 
-    /**
-     * Initializes loader.
-     *
-     * @param Parser $parser Parser
-     * @param CacheInterface|null $cache Cache layer
-     */
-    public function __construct(Parser $parser, ?CacheInterface $cache = null)
+    public function __construct(ParserInterface $parser, ?CacheInterface $cache = null)
     {
         $this->parser = $parser;
         $this->cache = $cache;
@@ -45,8 +42,6 @@ class GherkinFileLoader extends AbstractFileLoader
     /**
      * Sets cache layer.
      *
-     * @param CacheInterface $cache Cache layer
-     *
      * @return void
      */
     public function setCache(CacheInterface $cache)
@@ -54,14 +49,7 @@ class GherkinFileLoader extends AbstractFileLoader
         $this->cache = $cache;
     }
 
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource)
             && ($path = $this->findAbsolutePath($resource)) !== false
@@ -69,18 +57,11 @@ class GherkinFileLoader extends AbstractFileLoader
             && pathinfo($path, PATHINFO_EXTENSION) === 'feature';
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param string $resource Resource to load
-     *
-     * @return list<FeatureNode>
-     */
-    public function load($resource)
+    protected function doLoad(mixed $resource): array
     {
         $path = $this->getAbsolutePath($resource);
         if ($this->cache) {
-            if ($this->cache->isFresh($path, filemtime($path))) {
+            if ($this->cache->isFresh($path, Filesystem::getLastModified($path))) {
                 $feature = $this->cache->read($path);
             } elseif (null !== $feature = $this->parseFeature($path)) {
                 $this->cache->write($path, $feature);
@@ -99,10 +80,8 @@ class GherkinFileLoader extends AbstractFileLoader
      *
      * @return FeatureNode|null
      */
-    protected function parseFeature($path)
+    protected function parseFeature(string $path)
     {
-        $content = file_get_contents($path);
-
-        return $this->parser->parse($content, $path);
+        return $this->parser->parseFile($path);
     }
 }

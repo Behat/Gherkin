@@ -14,6 +14,8 @@ namespace Behat\Gherkin\Node;
  * Represents Gherkin PyString argument.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class PyStringNode implements ArgumentInterface
 {

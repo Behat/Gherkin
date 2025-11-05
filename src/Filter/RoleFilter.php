@@ -30,7 +30,7 @@ class RoleFilter extends SimpleFilter
      *
      * @param string $role Approved role wildcard
      */
-    public function __construct($role)
+    public function __construct(string $role)
     {
         $this->pattern = sprintf(
             '/as an? %s[$\n]/i',

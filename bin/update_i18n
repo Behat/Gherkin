@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 $gherkinFile = __DIR__ . '/../vendor/cucumber/gherkin-monorepo/gherkin-languages.json';
-$gherkinLanguages = json_decode(file_get_contents($gherkinFile) ?: '', true, 512, JSON_THROW_ON_ERROR);
-assert(is_array($gherkinLanguages));
+$gherkinLanguages = Behat\Gherkin\Filesystem::readJsonFileHash($gherkinFile);
 $array = [];
 
 foreach ($gherkinLanguages as $lang => $keywords) {

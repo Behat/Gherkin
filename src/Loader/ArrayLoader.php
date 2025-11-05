@@ -26,40 +26,26 @@ use Behat\Gherkin\Node\TableNode;
  *
  * @phpstan-type TFeatureHash array{title?: string|null, description?: string|null, tags?: list<string>, keyword?: string, language?: string, line?: int, background?: TBackgroundHash|null, scenarios?: array<int, TScenarioHash|TOutlineHash>}
  * @phpstan-type TBackgroundHash array{title?: string|null, keyword?: string, line?: int, steps?: array<int, TStepHash>}
- * @phpstan-type TScenarioHash array{type?: 'scenario', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>}
+ * @phpstan-type TScenarioHash array{title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>}
  * @phpstan-type TOutlineHash array{type: 'outline', title?: string|null, tags?: list<string>, keyword?: string, line?: int, steps?: array<int, TStepHash>, examples?: TExampleTableHash|array<array-key, TExampleHash>}
  * @phpstan-type TExampleHash array{table: TExampleTableHash, tags?: list<string>}|TExampleTableHash
  * @phpstan-type TExampleTableHash array<int<1, max>, list<string>>
  * @phpstan-type TStepHash array{keyword_type?: string, type?: string, text: string, keyword?: string, line?: int, arguments?: array<array-key, TArgumentHash>}
- * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPySstringHash
- * @phpstan-type TTableHash array<int, list<string|int>>
- * @phpstan-type TPySstringHash array{type: 'pystring', line?: int, text: string}
+ * @phpstan-type TArgumentHash array{type: 'table', rows: TTableHash}|TPyStringHash
+ * @phpstan-type TTableHash array<int, list<string>>
+ * @phpstan-type TPyStringHash array{type: 'pystring', line?: int, text: string}
  * @phpstan-type TArrayResource array{feature: TFeatureHash}|array{features: array<int, TFeatureHash>}
+ *
+ * @phpstan-extends AbstractLoader<TArrayResource>
  */
-class ArrayLoader implements LoaderInterface
+class ArrayLoader extends AbstractLoader
 {
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_array($resource) && (isset($resource['features']) || isset($resource['feature']));
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @phpstan-param TArrayResource $resource
-     *
-     * @return list<FeatureNode>
-     */
-    public function load($resource)
+    protected function doLoad(mixed $resource): array
     {
         $features = [];
 
@@ -185,6 +171,7 @@ class ArrayLoader implements LoaderInterface
 
         if (isset($hash['examples']['keyword'])) {
             $examplesKeyword = $hash['examples']['keyword'];
+            assert(is_string($examplesKeyword));
             unset($hash['examples']['keyword']);
         } else {
             $examplesKeyword = 'Examples';
@@ -260,7 +247,7 @@ class ArrayLoader implements LoaderInterface
     /**
      * Loads PyString from provided hash.
      *
-     * @phpstan-param TPySstringHash $hash
+     * @phpstan-param TPyStringHash $hash
      *
      * @return PyStringNode
      */
@@ -288,6 +275,7 @@ class ArrayLoader implements LoaderInterface
     {
         if (!isset($examplesHash[0])) {
             // examples as a single table - create a list with the one element
+            // @phpstan-ignore argument.type
             return [new ExampleTableNode($examplesHash, $examplesKeyword)];
         }
 
@@ -297,9 +285,11 @@ class ArrayLoader implements LoaderInterface
             if (isset($exampleHash['table'])) {
                 // we have examples as objects, hence there could be tags
                 $exHashTags = $exampleHash['tags'] ?? [];
+                // @phpstan-ignore argument.type,argument.type
                 $examples[] = new ExampleTableNode($exampleHash['table'], $examplesKeyword, $exHashTags);
             } else {
                 // we have examples as arrays
+                // @phpstan-ignore argument.type
                 $examples[] = new ExampleTableNode($exampleHash, $examplesKeyword);
             }
         }

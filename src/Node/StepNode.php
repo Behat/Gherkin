@@ -16,6 +16,8 @@ use Behat\Gherkin\Exception\NodeException;
  * Represents Gherkin Step.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class StepNode implements NodeInterface
 {

@@ -22,7 +22,7 @@ class ParserResultDumper
     ) {
     }
 
-    public function dump(FeatureNode|ParserException $result): string
+    public function dump(FeatureNode|ParserException|null $result): string
     {
         if ($result instanceof ParserException) {
             $values = $this->dumpParserExceptionValues($result);

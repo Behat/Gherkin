@@ -10,7 +10,11 @@
 
 namespace Behat\Gherkin;
 
+use Behat\Gherkin\Dialect\DialectProviderInterface;
+use Behat\Gherkin\Dialect\GherkinDialect;
+use Behat\Gherkin\Dialect\KeywordsDialectProvider;
 use Behat\Gherkin\Exception\LexerException;
+use Behat\Gherkin\Exception\NoSuchLanguageException;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use LogicException;
 
@@ -21,7 +25,18 @@ use function assert;
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-type TToken array{type: string, line: int, value: string|null, deferred: bool, tags?: list<string>, keyword?: string, keyword_type?: string, text?: string, indent?: int, columns?: list<string>}
+ * @final since 4.15.0
+ *
+ * @phpstan-type TStepKeyword 'Given'|'When'|'Then'|'And'|'But'
+ * @phpstan-type TTitleKeyword 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'
+ * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|'Step'|TTitleKeyword
+ * @phpstan-type TToken TStringValueToken|TNullValueToken|TTitleToken|TStepToken|TTagToken|TTableRowToken
+ * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
+ * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
+ * @phpstan-type TTitleToken array{type: TTitleKeyword, value: null|non-empty-string, line: int, deferred: bool, keyword: string, indent: int}
+ * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string}
+ * @phpstan-type TTagToken array{type: 'Tag', value: null, line: int, deferred: bool, tags: list<string>}
+ * @phpstan-type TTableRowToken array{type: 'TableRow', value: null, line: int, deferred: bool, columns: list<string>}
  */
 class Lexer
 {
@@ -31,7 +46,10 @@ class Lexer
      * @see https://github.com/cucumber/gherkin/blob/679a87e21263699c15ea635159c6cda60f64af3b/php/src/StringGherkinLine.php#L14
      */
     private const CELL_PATTERN = '/(?<!\\\\)(?:\\\\{2})*\K\\|/u';
-    private string $language;
+
+    private readonly DialectProviderInterface $dialectProvider;
+    private GherkinDialect $currentDialect;
+    private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY;
     /**
      * @var list<string>
      */
@@ -42,13 +60,11 @@ class Lexer
     private int $lineNumber;
     private bool $eos;
     /**
-     * @var array<string, string>
+     * A cache of keyword types associated with each keyword.
+     *
+     * @phpstan-var array<string, non-empty-list<TStepKeyword>>|null
      */
-    private array $keywordsCache = [];
-    /**
-     * @var array<string, list<string>>
-     */
-    private array $stepKeywordTypesCache = [];
+    private ?array $stepKeywordTypesCache = null;
     /**
      * @phpstan-var list<TToken>
      */
@@ -67,8 +83,22 @@ class Lexer
     private ?string $pyStringDelimiter = null;
 
     public function __construct(
-        private readonly KeywordsInterface $keywords,
+        DialectProviderInterface|KeywordsInterface $dialectProvider,
     ) {
+        if ($dialectProvider instanceof KeywordsInterface) {
+            // TODO trigger deprecation
+            $dialectProvider = new KeywordsDialectProvider($dialectProvider);
+        }
+
+        $this->dialectProvider = $dialectProvider;
+    }
+
+    /**
+     * @internal
+     */
+    public function setCompatibilityMode(GherkinCompatibilityMode $compatibilityMode): void
+    {
+        $this->compatibilityMode = $compatibilityMode;
     }
 
     /**
@@ -81,7 +111,7 @@ class Lexer
      *
      * @throws LexerException
      */
-    public function analyse($input, $language = 'en')
+    public function analyse(string $input, string $language = 'en')
     {
         // try to detect unsupported encoding
         if (mb_detect_encoding($input, 'UTF-8', true) !== 'UTF-8') {
@@ -108,9 +138,21 @@ class Lexer
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
 
-        $this->setLanguage($language);
+        if (\func_num_args() > 1) {
+            // @codeCoverageIgnoreStart
+            \assert($language !== '');
+            // TODO trigger deprecation (the Parser does not use this code path)
+            $this->setLanguage($language);
+        // @codeCoverageIgnoreEnd
+        } else {
+            $this->currentDialect = $this->dialectProvider->getDefaultDialect();
+            $this->stepKeywordTypesCache = null;
+        }
     }
 
+    /**
+     * @param non-empty-string $language
+     */
     private function setLanguage(string $language): void
     {
         if (($this->stashedToken !== null) || ($this->deferredObjects !== [])) {
@@ -129,9 +171,14 @@ class Lexer
             // @codeCoverageIgnoreEnd
         }
 
-        $this->keywords->setLanguage($this->language = $language);
-        $this->keywordsCache = [];
-        $this->stepKeywordTypesCache = [];
+        try {
+            $this->currentDialect = $this->dialectProvider->getDialect($language);
+        } catch (NoSuchLanguageException $e) {
+            if (!$this->compatibilityMode->shouldIgnoreInvalidLanguage()) {
+                throw $e;
+            }
+        }
+        $this->stepKeywordTypesCache = null;
     }
 
     /**
@@ -141,7 +188,7 @@ class Lexer
      */
     public function getLanguage()
     {
-        return $this->language;
+        return $this->currentDialect->getLanguage();
     }
 
     /**
@@ -153,7 +200,7 @@ class Lexer
      */
     public function getAdvancedToken()
     {
-        return $this->getStashedToken() ?: $this->getNextToken();
+        return $this->getStashedToken() ?? $this->getNextToken();
     }
 
     /**
@@ -193,16 +240,19 @@ class Lexer
     }
 
     /**
-     * Constructs token with specified parameters.
+     * Constructs a token with specified parameters.
      *
-     * @param string $type Token type
+     * @template T of TTokenType
+     *
      * @param string|null $value Token value
+     *
+     * @phpstan-param T $type Token type
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return ($value is non-empty-string ? array{type: T, value: non-empty-string, line: int, deferred: bool} : array{type: T, value: null, line: int, deferred: bool})
      */
-    public function takeToken($type, $value = null)
+    public function takeToken(string $type, ?string $value = null)
     {
         return [
             'type' => $type,
@@ -253,7 +303,7 @@ class Lexer
     }
 
     /**
-     * Returns stashed token or null if hasn't.
+     * Returns stashed token or null if there isn't one.
      *
      * @return array|null
      *
@@ -268,7 +318,7 @@ class Lexer
     }
 
     /**
-     * Returns deferred token or null if hasn't.
+     * Returns deferred token or null if there isn't one.
      *
      * @return array|null
      *
@@ -295,38 +345,41 @@ class Lexer
     protected function getNextToken()
     {
         return $this->getDeferredToken()
-            ?: $this->scanEOS()
-            ?: $this->scanLanguage()
-            ?: $this->scanComment()
-            ?: $this->scanPyStringOp()
-            ?: $this->scanPyStringContent()
-            ?: $this->scanStep()
-            ?: $this->scanScenario()
-            ?: $this->scanBackground()
-            ?: $this->scanOutline()
-            ?: $this->scanExamples()
-            ?: $this->scanFeature()
-            ?: $this->scanTags()
-            ?: $this->scanTableRow()
-            ?: $this->scanNewline()
-            ?: $this->scanText();
+            ?? $this->scanEOS()
+            ?? $this->scanLanguage()
+            ?? $this->scanComment()
+            ?? $this->scanPyStringOp()
+            ?? $this->scanPyStringContent()
+            ?? $this->scanStep()
+            ?? $this->scanScenario()
+            ?? $this->scanBackground()
+            ?? $this->scanOutline()
+            ?? $this->scanExamples()
+            ?? $this->scanFeature()
+            ?? $this->scanTags()
+            ?? $this->scanTableRow()
+            ?? $this->scanNewline()
+            ?? $this->scanText();
     }
 
     /**
      * Scans for token with specified regex.
      *
      * @param string $regex Regular expression
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTokenType $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
-    protected function scanInput($regex, $type)
+    protected function scanInput(string $regex, string $type)
     {
         if (!preg_match($regex, $this->line, $matches)) {
             return null;
         }
+
+        assert($matches[1] !== '');
 
         $token = $this->takeToken($type, $matches[1]);
         $this->consumeLine();
@@ -338,14 +391,18 @@ class Lexer
      * Scans for token with specified keywords.
      *
      * @param string $keywords Keywords (separated by "|")
-     * @param string $type Expected token type
+     *
+     * @phpstan-param TTitleKeyword $type Expected token type
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
+     *
+     * @deprecated
      */
-    protected function scanInputForKeywords($keywords, $type)
+    protected function scanInputForKeywords(string $keywords, string $type)
     {
+        // @codeCoverageIgnoreStart
         if (!preg_match('/^(\s*)(' . $keywords . '):\s*(.*)/u', $this->line, $matches)) {
             return null;
         }
@@ -375,6 +432,35 @@ class Lexer
         }
 
         return $token;
+        // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * @param list<string> $keywords
+     *
+     * @phpstan-param TTitleKeyword $type
+     *
+     * @phpstan-return TTitleToken|null
+     */
+    private function scanTitleLine(array $keywords, string $type): ?array
+    {
+        $trimmedLine = $this->getTrimmedLine();
+
+        foreach ($keywords as $keyword) {
+            if (str_starts_with($trimmedLine, $keyword . ':')) {
+                $title = trim(mb_substr($trimmedLine, mb_strlen($keyword) + 1));
+
+                $token = $this->takeToken($type, $title);
+                $token['keyword'] = $keyword;
+                $token['indent'] = mb_strlen($this->line, 'utf8') - mb_strlen(ltrim($this->line), 'utf8');
+
+                $this->consumeLine();
+
+                return $token;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -382,7 +468,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanEOS()
     {
@@ -394,33 +480,40 @@ class Lexer
     }
 
     /**
-     * Returns keywords for provided type.
+     * Returns a regex matching the keywords for the provided type.
      *
-     * @param string $type Keyword type
+     * @phpstan-param 'Step'|TTitleKeyword|TStepKeyword $type Keyword type
      *
      * @return string
+     *
+     * @deprecated
      */
-    protected function getKeywords($type)
+    protected function getKeywords(string $type)
     {
-        if (!isset($this->keywordsCache[$type])) {
-            $getter = 'get' . $type . 'Keywords';
-            $keywords = $this->keywords->$getter();
+        // @codeCoverageIgnoreStart
+        $keywords = match ($type) {
+            'Feature' => $this->currentDialect->getFeatureKeywords(),
+            'Background' => $this->currentDialect->getBackgroundKeywords(),
+            'Scenario' => $this->currentDialect->getScenarioKeywords(),
+            'Outline' => $this->currentDialect->getScenarioOutlineKeywords(),
+            'Examples' => $this->currentDialect->getExamplesKeywords(),
+            'Step' => $this->currentDialect->getStepKeywords(),
+            'Given' => $this->currentDialect->getGivenKeywords(),
+            'When' => $this->currentDialect->getWhenKeywords(),
+            'Then' => $this->currentDialect->getThenKeywords(),
+            'And' => $this->currentDialect->getAndKeywords(),
+            'But' => $this->currentDialect->getButKeywords(),
+            default => throw new \InvalidArgumentException(sprintf('Unknown keyword type "%s"', $type)),
+        };
 
-            if ($type === 'Step') {
-                $padded = [];
-                foreach (explode('|', $keywords) as $keyword) {
-                    $padded[] = str_contains($keyword, '<')
-                        ? preg_quote(mb_substr($keyword, 0, -1, 'utf8'), '/') . '\s*'
-                        : preg_quote($keyword, '/') . '\s+';
-                }
+        $keywordsRegex = implode('|', array_map(fn ($keyword) => preg_quote($keyword, '/'), $keywords));
 
-                $keywords = implode('|', $padded);
-            }
-
-            $this->keywordsCache[$type] = $keywords;
+        if ($type === 'Step') {
+            $keywordsRegex = '(?:' . $keywordsRegex . ')\s*';
         }
 
-        return $this->keywordsCache[$type];
+        return $keywordsRegex;
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -428,7 +521,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanFeature()
     {
@@ -437,7 +530,17 @@ class Lexer
             return null;
         }
 
-        return $this->scanInputForKeywords($this->getKeywords('Feature'), 'Feature');
+        $token = $this->scanTitleLine($this->currentDialect->getFeatureKeywords(), 'Feature');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowFeature = false;
+        $this->allowLanguageTag = false;
+        $this->allowMultilineArguments = false;
+
+        return $token;
     }
 
     /**
@@ -445,11 +548,19 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanBackground()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Background'), 'Background');
+        $token = $this->scanTitleLine($this->currentDialect->getBackgroundKeywords(), 'Background');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -457,11 +568,20 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanScenario()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Scenario'), 'Scenario');
+        $token = $this->scanTitleLine($this->currentDialect->getScenarioKeywords(), 'Scenario');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = false;
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -469,11 +589,20 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanOutline()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Outline'), 'Outline');
+        $token = $this->scanTitleLine($this->currentDialect->getScenarioOutlineKeywords(), 'Outline');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = false;
+        $this->allowSteps = true;
+
+        return $token;
     }
 
     /**
@@ -481,11 +610,19 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTitleToken|null
      */
     protected function scanExamples()
     {
-        return $this->scanInputForKeywords($this->getKeywords('Examples'), 'Examples');
+        $token = $this->scanTitleLine($this->currentDialect->getExamplesKeywords(), 'Examples');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = true;
+
+        return $token;
     }
 
     /**
@@ -493,7 +630,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStepToken|null
      */
     protected function scanStep()
     {
@@ -501,15 +638,28 @@ class Lexer
             return null;
         }
 
-        $keywords = $this->getKeywords('Step');
-        if (!preg_match('/^\s*(' . $keywords . ')([^\s].*)/u', $this->line, $matches)) {
+        $trimmedLine = $this->getTrimmedLine();
+        $matchedKeyword = null;
+
+        foreach ($this->currentDialect->getStepKeywords() as $keyword) {
+            if (str_starts_with($trimmedLine, $keyword)) {
+                $matchedKeyword = $keyword;
+                break;
+            }
+        }
+
+        if ($matchedKeyword === null) {
             return null;
         }
 
-        $keyword = trim($matches[1]);
-        $token = $this->takeToken('Step', $keyword);
-        $token['keyword_type'] = $this->getStepKeywordType($keyword);
-        $token['text'] = $matches[2];
+        $text = ltrim(mb_substr($trimmedLine, mb_strlen($matchedKeyword)));
+
+        $nodeKeyword = $this->compatibilityMode->shouldRemoveStepKeywordSpace() ? trim($matchedKeyword) : $matchedKeyword;
+        assert($nodeKeyword !== '');
+
+        $token = $this->takeToken('Step', $nodeKeyword);
+        $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
+        $token['text'] = $text;
 
         $this->consumeLine();
         $this->allowMultilineArguments = true;
@@ -522,7 +672,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanPyStringOp()
     {
@@ -559,7 +709,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanPyStringContent()
     {
@@ -569,7 +719,7 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+        $token['value'] = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
 
         return $token;
     }
@@ -579,7 +729,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTableRowToken|null
      */
     protected function scanTableRow()
     {
@@ -602,9 +752,11 @@ class Lexer
         array_pop($rawColumns);
 
         $token = $this->takeToken('TableRow');
-        $columns = array_map(function ($column) {
-            return trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column));
-        }, $rawColumns);
+        if ($this->compatibilityMode->shouldSupportNewlineEscapeSequenceInTableCell()) {
+            $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\n', '\\\\'], ['|', "\n", '\\'], $column), ' '), $rawColumns);
+        } else {
+            $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
+        }
         $token['columns'] = $columns;
 
         $this->consumeLine();
@@ -617,7 +769,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TTagToken|null
      */
     protected function scanTags()
     {
@@ -636,7 +788,7 @@ class Lexer
 
         $token = $this->takeToken('Tag');
         $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
-        $tags = array_map('trim', $tags);
+        $tags = array_map(trim(...), $tags);
         $token['tags'] = $tags;
 
         return $token;
@@ -647,7 +799,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanLanguage()
     {
@@ -663,10 +815,15 @@ class Lexer
             return null;
         }
 
-        $token = $this->scanInput('/^\s*#\s*language:\s*([\w_\-]+)\s*$/', 'Language');
+        $pattern = $this->compatibilityMode->allowWhitespaceInLanguageTag()
+            ? '/^\s*#\s*language\s*:\s*([\w_\-]+)\s*$/u'
+            : '/^\s*#\s*language:\s*([\w_\-]+)\s*$/';
+
+        $token = $this->scanInput($pattern, 'Language');
 
         if ($token) {
             \assert(\is_string($token['value']));
+            \assert($token['value'] !== ''); // the regex can only match a non-empty value.
             $this->allowLanguageTag = false;
             $this->setLanguage($token['value']);
         }
@@ -679,7 +836,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TStringValueToken|null
      */
     protected function scanComment()
     {
@@ -703,7 +860,7 @@ class Lexer
      *
      * @return array|null
      *
-     * @phpstan-return TToken|null
+     * @phpstan-return TNullValueToken|null
      */
     protected function scanNewline()
     {
@@ -722,7 +879,7 @@ class Lexer
      *
      * @return array
      *
-     * @phpstan-return TToken
+     * @phpstan-return TStringValueToken|TNullValueToken
      */
     protected function scanText()
     {
@@ -737,31 +894,42 @@ class Lexer
      *
      * @param string $native Step keyword in provided language
      *
-     * @return string
+     * @phpstan-return TStepKeyword
      */
-    private function getStepKeywordType($native)
+    private function getStepKeywordType(string $native): string
     {
-        // Consider "*" as a AND keyword so that it is normalized to the previous step type
-        if ($native === '*') {
-            return 'And';
+        if ($this->stepKeywordTypesCache === null) {
+            $this->stepKeywordTypesCache = [];
+            $this->addStepKeywordTypes($this->currentDialect->getGivenKeywords(), 'Given');
+            $this->addStepKeywordTypes($this->currentDialect->getWhenKeywords(), 'When');
+            $this->addStepKeywordTypes($this->currentDialect->getThenKeywords(), 'Then');
+            $this->addStepKeywordTypes($this->currentDialect->getAndKeywords(), 'And');
+            $this->addStepKeywordTypes($this->currentDialect->getButKeywords(), 'But');
         }
 
-        if (empty($this->stepKeywordTypesCache)) {
-            $this->stepKeywordTypesCache = [
-                'Given' => explode('|', $this->keywords->getGivenKeywords()),
-                'When' => explode('|', $this->keywords->getWhenKeywords()),
-                'Then' => explode('|', $this->keywords->getThenKeywords()),
-                'And' => explode('|', $this->keywords->getAndKeywords()),
-                'But' => explode('|', $this->keywords->getButKeywords()),
-            ];
+        if (!isset($this->stepKeywordTypesCache[$native])) { // should not happen when the native keyword belongs to the dialect
+            return 'Given'; // cucumber/gherkin has an UNKNOWN type, but we don't have it.
         }
 
-        foreach ($this->stepKeywordTypesCache as $type => $keywords) {
-            if (in_array($native, $keywords, true) || in_array($native . '<', $keywords, true)) {
-                return $type;
-            }
+        if (\count($this->stepKeywordTypesCache[$native]) === 1) {
+            return $this->stepKeywordTypesCache[$native][0];
         }
 
-        return 'Given';
+        // Consider ambiguous keywords as AND keywords so that they are normalized to the previous step type.
+        // This happens in English for the `* ` keyword for instance.
+        // cucumber/gherkin returns that as an UNKNOWN type, but we don't have it.
+        return 'And';
+    }
+
+    /**
+     * @param list<string> $keywords
+     *
+     * @phpstan-param TStepKeyword $type
+     */
+    private function addStepKeywordTypes(array $keywords, string $type): void
+    {
+        foreach ($keywords as $keyword) {
+            $this->stepKeywordTypesCache[$keyword][] = $type;
+        }
     }
 }

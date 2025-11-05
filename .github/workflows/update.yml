@@ -19,13 +19,13 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: 8.5
           coverage: none
           ini-file: "development"
 
       - name: Check whether to update or create PR
         id: check-existing-pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             async function findOpenPR({owner, repo, branchPrefix}) {
@@ -70,7 +70,7 @@ jobs:
               core.setOutput('commit_branch', newBranch)
             }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ steps.check-existing-pr.outputs.checkout_branch }}
           persist-credentials: 'false'
@@ -79,6 +79,9 @@ jobs:
         id: cucumber
 
       - run: composer update
+        if: steps.cucumber.outputs.cucumber_updated == 'yes'
+
+      - run: cp vendor/cucumber/gherkin-monorepo/gherkin-languages.json resources/
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
 
       - run: bin/update_i18n

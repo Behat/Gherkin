@@ -29,8 +29,9 @@ class CachedArrayKeywords extends ArrayKeywords
      *
      * @param string $file Cached array path
      */
-    public function __construct($file)
+    public function __construct(string $file)
     {
+        // @phpstan-ignore argument.type
         parent::__construct(require $file);
     }
 }

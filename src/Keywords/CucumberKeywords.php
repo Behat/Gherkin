@@ -27,7 +27,7 @@ class CucumberKeywords extends ArrayKeywords
      *
      * @param string $yaml Yaml string or file path
      */
-    public function __construct($yaml)
+    public function __construct(string $yaml)
     {
         if (!str_contains($yaml, "\n") && is_file($yaml)) {
             $content = Yaml::parseFile($yaml);
@@ -39,6 +39,7 @@ class CucumberKeywords extends ArrayKeywords
             throw new ParseException(sprintf('Root element must be an array, but %s found.', get_debug_type($content)));
         }
 
+        // @phpstan-ignore argument.type
         parent::__construct($content);
     }
 
@@ -93,13 +94,9 @@ class CucumberKeywords extends ArrayKeywords
     }
 
     /**
-     * Trim *| from the begining of the list.
-     *
-     * @param string $keywordsString Keywords string
-     *
-     * @return string
+     * Trim *| from the beginning of the list.
      */
-    private function prepareStepString($keywordsString)
+    private function prepareStepString(string $keywordsString): string
     {
         if (str_starts_with($keywordsString, '*|')) {
             $keywordsString = mb_substr($keywordsString, 2, mb_strlen($keywordsString, 'utf8') - 2, 'utf8');

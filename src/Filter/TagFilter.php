@@ -26,12 +26,7 @@ class TagFilter extends ComplexFilter
      */
     protected $filterString;
 
-    /**
-     * Initializes filter.
-     *
-     * @param string $filterString Name filter string
-     */
-    public function __construct($filterString)
+    public function __construct(string $filterString)
     {
         $this->filterString = trim($filterString);
 
@@ -116,7 +111,7 @@ class TagFilter extends ComplexFilter
      *
      * @return bool
      */
-    protected function isTagsMatchCondition($tags)
+    protected function isTagsMatchCondition(array $tags)
     {
         if ($this->filterString === '') {
             return true;

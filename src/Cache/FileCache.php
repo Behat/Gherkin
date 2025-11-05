@@ -11,6 +11,8 @@
 namespace Behat\Gherkin\Cache;
 
 use Behat\Gherkin\Exception\CacheException;
+use Behat\Gherkin\Exception\FilesystemException;
+use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Node\FeatureNode;
 use Composer\InstalledVersions;
 
@@ -29,7 +31,7 @@ class FileCache implements CacheInterface
      */
     private static function getGherkinVersionHash(): string
     {
-        $version = InstalledVersions::getVersion('behat/gherkin');
+        $version = InstalledVersions::getVersion('behat/gherkin') ?? 'unknown';
 
         // Composer version strings can contain arbitrary content so hash for filesystem safety
         return md5($version);
@@ -46,11 +48,20 @@ class FileCache implements CacheInterface
     {
         $this->path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::getGherkinVersionHash();
 
-        if (!is_dir($this->path)) {
-            @mkdir($this->path, 0777, true);
+        try {
+            Filesystem::ensureDirectoryExists($this->path);
+        } catch (FilesystemException $ex) {
+            throw new CacheException(
+                sprintf(
+                    'Cache path "%s" cannot be created or is not a directory: %s',
+                    $this->path,
+                    $ex->getMessage(),
+                ),
+                previous: $ex
+            );
         }
 
-        if (!is_writeable($this->path)) {
+        if (!is_writable($this->path)) {
             throw new CacheException(sprintf('Cache path "%s" is not writeable. Check your filesystem permissions or disable Gherkin file cache.', $this->path));
         }
     }
@@ -63,7 +74,7 @@ class FileCache implements CacheInterface
      *
      * @return bool
      */
-    public function isFresh($path, $timestamp)
+    public function isFresh(string $path, int $timestamp)
     {
         $cachePath = $this->getCachePathFor($path);
 
@@ -71,7 +82,7 @@ class FileCache implements CacheInterface
             return false;
         }
 
-        return filemtime($cachePath) > $timestamp;
+        return Filesystem::getLastModified($cachePath) > $timestamp;
     }
 
     /**
@@ -83,10 +94,14 @@ class FileCache implements CacheInterface
      *
      * @throws CacheException
      */
-    public function read($path)
+    public function read(string $path)
     {
         $cachePath = $this->getCachePathFor($path);
-        $feature = unserialize(file_get_contents($cachePath));
+        try {
+            $feature = unserialize(Filesystem::readFile($cachePath), ['allowed_classes' => true]);
+        } catch (FilesystemException $ex) {
+            throw new CacheException("Can not load cache: {$ex->getMessage()}", previous: $ex);
+        }
 
         if (!$feature instanceof FeatureNode) {
             throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath));
@@ -99,11 +114,10 @@ class FileCache implements CacheInterface
      * Caches feature node.
      *
      * @param string $path Feature path
-     * @param FeatureNode $feature Feature instance
      *
      * @return void
      */
-    public function write($path, FeatureNode $feature)
+    public function write(string $path, FeatureNode $feature)
     {
         file_put_contents($this->getCachePathFor($path), serialize($feature));
     }
@@ -115,7 +129,7 @@ class FileCache implements CacheInterface
      *
      * @return string
      */
-    protected function getCachePathFor($path)
+    protected function getCachePathFor(string $path)
     {
         return $this->path . '/' . md5($path) . '.feature.cache';
     }

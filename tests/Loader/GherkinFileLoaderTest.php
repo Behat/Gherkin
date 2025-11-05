@@ -11,7 +11,7 @@
 namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Cache\CacheInterface;
-use Behat\Gherkin\Keywords\CucumberKeywords;
+use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
@@ -24,11 +24,10 @@ class GherkinFileLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        $keywords = new CucumberKeywords(__DIR__ . '/../Fixtures/i18n.yml');
-        $parser = new Parser(new Lexer($keywords));
+        $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
-        $this->featuresPath = (string) realpath(__DIR__ . '/../Fixtures/features');
+        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
     }
 
     public function testSupports(): void
@@ -104,15 +103,16 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports('tables.feature'));
         $this->assertTrue($this->loader->supports('features/tables.feature'));
 
+        $this->assertTrue($this->loader->supports('features/pystring.feature'));
         $features = $this->loader->load('features/pystring.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());
-        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature'), $features[0]->getFile());
+        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
 
         $this->loader->setBasePath($this->featuresPath);
         $features = $this->loader->load('multiline_name.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
-        $this->assertEquals(realpath($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature'), $features[0]->getFile());
+        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
     }
 }

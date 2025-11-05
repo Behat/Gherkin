@@ -17,22 +17,22 @@ use Symfony\Component\Yaml\Yaml;
  * Yaml files loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @extends AbstractFileLoader<string>
+ *
+ * @phpstan-import-type TArrayResource from ArrayLoader
  */
 class YamlFileLoader extends AbstractFileLoader
 {
+    /**
+     * @phpstan-param LoaderInterface<TArrayResource> $loader
+     */
     public function __construct(
         private readonly LoaderInterface $loader = new ArrayLoader(),
     ) {
     }
 
-    /**
-     * Checks if current loader supports provided resource.
-     *
-     * @param mixed $resource Resource to load
-     *
-     * @return bool
-     */
-    public function supports($resource)
+    public function supports(mixed $resource)
     {
         return is_string($resource)
             && ($path = $this->findAbsolutePath($resource)) !== false
@@ -40,18 +40,12 @@ class YamlFileLoader extends AbstractFileLoader
             && pathinfo($path, PATHINFO_EXTENSION) === 'yml';
     }
 
-    /**
-     * Loads features from provided resource.
-     *
-     * @param string $resource Resource to load
-     *
-     * @return FeatureNode[]
-     */
-    public function load($resource)
+    protected function doLoad(mixed $resource): array
     {
         $path = $this->getAbsolutePath($resource);
         $hash = Yaml::parseFile($path);
 
+        // @phpstan-ignore argument.type
         $features = $this->loader->load($hash);
 
         return array_map(

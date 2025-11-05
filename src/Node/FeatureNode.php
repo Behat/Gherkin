@@ -18,6 +18,8 @@ use function strlen;
  * Represents Gherkin Feature.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @final since 4.15.0
  */
 class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
 {
@@ -199,7 +201,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface
      *
      * @see https://github.com/symfony/filesystem/blob/master/Filesystem.php
      */
-    protected function isAbsolutePath($file)
+    protected function isAbsolutePath(?string $file)
     {
         if ($file === null) {
             throw new InvalidArgumentException('The provided file path must not be null.');

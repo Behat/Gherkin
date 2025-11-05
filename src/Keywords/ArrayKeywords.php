@@ -13,6 +13,7 @@ namespace Behat\Gherkin\Keywords;
 /**
  * Array initializable keywords holder.
  *
+ * ```
  * $keywords = new Behat\Gherkin\Keywords\ArrayKeywords(array(
  *     'en' => array(
  *         'feature'          => 'Feature',
@@ -39,10 +40,23 @@ namespace Behat\Gherkin\Keywords;
  *         'but'              => 'Но'
  *     )
  * ));
+ * ```
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  *
- * @phpstan-import-type TMultiLanguageKeywords from KeywordsInterface
+ * @phpstan-type TKeywordsArray array{
+ *      feature: string,
+ *      background: string,
+ *      scenario: string,
+ *      scenario_outline: string,
+ *      examples: string,
+ *      given: string,
+ *      when: string,
+ *      then: string,
+ *      and: string,
+ *      but: string,
+ *  }
+ * @phpstan-type TMultiLanguageKeywords array<string, TKeywordsArray>
  */
 class ArrayKeywords implements KeywordsInterface
 {
@@ -65,17 +79,23 @@ class ArrayKeywords implements KeywordsInterface
     /**
      * Sets keywords holder language.
      *
-     * @param string $language Language name
-     *
      * @return void
      */
-    public function setLanguage($language)
+    public function setLanguage(string $language)
     {
         if (!isset($this->keywords[$language])) {
             $this->language = 'en';
         } else {
             $this->language = $language;
         }
+    }
+
+    /**
+     * @internal
+     */
+    public function getLanguage(): string
+    {
+        return $this->language;
     }
 
     /**

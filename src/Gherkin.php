@@ -32,7 +32,7 @@ class Gherkin
     public const VERSION = '4.8.0';
 
     /**
-     * @var list<LoaderInterface>
+     * @var list<LoaderInterface<*>>
      */
     protected $loaders = [];
     /**
@@ -43,7 +43,7 @@ class Gherkin
     /**
      * Adds loader to manager.
      *
-     * @param LoaderInterface $loader Feature loader
+     * @param LoaderInterface<*> $loader Feature loader
      *
      * @return void
      */
@@ -84,7 +84,7 @@ class Gherkin
      *
      * @return void
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path)
     {
         foreach ($this->loaders as $loader) {
             if ($loader instanceof FileLoaderInterface) {
@@ -106,12 +106,14 @@ class Gherkin
         $filters = array_merge($this->filters, $filters);
 
         $matches = [];
-        if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', $resource, $matches)) {
-            $resource = $matches[1];
-            $filters[] = new LineRangeFilter($matches[2], $matches[3]);
-        } elseif (preg_match('/^(.*):(\d+)$/', $resource, $matches)) {
-            $resource = $matches[1];
-            $filters[] = new LineFilter($matches[2]);
+        if (is_scalar($resource) || $resource instanceof \Stringable) {
+            if (preg_match('/^(.*):(\d+)-(\d+|\*)$/', (string) $resource, $matches)) {
+                $resource = $matches[1];
+                $filters[] = new LineRangeFilter($matches[2], $matches[3]);
+            } elseif (preg_match('/^(.*):(\d+)$/', (string) $resource, $matches)) {
+                $resource = $matches[1];
+                $filters[] = new LineFilter($matches[2]);
+            }
         }
 
         $loader = $this->resolveLoader($resource);
@@ -139,11 +141,13 @@ class Gherkin
     /**
      * Resolves loader by resource.
      *
-     * @param mixed $resource Resource to load
+     * @template TResourceType
      *
-     * @return LoaderInterface|null
+     * @param TResourceType $resource Resource to load
+     *
+     * @return LoaderInterface<TResourceType>|null
      */
-    public function resolveLoader($resource)
+    public function resolveLoader(mixed $resource)
     {
         foreach ($this->loaders as $loader) {
             if ($loader->supports($resource)) {

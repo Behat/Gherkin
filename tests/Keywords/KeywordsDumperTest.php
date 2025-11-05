@@ -220,8 +220,8 @@ class KeywordsDumperTest extends TestCase
                 Примеры:
                   | agent1 | agent2 |
                   | D      | M      |
-            GHERKIN
-            , <<<'GHERKIN'
+            GHERKIN,
+            <<<'GHERKIN'
             # language: ru
             Фича: Internal operations
               In order to stay secret

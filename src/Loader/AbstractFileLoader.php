@@ -10,12 +10,20 @@
 
 namespace Behat\Gherkin\Loader;
 
+use Behat\Gherkin\Filesystem;
+
 /**
  * Abstract filesystem loader.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TResourceType
+ *
+ * @extends AbstractLoader<TResourceType>
+ *
+ * @implements FileLoaderInterface<TResourceType>
  */
-abstract class AbstractFileLoader implements FileLoaderInterface
+abstract class AbstractFileLoader extends AbstractLoader implements FileLoaderInterface
 {
     /**
      * @var string|null
@@ -25,13 +33,11 @@ abstract class AbstractFileLoader implements FileLoaderInterface
     /**
      * Sets base features path.
      *
-     * @param string $path Base loader path
-     *
      * @return void
      */
-    public function setBasePath($path)
+    public function setBasePath(string $path)
     {
-        $this->basePath = realpath($path);
+        $this->basePath = Filesystem::getRealPath($path);
     }
 
     /**
@@ -41,7 +47,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @return string
      */
-    protected function findRelativePath($path)
+    protected function findRelativePath(string $path)
     {
         if ($this->basePath !== null) {
             return strtr($path, [$this->basePath . DIRECTORY_SEPARATOR => '']);
@@ -57,9 +63,9 @@ abstract class AbstractFileLoader implements FileLoaderInterface
      *
      * @return false|string
      */
-    protected function findAbsolutePath($path)
+    protected function findAbsolutePath(string $path)
     {
-        if (is_file($path) || is_dir($path)) {
+        if (file_exists($path)) {
             return realpath($path);
         }
 
@@ -67,8 +73,7 @@ abstract class AbstractFileLoader implements FileLoaderInterface
             return false;
         }
 
-        if (is_file($this->basePath . DIRECTORY_SEPARATOR . $path)
-               || is_dir($this->basePath . DIRECTORY_SEPARATOR . $path)) {
+        if (file_exists($this->basePath . DIRECTORY_SEPARATOR . $path)) {
             return realpath($this->basePath . DIRECTORY_SEPARATOR . $path);
         }
 
