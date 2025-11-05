@@ -23,6 +23,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SebastianBergmann\Comparator\Factory;
 use SplFileInfo;
+use UnexpectedValueException;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -197,7 +198,7 @@ class CompatibilityTest extends TestCase
 
         $dumpedResult = $dumper->dump($result);
 
-        $expectationFile = self::EXPECTED_VARIANTS_PATH.'/'.$mode->value.'/'.$file->getFilename().'.expected.yaml';
+        $expectationFile = $this->getExpectedVariantFilename($mode, $file);
         try {
             $this->assertStringEqualsFile($expectationFile, $dumpedResult);
         } catch (ExpectationFailedException $e) {
@@ -206,6 +207,43 @@ class CompatibilityTest extends TestCase
             }
             throw $e;
         }
+    }
+
+    public function testNoRedundantVariantsFiles(): void
+    {
+        // This is a sanity check to ensure that variant expectation files are deleted once they are no longer required.
+        $usedFiles = [];
+        foreach (self::skippedCucumberFeatures() as ['mode' => $mode, 'file' => $file]) {
+            $usedFiles[] = $this->getExpectedVariantFilename($mode, $file);
+        }
+
+        $redundantFiles = array_diff(
+            Filesystem::findFilesRecursively(self::EXPECTED_VARIANTS_PATH, '*.expected.yaml'),
+            $usedFiles
+        );
+        if ($redundantFiles === []) {
+            $this->addToAssertionCount(1);
+
+            return;
+        }
+
+        $fileList = implode(
+            "\n - ",
+            array_map(
+                fn ($f) => preg_replace(
+                    '/^' . preg_quote(self::EXPECTED_VARIANTS_PATH . '/', '/') . '/',
+                    '',
+                    $f
+                ),
+                $redundantFiles
+            )
+        );
+
+        throw new UnexpectedValueException(sprintf(
+            "Found redundant expectation files in %s that were not used by any skipped feature:\n - %s",
+            self::EXPECTED_VARIANTS_PATH,
+            $fileList
+        ));
     }
 
     /**
@@ -276,5 +314,10 @@ class CompatibilityTest extends TestCase
 
         $this->expectExceptionMessageMatches($message);
         $this->expectException(RuntimeException::class);
+    }
+
+    private function getExpectedVariantFilename(GherkinCompatibilityMode $mode, SplFileInfo $file): string
+    {
+        return self::EXPECTED_VARIANTS_PATH . '/' . $mode->value . '/' . $file->getFilename() . '.expected.yaml';
     }
 }
