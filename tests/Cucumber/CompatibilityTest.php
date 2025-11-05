@@ -202,7 +202,7 @@ class CompatibilityTest extends TestCase
             $this->assertStringEqualsFile($expectationFile, $dumpedResult);
         } catch (ExpectationFailedException $e) {
             if (getenv('RE_RECORD_EXPECTATIONS')) {
-                file_put_contents($expectationFile, $dumpedResult);
+                Filesystem::writeFile($expectationFile, $dumpedResult);
             }
             throw $e;
         }
