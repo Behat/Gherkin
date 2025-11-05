@@ -1,0 +1,57 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Escaped pipes'
+    description: |4-
+          The \-character will be considered as an escape in table cell
+          iff it is followed by a |-character, a \-character or an n.
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'They are the future'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'they have arrived'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\TableNode:
+                                        maxLineLength:
+                                            - 1
+                                            - 1
+                                        table:
+                                            7:
+                                                - æ
+                                                - o
+                                            8:
+                                                - a
+                                                - ø
+                            line: 6
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'they have arrived'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\TableNode:
+                                        maxLineLength:
+                                            - 6
+                                            - 6
+                                        table:
+                                            10:
+                                                - '|æ\n'
+                                                - \o\no\
+                                            11:
+                                                - \|a\\n
+                                                - ø\\nø\
+                            line: 9
+                keyword: Scenario
+                line: 5
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/escaped_pipes.feature
+    line: 1

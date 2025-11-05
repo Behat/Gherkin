@@ -18,10 +18,12 @@ use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Parser;
 use FilesystemIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use SebastianBergmann\Comparator\Factory;
 use SplFileInfo;
+use UnexpectedValueException;
 
 /**
  * Tests the parser against the upstream cucumber/gherkin test data.
@@ -35,11 +37,13 @@ class CompatibilityTest extends TestCase
 {
     private const GHERKIN_TESTDATA_PATH = __DIR__ . '/../../vendor/cucumber/gherkin-monorepo/testdata';
     private const EXTRA_TESTDATA_PATH = __DIR__ . '/extra_testdata';
+    private const PROJECT_BASE_PATH = __DIR__ . '/../../';
+    private const EXPECTED_VARIANTS_PATH = __DIR__ . '/expected_variants';
 
     /**
      * @phpstan-var TKnownIncompatibilityMap
      */
-    private array $notParsingCorrectly = [
+    private static array $notParsingCorrectly = [
         'legacy' => [
             'complex_background.feature' => 'Rule keyword not supported',
             'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
@@ -59,7 +63,6 @@ class CompatibilityTest extends TestCase
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',
             'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
-            'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
             'rule.feature' => 'Rule keyword not supported',
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
@@ -75,7 +78,7 @@ class CompatibilityTest extends TestCase
     /**
      * @phpstan-var TKnownIncompatibilityMap
      */
-    private array $parsedButShouldNotBe = [
+    private static array $parsedButShouldNotBe = [
         'legacy' => [
             'invalid_language.feature' => 'Invalid language is silently ignored',
         ],
@@ -133,8 +136,8 @@ class CompatibilityTest extends TestCase
     #[DataProvider('goodCucumberFeatures')]
     public function testFeaturesParseTheSameAsCucumber(GherkinCompatibilityMode $mode, SplFileInfo $file): void
     {
-        if (isset($this->notParsingCorrectly[$mode->value][$file->getFilename()])) {
-            $this->markTestIncomplete($this->notParsingCorrectly[$mode->value][$file->getFilename()]);
+        if (isset(self::$notParsingCorrectly[$mode->value][$file->getFilename()])) {
+            $this->markTestIncomplete(self::$notParsingCorrectly[$mode->value][$file->getFilename()]);
         }
 
         assert(self::$featureNodeComparator instanceof FeatureNodeComparator);
@@ -159,8 +162,8 @@ class CompatibilityTest extends TestCase
     #[DataProvider('badCucumberFeatures')]
     public function testBadFeaturesDoNotParse(GherkinCompatibilityMode $mode, SplFileInfo $file): void
     {
-        if (isset($this->parsedButShouldNotBe[$mode->value][$file->getFilename()])) {
-            $this->markTestIncomplete($this->parsedButShouldNotBe[$mode->value][$file->getFilename()]);
+        if (isset(self::$parsedButShouldNotBe[$mode->value][$file->getFilename()])) {
+            $this->markTestIncomplete(self::$parsedButShouldNotBe[$mode->value][$file->getFilename()]);
         }
 
         $gherkinFile = $file->getPathname();
@@ -176,6 +179,70 @@ class CompatibilityTest extends TestCase
         }
 
         $this->parser->parseFile($gherkinFile);
+    }
+
+    #[DataProvider('skippedCucumberFeatures')]
+    public function testSkippedExamplesParseAsExpected(GherkinCompatibilityMode $mode, SplFileInfo $file): void
+    {
+        $dumper = new ParserResultDumper(Filesystem::getRealPath(self::PROJECT_BASE_PATH));
+
+        $this->parser->setGherkinCompatibilityMode($mode);
+
+        try {
+            $gherkinFile = Filesystem::getRealPath($file->getPathname());
+            $result = $this->parser->parse(Filesystem::readFile($gherkinFile), $gherkinFile);
+        } catch (ParserException $e) {
+            $result = $e;
+        }
+
+        $dumpedResult = $dumper->dump($result);
+
+        $expectationFile = $this->getExpectedVariantFilename($mode, $file);
+        try {
+            $this->assertStringEqualsFile($expectationFile, $dumpedResult);
+        } catch (ExpectationFailedException $e) {
+            if (getenv('RE_RECORD_EXPECTATIONS')) {
+                Filesystem::writeFile($expectationFile, $dumpedResult);
+            }
+            throw $e;
+        }
+    }
+
+    public function testNoRedundantVariantsFiles(): void
+    {
+        // This is a sanity check to ensure that variant expectation files are deleted once they are no longer required.
+        $usedFiles = [];
+        foreach (self::skippedCucumberFeatures() as ['mode' => $mode, 'file' => $file]) {
+            $usedFiles[] = $this->getExpectedVariantFilename($mode, $file);
+        }
+
+        $redundantFiles = array_diff(
+            Filesystem::findFilesRecursively(self::EXPECTED_VARIANTS_PATH, '*.expected.yaml'),
+            $usedFiles
+        );
+        if ($redundantFiles === []) {
+            $this->addToAssertionCount(1);
+
+            return;
+        }
+
+        $fileList = implode(
+            "\n - ",
+            array_map(
+                fn ($f) => preg_replace(
+                    '/^' . preg_quote(self::EXPECTED_VARIANTS_PATH . '/', '/') . '/',
+                    '',
+                    $f
+                ),
+                $redundantFiles
+            )
+        );
+
+        throw new UnexpectedValueException(sprintf(
+            "Found redundant expectation files in %s that were not used by any skipped feature:\n - %s",
+            self::EXPECTED_VARIANTS_PATH,
+            $fileList
+        ));
     }
 
     /**
@@ -194,6 +261,23 @@ class CompatibilityTest extends TestCase
     {
         yield from self::getCucumberFeatures(self::GHERKIN_TESTDATA_PATH . '/bad');
         yield from self::getCucumberFeatures(self::EXTRA_TESTDATA_PATH . '/bad');
+    }
+
+    /**
+     * @return iterable<string, TCucumberParsingTestCase>
+     */
+    public static function skippedCucumberFeatures(): iterable
+    {
+        foreach (self::goodCucumberFeatures() as $key => ['mode' => $mode, 'file' => $file]) {
+            if (isset(self::$notParsingCorrectly[$mode->value][$file->getFilename()])) {
+                yield $key => ['mode' => $mode, 'file' => $file];
+            }
+        }
+        foreach (self::badCucumberFeatures() as $key => ['mode' => $mode, 'file' => $file]) {
+            if (isset(self::$parsedButShouldNotBe[$mode->value][$file->getFilename()])) {
+                yield $key => ['mode' => $mode, 'file' => $file];
+            }
+        }
     }
 
     /**
@@ -229,5 +313,10 @@ class CompatibilityTest extends TestCase
 
         $this->expectExceptionMessageMatches($message);
         $this->expectException(RuntimeException::class);
+    }
+
+    private function getExpectedVariantFilename(GherkinCompatibilityMode $mode, SplFileInfo $file): string
+    {
+        return self::EXPECTED_VARIANTS_PATH . '/' . $mode->value . '/' . $file->getFilename() . '.expected.yaml';
     }
 }

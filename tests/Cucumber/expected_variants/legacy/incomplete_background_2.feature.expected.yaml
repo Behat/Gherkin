@@ -1,0 +1,31 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Incomplete backgrounds, Part 2'
+    description: ~
+    tags: []
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: |-
+                just a description
+                A short description
+            steps: []
+            keyword: Background
+            line: 3
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'still pickles up'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: '*'
+                            text: 'a step'
+                            arguments: []
+                            line: 7
+                keyword: Scenario
+                line: 6
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/incomplete_background_2.feature
+    line: 1
