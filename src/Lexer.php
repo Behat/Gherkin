@@ -753,7 +753,7 @@ class Lexer
 
         $token = $this->takeToken('TableRow');
         if ($this->compatibilityMode->shouldSupportNewlineEscapeSequenceInTableCell()) {
-            $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\n', '\\\\'], ['|', "\n", '\\'], $column), ' '), $rawColumns);
+            $columns = array_map($this->parseTableCell(...), $rawColumns);
         } else {
             $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
         }
@@ -762,6 +762,22 @@ class Lexer
         $this->consumeLine();
 
         return $token;
+    }
+
+    private function parseTableCell(string $cell): string
+    {
+        $value = preg_replace_callback('/\\\\./', function (array $matches) {
+            return match ($matches[0]) {
+                '\\n' => "\n",
+                '\\\\' => '\\',
+                '\\|' => '|',
+                default => $matches[0],
+            };
+        }, $cell);
+
+        assert($value !== null);
+
+        return trim($value, ' ');
     }
 
     /**
