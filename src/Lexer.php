@@ -37,6 +37,7 @@ use function assert;
  * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string}
  * @phpstan-type TTagToken array{type: 'Tag', value: null, line: int, deferred: bool, tags: list<string>}
  * @phpstan-type TTableRowToken array{type: 'TableRow', value: null, line: int, deferred: bool, columns: list<string>}
+ * @phpstan-type TDocStringSeparator '"""'|'```'
  */
 class Lexer
 {
@@ -80,6 +81,9 @@ class Lexer
     private bool $allowFeature = true;
     private bool $allowMultilineArguments = false;
     private bool $allowSteps = false;
+    /**
+     * @phpstan-var TDocStringSeparator|null
+     */
     private ?string $pyStringDelimiter = null;
 
     public function __construct(
@@ -719,7 +723,18 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+        $value = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+
+        if ($this->compatibilityMode->shouldUnespaceDocStringDelimiters()) {
+            \assert($this->pyStringDelimiter !== null);
+            $escapedDelimiter = match ($this->pyStringDelimiter) {
+                '"""' => '\\"\\"\\"',
+                '```' => '\\`\\`\\`',
+            };
+            $value = str_replace($escapedDelimiter, $this->pyStringDelimiter, $value);
+        }
+
+        $token['value'] = $value;
 
         return $token;
     }

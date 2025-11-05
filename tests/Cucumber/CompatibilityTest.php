@@ -62,7 +62,6 @@ class CompatibilityTest extends TestCase
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',
-            'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
             'rule.feature' => 'Rule keyword not supported',
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
