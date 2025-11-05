@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
-# [4.15.0] - 2025-11-03
+# [4.15.0] - 2025-11-05
 
 ### Changed
 
 * Added a new ParserInterface and deprecated extending the core Lexer, Parser and Node classes by @acoulton in [#354](https://github.com/Behat/Gherkin/pull/354)
 * Deprecate the CucumberNDJsonAstLoader (which was only intended for internal use by our tests) by @stof in [#356](https://github.com/Behat/Gherkin/pull/356)
+* By default, the parser ignores invalid language tags (e.g. `#language:no-such`) and falls back to the default language
+  (e.g. `en`). Previously, the resultant `FeatureNode::getLanguage()` would return the original invalid value from the
+  feature file - it will now return the language that was actually used for parsing. By @stof in [#350](https://github.com/Behat/Gherkin/pull/350)
 
 ### Added
 
@@ -26,6 +29,7 @@ This project follows the [Behat release and version support policies]
   - Step keywords will not be trimmed by @stof in [#360](https://github.com/Behat/Gherkin/pull/360)
   - Language tags can include whitespace by @acoulton in [#358](https://github.com/Behat/Gherkin/pull/358)
   - `\n` literals in table cells will be parsed as newlines by @stof in [#359](https://github.com/Behat/Gherkin/pull/359)
+    and [#391](https://github.com/Behat/Gherkin/pull/391)
 * Improved translations for `ru` (Russian) and `af` (Afrikaans) from cucumber/gherkin in [#381](https://github.com/Behat/Gherkin/pull/381)
   and [#386](https://github.com/Behat/Gherkin/pull/386)
 * Support PHP 8.5 by @acoulton in [#388](https://github.com/Behat/Gherkin/pull/388)
@@ -43,6 +47,7 @@ This project follows the [Behat release and version support policies]
 * Enable PHPStan level 10 and resolve remaining warnings by @uuf6429 in [#368](https://github.com/Behat/Gherkin/pull/368)
 * Remove duplication and improve robustness in filesystem operations by @uuf6429 in [#365](https://github.com/Behat/Gherkin/pull/365)
   and [#367](https://github.com/Behat/Gherkin/pull/367)
+* Explicitly cover expected departures from cucumber gherkin parsing with tests by @acoulton in [#392](https://github.com/Behat/Gherkin/pull/392)
 * Update cucumber/gherkin parity tests to v36.0.0 in [#355](https://github.com/Behat/Gherkin/pull/355), [#376](https://github.com/Behat/Gherkin/pull/376)
   [#378](https://github.com/Behat/Gherkin/pull/378), [#381](https://github.com/Behat/Gherkin/pull/381), [#385](https://github.com/Behat/Gherkin/pull/385)
   [#386](https://github.com/Behat/Gherkin/pull/386) and [#387](https://github.com/Behat/Gherkin/pull/387)
