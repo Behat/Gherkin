@@ -1,0 +1,20 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Examples keyword in Background description'
+    description: ~
+    tags: []
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: |-
+                The description can contain some example content
+                  Examples:
+                  | any   |
+                  | thing |
+            steps: []
+            keyword: Background
+            line: 3
+            description: ~
+    scenarios: []
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/examples_keyword_in_background_description.feature
+    line: 1

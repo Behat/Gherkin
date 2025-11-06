@@ -1,3 +1,152 @@
-Behat\Gherkin\Exception\UnexpectedParserNodeException:
-    message: 'Expected Examples table or end of Scenario, but got text: "This is an examples description" in file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/descriptions_with_comments.feature'
-    code: 0
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Descriptions with comments everywhere'
+    description: |-
+        This is a description
+        with a comment in the middle and at the end
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    two lines
+                    This description
+                    has two lines and two comments in the middle and is indented with two spaces
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 12
+                keyword: Scenario
+                line: 7
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    without indentation
+                    This is a description without indentation
+                    and a comment in the middle and at the end
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 20
+                keyword: Scenario
+                line: 14
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    empty lines in the middle
+                    This description
+
+                    has an empty line and a comment in the middle
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 27
+                keyword: Scenario
+                line: 22
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    empty lines around
+
+                    This description
+                    has an empty lines around
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 36
+                keyword: Scenario
+                line: 29
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: |-
+                                examples with description
+                                This is an examples description
+                                with a comment in the middle
+                            description: ~
+                            maxLineLength:
+                                - 3
+                            table:
+                                53:
+                                    - foo
+                                54:
+                                    - bar
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    scenario outline with a description
+                    This is a scenario outline description with comments
+                    in the middle and before and at the end
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 44
+                keyword: 'Scenario Outline'
+                line: 38
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'scenario with just a comment'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 58
+                keyword: Scenario
+                line: 56
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'scenario with a comment with new lines around'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 64
+                keyword: Scenario
+                line: 60
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/descriptions_with_comments.feature
+    line: 1

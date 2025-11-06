@@ -10,6 +10,7 @@ Behat\Gherkin\Node\FeatureNode:
             steps: []
             keyword: Background
             line: 3
+            description: ~
     scenarios:
         -
             Behat\Gherkin\Node\ScenarioNode:
@@ -25,6 +26,7 @@ Behat\Gherkin\Node\FeatureNode:
                             line: 7
                 keyword: Scenario
                 line: 6
+                description: ~
     keyword: Feature
     language: en
     file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/incomplete_background_2.feature
