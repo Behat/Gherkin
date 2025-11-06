@@ -70,12 +70,14 @@ class ParserResultDumper
         // we know that the FeatureNode and the objects it contains do not contain any recursive references.
         $values = [];
         $reflection = new ReflectionClass($value);
-        foreach ($reflection->getProperties() as $property) {
-            $values[$property->getName()] = match ($property->isInitialized($value)) {
-                true => $this->recursiveDump($property->getValue($value)),
-                false => '**NOT INITIALIZED**',
-            };
-        }
+        do {
+            foreach ($reflection->getProperties() as $property) {
+                $values[$property->getName()] = match ($property->isInitialized($value)) {
+                    true => $this->recursiveDump($property->getValue($value)),
+                    false => '**NOT INITIALIZED**',
+                };
+            }
+        } while ($reflection = $reflection->getParentClass());
 
         return [$value::class => $values];
     }

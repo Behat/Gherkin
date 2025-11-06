@@ -11,6 +11,13 @@ Behat\Gherkin\Node\FeatureNode:
                         Behat\Gherkin\Node\ExampleTableNode:
                             keyword: Examples
                             tags: []
+                            maxLineLength:
+                                - 9
+                            table:
+                                17:
+                                    - color
+                                18:
+                                    - "\_ \tred\_ \t"
                 examples: '**NOT INITIALIZED**'
                 title: test
                 tags: []
