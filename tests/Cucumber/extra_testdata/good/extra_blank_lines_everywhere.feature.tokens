@@ -1,0 +1,48 @@
+(1:1)Empty://
+(2:1)Language:/en/
+(3:1)Empty://
+(4:1)TagLine://1:@space-after-feature-tag
+(5:1)Empty://
+(6:1)FeatureLine:()Feature/Some feature/
+(7:1)Empty://
+(8:1)Other:/    With a description that has/
+(9:1)Other://
+(10:1)Other:/    some blank lines before and after/
+(11:1)Other://
+(12:1)Other://
+(13:5)BackgroundLine:()Background/That is described/
+(14:1)Empty://
+(15:1)Other:/        With multiple paragraphs/
+(16:1)Other://
+(17:1)Other:/        Of description/
+(18:1)Other://
+(19:9)StepLine:(Context)Given /something/
+(20:1)Empty://
+(21:9)StepLine:(Conjunction)And /something else/
+(22:1)Empty://
+(23:5)TagLine://5:@space-after-tag
+(24:1)Empty://
+(25:5)ScenarioLine:()Scenario/We will profit/
+(26:1)Empty://
+(27:1)Other:/        With another very long/
+(28:1)Other://
+(29:1)Other:/        Multiple line description/
+(30:1)Other://
+(31:9)StepLine:(Action)When /<precondition>/
+(32:1)Empty://
+(33:9)StepLine:(Outcome)Then /profit/
+(34:1)Empty://
+(35:9)TagLine://9:@space-after-example-tag
+(36:1)Empty://
+(37:9)ExamplesLine:()Examples/Here is a set of examples/
+(38:1)Empty://
+(39:1)Other:/           That have blank lines in their descriptions/
+(40:1)Other://
+(41:1)Other:/           Once again/
+(42:1)Other://
+(43:12)TableRow://14:precondition
+(44:1)Empty://
+(45:12)TableRow://14:?
+(46:1)Empty://
+(47:12)TableRow://14:really, ?
+EOF

@@ -60,6 +60,7 @@ class CompatibilityTest extends TestCase
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
             'incomplete_background_2.feature' => 'Background descriptions not supported',
             'examples_keyword_in_background_description.feature' => 'Background descriptions not supported',
+            'extra_blank_lines_everywhere.feature' => 'Background / Examples descriptions not supported',
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',

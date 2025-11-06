@@ -1,0 +1,91 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Some feature'
+    description: |4-
+
+          With a description that has
+
+          some blank lines before and after
+    tags:
+        - space-after-feature-tag
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: |-
+                That is described
+
+                  With multiple paragraphs
+
+                  Of description
+            steps:
+                -
+                    Behat\Gherkin\Node\StepNode:
+                        keywordType: Given
+                        keyword: Given
+                        text: something
+                        arguments: []
+                        line: 19
+                -
+                    Behat\Gherkin\Node\StepNode:
+                        keywordType: Given
+                        keyword: And
+                        text: 'something else'
+                        arguments: []
+                        line: 21
+            keyword: Background
+            line: 13
+            description: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags:
+                                - space-after-example-tag
+                            name: |-
+                                Here is a set of examples
+
+                                 That have blank lines in their descriptions
+
+                                 Once again
+                            description: ~
+                            maxLineLength:
+                                - 12
+                            table:
+                                43:
+                                    - precondition
+                                45:
+                                    - '?'
+                                47:
+                                    - 'really, ?'
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    We will profit
+
+                      With another very long
+
+                      Multiple line description
+                tags:
+                    - space-after-tag
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: When
+                            keyword: When
+                            text: '<precondition>'
+                            arguments: []
+                            line: 31
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Then
+                            keyword: Then
+                            text: profit
+                            arguments: []
+                            line: 33
+                keyword: Scenario
+                line: 25
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/extra_blank_lines_everywhere.feature
+    line: 6
