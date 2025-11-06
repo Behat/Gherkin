@@ -656,7 +656,7 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param TToken $keywordToken
+     * @param TTitleToken $keywordToken
      *
      * @return array{title:string|null, description:string|null}
      */
@@ -677,6 +677,11 @@ class Parser implements ParserInterface
                 'Text' => $token['value'],
                 default => throw new LogicException('Unexpected token type: ' . $token['type']),
             };
+
+            // The only time we use $token['value'] is if we got a `Text` token.
+            // ->expectTokenType('Text') is tagged as returning a `TStringValueToken`, where 'value' cannot be null
+            // However PHPStan cannot follow the chain through predictTokenType -> expectTokenType -> $token['type']
+            assert($text !== null, 'Text token value should not be null');
 
             if ($this->compatibilityMode->shouldRemoveDescriptionPadding()) {
                 $text = preg_replace('/^\s{0,' . ($keywordToken['indent'] + 2) . '}|\s*$/', '', $text);
