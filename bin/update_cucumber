@@ -36,7 +36,7 @@ class {
         $currentVersion = $this->findComposerGherkinVersion($composerFile);
         echo "Current local version is {$currentVersion['hash']} (tagged {$currentVersion['tag_name']})\n";
 
-        $releases = $this->listGitHubReleases('cucumber/gherkin');
+        $releases = $this->listGitHubReleasesSince('cucumber/gherkin', $currentVersion['tag_name']);
         echo "Latest upstream version is {$releases[0]['hash']} (tagged {$releases[0]['tag_name']})\n";
 
         // We only want to bump by one version at a time so that any test failures are easier to trace
@@ -112,13 +112,11 @@ class {
     /**
      * @phpstan-return non-empty-list<TGitHubReleaseArray>
      */
-    private function listGitHubReleases(string $repo): array
+    private function listGitHubReleasesSince(string $repo, string $currentVersionTag): array
     {
         // GitHub requires API requests to send a user_agent header for tracing
         ini_set('user_agent', 'https://github.com/Behat/Gherkin updater');
         $releases = Behat\Gherkin\Filesystem::readJsonFileArray('https://api.github.com/repos/' . $repo . '/releases');
-
-        assert($releases !== [], 'github should have returned at least one release');
 
         // Sanity check and simplify the GitHub API response structure to reduce assertions and type issues elsewhere
         $releases = array_map(
@@ -138,19 +136,8 @@ class {
                     'github release JSON should match expected structure',
                 );
 
-                // Edge case: they created the 29.0.0 release manually and for some reason it reports a target_commitish
-                // of `main` rather than the hash of the v29.0.0 tag. We could look up the tag in the API, but not worth
-                // it just for this one so hardcoded the value instead.
-                if ($release['tag_name'] === 'v29.0.0') {
-                    $release['target_commitish'] = 'c7d527d49d67ae39fe5a91aabcc5578c23ef1c5c';
-                }
-
-                // Protect against any future releases that don't properly target a tag SHA.
-                assert(
-                    (bool) preg_match('/^[a-z0-9]{40}$/', $release['target_commitish']),
-                    'target_commitish for ' . $release['tag_name'] . ' should be a hash',
-                );
-
+                // Note: `target_commitish` may not actually be a hash, but we will look this up later once we know if
+                // we actually need this release. See populateMissingTagHashes below.
                 return [
                     'tag_name' => $release['tag_name'],
                     'hash' => $release['target_commitish'],
@@ -161,11 +148,90 @@ class {
             $releases,
         );
 
+        // Remove older releases - we only need to validate the current release & possibly bump forwards.
+        $releases = array_values(array_filter(
+            $releases,
+            static fn (array $release) => version_compare($release['tag_name'], $currentVersionTag, '>=')
+        ));
+        assert($releases !== [], 'Should have found at least one current or newer release');
+
+        // The github releases API only contains a tag/commit hash for releases that were created from an existing tag.
+        // We may need to look up hashes for releases where the release & tag were created manually from a branch.
+        $releases = $this->populateMissingTagHashes($repo, $releases);
+
         // Releases API is in order of github release ID, this may not be version order (e.g. major releases may be
         // interspersed with point releases to older versions). So sort it most recent -> oldest by version number.
         usort($releases, static fn (array $a, array $b) => version_compare($b['tag_name'], $a['tag_name']));
 
         return $releases;
+    }
+
+    /**
+     * @phpstan-param non-empty-list<TGitHubReleaseArray> $releases
+     *
+     * @phpstan-return non-empty-list<TGitHubReleaseArray>
+     */
+    private function populateMissingTagHashes(string $repo, array $releases): array
+    {
+        if (array_filter($releases, $this->hasValidHash(...)) === $releases) {
+            // All releases we're interested in have a hash already, nothing to do
+            return $releases;
+        }
+
+        echo "Some releases do not have hashes, looking up tags\n";
+        $tags = Behat\Gherkin\Filesystem::readJsonFileArray('https://api.github.com/repos/' . $repo . '/tags');
+        $tagMap = [];
+        foreach ($tags as $tag) {
+            assert(
+                is_array($tag)
+                && is_string($tag['name'] ?? null)
+                && is_array($tag['commit'] ?? null)
+                && is_string($tag['commit']['sha'] ?? null),
+                'github tag JSON should match expected structure',
+            );
+            $tagMap[$tag['name']] = $tag['commit']['sha'];
+        }
+
+        return array_map(
+            function (array $release) use ($tagMap) {
+                if ($this->hasValidHash($release)) {
+                    return $release;
+                }
+
+                $originalHash = $release['hash'];
+                $tagHash = $tagMap[$release['tag_name']] ?? null;
+                if ($tagHash !== null) {
+                    $release['hash'] = $tagHash;
+                }
+
+                assert(
+                    $this->hasValidHash($release),
+                    sprintf(
+                        'github tags API should provide valid hash for %s with release target of %s',
+                        $release['tag_name'],
+                        $release['hash']
+                    )
+                );
+
+                echo sprintf(
+                    " - Identified %s (target: %s) as %s\n",
+                    $release['tag_name'],
+                    $originalHash,
+                    $release['hash']
+                );
+
+                return $release;
+            },
+            $releases,
+        );
+    }
+
+    /**
+     * @param TGitHubReleaseArray $release
+     */
+    private function hasValidHash(array $release): bool
+    {
+        return preg_match('/^[a-z0-9]{40}$/', $release['hash']) === 1;
     }
 
     /**
