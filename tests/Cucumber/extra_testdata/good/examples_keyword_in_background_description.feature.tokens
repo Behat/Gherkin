@@ -1,0 +1,7 @@
+(1:1)FeatureLine:()Feature/Examples keyword in Background description/
+(2:1)Empty://
+(3:5)BackgroundLine:()Background/The description can contain some example content/
+(4:1)Other:/        Examples:/
+(5:1)Other:/        | any   |/
+(6:1)Other:/        | thing |/
+EOF

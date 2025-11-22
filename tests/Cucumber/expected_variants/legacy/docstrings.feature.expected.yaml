@@ -121,6 +121,7 @@ Behat\Gherkin\Node\FeatureNode:
                             line: 44
                 keyword: Scenario
                 line: 3
+                description: ~
     keyword: Feature
     language: en
     file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/docstrings.feature

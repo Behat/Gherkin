@@ -80,6 +80,7 @@ class Lexer
     private bool $allowLanguageTag = true;
     private bool $allowFeature = true;
     private bool $allowMultilineArguments = false;
+    private bool $allowExamples = false;
     private bool $allowSteps = false;
     /**
      * @phpstan-var TDocStringSeparator|null
@@ -141,6 +142,7 @@ class Lexer
         $this->allowFeature = true;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
+        $this->allowExamples = false;
 
         if (\func_num_args() > 1) {
             // @codeCoverageIgnoreStart
@@ -584,6 +586,7 @@ class Lexer
 
         $this->allowMultilineArguments = false;
         $this->allowSteps = true;
+        $this->allowExamples = true;
 
         return $token;
     }
@@ -605,6 +608,7 @@ class Lexer
 
         $this->allowMultilineArguments = false;
         $this->allowSteps = true;
+        $this->allowExamples = true;
 
         return $token;
     }
@@ -618,6 +622,9 @@ class Lexer
      */
     protected function scanExamples()
     {
+        if (!$this->allowExamples) {
+            return null;
+        }
         $token = $this->scanTitleLine($this->currentDialect->getExamplesKeywords(), 'Examples');
 
         if ($token === null) {

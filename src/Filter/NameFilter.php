@@ -10,6 +10,7 @@
 
 namespace Behat\Gherkin\Filter;
 
+use Behat\Gherkin\Node\DescribableNodeInterface;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
@@ -59,15 +60,25 @@ class NameFilter extends SimpleFilter
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
-        if ($scenario->getTitle() === null) {
+        // Historically (and in legacy GherkinCompatibilityMode), multiline scenario text was all part of the title.
+        // In new GherkinCompatibilityMode the text will be split into a single-line title & multiline description.
+        // For BC, this filter should continue to match on the complete multiline text value.
+        $textParts = array_filter([
+            $scenario->getTitle(),
+            $scenario instanceof DescribableNodeInterface ? $scenario->getDescription() : null,
+        ]);
+
+        if ($textParts === []) {
             return false;
         }
 
-        if ($this->filterString[0] === '/' && preg_match($this->filterString, $scenario->getTitle())) {
+        $textToMatch = implode("\n", $textParts);
+
+        if ($this->filterString[0] === '/' && preg_match($this->filterString, $textToMatch)) {
             return true;
         }
 
-        if (str_contains($scenario->getTitle(), $this->filterString)) {
+        if (str_contains($textToMatch, $this->filterString)) {
             return true;
         }
 

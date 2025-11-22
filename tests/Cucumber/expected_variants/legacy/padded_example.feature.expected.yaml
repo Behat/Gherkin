@@ -11,6 +11,8 @@ Behat\Gherkin\Node\FeatureNode:
                         Behat\Gherkin\Node\ExampleTableNode:
                             keyword: Examples
                             tags: []
+                            name: ~
+                            description: ~
                             maxLineLength:
                                 - 7
                             table:
@@ -46,6 +48,7 @@ Behat\Gherkin\Node\FeatureNode:
                             line: 4
                 keyword: Scenario
                 line: 3
+                description: ~
     keyword: Feature
     language: en
     file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/padded_example.feature
