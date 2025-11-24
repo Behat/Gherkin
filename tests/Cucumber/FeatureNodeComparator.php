@@ -36,7 +36,7 @@ class FeatureNodeComparator extends ObjectComparator
         $array = parent::toArray($object);
 
         assert(isset($this->compatibilityMode));
-        if ($this->compatibilityMode->shouldRemoveFeatureDescriptionPadding()) {
+        if ($this->compatibilityMode->shouldRemoveDescriptionPadding()) {
             // Our legacy parsing mode handles whitespace in feature descriptions differently
             // to cucumber/gherkin - https://github.com/Behat/Gherkin/issues/209.
             // We need to be able to ignore that difference so that we can still run cucumber tests that

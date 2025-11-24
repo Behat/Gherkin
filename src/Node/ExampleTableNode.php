@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class ExampleTableNode extends TableNode implements TaggedNodeInterface
+class ExampleTableNode extends TableNode implements TaggedNodeInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 
@@ -29,6 +29,8 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
         array $table,
         private readonly string $keyword,
         private readonly array $tags = [],
+        private readonly ?string $name = null,
+        private readonly ?string $description = null,
     ) {
         parent::__construct($table);
     }
@@ -41,6 +43,16 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
     public function getNodeType()
     {
         return 'ExampleTable';
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function getTags()
@@ -56,5 +68,19 @@ class ExampleTableNode extends TableNode implements TaggedNodeInterface
     public function getKeyword()
     {
         return $this->keyword;
+    }
+
+    /**
+     * @param array<int, list<string>> $table Table in form of [$rowLineNumber => [$val1, $val2, $val3]]
+     */
+    public function withTable(array $table): self
+    {
+        return new self(
+            $table,
+            $this->keyword,
+            $this->tags,
+            $this->name,
+            $this->description,
+        );
     }
 }

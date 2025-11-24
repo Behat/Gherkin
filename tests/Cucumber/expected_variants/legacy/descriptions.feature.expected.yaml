@@ -1,3 +1,170 @@
-Behat\Gherkin\Exception\UnexpectedParserNodeException:
-    message: 'Expected Examples table or end of Scenario, but got text: "This is an examples description" in file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/descriptions.feature'
-    code: 0
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Descriptions everywhere'
+    description: 'This is a single line description'
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    two lines
+                    This description
+                    has two lines and indented with two spaces
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 7
+                keyword: Scenario
+                line: 4
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    without indentation
+                    This is a description without indentation
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 11
+                keyword: Scenario
+                line: 9
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    empty lines in the middle
+                    This description
+
+                    has an empty line in the middle
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 17
+                keyword: Scenario
+                line: 13
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    empty lines around
+
+                    This description
+                    has an empty lines around
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 24
+                keyword: Scenario
+                line: 19
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    comment after description
+                    This description
+                    has a comment after
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 31
+                keyword: Scenario
+                line: 26
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    comment right after description
+                    This description
+                    has a comment right after
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 38
+                keyword: Scenario
+                line: 33
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    description with escaped docstring separator
+                    This description has an \"\"\" (escaped docstring sparator)
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 43
+                keyword: Scenario
+                line: 40
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: |-
+                                examples with description
+                                This is an examples description
+                            description: ~
+                            maxLineLength:
+                                - 3
+                            table:
+                                51:
+                                    - foo
+                                52:
+                                    - bar
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    scenario outline with a description
+                    This is a scenario outline description
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            keyword: Given
+                            text: 'the minimalism'
+                            arguments: []
+                            line: 47
+                keyword: 'Scenario Outline'
+                line: 45
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/descriptions.feature
+    line: 1

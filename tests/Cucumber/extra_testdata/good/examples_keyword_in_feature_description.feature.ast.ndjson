@@ -1,0 +1,1 @@
+{"gherkinDocument":{"comments":[],"feature":{"children":[],"description":"    The description can contain some example content\n    Examples:\n    | any   |\n    | thing |","keyword":"Feature","language":"en","location":{"column":1,"line":1},"name":"Examples keyword in feature description","tags":[]},"uri":"../good/examples_keyword_in_feature_description.feature"}}

@@ -49,7 +49,7 @@ class MemoryCacheTest extends TestCase
 
     public function testCacheAndRead(): void
     {
-        $scenarios = [new ScenarioNode('Some scenario', [], [], '', 1)];
+        $scenarios = [new ScenarioNode('Some scenario', [], [], '', 1, 'Which covers some behaviour')];
         $feature = new FeatureNode('Some feature', 'some description', [], null, $scenarios, '', '', null, 1);
 
         $this->cache->write('some_feature', $feature);

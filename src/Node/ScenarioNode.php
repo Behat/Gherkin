@@ -17,7 +17,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
+class ScenarioNode implements ScenarioInterface, NamedScenarioInterface, DescribableNodeInterface
 {
     use TaggedNodeTrait;
 
@@ -31,6 +31,7 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
         private readonly array $steps,
         private readonly string $keyword,
         private readonly int $line,
+        private readonly ?string $description = null,
     ) {
     }
 
@@ -60,6 +61,11 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface
     public function getName(): ?string
     {
         return $this->title;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
     }
 
     public function getTags()
