@@ -103,6 +103,7 @@ enum GherkinCompatibilityMode: string
      */
     public function shouldRemoveTagPrefixChar(): bool
     {
+        // Note: When this is removed we can also remove the code in TagFilter that handles tags with no leading @
         return match ($this) {
             self::LEGACY => true,
             default => false,

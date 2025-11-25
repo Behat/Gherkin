@@ -16,6 +16,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use ErrorException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
@@ -298,6 +299,40 @@ class TagFilterTest extends TestCase
         $result = $tagFilter->isFeatureMatch($feature);
 
         $this->assertTrue($result);
+    }
+
+    /**
+     * @phpstan-return list<array{string, list<string>, bool}>
+     */
+    public static function providerMatchWithoutRemovingPrefix(): array
+    {
+        // These cases rely on the bulk of the coverage being provided by the other tests, and the knowledge that the
+        // implementation ultimately uses the same logic to compare tags from all types of nodes. They are only intended
+        // to be temporary until we drop legacy parsing mode, at which point we can add the `@` to all the tags in the
+        // other tests in this file.
+        return [
+            ['@wip', [], false],
+            ['@wip', ['@slow'], false],
+            ['@wip', ['@wip'], true],
+            ['@wip', ['@slow', '@wip'], true],
+            ['@tag1&&~@tag2&&@tag3', [], false],
+            ['@tag1&&~@tag2&&@tag3', ['@tag1'], false],
+            ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag3'], true],
+            ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2'], false],
+            ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag4'], false],
+            ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2', '@tag3'], false],
+        ];
+    }
+
+    /**
+     * @phpstan-param list<string> $tags
+     */
+    #[DataProvider('providerMatchWithoutRemovingPrefix')]
+    public function testItMatchesTagsParsedWithoutRemovingPrefix(string $filter, array $tags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $tags, null, [], '', '', null, 1);
+        $tagFilter = new TagFilter($filter);
+        $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
     private function expectDeprecationError(): void
