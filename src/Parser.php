@@ -11,6 +11,7 @@
 namespace Behat\Gherkin;
 
 use Behat\Gherkin\Exception\FilesystemException;
+use Behat\Gherkin\Exception\InvalidTagContentException;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Exception\ParserException;
@@ -584,8 +585,12 @@ class Parser implements ParserInterface
     {
         foreach ($tags as $tag) {
             if (preg_match('/\s/', $tag)) {
+                if ($this->compatibilityMode->shouldThrowOnWhitespaceInTag()) {
+                    throw new InvalidTagContentException($tag, $this->file);
+                }
+
                 trigger_error(
-                    sprintf('Whitespace in tags is deprecated, found "%s"', $tag),
+                    sprintf('Whitespace in tags is deprecated, found "%s" in %s', $tag, $this->file ?? 'unknown file'),
                     E_USER_DEPRECATED
                 );
             }

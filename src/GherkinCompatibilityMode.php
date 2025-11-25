@@ -109,4 +109,15 @@ enum GherkinCompatibilityMode: string
         };
     }
 
+    /**
+     * @internal
+     */
+    public function shouldThrowOnWhitespaceInTag(): bool
+    {
+        return match ($this) {
+            // Note, although we don't throw we have triggered an E_USER_DEPRECATED in Parser::guardTags since v4.9.0
+            self::LEGACY => false,
+            default => true,
+        };
+    }
 }

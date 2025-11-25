@@ -91,7 +91,6 @@ class CompatibilityTest extends TestCase
             'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
         'gherkin-32' => [
-            'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
     ];
 
