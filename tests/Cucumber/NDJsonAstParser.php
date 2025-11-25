@@ -11,6 +11,7 @@
 namespace Tests\Behat\Gherkin\Cucumber;
 
 use Behat\Gherkin\Exception\NodeException;
+use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Node\ArgumentInterface;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
@@ -49,6 +50,13 @@ use RuntimeException;
  */
 class NDJsonAstParser
 {
+    private GherkinCompatibilityMode $compatibilityMode = GherkinCompatibilityMode::LEGACY;
+
+    public function setGherkinCompatibilityMode(GherkinCompatibilityMode $mode): void
+    {
+        $this->compatibilityMode = $mode;
+    }
+
     /**
      * @return list<FeatureNode>
      */
@@ -57,10 +65,10 @@ class NDJsonAstParser
         return array_values(
             array_filter(
                 array_map(
-                    static function ($line) use ($resource) {
+                    function ($line) use ($resource) {
                         // As we load data from the official Cucumber project, we assume the data matches the JSON schema.
                         // @phpstan-ignore argument.type
-                        return self::getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
+                        return $this->getFeature(json_decode($line, true, 512, \JSON_THROW_ON_ERROR), $resource);
                     },
                     file($resource)
                         ?: throw new RuntimeException("Could not load Cucumber json file: $resource."),
@@ -72,7 +80,7 @@ class NDJsonAstParser
     /**
      * @phpstan-param TEnvelope $json
      */
-    private static function getFeature(array $json, string $filePath): ?FeatureNode
+    private function getFeature(array $json, string $filePath): ?FeatureNode
     {
         if (!isset($json['gherkinDocument']['feature'])) {
             return null;
@@ -83,9 +91,9 @@ class NDJsonAstParser
         return new FeatureNode(
             $featureJson['name'],
             $featureJson['description'],
-            self::getTags($featureJson),
-            self::getBackground($featureJson),
-            self::getScenarios($featureJson),
+            $this->getTags($featureJson),
+            $this->getBackground($featureJson),
+            $this->getScenarios($featureJson),
             $featureJson['keyword'],
             $featureJson['language'],
             preg_replace('/(?<=\\.feature).*$/', '', $filePath),
@@ -98,10 +106,16 @@ class NDJsonAstParser
      *
      * @return list<string>
      */
-    private static function getTags(array $json): array
+    private function getTags(array $json): array
     {
         return array_map(
-            static fn (array $tag) => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
+            fn (array $tag) => match ($this->compatibilityMode->shouldRemoveTagPrefixChar()) {
+                // The cucumber/gherkin testdata contains the @ prefix. We need to remove that to match our legacy
+                // parser. It's not ideal to modify the expected parser result here, but the custom comparator approach
+                // we have used for other parity variations is tricky because of the variety taggable nodes.
+                true => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
+                false => $tag['name'],
+            },
             $json['tags']
         );
     }
@@ -111,18 +125,18 @@ class NDJsonAstParser
      *
      * @return list<ScenarioInterface>
      */
-    private static function getScenarios(array $json): array
+    private function getScenarios(array $json): array
     {
         return array_values(
             array_map(
-                static function ($child) {
-                    $tables = self::getTables($child['scenario']['examples']);
+                function ($child) {
+                    $tables = $this->getTables($child['scenario']['examples']);
 
                     if ($tables) {
                         return new OutlineNode(
                             $child['scenario']['name'],
-                            self::getTags($child['scenario']),
-                            self::getSteps($child['scenario']['steps']),
+                            $this->getTags($child['scenario']),
+                            $this->getSteps($child['scenario']['steps']),
                             $tables,
                             $child['scenario']['keyword'],
                             $child['scenario']['location']['line'],
@@ -132,8 +146,8 @@ class NDJsonAstParser
 
                     return new ScenarioNode(
                         $child['scenario']['name'],
-                        self::getTags($child['scenario']),
-                        self::getSteps($child['scenario']['steps']),
+                        $this->getTags($child['scenario']),
+                        $this->getSteps($child['scenario']['steps']),
                         $child['scenario']['keyword'],
                         $child['scenario']['location']['line'],
                         $child['scenario']['description']
@@ -152,7 +166,7 @@ class NDJsonAstParser
     /**
      * @phpstan-param TFeature $json
      */
-    private static function getBackground(array $json): ?BackgroundNode
+    private function getBackground(array $json): ?BackgroundNode
     {
         $backgrounds = array_filter(
             $json['children'],
@@ -167,7 +181,7 @@ class NDJsonAstParser
 
         return new BackgroundNode(
             $background['background']['name'],
-            self::getSteps($background['background']['steps']),
+            $this->getSteps($background['background']['steps']),
             $background['background']['keyword'],
             $background['background']['location']['line'],
             $background['background']['description'],
@@ -179,13 +193,13 @@ class NDJsonAstParser
      *
      * @return list<StepNode>
      */
-    private static function getSteps(array $items): array
+    private function getSteps(array $items): array
     {
         return array_map(
-            static fn (array $item) => new StepNode(
+            fn (array $item) => new StepNode(
                 $item['keyword'],
                 $item['text'],
-                self::getStepArguments($item),
+                $this->getStepArguments($item),
                 $item['location']['line'],
                 trim($item['keyword'])
             ),
@@ -198,7 +212,7 @@ class NDJsonAstParser
      *
      * @return list<ArgumentInterface>
      */
-    private static function getStepArguments(array $step): array
+    private function getStepArguments(array $step): array
     {
         $args = [];
 
@@ -225,10 +239,10 @@ class NDJsonAstParser
      *
      * @return list<ExampleTableNode>
      */
-    private static function getTables(array $items): array
+    private function getTables(array $items): array
     {
         return array_map(
-            static function ($tableJson): ExampleTableNode {
+            function ($tableJson): ExampleTableNode {
                 $headerRow = $tableJson['tableHeader'] ?? null;
                 $tableBody = $tableJson['tableBody'];
 
@@ -253,7 +267,7 @@ class NDJsonAstParser
                 return new ExampleTableNode(
                     $table,
                     $tableJson['keyword'],
-                    self::getTags($tableJson),
+                    $this->getTags($tableJson),
                     $tableJson['name'],
                     $tableJson['description'],
                 );

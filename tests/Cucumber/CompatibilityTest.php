@@ -142,6 +142,7 @@ class CompatibilityTest extends TestCase
         self::$featureNodeComparator->setGherkinCompatibilityMode($mode);
         self::$stepNodeComparator->setGherkinCompatibilityMode($mode);
         $this->parser->setGherkinCompatibilityMode($mode);
+        $this->ndJsonAstParser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
         $actual = $this->parser->parseFile($gherkinFile);

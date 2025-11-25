@@ -825,9 +825,23 @@ class Lexer
         }
 
         $token = $this->takeToken('Tag');
-        $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
-        $tags = array_map(trim(...), $tags);
-        $token['tags'] = $tags;
+
+        if ($this->compatibilityMode->shouldRemoveTagPrefixChar()) {
+            // Legacy behaviour
+            $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
+            $tags = array_map(trim(...), $tags);
+            $token['tags'] = $tags;
+
+            return $token;
+        }
+
+        $tags = preg_split('/(?=@)/u', $line);
+        assert($tags !== false);
+        // Remove the empty content before the first tag prefix
+        array_shift($tags);
+
+        // Note: checking for whitespace in tags is done in the Parser to fit with existing logic
+        $token['tags'] = array_map(trim(...), $tags);
 
         return $token;
     }

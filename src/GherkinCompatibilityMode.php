@@ -97,4 +97,16 @@ enum GherkinCompatibilityMode: string
             default => true,
         };
     }
+
+    /**
+     * @internal
+     */
+    public function shouldRemoveTagPrefixChar(): bool
+    {
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
+
 }
