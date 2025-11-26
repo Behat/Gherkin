@@ -97,4 +97,28 @@ enum GherkinCompatibilityMode: string
             default => true,
         };
     }
+
+    /**
+     * @internal
+     */
+    public function shouldRemoveTagPrefixChar(): bool
+    {
+        // Note: When this is removed we can also remove the code in TagFilter that handles tags with no leading @
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function shouldThrowOnWhitespaceInTag(): bool
+    {
+        return match ($this) {
+            // Note, although we don't throw we have triggered an E_USER_DEPRECATED in Parser::guardTags since v4.9.0
+            self::LEGACY => false,
+            default => true,
+        };
+    }
 }

@@ -91,7 +91,6 @@ class CompatibilityTest extends TestCase
             'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
         'gherkin-32' => [
-            'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
     ];
 
@@ -142,6 +141,7 @@ class CompatibilityTest extends TestCase
         self::$featureNodeComparator->setGherkinCompatibilityMode($mode);
         self::$stepNodeComparator->setGherkinCompatibilityMode($mode);
         $this->parser->setGherkinCompatibilityMode($mode);
+        $this->ndJsonAstParser->setGherkinCompatibilityMode($mode);
 
         $gherkinFile = $file->getPathname();
         $actual = $this->parser->parseFile($gherkinFile);
