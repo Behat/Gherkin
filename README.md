@@ -59,7 +59,7 @@ Contributors
 - Andrew Coulton [acoulton](https://github.com/acoulton) [current maintainer]
 - Carlos Granados [carlos-granados](https://github.com/carlos-granados) [current maintainer]
 - Christophe Coevoet [stof](https://github.com/stof) [current maintainer]
-- Other [awesome developers](https://github.com/Behat/Behat/graphs/contributors)
+- Other [awesome developers](https://github.com/Behat/Gherkin/graphs/contributors)
 
 Support the project
 -------------------
