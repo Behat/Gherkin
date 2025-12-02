@@ -10,6 +10,8 @@
 
 namespace Behat\Gherkin\Node;
 
+use Stringable;
+
 /**
  * Represents Gherkin PyString argument.
  *
@@ -17,7 +19,7 @@ namespace Behat\Gherkin\Node;
  *
  * @final since 4.15.0
  */
-class PyStringNode implements ArgumentInterface
+class PyStringNode implements Stringable, ArgumentInterface
 {
     /**
      * @param list<string> $strings String in form of [$stringLine]
