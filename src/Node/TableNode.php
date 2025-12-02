@@ -15,6 +15,7 @@ use Behat\Gherkin\Exception\NodeException;
 use Iterator;
 use IteratorAggregate;
 use ReturnTypeWillChange;
+use Stringable;
 
 /**
  * Represents Gherkin Table argument.
@@ -23,7 +24,7 @@ use ReturnTypeWillChange;
  *
  * @template-implements IteratorAggregate<int, array<string, string>>
  */
-class TableNode implements ArgumentInterface, IteratorAggregate
+class TableNode implements Stringable, ArgumentInterface, IteratorAggregate
 {
     /**
      * @var array<array-key, int>
@@ -135,7 +136,7 @@ class TableNode implements ArgumentInterface, IteratorAggregate
 
         $hash = [];
         foreach ($rows as $row) {
-            \assert($keys !== null); // If there is no first row due to an empty table, we won't enter this loop either.
+            assert($keys !== null); // If there is no first row due to an empty table, we won't enter this loop either.
             $hash[] = array_combine($keys, $row);
         }
 
