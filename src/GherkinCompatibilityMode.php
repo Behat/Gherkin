@@ -57,7 +57,7 @@ enum GherkinCompatibilityMode: string
     /**
      * @internal
      */
-    public function shouldSupportNewlineEscapeSequenceInTableCell(): bool
+    public function shouldUseNewTableCellParsing(): bool
     {
         return match ($this) {
             self::LEGACY => false,
