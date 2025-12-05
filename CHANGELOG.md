@@ -15,6 +15,7 @@ This project follows the [Behat release and version support policies]
   - Parse descriptions (instead of multiline titles) for all describable nodes by @acoulton in [#361](https://github.com/Behat/Gherkin/pull/361)
   - Unescape escaped delimiters within doc strings by @stof in [#393](https://github.com/Behat/Gherkin/pull/393)
   - Retain the `@` prefix when parsing tags by @acoulton in [#400](https://github.com/Behat/Gherkin/pull/400)
+  - Trim unicode padding from table cells by @stof in [#405](https://github.com/Behat/Gherkin/pull/405)
 
 ### Fixed
 
