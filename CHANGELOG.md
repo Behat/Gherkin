@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.16.0] - 2025-12-05
+
+### Changed
+
+* Further improvements to parser parity when the experimental `gherkin-32` compatibility mode is enabled:
+  - Parse descriptions (instead of multiline titles) for all describable nodes by @acoulton in [#361](https://github.com/Behat/Gherkin/pull/361)
+  - Unescape escaped delimiters within doc strings by @stof in [#393](https://github.com/Behat/Gherkin/pull/393)
+  - Retain the `@` prefix when parsing tags by @acoulton in [#400](https://github.com/Behat/Gherkin/pull/400)
+
+### Fixed
+
+* Fix the implementation of the default dialect for the keywords provider by @stof in [#404](https://github.com/Behat/Gherkin/pull/404)
+
+### Internal
+
+* Add `Stringable` to classes implementing __toString() by @acoulton in [#402](https://github.com/Behat/Gherkin/pull/402)
+* Fix cucumber variant assertions to include inherited properties by @acoulton in [#394](https://github.com/Behat/Gherkin/pull/394)
+* Update cucumber/gherkin parity tests to 37.0.0 by @behat-gherkin-updater[bot] in [#397](https://github.com/Behat/Gherkin/pull/397) and [#398](https://github.com/Behat/Gherkin/pull/398)
+* update_cucumber script should not fail on manually created releases by @acoulton in [#396](https://github.com/Behat/Gherkin/pull/396)
+* Add funding links and information by @acoulton in [#401](https://github.com/Behat/Gherkin/pull/401)
+
 # [4.15.0] - 2025-11-05
 
 ### Changed
@@ -566,6 +587,8 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.16.0]: https://github.com/Behat/Gherkin/compare/v4.15.0...v4.16.0
+[4.15.0]: https://github.com/Behat/Gherkin/compare/v4.14.0...v4.15.0
 [4.14.0]: https://github.com/Behat/Gherkin/compare/v4.13.0...v4.14.0
 [4.13.0]: https://github.com/Behat/Gherkin/compare/v4.12.0...v4.13.0
 [4.12.0]: https://github.com/Behat/Gherkin/compare/v4.11.0...v4.12.0
