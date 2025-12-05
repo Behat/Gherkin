@@ -67,7 +67,6 @@ class CompatibilityTest extends TestCase
             'rule.feature' => 'Rule keyword not supported',
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
-            'padded_example.feature' => 'Table padding is not trimmed as aggressively',
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
         ],
     ];
