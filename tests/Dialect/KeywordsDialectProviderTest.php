@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Dialect;
 
 use Behat\Gherkin\Dialect\KeywordsDialectProvider;
 use Behat\Gherkin\Keywords\ArrayKeywords;
+use Behat\Gherkin\Keywords\CachedArrayKeywords;
 use PHPUnit\Framework\TestCase;
 
 class KeywordsDialectProviderTest extends TestCase
@@ -39,5 +40,16 @@ class KeywordsDialectProviderTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('A keyword string must contain at least one keyword.');
         $dialectProvider->getDialect('en');
+    }
+
+    public function testDefaultDialectAfterExplicitDialect(): void
+    {
+        $dialectProvider = new KeywordsDialectProvider(CachedArrayKeywords::withDefaultKeywords());
+
+        $ruDialect = $dialectProvider->getDialect('ru');
+        $defaultDialect = $dialectProvider->getDefaultDialect();
+
+        $this->assertSame('ru', $ruDialect->getLanguage());
+        $this->assertSame('en', $defaultDialect->getLanguage());
     }
 }
