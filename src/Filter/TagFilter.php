@@ -28,7 +28,10 @@ class TagFilter extends ComplexFilter
 
     public function __construct(string $filterString)
     {
-        $this->filterString = trim($filterString);
+        $filterString = trim($filterString);
+        $fixedFilterString = $this->fixLegacyFilterStringWithoutPrefixes($filterString);
+        // @todo trigger a deprecation here $filterString !== $fixedFilterString
+        $this->filterString = $fixedFilterString;
 
         if (preg_match('/\s/u', $this->filterString)) {
             trigger_error(
@@ -36,6 +39,40 @@ class TagFilter extends ComplexFilter
                 E_USER_DEPRECATED
             );
         }
+    }
+
+    /**
+     * Fix tag expressions where the filter string does not include the `@` prefixes.
+     *
+     * e.g. `new TagFilter('wip&&~slow')` rather than `new TagFilter('@wip&&~@slow')`. These were historically
+     * supported, although not officially, and have been reinstated to solve a BC issue. This syntax will be deprecated
+     * and removed in future.
+     */
+    private function fixLegacyFilterStringWithoutPrefixes(string $filterString): string
+    {
+        if ($filterString === '') {
+            return '';
+        }
+
+        $allParts = [];
+        foreach (explode('&&', $filterString) as $andTags) {
+            $allParts[] = implode(
+                ',',
+                array_map(
+                    fn (string $tag): string => match (true) {
+                        // Valid - tag filter contains the `@` prefix
+                        str_starts_with($tag, '@'),
+                        str_starts_with($tag, '~@') => $tag,
+                        // Invalid / legacy cases - insert the missing `@` prefix in the right place
+                        str_starts_with($tag, '~') => '~@' . substr($tag, 1),
+                        default => '@' . $tag,
+                    },
+                    explode(',', $andTags),
+                ),
+            );
+        }
+
+        return implode('&&', $allParts);
     }
 
     /**
