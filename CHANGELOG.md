@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.16.1] - 2025-12-08
+
+### Fixed
+
+* Reinstate support for tag filter expressions without a leading `@` (e.g. `wip&&~slow` instead of `@wip&&~@slow`).
+  This syntax was never officially supported, but previously worked and was broken by 4.16.0. We have temporarily
+  fixed this, but it is deprecated and will be removed in the next major version.
+
 # [4.16.0] - 2025-12-05
 
 ### Changed
@@ -588,6 +596,7 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.16.1]: https://github.com/Behat/Gherkin/compare/v4.16.0...v4.16.1
 [4.16.0]: https://github.com/Behat/Gherkin/compare/v4.15.0...v4.16.0
 [4.15.0]: https://github.com/Behat/Gherkin/compare/v4.14.0...v4.15.0
 [4.14.0]: https://github.com/Behat/Gherkin/compare/v4.13.0...v4.14.0
