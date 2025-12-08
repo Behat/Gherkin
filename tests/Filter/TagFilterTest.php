@@ -282,7 +282,7 @@ class TagFilterTest extends TestCase
     /**
      * @phpstan-return list<array{string, list<string>, bool}>
      */
-    public static function provderMatchWithNoPrefixInFilter(): array
+    public static function providerMatchWithNoPrefixInFilter(): array
     {
         // This is officially unsupported (but potentially widespread) use of a filter expression that does not
         // contain the `@` prefix. Behat's documentation shows that the `@` prefix should be provided - however Behat's
@@ -319,7 +319,7 @@ class TagFilterTest extends TestCase
     /**
      * @phpstan-param list<string> $tags
      */
-    #[DataProvider('provderMatchWithNoPrefixInFilter')]
+    #[DataProvider('providerMatchWithNoPrefixInFilter')]
     public function testItMatchesWhenFilterDoesNotContainPrefix(string $filter, array $tags, bool $expect): void
     {
         $feature = new FeatureNode(null, null, $tags, null, [], '', '', null, 1);
