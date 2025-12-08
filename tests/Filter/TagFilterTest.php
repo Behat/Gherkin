@@ -16,6 +16,7 @@ use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use ErrorException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
@@ -276,6 +277,43 @@ class TagFilterTest extends TestCase
         $this->assertEquals([$exampleTableNode2], $scenarioInterfaces[0]->getExampleTables());
         $this->assertInstanceOf(OutlineNode::class, $scenarioInterfaces[1]);
         $this->assertEquals([$exampleTableNode3], $scenarioInterfaces[1]->getExampleTables());
+    }
+
+    /**
+     * @phpstan-return list<array{string, list<string>, bool}>
+     */
+    public static function provderMatchWithNoPrefixInFilter(): array
+    {
+        // This is officially unsupported (but potentially widespread) use of a filter expression that does not
+        // contain the `@` prefix. Behat's documentation shows that the `@` prefix should be provided - however Behat's
+        // own tests include an example where this is not the case, which has been passing. Gherkin has not historically
+        // validated the tag expression, so we will continue to support these for now.
+        // These cases rely on the bulk of the coverage being provided by the other tests, and the knowledge that the
+        // implementation ultimately uses the same logic to compare tags from all types of nodes.
+        // They are only intended to be temporary until we enforce that filter expressions are valid.
+        return [
+            ['wip', [], false],
+            ['wip', ['slow'], false],
+            ['wip', ['wip'], true],
+            ['wip', ['slow', 'wip'], true],
+            ['tag1&&~tag2&&tag3', [], false],
+            ['tag1&&~tag2&&tag3', ['tag1'], false],
+            ['tag1&&~tag2&&tag3', ['tag1', 'tag3'], true],
+            ['tag1&&~tag2&&tag3', ['tag1', 'tag2'], false],
+            ['tag1&&~tag2&&tag3', ['tag1', 'tag4'], false],
+            ['tag1&&~tag2&&tag3', ['tag1', 'tag2', 'tag3'], false],
+        ];
+    }
+
+    /**
+     * @phpstan-param list<string> $tags
+     */
+    #[DataProvider('provderMatchWithNoPrefixInFilter')]
+    public function testItMatchesWhenFilterDoesNotContainPrefix(string $filter, array $tags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $tags, null, [], '', '', null, 1);
+        $tagFilter = new TagFilter($filter);
+        $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
     public function testFilterWithWhitespaceIsDeprecated(): void
