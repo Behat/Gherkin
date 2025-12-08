@@ -302,6 +302,17 @@ class TagFilterTest extends TestCase
             ['tag1&&~tag2&&tag3', ['tag1', 'tag2'], false],
             ['tag1&&~tag2&&tag3', ['tag1', 'tag4'], false],
             ['tag1&&~tag2&&tag3', ['tag1', 'tag2', 'tag3'], false],
+            // Also cover when the file was parsed in compatibility mode including the prefix
+            ['wip', [], false],
+            ['wip', ['@slow'], false],
+            ['wip', ['@wip'], true],
+            ['wip', ['@slow', '@wip'], true],
+            ['tag1&&~tag2&&tag3', [], false],
+            ['tag1&&~tag2&&tag3', ['@tag1'], false],
+            ['tag1&&~tag2&&tag3', ['@tag1', '@tag3'], true],
+            ['tag1&&~tag2&&tag3', ['@tag1', '@tag2'], false],
+            ['tag1&&~tag2&&tag3', ['@tag1', '@tag4'], false],
+            ['tag1&&~tag2&&tag3', ['@tag1', '@tag2', '@tag3'], false],
         ];
     }
 
