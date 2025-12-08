@@ -117,12 +117,18 @@ class TagFilter extends ComplexFilter
             return true;
         }
 
+        // If the file was parsed in legacy mode, the `@` prefix will have been removed from the individual tags on the
+        // parsed node. The tags in the filter expression still have their @ so we add the prefix back here if required.
+        // This can be removed once legacy parsing mode is removed.
+        $tags = array_map(
+            static fn (string $tag) => str_starts_with($tag, '@') ? $tag : '@' . $tag,
+            $tags
+        );
+
         foreach (explode('&&', $this->filterString) as $andTags) {
             $satisfiesComma = false;
 
             foreach (explode(',', $andTags) as $tag) {
-                $tag = str_replace('@', '', trim($tag));
-
                 if ($tag[0] === '~') {
                     $tag = mb_substr($tag, 1, mb_strlen($tag, 'utf8') - 1, 'utf8');
                     $satisfiesComma = !in_array($tag, $tags, true) || $satisfiesComma;

@@ -18,6 +18,7 @@ Behat\Gherkin\Node\FeatureNode:
                             line: 6
                 keyword: Scenario
                 line: 5
+                description: ~
     keyword: Feature
     language: en
     file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/bad/invalid_language.feature

@@ -1,3 +1,0 @@
-Behat\Gherkin\Exception\UnexpectedParserNodeException:
-    message: 'Expected Examples table or end of Scenario, but got text: "This is an examples description" in file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/descriptions_with_comments.feature'
-    code: 0

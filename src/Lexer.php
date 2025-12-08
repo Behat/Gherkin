@@ -37,6 +37,7 @@ use function assert;
  * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string}
  * @phpstan-type TTagToken array{type: 'Tag', value: null, line: int, deferred: bool, tags: list<string>}
  * @phpstan-type TTableRowToken array{type: 'TableRow', value: null, line: int, deferred: bool, columns: list<string>}
+ * @phpstan-type TDocStringSeparator '"""'|'```'
  */
 class Lexer
 {
@@ -79,7 +80,11 @@ class Lexer
     private bool $allowLanguageTag = true;
     private bool $allowFeature = true;
     private bool $allowMultilineArguments = false;
+    private bool $allowExamples = false;
     private bool $allowSteps = false;
+    /**
+     * @phpstan-var TDocStringSeparator|null
+     */
     private ?string $pyStringDelimiter = null;
 
     public function __construct(
@@ -137,6 +142,7 @@ class Lexer
         $this->allowFeature = true;
         $this->allowMultilineArguments = false;
         $this->allowSteps = false;
+        $this->allowExamples = false;
 
         if (\func_num_args() > 1) {
             // @codeCoverageIgnoreStart
@@ -580,6 +586,7 @@ class Lexer
 
         $this->allowMultilineArguments = false;
         $this->allowSteps = true;
+        $this->allowExamples = true;
 
         return $token;
     }
@@ -601,6 +608,7 @@ class Lexer
 
         $this->allowMultilineArguments = false;
         $this->allowSteps = true;
+        $this->allowExamples = true;
 
         return $token;
     }
@@ -614,6 +622,9 @@ class Lexer
      */
     protected function scanExamples()
     {
+        if (!$this->allowExamples) {
+            return null;
+        }
         $token = $this->scanTitleLine($this->currentDialect->getExamplesKeywords(), 'Examples');
 
         if ($token === null) {
@@ -719,7 +730,18 @@ class Lexer
 
         $token = $this->scanText();
         // swallow trailing spaces
-        $token['value'] = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+        $value = (string) preg_replace('/^\s{0,' . $this->pyStringSwallow . '}/u', '', $token['value'] ?? '');
+
+        if ($this->compatibilityMode->shouldUnespaceDocStringDelimiters()) {
+            \assert($this->pyStringDelimiter !== null);
+            $escapedDelimiter = match ($this->pyStringDelimiter) {
+                '"""' => '\\"\\"\\"',
+                '```' => '\\`\\`\\`',
+            };
+            $value = str_replace($escapedDelimiter, $this->pyStringDelimiter, $value);
+        }
+
+        $token['value'] = $value;
 
         return $token;
     }
@@ -752,7 +774,7 @@ class Lexer
         array_pop($rawColumns);
 
         $token = $this->takeToken('TableRow');
-        if ($this->compatibilityMode->shouldSupportNewlineEscapeSequenceInTableCell()) {
+        if ($this->compatibilityMode->shouldUseNewTableCellParsing()) {
             $columns = array_map($this->parseTableCell(...), $rawColumns);
         } else {
             $columns = array_map(static fn ($column) => trim(str_replace(['\\|', '\\\\'], ['|', '\\'], $column)), $rawColumns);
@@ -766,6 +788,9 @@ class Lexer
 
     private function parseTableCell(string $cell): string
     {
+        $trimmedCell = preg_replace('/^[ \\t\\n\\x0B\\f\\r\\x85\\xA0]++|[ \\t\\n\\x0B\\f\\r\\x85\\xA0]++$/u', '', $cell);
+        \assert($trimmedCell !== null);
+
         $value = preg_replace_callback('/\\\\./', function (array $matches) {
             return match ($matches[0]) {
                 '\\n' => "\n",
@@ -773,11 +798,11 @@ class Lexer
                 '\\|' => '|',
                 default => $matches[0],
             };
-        }, $cell);
+        }, $trimmedCell);
 
         assert($value !== null);
 
-        return trim($value, ' ');
+        return $value;
     }
 
     /**
@@ -803,9 +828,23 @@ class Lexer
         }
 
         $token = $this->takeToken('Tag');
-        $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
-        $tags = array_map(trim(...), $tags);
-        $token['tags'] = $tags;
+
+        if ($this->compatibilityMode->shouldRemoveTagPrefixChar()) {
+            // Legacy behaviour
+            $tags = explode('@', mb_substr($line, 1, mb_strlen($line, 'utf8') - 1, 'utf8'));
+            $tags = array_map(trim(...), $tags);
+            $token['tags'] = $tags;
+
+            return $token;
+        }
+
+        $tags = preg_split('/(?=@)/u', $line);
+        assert($tags !== false);
+        // Remove the empty content before the first tag prefix
+        array_shift($tags);
+
+        // Note: checking for whitespace in tags is done in the Parser to fit with existing logic
+        $token['tags'] = array_map(trim(...), $tags);
 
         return $token;
     }

@@ -21,9 +21,13 @@ use Behat\Gherkin\Keywords\KeywordsInterface;
  */
 final class KeywordsDialectProvider implements DialectProviderInterface
 {
+    private readonly string $defaultLanguage;
+
     public function __construct(
         private readonly KeywordsInterface $keywords,
     ) {
+        // Assume a default dialect of `en` as the KeywordsInterface does not allow reading its language but returns the current data
+        $this->defaultLanguage = $this->keywords instanceof ArrayKeywords ? $this->keywords->getLanguage() : 'en';
     }
 
     public function getDialect(string $language): GherkinDialect
@@ -40,10 +44,9 @@ final class KeywordsDialectProvider implements DialectProviderInterface
 
     public function getDefaultDialect(): GherkinDialect
     {
-        // Assume a default dialect of `en` as the KeywordsInterface does not allow reading its language but returns the current data
-        $language = $this->keywords instanceof ArrayKeywords ? $this->keywords->getLanguage() : 'en';
+        $this->keywords->setLanguage($this->defaultLanguage);
 
-        return $this->buildDialect($language);
+        return $this->buildDialect($this->defaultLanguage);
     }
 
     private function buildDialect(string $language): GherkinDialect

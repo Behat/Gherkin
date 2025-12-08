@@ -12,7 +12,7 @@ jobs:
     name: Check composer.json
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -25,7 +25,7 @@ jobs:
     name: Analyse code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -50,7 +50,7 @@ jobs:
           - php: 8.1
             composer-flags: "--with=symfony/yaml:^6.4"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: shivammathur/setup-php@v2
         with:

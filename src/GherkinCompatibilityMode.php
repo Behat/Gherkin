@@ -35,7 +35,7 @@ enum GherkinCompatibilityMode: string
     /**
      * @internal
      */
-    public function shouldRemoveFeatureDescriptionPadding(): bool
+    public function shouldRemoveDescriptionPadding(): bool
     {
         return match ($this) {
             self::LEGACY => true,
@@ -46,7 +46,29 @@ enum GherkinCompatibilityMode: string
     /**
      * @internal
      */
-    public function shouldSupportNewlineEscapeSequenceInTableCell(): bool
+    public function allowAllNodeDescriptions(): bool
+    {
+        return match ($this) {
+            self::LEGACY => false,
+            default => true,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function shouldUseNewTableCellParsing(): bool
+    {
+        return match ($this) {
+            self::LEGACY => false,
+            default => true,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function shouldUnespaceDocStringDelimiters(): bool
     {
         return match ($this) {
             self::LEGACY => false,
@@ -71,6 +93,30 @@ enum GherkinCompatibilityMode: string
     public function allowWhitespaceInLanguageTag(): bool
     {
         return match ($this) {
+            self::LEGACY => false,
+            default => true,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function shouldRemoveTagPrefixChar(): bool
+    {
+        // Note: When this is removed we can also remove the code in TagFilter that handles tags with no leading @
+        return match ($this) {
+            self::LEGACY => true,
+            default => false,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function shouldThrowOnWhitespaceInTag(): bool
+    {
+        return match ($this) {
+            // Note, although we don't throw we have triggered an E_USER_DEPRECATED in Parser::guardTags since v4.9.0
             self::LEGACY => false,
             default => true,
         };
