@@ -87,7 +87,7 @@ jobs:
       - run: bin/update_i18n
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
         with:
