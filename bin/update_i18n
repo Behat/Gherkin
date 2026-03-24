@@ -24,6 +24,17 @@ foreach ($gherkinLanguages as $lang => $keywords) {
             $words = [$words];
         }
 
+        assert(array_find($words, fn ($word) => is_string($word)) === null, 'Expected $words to be an array of strings');
+        /**
+         * Here we force phpstan to recognise that we have narrowed the type of $words to a list of strings with the
+         * assertion above. Otherwise it will report an error from the later `implode()` call that $words must be a
+         * list<string>.
+         *
+         * There does not currently seem to be a way to force phpstan to detect this type narrowing at runtime
+         * https://github.com/phpstan/phpstan/issues/14360
+         *
+         * @var array<string> $words
+         */
         if ($type === 'scenarioOutline') {
             $type = 'scenario_outline';
         }
@@ -32,7 +43,6 @@ foreach ($gherkinLanguages as $lang => $keywords) {
             $formattedKeywords = [];
 
             foreach ($words as $word) {
-                assert(is_string($word));
                 $formattedWord = trim($word);
 
                 if ($formattedWord === $word) {
@@ -45,12 +55,14 @@ foreach ($gherkinLanguages as $lang => $keywords) {
             $words = $formattedKeywords;
         }
 
-        usort($words, static function ($type1, $type2) {
-            assert(is_string($type1));
-            assert(is_string($type2));
+        foreach ($words as $word) {
+            assert(is_string($word));
+        }
 
-            return [mb_strlen($type2, 'utf8'), $type1] <=> [mb_strlen($type1, 'utf8'), $type2];
-        });
+        usort(
+            $words,
+            static fn (string $type1, string $type2) => [mb_strlen($type2, 'utf8'), $type1] <=> [mb_strlen($type1, 'utf8'), $type2]
+        );
 
         $langMessages[$type] = implode('|', $words);
     }

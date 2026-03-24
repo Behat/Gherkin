@@ -40,5 +40,8 @@ return (new PhpCsFixer\Config())
         'single_line_throw' => false,
         'ternary_to_null_coalescing' => true,
         'global_namespace_import' => false,
+        'phpdoc_to_comment' => [ // Keep as a phpdoc if it contains the `@var` annotation
+            'ignored_tags' => ['var'],
+        ],
     ])
     ->setFinder($finder);
