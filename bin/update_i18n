@@ -24,7 +24,7 @@ foreach ($gherkinLanguages as $lang => $keywords) {
             $words = [$words];
         }
 
-        assert(array_find($words, fn ($word) => is_string($word)) === null, 'Expected $words to be an array of strings');
+        assert(array_find($words, fn ($word) => !is_string($word)) === null, 'Expected $words to be an array of strings');
         /**
          * Here we force phpstan to recognise that we have narrowed the type of $words to a list of strings with the
          * assertion above. Otherwise it will report an error from the later `implode()` call that $words must be a
