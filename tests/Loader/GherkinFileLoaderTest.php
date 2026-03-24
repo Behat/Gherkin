@@ -15,6 +15,7 @@ use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Parser;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class GherkinFileLoaderTest extends TestCase
@@ -22,12 +23,17 @@ class GherkinFileLoaderTest extends TestCase
     private GherkinFileLoader $loader;
     private string $featuresPath;
 
+    private static function featuresPath(): string
+    {
+        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
+    }
+
     protected function setUp(): void
     {
         $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
-        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
+        $this->featuresPath = self::featuresPath();
     }
 
     public function testSupports(): void
@@ -93,26 +99,76 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertEquals('cache', $features[0]);
     }
 
-    public function testBasePath(): void
+    /**
+     * @return array<string, array{?string, array<string, bool>}>
+     */
+    public static function providerSupportsWithBasePath(): array
     {
-        $this->assertFalse($this->loader->supports('features'));
-        $this->assertFalse($this->loader->supports('tables.feature'));
+        return [
+            'with no base path set' => [
+                null,
+                [
+                    // The default is the current working directory, and there are no files there
+                    'features' => false,
+                    'tables.feature' => false,
+                    'features/tables.feature' => false,
+                    'features/pystring.feature' => false,
+                    'features/multiline_name.feature' => false,
+                ],
+            ],
+            'with base path set to features directory' => [
+                self::featuresPath(),
+                [
+                    'features' => false,
+                    'tables.feature' => true,
+                    'pystring.feature' => true,
+                    'features/tables.feature' => false,
+                    'features/pystring.feature' => false,
+                ],
+            ],
+            'with base path set to parent of features directory' => [
+                self::featuresPath() . '/../',
+                [
+                    'features' => false,
+                    'tables.feature' => false,
+                    'pystring.feature' => false,
+                    'features/tables.feature' => true,
+                    'features/pystring.feature' => true,
+                ],
+            ],
+        ];
+    }
 
-        $this->loader->setBasePath($this->featuresPath . '/../');
-        $this->assertFalse($this->loader->supports('features'));
-        $this->assertFalse($this->loader->supports('tables.feature'));
-        $this->assertTrue($this->loader->supports('features/tables.feature'));
+    /**
+     * @param array<string,bool> $expected
+     */
+    #[DataProvider('providerSupportsWithBasePath')]
+    public function testSupportsWithBasePath(?string $basePath, array $expected): void
+    {
+        if ($basePath !== null) {
+            $this->loader->setBasePath($basePath);
+        }
 
-        $this->assertTrue($this->loader->supports('features/pystring.feature'));
+        $actual = [];
+        foreach (array_keys($expected) as $resource) {
+            $actual[$resource] = $this->loader->supports($resource);
+        }
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testLoadWithBasePath(): void
+    {
+        $this->loader->setBasePath(self::featuresPath() . '/../');
         $features = $this->loader->load('features/pystring.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('A py string feature', $features[0]->getTitle());
-        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
+        $this->assertEquals(self::featuresPath() . DIRECTORY_SEPARATOR . 'pystring.feature', $features[0]->getFile());
 
-        $this->loader->setBasePath($this->featuresPath);
+        $this->loader->setBasePath(self::featuresPath());
         $features = $this->loader->load('multiline_name.feature');
         $this->assertCount(1, $features);
         $this->assertEquals('multiline', $features[0]->getTitle());
-        $this->assertEquals($this->featuresPath . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
+        $this->assertEquals(self::featuresPath() . DIRECTORY_SEPARATOR . 'multiline_name.feature', $features[0]->getFile());
     }
 }
