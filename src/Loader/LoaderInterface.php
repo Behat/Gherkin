@@ -24,11 +24,9 @@ interface LoaderInterface
     /**
      * Checks if current loader supports provided resource.
      *
-     * @template TSupportedResourceType
+     * @param mixed $resource Resource to load
      *
-     * @param TSupportedResourceType $resource Resource to load
-     *
-     * @phpstan-assert-if-true =LoaderInterface<TSupportedResourceType> $this
+     * @phpstan-assert-if-true =TResourceType $resource
      *
      * @return bool
      */
