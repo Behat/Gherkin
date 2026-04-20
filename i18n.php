@@ -756,7 +756,7 @@ return array (
     'given' => '먼저|조건|*',
     'name' => 'Korean',
     'native' => '한국어',
-    'rule' => 'Rule',
+    'rule' => '규칙',
     'scenario' => '시나리오',
     'scenario_outline' => '시나리오 개요',
     'then' => '그러면|*',
