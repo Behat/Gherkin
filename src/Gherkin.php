@@ -151,6 +151,12 @@ class Gherkin
     {
         foreach ($this->loaders as $loader) {
             if ($loader->supports($resource)) {
+                /**
+                 * If the loader supports the provided resource, then it can safely be typed as
+                 * LoaderInterface<ResourceType>.
+                 *
+                 * @var LoaderInterface<TResourceType> $loader
+                 */
                 return $loader;
             }
         }
