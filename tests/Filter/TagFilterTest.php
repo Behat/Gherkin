@@ -47,147 +47,140 @@ class TagFilterTest extends TestCase
         $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
     }
 
-    public function testIsFeatureMatchFilter(): void
+    /**
+     * @return array<array{string, list<string>, bool}>
+     */
+    public static function providerFeatureMatches(): array
     {
-        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
+        return [
+            // Single tag matches if tag is present
+            ['@wip', [], false],
+            ['@wip', ['wip'], true],
 
-        $filter = new TagFilter('@wip');
-        $this->assertFalse($filter->isFeatureMatch($feature));
+            // Negated `~` tag matches if tag is NOT present
+            ['~@done', ['wip'], true],
+            ['~@done', ['wip', 'done'], false],
 
-        $feature = new FeatureNode(null, null, ['wip'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // Or `,` matches if ANY of the list of tags is present
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3'], false],
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3', 'tag5'], true],
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3', 'tag5'], true],
 
-        $filter = new TagFilter('~@done');
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // And `&&` matches if ALL of the list of tags is present
+            ['@wip&&@vip', ['wip', 'done'], false],
+            ['@wip&&@vip', ['wip', 'done'], false],
+            ['@wip&&@vip', ['wip', 'done', 'vip'], true],
 
-        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], '', '', null, 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['tag1', 'tag2', 'tag3'], null, [], '', '', null, 1);
-        $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, [
-            'tag1',
-            'tag2',
-            'tag3',
-            'tag5',
-        ], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
-
-        $filter = new TagFilter('@wip&&@vip');
-        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], '', '', null, 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['wip', 'done', 'vip'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
-
-        $filter = new TagFilter('@wip,@vip&&@user');
-        $feature = new FeatureNode(null, null, ['wip'], null, [], '', '', '', 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['vip'], null, [], '', '', '', 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['wip', 'user'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['vip', 'user'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // `,` has precedence over `&&` - resolves as "(@wip OR @vip) AND user"
+            ['@wip,@vip&&@user', ['wip'], false],
+            ['@wip,@vip&&@user', ['vip'], false],
+            ['@wip,@vip&&@user', ['wip', 'user'], true],
+            ['@wip,@vip&&@user', ['vip', 'user'], true],
+        ];
     }
 
-    public function testIsScenarioMatchFilter(): void
+    /**
+     * @param list<string> $featureTags
+     */
+    #[DataProvider('providerFeatureMatches')]
+    public function testIsFeatureMatchFilter(string $filterString, array $featureTags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $featureTags, null, [], '', '', null, 1);
+        $filter = new TagFilter($filterString);
+        $this->assertSame($expect, $filter->isFeatureMatch($feature));
+    }
+
+    /**
+     * @return iterable<array{string, list<string>, list<string>, bool}>
+     */
+    public static function providerScenarioMatches(): iterable
+    {
+        // Behaviour matches filtering Features, if the tags are present on the Scenario instead of the Feature
+        foreach (self::providerFeatureMatches() as [$filterString, $featureTags, $expect]) {
+            yield [$filterString, [], $featureTags, $expect];
+        }
+
+        // Additionally, filter expressions match based on the combined list of Feature and Scenario tags
+        yield from [
+            // `&&` matches if one tag present on the feature and one on the scenario
+            ['@feature-tag&&@user', ['feature-tag'], ['wip', 'user'], true],
+            ['@feature-tag&&@user', ['feature-tag'], ['wip'], false],
+        ];
+    }
+
+    /**
+     * @param list<string> $featureTags
+     * @param list<string> $scenarioTags
+     */
+    #[DataProvider('providerScenarioMatches')]
+    public function testIsScenarioMatchFilterWithScenarioNode(string $filterString, array $featureTags, array $scenarioTags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $featureTags, null, [], '', '', null, 1);
+        $scenario = new ScenarioNode(null, $scenarioTags, [], '', 2);
+        $filter = new TagFilter($filterString);
+        $this->assertSame($expect, $filter->isScenarioMatch($feature, $scenario));
+    }
+
+    /**
+     * @return array<string, array{string, bool}>
+     */
+    public static function providerScenarioOutlineFilterMatches(): array
+    {
+        return [
+            'match if ANY Examples tables match the tag' => [
+                '@etag3',
+                true,
+            ],
+            'match if ANY Examples tables match a NOT filter' => [
+                '~@etag3',
+                true,
+            ],
+            'match if the Outline matches the tag' => [
+                '@wip',
+                true,
+            ],
+            'match if tags present on Outline & ANY Examples' => [
+                '@wip&&~@etag3',
+                true,
+            ],
+            'match if tags present on Feature, Outline & ANY Examples' => [
+                '@feature-tag&&@etag1&&@wip',
+                true,
+            ],
+            'match if tags present on Feature & Outline & ALL Examples match the NOT filter' => [
+                '@feature-tag&&~@etag11111&&@wip',
+                true,
+            ],
+            'match if tags present on Feature & Outline & ANY Examples match the NOT filter' => [
+                '@feature-tag&&~@etag1&&@wip',
+                true,
+            ],
+            'match if tags present on Feature & ALL Examples' => [
+                '@feature-tag&&@etag2',
+                true,
+            ],
+            'no match if ALL Examples match ONE of the NOT filters' => [
+                '~@etag1&&~@etag3',
+                false,
+            ],
+            'no match if NO Examples match ALL of the AND filters' => [
+                '@etag1&&@etag3',
+                false,
+            ],
+        ];
+    }
+
+    #[DataProvider('providerScenarioOutlineFilterMatches')]
+    public function testIsScenarioMatchFilterConsidersOutlineAndExampleTableTags(string $filterString, bool $expect): void
     {
         $feature = new FeatureNode(null, null, ['feature-tag'], null, [], '', '', null, 1);
-        $scenario = new ScenarioNode(null, [], [], '', 2);
-
-        $filter = new TagFilter('@wip');
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('~@done');
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'tag1',
-            'tag2',
-            'tag3',
-        ], [], '', 2);
-        $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'tag1',
-            'tag2',
-            'tag3',
-            'tag5',
-        ], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@wip&&@vip');
-        $scenario = new ScenarioNode(null, ['wip', 'not-done'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'wip',
-            'not-done',
-            'vip',
-        ], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@wip,@vip&&@user');
-        $scenario = new ScenarioNode(null, [
-            'wip',
-        ], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, ['vip'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, ['wip', 'user'], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, ['wip', 'user'], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, ['wip'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
         $scenario = new OutlineNode(null, ['wip'], [], [
             new ExampleTableNode([], '', ['etag1', 'etag2']),
             new ExampleTableNode([], '', ['etag2', 'etag3']),
         ], '', 2);
 
-        $tagFilter = new TagFilter('@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('~@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@wip&&@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&@etag1&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&~@etag11111&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&~@etag1&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&@etag2');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('~@etag1&&~@etag3');
-        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@etag1&&@etag3');
-        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario), 'Tags from different examples tables');
+        $tagFilter = new TagFilter($filterString);
+        $this->assertSame($expect, $tagFilter->isScenarioMatch($feature, $scenario));
     }
 
     public function testFilterFeatureWithTaggedExamples(): void
