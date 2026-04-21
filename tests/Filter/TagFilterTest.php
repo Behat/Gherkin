@@ -76,6 +76,12 @@ class TagFilterTest extends TestCase
             ['@wip,@vip&&@user', ['vip'], false],
             ['@wip,@vip&&@user', ['wip', 'user'], true],
             ['@wip,@vip&&@user', ['vip', 'user'], true],
+
+            // `&&` with negated tag matches if only the first tag is present
+            ['@wip&&~@slow', [], false],
+            ['@wip&&~@slow', ['wip'], true],
+            ['@wip&&~@slow', ['wip', 'fast'], true],
+            ['@wip&&~@slow', ['wip', 'slow'], false],
         ];
     }
 
@@ -105,6 +111,25 @@ class TagFilterTest extends TestCase
             // `&&` matches if one tag present on the feature and one on the scenario
             ['@feature-tag&&@user', ['feature-tag'], ['wip', 'user'], true],
             ['@feature-tag&&@user', ['feature-tag'], ['wip'], false],
+
+            // Does not match if the feature matches a `~` tag
+            ['@user&&~@feature-tag', [], [], false],
+            ['@user&&~@feature-tag', ['feature-tag'], ['user'], false],
+            ['@user&&~@feature-tag', ['other-feature'], ['user'], true],
+            ['@user&&~@feature-tag', ['other-feature'], ['api'], false],
+
+            // Matches if the feature or the scenario matches an OR expression
+            ['@api,@browser', [], [], false],
+            ['@api,@browser', ['api'], [], true],
+            ['@api,@browser', ['browser'], [], true],
+            ['@api,@browser', [], ['api'], true],
+            ['@api,@browser', [], ['browser'], true],
+            ['@api,@browser', ['api'], ['browser'], true],
+            ['@api,@browser', ['browser'], ['api'], true],
+
+            // Not affected if same tag is present on Feature and Scenario
+            ['@api', ['api'], ['api'], true],
+            ['@api', ['slow'], ['slow'], false],
         ];
     }
 
@@ -139,6 +164,10 @@ class TagFilterTest extends TestCase
                 '@wip',
                 true,
             ],
+            'no match if the Outline does not match regardless of Examples' => [
+                '@etag2&&~@wip',
+                false,
+            ],
             'match if tags present on Outline & ANY Examples' => [
                 '@wip&&~@etag3',
                 true,
@@ -146,6 +175,10 @@ class TagFilterTest extends TestCase
             'match if tags present on Feature, Outline & ANY Examples' => [
                 '@feature-tag&&@etag1&&@wip',
                 true,
+            ],
+            'no match if the Feature does not match regardless of Examples' => [
+                '@etag2&&~@feature-tag',
+                false,
             ],
             'match if tags present on Feature & Outline & ALL Examples match the NOT filter' => [
                 '@feature-tag&&~@etag11111&&@wip',
@@ -159,6 +192,10 @@ class TagFilterTest extends TestCase
                 '@feature-tag&&@etag2',
                 true,
             ],
+            'match if tags present on Feature & ANY Examples' => [
+                '@feature-tag&&@etag3',
+                true,
+            ],
             'no match if ALL Examples match ONE of the NOT filters' => [
                 '~@etag1&&~@etag3',
                 false,
@@ -167,6 +204,10 @@ class TagFilterTest extends TestCase
                 '@etag1&&@etag3',
                 false,
             ],
+            'match if ANY Examples match an OR filter' => [
+                '@etag1,@etag3',
+                true
+            ]
         ];
     }
 
