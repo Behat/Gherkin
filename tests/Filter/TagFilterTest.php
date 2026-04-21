@@ -15,8 +15,10 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Closure;
 use ErrorException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
@@ -206,8 +208,8 @@ class TagFilterTest extends TestCase
             ],
             'match if ANY Examples match an OR filter' => [
                 '@etag1,@etag3',
-                true
-            ]
+                true,
+            ],
         ];
     }
 
@@ -361,23 +363,59 @@ class TagFilterTest extends TestCase
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
-    public function testFilterWithWhitespaceIsDeprecated(): void
+    /**
+     * @return array<string, array{string, expectMatch: bool, expectDeprecation: bool}>
+     */
+    public static function providerWhitespaceDeprecated(): array
     {
-        $this->expectDeprecationError();
-
-        $tagFilter = new TagFilter('@tag with space');
-        $scenario = new ScenarioNode(null, ['tag with space'], [], '', 2);
-        $feature = new FeatureNode(null, null, [], null, [$scenario], '', '', null, 1);
-
-        $scenarios = $tagFilter->filterFeature($feature)->getScenarios();
-
-        $this->assertEquals([$scenario], $scenarios);
+        return [
+            'deprecation if filter has spaces in tag name' => [
+                '@tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'deprecation if negated filter has spaces in tag name' => [
+                '~@tag with space',
+                'expectMatch' => false,
+                'expectDeprecation' => true,
+            ],
+            'ignore leading whitespace' => [
+                ' @tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'ignore trailing whitespace' => [
+                '@tag1 ',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation if filter has no spaces in tag name' => [
+                '@tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+        ];
     }
 
-    public function testTagFilterThatIsAllWhitespaceIsIgnored(): void
+    #[DataProvider('providerWhitespaceDeprecated')]
+    public function testFilterWithWhitespaceIsDeprecated(string $filterString, bool $expectMatch, bool $expectDeprecation): void
+    {
+        $tagFilter = $this->assertWhetherTriggersDeprecation(
+            $expectDeprecation ? 'Tags with whitespace' : false,
+            fn () => new TagFilter($filterString)
+        );
+
+        $feature = new FeatureNode(null, null, ['tag with space', 'tag1', 'tag2'], null, [], '', '', null, 1);
+
+        $this->assertSame($expectMatch, $tagFilter->isFeatureMatch($feature), 'Expected correct matching behaviour');
+    }
+
+    #[TestWith(['', true])]
+    #[TestWith([' ', true])]
+    public function testTagFilterThatIsAllWhitespaceIsIgnored(string $filterString): void
     {
         $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
-        $tagFilter = new TagFilter('');
+        $tagFilter = new TagFilter($filterString);
         $result = $tagFilter->isFeatureMatch($feature);
 
         $this->assertTrue($result);
@@ -417,16 +455,42 @@ class TagFilterTest extends TestCase
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
-    private function expectDeprecationError(): void
+    /**
+     * @template T
+     *
+     * @param Closure():T $callable
+     * @param non-empty-string|false $expectDeprecation
+     *
+     * @return T
+     */
+    private function assertWhetherTriggersDeprecation(string|false $expectDeprecation, Closure $callable): mixed
     {
+        $deprecationCaptured = false;
+
         set_error_handler(
-            static function (int $errNo, string $errStr, string $errFile, int $errLine) {
-                restore_error_handler();
+            static function (int $errNo, string $errStr, string $errFile, int $errLine) use (&$deprecationCaptured): bool {
+                if (($errNo === E_USER_DEPRECATED) && ($deprecationCaptured === false)) {
+                    $deprecationCaptured = $errStr;
+
+                    return false;
+                }
                 throw new ErrorException($errStr, $errNo, filename: $errFile, line: $errLine);
             },
-            E_ALL
         );
 
-        $this->expectException(ErrorException::class);
+        try {
+            $result = $callable();
+        } finally {
+            restore_error_handler();
+        }
+
+        if ($expectDeprecation === false) {
+            $this->assertFalse($deprecationCaptured, 'Expected no deprecation to be emitted');
+        } else {
+            $this->assertIsString($deprecationCaptured, 'Expected deprecation to be emitted');
+            $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
+        }
+
+        return $result;
     }
 }
