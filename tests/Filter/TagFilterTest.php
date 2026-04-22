@@ -84,6 +84,17 @@ class TagFilterTest extends TestCase
             ['@wip&&~@slow', ['wip'], true],
             ['@wip&&~@slow', ['wip', 'fast'], true],
             ['@wip&&~@slow', ['wip', 'slow'], false],
+
+            // Whitespace around operators is ignored
+            ['@wip && ~@slow', ['wip', 'fast'], true],
+            ['@wip && ~@slow', ['wip', 'slow'], false],
+            ['@wip, @vip && @user', ['wip'], false],
+            ['@wip, @vip && @user', ['vip'], false],
+            ['@wip, @vip && @user', ['wip', 'user'], true],
+            ['@wip, @vip && @user', ['vip', 'user'], true],
+
+            // Edge case - whitespace before a `,` doesn't really make sense, but was historically supported
+            ['@wip , @vip && @user', ['vip', 'user'], true],
         ];
     }
 
@@ -208,6 +219,10 @@ class TagFilterTest extends TestCase
             ],
             'match if ANY Examples match an OR filter' => [
                 '@etag1,@etag3',
+                true,
+            ],
+            'allows whitespace around operators' => [
+                '@feature-tag && @etag3',
                 true,
             ],
         ];
@@ -349,6 +364,14 @@ class TagFilterTest extends TestCase
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag2'], false],
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag4'], false],
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag2', '@tag3'], false],
+
+            // And cover with whitespace around operators
+            ['tag1 && ~tag2 && tag3', [], false],
+            ['tag1 && ~tag2 && tag3', ['tag1'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag3'], true],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag2'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag4'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag2', 'tag3'], false],
         ];
     }
 
@@ -393,6 +416,50 @@ class TagFilterTest extends TestCase
                 '@tag1',
                 'expectMatch' => true,
                 'expectDeprecation' => false,
+            ],
+            'deprecation with spaces in tag name and around && operator' => [
+                '@tag1 && @tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'deprecation with spaces in tag name and around , operator' => [
+                '@any-tag, @tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'no deprecation with spaces only around && operator' => [
+                '@tag1 && @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only after , operator' => [
+                '@any-tag, @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only around , operator' => [
+                '@any-tag , @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only around complex operators' => [
+                '@tag1, @tag2 && ~@tag3',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'allows all whitespace around operators' => [
+                // Very much an edge case, but the legacy implementation would have allowed this as it always just used
+                // `trim`. And arguably someone *could* have a config file with an indented multiline filter expression.
+                "\t@tag1,\n\t@tag2  &&  ~@tag3\n",
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'deprecation on whitespace after ~ operator (and the negated tag is ignored)' => [
+                // Edge case - we don't expect people to have whitespace after a `~` and historically that would not
+                // have been trimmed so the filter would have matched even if a feature / scenario had the negated tag.
+                '~ @tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
             ],
         ];
     }
@@ -441,6 +508,7 @@ class TagFilterTest extends TestCase
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2'], false],
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag4'], false],
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2', '@tag3'], false],
+            ['@tag1 && ~@tag2 && @tag3', ['@tag1', '@tag3'], true],
         ];
     }
 
