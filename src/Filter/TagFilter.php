@@ -26,37 +26,61 @@ class TagFilter extends ComplexFilter
      */
     protected $filterString;
 
+    /**
+     * @var array{all?: list<array{any: list<array{not: string}|array{has: string}>}>, filterString: string}
+     */
+    private array $parsedFilter;
+
     public function __construct(string $filterString)
     {
-        $filterString = trim($filterString);
-        $this->filterString = $this->fixLegacyFilterStringWithoutPrefixes($filterString);
-        // @todo: Now that we are parsing the filter in the constructor, it would be more efficient to store the parsed
-        //        filter rather than re-parsing it on every call to isTagsMatchCondition(). However, we can't safely
-        //        do that till the next major, because `filterString` is protected and we can't guarantee that a child
-        //        class doesn't modify it during execution.
+        $this->filterString = trim($filterString);
+        $this->parseFilterString();
+
+        // Because `filterString` is protected (and therefore could in theory be modified by a child class at runtime),
+        // we need to check if the parsed filter is up to date every time isTagsMatchCondition is called.
+        //
+        // But in previous releases, we normalised the actual `$this->filterString` value in the constructor. Therefore,
+        // we render the (normalised) parsed value back to the filter string to avoid a behaviour change here. This
+        // means we also have to update the value in the `parsedFilter` array, to avoid parsing it again.
+        //
+        // This can all be removed in the next major if we make `filterString` private and/or readonly and remove the
+        // normalisation of deprecated syntax.
+        $this->filterString = $this->parsedFilter['filterString'] = implode(
+            '&&',
+            array_map(
+                static fn (array $filterClause) => implode(',',
+                    array_map(
+                        static fn (array $tag) => isset($tag['not']) ? '~' . $tag['not'] : $tag['has'],
+                        $filterClause['any']
+                    )),
+                $this->parsedFilter['all'] ?? [],
+            ),
+        );
     }
 
-    /**
-     * Fix tag expressions where the filter string does not include the `@` prefixes.
-     *
-     * e.g. `new TagFilter('wip&&~slow')` rather than `new TagFilter('@wip&&~@slow')`. These were historically
-     * supported, although not officially, and have been reinstated to solve a BC issue. This syntax will be deprecated
-     * and removed in future.
-     */
-    private function fixLegacyFilterStringWithoutPrefixes(string $filterString): string
+    private function parseFilterString(): void
     {
-        if ($filterString === '') {
-            return '';
+        $this->parsedFilter = [
+            'filterString' => $this->filterString,
+        ];
+
+        if ($this->filterString === '') {
+            return;
         }
 
         $hadTagWithWhitespace = false;
         $hadTagWithoutPrefix = false;
 
-        $allParts = [];
-        foreach (explode('&&', $filterString) as $andTags) {
+        $this->parsedFilter['all'] = [];
+        foreach (explode('&&', $this->filterString) as $andTags) {
             $orParts = [];
             foreach (explode(',', $andTags) as $tag) {
                 $tag = trim($tag);
+
+                // Fix tag expressions where the filter string does not include the `@` prefixes.
+                // e.g. `new TagFilter('wip&&~slow')` rather than `new TagFilter('@wip&&~@slow')`. These were
+                // historically supported, although not officially, and have been reinstated to solve a BC issue.
+                // This syntax is deprecated and will be removed in future.
                 $fixedTag = match (true) {
                     // Valid - tag filter contains the `@` prefix
                     str_starts_with($tag, '@'),
@@ -68,12 +92,17 @@ class TagFilter extends ComplexFilter
                     default => '@' . $tag,
                 };
 
+                if (str_starts_with($fixedTag, '~')) {
+                    $orParts[] = ['not' => substr($fixedTag, 1)];
+                } else {
+                    $orParts[] = ['has' => $fixedTag];
+                }
+
                 $hadTagWithoutPrefix = $hadTagWithoutPrefix || ($tag !== $fixedTag);
-                $hadTagWithWhitespace = $hadTagWithWhitespace || str_contains($fixedTag, ' ');
-                $orParts[] = $fixedTag;
+                $hadTagWithWhitespace = $hadTagWithWhitespace || str_contains($tag, ' ');
             }
 
-            $allParts[] = implode(',', $orParts);
+            $this->parsedFilter['all'][] = ['any' => $orParts];
         }
 
         if ($hadTagWithWhitespace) {
@@ -89,8 +118,6 @@ class TagFilter extends ComplexFilter
                 E_USER_DEPRECATED
             );
         }
-
-        return implode('&&', $allParts);
     }
 
     /**
@@ -168,7 +195,12 @@ class TagFilter extends ComplexFilter
      */
     protected function isTagsMatchCondition(array $tags)
     {
-        if ($this->filterString === '') {
+        if ($this->parsedFilter['filterString'] !== $this->filterString) {
+            // A child class has modified the filter string since the last call.
+            $this->parseFilterString();
+        }
+
+        if (!isset($this->parsedFilter['all'])) {
             return true;
         }
 
@@ -180,15 +212,21 @@ class TagFilter extends ComplexFilter
             $tags
         );
 
-        foreach (explode('&&', $this->filterString) as $andTags) {
+        foreach ($this->parsedFilter['all'] as $filterPart) {
             $satisfiesComma = false;
 
-            foreach (explode(',', $andTags) as $tag) {
-                if ($tag[0] === '~') {
-                    $tag = mb_substr($tag, 1, mb_strlen($tag, 'utf8') - 1, 'utf8');
-                    $satisfiesComma = !in_array($tag, $tags, true) || $satisfiesComma;
+            foreach ($filterPart['any'] as $tag) {
+                if (isset($tag['not'])) {
+                    $searchTag = $tag['not'];
+                    $expectFound = false;
                 } else {
-                    $satisfiesComma = in_array($tag, $tags, true) || $satisfiesComma;
+                    $searchTag = $tag['has'];
+                    $expectFound = true;
+                }
+
+                if (in_array($searchTag, $tags, true) === $expectFound) {
+                    $satisfiesComma = true;
+                    break;
                 }
             }
 
