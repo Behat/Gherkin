@@ -50,6 +50,7 @@ class TagFilter extends ComplexFilter
         }
 
         $hadTagWithWhitespace = false;
+        $hadTagWithoutPrefix = false;
 
         $allParts = [];
         foreach (explode('&&', $filterString) as $andTags) {
@@ -59,14 +60,15 @@ class TagFilter extends ComplexFilter
                 $fixedTag = match (true) {
                     // Valid - tag filter contains the `@` prefix
                     str_starts_with($tag, '@'),
-                    str_starts_with($tag, '~@') => $tag,
+                    str_starts_with($tag, '~@'),
+                    // Valid historical edge case - tag filter contains the `@` prefix, but there is whitespace after the `~`
+                    (bool) preg_match('/^~\s+@/', $tag) => $tag,
                     // Invalid / legacy cases - insert the missing `@` prefix in the right place
                     str_starts_with($tag, '~') => '~@' . substr($tag, 1),
                     default => '@' . $tag,
                 };
 
-                // @todo trigger a deprecation if any @ were added
-
+                $hadTagWithoutPrefix = $hadTagWithoutPrefix || ($tag !== $fixedTag);
                 $hadTagWithWhitespace = $hadTagWithWhitespace || str_contains($fixedTag, ' ');
                 $orParts[] = $fixedTag;
             }
@@ -77,6 +79,13 @@ class TagFilter extends ComplexFilter
         if ($hadTagWithWhitespace) {
             trigger_error(
                 'Tags with whitespace are deprecated and may be removed in a future version',
+                E_USER_DEPRECATED
+            );
+        }
+
+        if ($hadTagWithoutPrefix) {
+            trigger_error(
+                'Filter strings should contain `@` prefixes for tags, e.g. `@wip` rather than `wip`.',
                 E_USER_DEPRECATED
             );
         }
