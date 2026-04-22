@@ -426,8 +426,12 @@ class TagFilterTest extends TestCase
     #[DataProvider('providerMatchWithNoPrefixInFilter')]
     public function testItMatchesWhenFilterDoesNotContainPrefix(string $filter, array $tags, bool $expect): void
     {
+        $tagFilter = $this->assertTriggersDeprecation(
+            'Filter strings should contain `@` prefixes',
+            fn () => new TagFilter($filter),
+        );
+
         $feature = new FeatureNode(null, null, $tags, null, [], '', '', null, 1);
-        $tagFilter = new TagFilter($filter);
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
