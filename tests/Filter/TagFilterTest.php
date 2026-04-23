@@ -78,7 +78,7 @@ class TagFilterTest extends TestCase
         yield ['@wip,@vip&&@user', ['wip', 'user'], true];
         yield ['@wip,@vip&&@user', ['vip', 'user'], true];
 
-        // `&&` with negated tag matches if only the first tag is present
+        // `&&` with negated tag matches if positive tag is present AND negated tag is absent
         yield ['@wip&&~@slow', [], false];
         yield ['@wip&&~@slow', ['wip'], true];
         yield ['@wip&&~@slow', ['wip', 'fast'], true];
@@ -123,7 +123,7 @@ class TagFilterTest extends TestCase
         yield ['@feature-tag&&@user', ['feature-tag'], ['wip', 'user'], true];
         yield ['@feature-tag&&@user', ['feature-tag'], ['wip'], false];
 
-        // Does not match if the feature matches a `~` tag
+        // Does not match if the feature matches a negated expression
         yield ['@user&&~@feature-tag', [], [], false];
         yield ['@user&&~@feature-tag', ['feature-tag'], ['user'], false];
         yield ['@user&&~@feature-tag', ['other-feature'], ['user'], true];
