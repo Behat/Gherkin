@@ -27,7 +27,7 @@ class TagFilter extends ComplexFilter
     protected $filterString;
 
     /**
-     * @var array{all?: list<array{any: list<array{not: string}|array{has: string}>}>, filterString: string}
+     * @var array{all?: list<array{any: list<array{tag: string, hasTag: bool}>}>, filterString: string}
      */
     private array $parsedFilter;
 
@@ -50,7 +50,11 @@ class TagFilter extends ComplexFilter
             array_map(
                 static fn (array $filterClause) => implode(',',
                     array_map(
-                        static fn (array $tag) => isset($tag['not']) ? '~' . $tag['not'] : $tag['has'],
+                        static fn (array $tag) => sprintf(
+                            '%s%s',
+                            $tag['hasTag'] ? '' : '~',
+                            $tag['tag']
+                        ),
                         $filterClause['any']
                     )),
                 $this->parsedFilter['all'] ?? [],
@@ -93,9 +97,9 @@ class TagFilter extends ComplexFilter
                 };
 
                 if (str_starts_with($fixedTag, '~')) {
-                    $orParts[] = ['not' => substr($fixedTag, 1)];
+                    $orParts[] = ['tag' => substr($fixedTag, 1), 'hasTag' => false];
                 } else {
-                    $orParts[] = ['has' => $fixedTag];
+                    $orParts[] = ['tag' => $fixedTag, 'hasTag' => true];
                 }
 
                 $hadTagWithoutPrefix = $hadTagWithoutPrefix || ($tag !== $fixedTag);
@@ -216,15 +220,7 @@ class TagFilter extends ComplexFilter
             $satisfiesComma = false;
 
             foreach ($filterPart['any'] as $tag) {
-                if (isset($tag['not'])) {
-                    $searchTag = $tag['not'];
-                    $expectFound = false;
-                } else {
-                    $searchTag = $tag['has'];
-                    $expectFound = true;
-                }
-
-                if (in_array($searchTag, $tags, true) === $expectFound) {
+                if (in_array($tag['tag'], $tags, true) === $tag['hasTag']) {
                     $satisfiesComma = true;
                     break;
                 }
