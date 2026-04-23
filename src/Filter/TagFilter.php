@@ -26,53 +26,102 @@ class TagFilter extends ComplexFilter
      */
     protected $filterString;
 
+    /**
+     * @var array{all?: list<array{any: list<array{tag: string, hasTag: bool}>}>, filterString: string}
+     */
+    private array $parsedFilter;
+
     public function __construct(string $filterString)
     {
-        $filterString = trim($filterString);
-        $fixedFilterString = $this->fixLegacyFilterStringWithoutPrefixes($filterString);
-        // @todo trigger a deprecation here $filterString !== $fixedFilterString
-        $this->filterString = $fixedFilterString;
+        $this->filterString = trim($filterString);
+        $this->parseFilterString();
 
-        if (preg_match('/\s/u', $this->filterString)) {
+        // Because `filterString` is protected (and therefore could in theory be modified by a child class at runtime),
+        // we need to check if the parsed filter is up to date every time isTagsMatchCondition is called.
+        //
+        // But in previous releases, we normalised the actual `$this->filterString` value in the constructor. Therefore,
+        // we render the (normalised) parsed value back to the filter string to avoid a behaviour change here. This
+        // means we also have to update the value in the `parsedFilter` array, to avoid parsing it again.
+        //
+        // This can all be removed in the next major if we make `filterString` private and/or readonly and remove the
+        // normalisation of deprecated syntax.
+        $this->filterString = $this->parsedFilter['filterString'] = implode(
+            '&&',
+            array_map(
+                static fn (array $filterClause) => implode(',',
+                    array_map(
+                        static fn (array $tag) => sprintf(
+                            '%s%s',
+                            $tag['hasTag'] ? '' : '~',
+                            $tag['tag']
+                        ),
+                        $filterClause['any']
+                    )),
+                $this->parsedFilter['all'] ?? [],
+            ),
+        );
+    }
+
+    private function parseFilterString(): void
+    {
+        $this->parsedFilter = [
+            'filterString' => $this->filterString,
+        ];
+
+        if ($this->filterString === '') {
+            return;
+        }
+
+        $hadTagWithWhitespace = false;
+        $hadTagWithoutPrefix = false;
+
+        $this->parsedFilter['all'] = [];
+        foreach (explode('&&', $this->filterString) as $andTags) {
+            $orParts = [];
+            foreach (explode(',', $andTags) as $tag) {
+                $tag = trim($tag);
+
+                // Fix tag expressions where the filter string does not include the `@` prefixes.
+                // e.g. `new TagFilter('wip&&~slow')` rather than `new TagFilter('@wip&&~@slow')`. These were
+                // historically supported, although not officially, and have been reinstated to solve a BC issue.
+                // This syntax is deprecated and will be removed in future.
+                $fixedTag = match (true) {
+                    // Valid - tag filter contains the `@` prefix
+                    str_starts_with($tag, '@'),
+                    str_starts_with($tag, '~@'),
+                    // Valid historical edge case - tag filter contains the `@` prefix, but there is whitespace after the `~`
+                    (bool) preg_match('/^~\s+@/', $tag) => $tag,
+                    // Invalid / legacy cases - insert the missing `@` prefix in the right place
+                    str_starts_with($tag, '~') => '~@' . substr($tag, 1),
+                    default => '@' . $tag,
+                };
+
+                if (str_starts_with($fixedTag, '~')) {
+                    $orParts[] = ['tag' => substr($fixedTag, 1), 'hasTag' => false];
+                } else {
+                    $orParts[] = ['tag' => $fixedTag, 'hasTag' => true];
+                }
+
+                $hadTagWithoutPrefix = $hadTagWithoutPrefix || ($tag !== $fixedTag);
+                $hadTagWithWhitespace = $hadTagWithWhitespace || str_contains($tag, ' ');
+            }
+
+            $this->parsedFilter['all'][] = ['any' => $orParts];
+        }
+
+        if ($hadTagWithWhitespace) {
             trigger_error(
                 'Tags with whitespace are deprecated and may be removed in a future version',
                 E_USER_DEPRECATED
             );
         }
-    }
 
-    /**
-     * Fix tag expressions where the filter string does not include the `@` prefixes.
-     *
-     * e.g. `new TagFilter('wip&&~slow')` rather than `new TagFilter('@wip&&~@slow')`. These were historically
-     * supported, although not officially, and have been reinstated to solve a BC issue. This syntax will be deprecated
-     * and removed in future.
-     */
-    private function fixLegacyFilterStringWithoutPrefixes(string $filterString): string
-    {
-        if ($filterString === '') {
-            return '';
-        }
-
-        $allParts = [];
-        foreach (explode('&&', $filterString) as $andTags) {
-            $allParts[] = implode(
-                ',',
-                array_map(
-                    fn (string $tag): string => match (true) {
-                        // Valid - tag filter contains the `@` prefix
-                        str_starts_with($tag, '@'),
-                        str_starts_with($tag, '~@') => $tag,
-                        // Invalid / legacy cases - insert the missing `@` prefix in the right place
-                        str_starts_with($tag, '~') => '~@' . substr($tag, 1),
-                        default => '@' . $tag,
-                    },
-                    explode(',', $andTags),
-                ),
+        if ($hadTagWithoutPrefix) {
+            trigger_error(
+                'Filter strings should contain `@` prefixes for tags, e.g. `@wip` rather than `wip`.',
+                E_USER_DEPRECATED
             );
         }
-
-        return implode('&&', $allParts);
     }
 
     /**
@@ -150,7 +199,12 @@ class TagFilter extends ComplexFilter
      */
     protected function isTagsMatchCondition(array $tags)
     {
-        if ($this->filterString === '') {
+        if ($this->parsedFilter['filterString'] !== $this->filterString) {
+            // A child class has modified the filter string since the last call.
+            $this->parseFilterString();
+        }
+
+        if (!isset($this->parsedFilter['all'])) {
             return true;
         }
 
@@ -162,15 +216,13 @@ class TagFilter extends ComplexFilter
             $tags
         );
 
-        foreach (explode('&&', $this->filterString) as $andTags) {
+        foreach ($this->parsedFilter['all'] as $filterPart) {
             $satisfiesComma = false;
 
-            foreach (explode(',', $andTags) as $tag) {
-                if ($tag[0] === '~') {
-                    $tag = mb_substr($tag, 1, mb_strlen($tag, 'utf8') - 1, 'utf8');
-                    $satisfiesComma = !in_array($tag, $tags, true) || $satisfiesComma;
-                } else {
-                    $satisfiesComma = in_array($tag, $tags, true) || $satisfiesComma;
+            foreach ($filterPart['any'] as $tag) {
+                if (in_array($tag['tag'], $tags, true) === $tag['hasTag']) {
+                    $satisfiesComma = true;
+                    break;
                 }
             }
 

@@ -15,8 +15,10 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioNode;
+use Closure;
 use ErrorException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 class TagFilterTest extends TestCase
@@ -47,147 +49,196 @@ class TagFilterTest extends TestCase
         $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
     }
 
-    public function testIsFeatureMatchFilter(): void
+    /**
+     * @return array<array{string, list<string>, bool}>
+     */
+    public static function providerFeatureMatches(): array
     {
-        $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
+        return [
+            // Single tag matches if tag is present
+            ['@wip', [], false],
+            ['@wip', ['wip'], true],
 
-        $filter = new TagFilter('@wip');
-        $this->assertFalse($filter->isFeatureMatch($feature));
+            // Negated `~` tag matches if tag is NOT present
+            ['~@done', ['wip'], true],
+            ['~@done', ['wip', 'done'], false],
 
-        $feature = new FeatureNode(null, null, ['wip'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // Or `,` matches if ANY of the list of tags is present
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3'], false],
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3', 'tag5'], true],
+            ['@tag5,@tag4,@tag6', ['tag1', 'tag2', 'tag3', 'tag5'], true],
 
-        $filter = new TagFilter('~@done');
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // And `&&` matches if ALL of the list of tags is present
+            ['@wip&&@vip', ['wip', 'done'], false],
+            ['@wip&&@vip', ['wip', 'done'], false],
+            ['@wip&&@vip', ['wip', 'done', 'vip'], true],
 
-        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], '', '', null, 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
+            // `,` has precedence over `&&` - resolves as "(@wip OR @vip) AND user"
+            ['@wip,@vip&&@user', ['wip'], false],
+            ['@wip,@vip&&@user', ['vip'], false],
+            ['@wip,@vip&&@user', ['wip', 'user'], true],
+            ['@wip,@vip&&@user', ['vip', 'user'], true],
 
-        $feature = new FeatureNode(null, null, ['tag1', 'tag2', 'tag3'], null, [], '', '', null, 1);
-        $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isFeatureMatch($feature));
+            // `&&` with negated tag matches if only the first tag is present
+            ['@wip&&~@slow', [], false],
+            ['@wip&&~@slow', ['wip'], true],
+            ['@wip&&~@slow', ['wip', 'fast'], true],
+            ['@wip&&~@slow', ['wip', 'slow'], false],
 
-        $feature = new FeatureNode(null, null, [
-            'tag1',
-            'tag2',
-            'tag3',
-            'tag5',
-        ], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // Whitespace around operators is ignored
+            ['@wip && ~@slow', ['wip', 'fast'], true],
+            ['@wip && ~@slow', ['wip', 'slow'], false],
+            ['@wip, @vip && @user', ['wip'], false],
+            ['@wip, @vip && @user', ['vip'], false],
+            ['@wip, @vip && @user', ['wip', 'user'], true],
+            ['@wip, @vip && @user', ['vip', 'user'], true],
 
-        $filter = new TagFilter('@wip&&@vip');
-        $feature = new FeatureNode(null, null, ['wip', 'done'], null, [], '', '', null, 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['wip', 'done', 'vip'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
-
-        $filter = new TagFilter('@wip,@vip&&@user');
-        $feature = new FeatureNode(null, null, ['wip'], null, [], '', '', '', 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['vip'], null, [], '', '', '', 1);
-        $this->assertFalse($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['wip', 'user'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
-
-        $feature = new FeatureNode(null, null, ['vip', 'user'], null, [], '', '', null, 1);
-        $this->assertTrue($filter->isFeatureMatch($feature));
+            // Edge case - whitespace before a `,` doesn't really make sense, but was historically supported
+            ['@wip , @vip && @user', ['vip', 'user'], true],
+        ];
     }
 
-    public function testIsScenarioMatchFilter(): void
+    /**
+     * @param list<string> $featureTags
+     */
+    #[DataProvider('providerFeatureMatches')]
+    public function testIsFeatureMatchFilter(string $filterString, array $featureTags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $featureTags, null, [], '', '', null, 1);
+        $filter = new TagFilter($filterString);
+        $this->assertSame($expect, $filter->isFeatureMatch($feature));
+    }
+
+    /**
+     * @return iterable<array{string, list<string>, list<string>, bool}>
+     */
+    public static function providerScenarioMatches(): iterable
+    {
+        // Behaviour matches filtering Features, if the tags are present on the Scenario instead of the Feature
+        foreach (self::providerFeatureMatches() as [$filterString, $featureTags, $expect]) {
+            yield [$filterString, [], $featureTags, $expect];
+        }
+
+        // Additionally, filter expressions match based on the combined list of Feature and Scenario tags
+        yield from [
+            // `&&` matches if one tag present on the feature and one on the scenario
+            ['@feature-tag&&@user', ['feature-tag'], ['wip', 'user'], true],
+            ['@feature-tag&&@user', ['feature-tag'], ['wip'], false],
+
+            // Does not match if the feature matches a `~` tag
+            ['@user&&~@feature-tag', [], [], false],
+            ['@user&&~@feature-tag', ['feature-tag'], ['user'], false],
+            ['@user&&~@feature-tag', ['other-feature'], ['user'], true],
+            ['@user&&~@feature-tag', ['other-feature'], ['api'], false],
+
+            // Matches if the feature or the scenario matches an OR expression
+            ['@api,@browser', [], [], false],
+            ['@api,@browser', ['api'], [], true],
+            ['@api,@browser', ['browser'], [], true],
+            ['@api,@browser', [], ['api'], true],
+            ['@api,@browser', [], ['browser'], true],
+            ['@api,@browser', ['api'], ['browser'], true],
+            ['@api,@browser', ['browser'], ['api'], true],
+
+            // Not affected if same tag is present on Feature and Scenario
+            ['@api', ['api'], ['api'], true],
+            ['@api', ['slow'], ['slow'], false],
+        ];
+    }
+
+    /**
+     * @param list<string> $featureTags
+     * @param list<string> $scenarioTags
+     */
+    #[DataProvider('providerScenarioMatches')]
+    public function testIsScenarioMatchFilterWithScenarioNode(string $filterString, array $featureTags, array $scenarioTags, bool $expect): void
+    {
+        $feature = new FeatureNode(null, null, $featureTags, null, [], '', '', null, 1);
+        $scenario = new ScenarioNode(null, $scenarioTags, [], '', 2);
+        $filter = new TagFilter($filterString);
+        $this->assertSame($expect, $filter->isScenarioMatch($feature, $scenario));
+    }
+
+    /**
+     * @return array<string, array{string, bool}>
+     */
+    public static function providerScenarioOutlineFilterMatches(): array
+    {
+        return [
+            'match if ANY Examples tables match the tag' => [
+                '@etag3',
+                true,
+            ],
+            'match if ANY Examples tables match a NOT filter' => [
+                '~@etag3',
+                true,
+            ],
+            'match if the Outline matches the tag' => [
+                '@wip',
+                true,
+            ],
+            'no match if the Outline does not match regardless of Examples' => [
+                '@etag2&&~@wip',
+                false,
+            ],
+            'match if tags present on Outline & ANY Examples' => [
+                '@wip&&~@etag3',
+                true,
+            ],
+            'match if tags present on Feature, Outline & ANY Examples' => [
+                '@feature-tag&&@etag1&&@wip',
+                true,
+            ],
+            'no match if the Feature does not match regardless of Examples' => [
+                '@etag2&&~@feature-tag',
+                false,
+            ],
+            'match if tags present on Feature & Outline & ALL Examples match the NOT filter' => [
+                '@feature-tag&&~@etag11111&&@wip',
+                true,
+            ],
+            'match if tags present on Feature & Outline & ANY Examples match the NOT filter' => [
+                '@feature-tag&&~@etag1&&@wip',
+                true,
+            ],
+            'match if tags present on Feature & ALL Examples' => [
+                '@feature-tag&&@etag2',
+                true,
+            ],
+            'match if tags present on Feature & ANY Examples' => [
+                '@feature-tag&&@etag3',
+                true,
+            ],
+            'no match if ALL Examples match ONE of the NOT filters' => [
+                '~@etag1&&~@etag3',
+                false,
+            ],
+            'no match if NO Examples match ALL of the AND filters' => [
+                '@etag1&&@etag3',
+                false,
+            ],
+            'match if ANY Examples match an OR filter' => [
+                '@etag1,@etag3',
+                true,
+            ],
+            'allows whitespace around operators' => [
+                '@feature-tag && @etag3',
+                true,
+            ],
+        ];
+    }
+
+    #[DataProvider('providerScenarioOutlineFilterMatches')]
+    public function testIsScenarioMatchFilterConsidersOutlineAndExampleTableTags(string $filterString, bool $expect): void
     {
         $feature = new FeatureNode(null, null, ['feature-tag'], null, [], '', '', null, 1);
-        $scenario = new ScenarioNode(null, [], [], '', 2);
-
-        $filter = new TagFilter('@wip');
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('~@done');
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'tag1',
-            'tag2',
-            'tag3',
-        ], [], '', 2);
-        $filter = new TagFilter('@tag5,@tag4,@tag6');
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'tag1',
-            'tag2',
-            'tag3',
-            'tag5',
-        ], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@wip&&@vip');
-        $scenario = new ScenarioNode(null, ['wip', 'not-done'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, [
-            'wip',
-            'not-done',
-            'vip',
-        ], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@wip,@vip&&@user');
-        $scenario = new ScenarioNode(null, [
-            'wip',
-        ], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, ['vip'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
-        $scenario = new ScenarioNode(null, ['wip', 'user'], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, ['wip', 'user'], [], '', 2);
-        $this->assertTrue($filter->isScenarioMatch($feature, $scenario));
-
-        $filter = new TagFilter('@feature-tag&&@user');
-        $scenario = new ScenarioNode(null, ['wip'], [], '', 2);
-        $this->assertFalse($filter->isScenarioMatch($feature, $scenario));
-
         $scenario = new OutlineNode(null, ['wip'], [], [
             new ExampleTableNode([], '', ['etag1', 'etag2']),
             new ExampleTableNode([], '', ['etag2', 'etag3']),
         ], '', 2);
 
-        $tagFilter = new TagFilter('@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('~@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@wip&&@etag3');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&@etag1&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&~@etag11111&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&~@etag1&&@wip');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@feature-tag&&@etag2');
-        $this->assertTrue($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('~@etag1&&~@etag3');
-        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario));
-
-        $tagFilter = new TagFilter('@etag1&&@etag3');
-        $this->assertFalse($tagFilter->isScenarioMatch($feature, $scenario), 'Tags from different examples tables');
+        $tagFilter = new TagFilter($filterString);
+        $this->assertSame($expect, $tagFilter->isScenarioMatch($feature, $scenario));
     }
 
     public function testFilterFeatureWithTaggedExamples(): void
@@ -313,6 +364,14 @@ class TagFilterTest extends TestCase
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag2'], false],
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag4'], false],
             ['tag1&&~tag2&&tag3', ['@tag1', '@tag2', '@tag3'], false],
+
+            // And cover with whitespace around operators
+            ['tag1 && ~tag2 && tag3', [], false],
+            ['tag1 && ~tag2 && tag3', ['tag1'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag3'], true],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag2'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag4'], false],
+            ['tag1 && ~tag2 && tag3', ['tag1', 'tag2', 'tag3'], false],
         ];
     }
 
@@ -322,28 +381,112 @@ class TagFilterTest extends TestCase
     #[DataProvider('providerMatchWithNoPrefixInFilter')]
     public function testItMatchesWhenFilterDoesNotContainPrefix(string $filter, array $tags, bool $expect): void
     {
+        $tagFilter = $this->assertWhetherTriggersDeprecation(
+            'Filter strings should contain `@` prefixes',
+            fn () => new TagFilter($filter),
+        );
+
         $feature = new FeatureNode(null, null, $tags, null, [], '', '', null, 1);
-        $tagFilter = new TagFilter($filter);
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
-    public function testFilterWithWhitespaceIsDeprecated(): void
+    /**
+     * @return array<string, array{string, expectMatch: bool, expectDeprecation: bool}>
+     */
+    public static function providerWhitespaceDeprecated(): array
     {
-        $this->expectDeprecationError();
-
-        $tagFilter = new TagFilter('@tag with space');
-        $scenario = new ScenarioNode(null, ['tag with space'], [], '', 2);
-        $feature = new FeatureNode(null, null, [], null, [$scenario], '', '', null, 1);
-
-        $scenarios = $tagFilter->filterFeature($feature)->getScenarios();
-
-        $this->assertEquals([$scenario], $scenarios);
+        return [
+            'deprecation if filter has spaces in tag name' => [
+                '@tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'deprecation if negated filter has spaces in tag name' => [
+                '~@tag with space',
+                'expectMatch' => false,
+                'expectDeprecation' => true,
+            ],
+            'ignore leading whitespace' => [
+                ' @tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'ignore trailing whitespace' => [
+                '@tag1 ',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation if filter has no spaces in tag name' => [
+                '@tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'deprecation with spaces in tag name and around && operator' => [
+                '@tag1 && @tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'deprecation with spaces in tag name and around , operator' => [
+                '@any-tag, @tag with space',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+            'no deprecation with spaces only around && operator' => [
+                '@tag1 && @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only after , operator' => [
+                '@any-tag, @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only around , operator' => [
+                '@any-tag , @tag2',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'no deprecation with spaces only around complex operators' => [
+                '@tag1, @tag2 && ~@tag3',
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'allows all whitespace around operators' => [
+                // Very much an edge case, but the legacy implementation would have allowed this as it always just used
+                // `trim`. And arguably someone *could* have a config file with an indented multiline filter expression.
+                "\t@tag1,\n\t@tag2  &&  ~@tag3\n",
+                'expectMatch' => true,
+                'expectDeprecation' => false,
+            ],
+            'deprecation on whitespace after ~ operator (and the negated tag is ignored)' => [
+                // Edge case - we don't expect people to have whitespace after a `~` and historically that would not
+                // have been trimmed so the filter would have matched even if a feature / scenario had the negated tag.
+                '~ @tag1',
+                'expectMatch' => true,
+                'expectDeprecation' => true,
+            ],
+        ];
     }
 
-    public function testTagFilterThatIsAllWhitespaceIsIgnored(): void
+    #[DataProvider('providerWhitespaceDeprecated')]
+    public function testFilterWithWhitespaceIsDeprecated(string $filterString, bool $expectMatch, bool $expectDeprecation): void
+    {
+        $tagFilter = $this->assertWhetherTriggersDeprecation(
+            $expectDeprecation ? 'Tags with whitespace' : false,
+            fn () => new TagFilter($filterString)
+        );
+
+        $feature = new FeatureNode(null, null, ['tag with space', 'tag1', 'tag2'], null, [], '', '', null, 1);
+
+        $this->assertSame($expectMatch, $tagFilter->isFeatureMatch($feature), 'Expected correct matching behaviour');
+    }
+
+    #[TestWith(['', true])]
+    #[TestWith([' ', true])]
+    public function testTagFilterThatIsAllWhitespaceIsIgnored(string $filterString): void
     {
         $feature = new FeatureNode(null, null, [], null, [], '', '', null, 1);
-        $tagFilter = new TagFilter('');
+        $tagFilter = new TagFilter($filterString);
         $result = $tagFilter->isFeatureMatch($feature);
 
         $this->assertTrue($result);
@@ -369,6 +512,7 @@ class TagFilterTest extends TestCase
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2'], false],
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag4'], false],
             ['@tag1&&~@tag2&&@tag3', ['@tag1', '@tag2', '@tag3'], false],
+            ['@tag1 && ~@tag2 && @tag3', ['@tag1', '@tag3'], true],
         ];
     }
 
@@ -383,16 +527,60 @@ class TagFilterTest extends TestCase
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
-    private function expectDeprecationError(): void
+    public function testItFiltersAsExpectedIfChildClassModifiesFilterString(): void
     {
+        $filter = new class('@wip') extends TagFilter {
+            public function setFilterString(string $filterString): void
+            {
+                $this->filterString = $filterString;
+            }
+        };
+
+        $feature = new FeatureNode(null, null, ['@wip'], null, [], '', '', null, 1);
+
+        $this->assertTrue($filter->isFeatureMatch($feature), 'Matches initially');
+
+        $filter->setFilterString('@wip&&@slow');
+
+        $this->assertFalse($filter->isFeatureMatch($feature), 'Matches after filter is modified');
+    }
+
+    /**
+     * @template T
+     *
+     * @param Closure():T $callable
+     * @param non-empty-string|false $expectDeprecation
+     *
+     * @return T
+     */
+    private function assertWhetherTriggersDeprecation(string|false $expectDeprecation, Closure $callable): mixed
+    {
+        $deprecationCaptured = false;
+
         set_error_handler(
-            static function (int $errNo, string $errStr, string $errFile, int $errLine) {
-                restore_error_handler();
+            static function (int $errNo, string $errStr, string $errFile, int $errLine) use (&$deprecationCaptured): bool {
+                if (($errNo === E_USER_DEPRECATED) && ($deprecationCaptured === false)) {
+                    $deprecationCaptured = $errStr;
+
+                    return false;
+                }
                 throw new ErrorException($errStr, $errNo, filename: $errFile, line: $errLine);
             },
-            E_ALL
         );
 
-        $this->expectException(ErrorException::class);
+        try {
+            $result = $callable();
+        } finally {
+            restore_error_handler();
+        }
+
+        if ($expectDeprecation === false) {
+            $this->assertFalse($deprecationCaptured, 'Expected no deprecation to be emitted');
+        } else {
+            $this->assertIsString($deprecationCaptured, 'Expected deprecation to be emitted');
+            $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
+        }
+
+        return $result;
     }
 }
