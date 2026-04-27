@@ -14,6 +14,7 @@ use Behat\Gherkin\Exception\FilesystemException;
 use Behat\Gherkin\Exception\InvalidTagContentException;
 use Behat\Gherkin\Exception\LexerException;
 use Behat\Gherkin\Exception\NodeException;
+use Behat\Gherkin\Exception\NoSuchLanguageException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Exception\UnexpectedParserNodeException;
 use Behat\Gherkin\Exception\UnexpectedTaggedNodeException;
@@ -81,32 +82,40 @@ class Parser implements ParserInterface
         $this->lexer->setCompatibilityMode($this->compatibilityMode);
 
         try {
-            $this->lexer->analyse($this->input);
-        } catch (LexerException $e) {
-            throw new ParserException(
-                sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),
-                0,
-                $e
-            );
-        }
-
-        $feature = null;
-        while ($this->predictTokenType() !== 'EOS') {
-            $node = $this->parseExpression();
-
-            if ($node === "\n" || $node === '') {
-                continue;
+            try {
+                $this->lexer->analyse($this->input);
+            } catch (LexerException $e) {
+                throw new ParserException(
+                    sprintf('Lexer exception "%s" thrown for file %s', $e->getMessage(), $file),
+                    0,
+                    $e
+                );
             }
 
-            if (!$feature && $node instanceof FeatureNode) {
-                $feature = $node;
-                continue;
+            $feature = null;
+            while ($this->predictTokenType() !== 'EOS') {
+                $node = $this->parseExpression();
+
+                if ($node === "\n" || $node === '') {
+                    continue;
+                }
+
+                if (!$feature && $node instanceof FeatureNode) {
+                    $feature = $node;
+                    continue;
+                }
+
+                throw new UnexpectedParserNodeException('Feature', $node, $this->file);
             }
 
-            throw new UnexpectedParserNodeException('Feature', $node, $this->file);
+            return $feature;
+        } catch (NoSuchLanguageException $e) {
+            throw new ParserException(sprintf(
+                '%s%s',
+                $e->getMessage(),
+                $this->file ? ' in file: ' . $this->file : ''
+            ), previous: $e);
         }
-
-        return $feature;
     }
 
     public function parseFile(string $file): ?FeatureNode
