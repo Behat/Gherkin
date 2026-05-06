@@ -12,6 +12,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given the minimalism'
                             keyword: Given
                             text: 'the minimalism'
                             arguments: []

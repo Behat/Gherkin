@@ -12,6 +12,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given 3 lines of poetry on 5 lines'
                             keyword: Given
                             text: '3 lines of poetry on 5 lines'
                             arguments:
@@ -26,6 +27,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given an example of negative space'
                             keyword: Given
                             text: 'an example of negative space'
                             arguments:

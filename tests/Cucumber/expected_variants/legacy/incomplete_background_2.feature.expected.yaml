@@ -20,6 +20,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: '* a step'
                             keyword: '*'
                             text: 'a step'
                             arguments: []

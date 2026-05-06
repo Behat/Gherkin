@@ -14,6 +14,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given they have arrived'
                             keyword: Given
                             text: 'they have arrived'
                             arguments:
@@ -33,6 +34,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given they have arrived'
                             keyword: Given
                             text: 'they have arrived'
                             arguments:

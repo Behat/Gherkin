@@ -36,9 +36,12 @@ class CucumberKeywordsTest extends KeywordsTestCase
         foreach (explode('|', mb_substr($keywords, 2)) as $keyword) {
             if (str_contains($keyword, '<')) {
                 $keyword = mb_substr($keyword, 0, -1);
+                $fullText = $keyword . $text;
+            } else {
+                $fullText = $keyword . ' ' . $text;
             }
 
-            $steps[] = new StepNode($keyword, $text, [], $line++, $keywordType);
+            $steps[] = new StepNode($keyword, $text, [], $line++, $keywordType, $fullText);
         }
 
         return $steps;

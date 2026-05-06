@@ -19,6 +19,7 @@ Behat\Gherkin\Node\FeatureNode:
                 -
                     Behat\Gherkin\Node\StepNode:
                         keywordType: Given
+                        fullText: 'Given something'
                         keyword: Given
                         text: something
                         arguments: []
@@ -26,6 +27,7 @@ Behat\Gherkin\Node\FeatureNode:
                 -
                     Behat\Gherkin\Node\StepNode:
                         keywordType: Given
+                        fullText: 'And something else'
                         keyword: And
                         text: 'something else'
                         arguments: []
@@ -71,6 +73,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: When
+                            fullText: 'When <precondition>'
                             keyword: When
                             text: '<precondition>'
                             arguments: []
@@ -78,6 +81,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Then
+                            fullText: 'Then profit'
                             keyword: Then
                             text: profit
                             arguments: []

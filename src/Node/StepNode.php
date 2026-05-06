@@ -23,6 +23,8 @@ class StepNode implements NodeInterface
 {
     private readonly string $keywordType;
 
+    private readonly string $fullText;
+
     /**
      * @param ArgumentInterface[] $arguments
      */
@@ -32,6 +34,7 @@ class StepNode implements NodeInterface
         private readonly array $arguments,
         private readonly int $line,
         ?string $keywordType = null,
+        ?string $fullText = null,
     ) {
         if (count($arguments) > 1) {
             throw new NodeException(sprintf(
@@ -43,6 +46,7 @@ class StepNode implements NodeInterface
         }
 
         $this->keywordType = $keywordType ?: 'Given';
+        $this->fullText = $fullText ?? $keyword . ' ' . $text;
     }
 
     /**
@@ -95,6 +99,18 @@ class StepNode implements NodeInterface
     public function getText()
     {
         return $this->text;
+    }
+
+    /**
+     * Returns the full gherkin text including the keyword.
+     *
+     * Can be used to print a representation of the gherkin for this step, without
+     * needing to know whether the language / keyword requires a space between the
+     * keyword and the following text.
+     */
+    public function getFullText(): string
+    {
+        return $this->fullText;
     }
 
     /**

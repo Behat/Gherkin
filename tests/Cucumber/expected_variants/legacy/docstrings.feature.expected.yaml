@@ -12,6 +12,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given a simple DocString'
                             keyword: Given
                             text: 'a simple DocString'
                             arguments:
@@ -27,6 +28,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given a DocString with content type'
                             keyword: Given
                             text: 'a DocString with content type'
                             arguments:
@@ -41,6 +43,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with wrong indentation'
                             keyword: And
                             text: 'a DocString with wrong indentation'
                             arguments:
@@ -53,6 +56,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with alternative separator'
                             keyword: And
                             text: 'a DocString with alternative separator'
                             arguments:
@@ -66,6 +70,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with normal separator inside'
                             keyword: And
                             text: 'a DocString with normal separator inside'
                             arguments:
@@ -80,6 +85,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with alternative separator inside'
                             keyword: And
                             text: 'a DocString with alternative separator inside'
                             arguments:
@@ -94,6 +100,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with escaped separator inside'
                             keyword: And
                             text: 'a DocString with escaped separator inside'
                             arguments:
@@ -108,6 +115,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'And a DocString with an escaped alternative separator inside'
                             keyword: And
                             text: 'a DocString with an escaped alternative separator inside'
                             arguments:

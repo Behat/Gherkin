@@ -168,10 +168,13 @@ class ExampleNode implements ScenarioInterface, NamedScenarioInterface
             $keyword = $outlineStep->getKeyword();
             $keywordType = $outlineStep->getKeywordType();
             $text = $this->replaceTextTokens($outlineStep->getText());
+            // Only replace tokens within the step part of the fullText. Avoids risk of accidentally replacing tokens
+            // in the keyword portion even in unexpected / custom languages.
+            $fullText = $keyword . $this->replaceTextTokens(mb_substr($outlineStep->getFullText(), mb_strlen($keyword)));
             $args = $this->replaceArgumentsTokens($outlineStep->getArguments());
             $line = $outlineStep->getLine();
 
-            $steps[] = new StepNode($keyword, $text, $args, $line, $keywordType);
+            $steps[] = new StepNode($keyword, $text, $args, $line, $keywordType, $fullText);
         }
 
         return $steps;
