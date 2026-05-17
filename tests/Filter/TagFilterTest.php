@@ -85,15 +85,51 @@ class TagFilterTest extends TestCase
         yield ['@wip&&~@slow', ['wip', 'slow'], false];
 
         // Whitespace around operators is ignored
-        yield ['@wip && ~@slow', ['wip', 'fast'], true];
+        // Should match behaviour of the unspaced examples above
+        yield ['@tag5, @tag4, @tag6', ['tag1', 'tag2', 'tag3'], false];
+        yield ['@tag5, @tag4, @tag6', ['tag1', 'tag2', 'tag3', 'tag5'], true];
+
+        yield ['@wip && @vip', ['wip', 'done'], false];
+        yield ['@wip && @vip', ['wip', 'done', 'vip'], true];
+        yield ['@wip &&@vip', ['wip', 'done'], false];
+        yield ['@wip &&@vip', ['wip', 'done', 'vip'], true];
+        yield ['@wip&& @vip', ['wip', 'done'], false];
+        yield ['@wip&& @vip', ['wip', 'done', 'vip'], true];
+
+        yield ['@wip, @vip&&@user', ['wip'], false];
+        yield ['@wip, @vip&&@user', ['vip', 'user'], true];
+        yield ['@wip, @vip&& @user', ['wip'], false];
+        yield ['@wip, @vip&& @user', ['vip', 'user'], true];
+        yield ['@wip, @vip &&@user', ['wip'], false];
+        yield ['@wip, @vip &&@user', ['vip', 'user'], true];
+        yield ['@wip, @vip&& @user', ['wip'], false];
+        yield ['@wip, @vip&& @user', ['vip', 'user'], true];
+        yield ['@wip,@vip &&@user', ['wip'], false];
+        yield ['@wip,@vip &&@user', ['vip', 'user'], true];
+        yield ['@wip,@vip&& @user', ['wip'], false];
+        yield ['@wip,@vip&& @user', ['vip', 'user'], true];
+        yield ['@wip,@vip && @user', ['wip'], false];
+        yield ['@wip,@vip && @user', ['vip', 'user'], true];
+
+        yield ['@wip &&~@slow', ['wip'], true];
+        yield ['@wip &&~@slow', ['wip', 'slow'], false];
+        yield ['@wip && ~@slow', ['wip'], true];
         yield ['@wip && ~@slow', ['wip', 'slow'], false];
-        yield ['@wip, @vip && @user', ['wip'], false];
-        yield ['@wip, @vip && @user', ['vip'], false];
-        yield ['@wip, @vip && @user', ['wip', 'user'], true];
-        yield ['@wip, @vip && @user', ['vip', 'user'], true];
+        yield ['@wip&& ~@slow', ['wip'], true];
+        yield ['@wip&& ~@slow', ['wip', 'slow'], false];
 
         // Edge case - whitespace before a `,` doesn't really make sense, but was historically supported
         yield ['@wip , @vip && @user', ['vip', 'user'], true];
+
+        // Very much an edge case, but the legacy implementation would have allowed this as it always just used
+        // `trim`. And arguably someone *could* have a config file with an indented multiline filter expression.
+        yield ["\t@tag1,\n\t@tag2  &&  ~@tag3\n", ['tag1', 'tag3'], false];
+        yield ["\t@tag1,\n\t@tag2  &&  ~@tag3\n", ['tag1', 'tag2'], true];
+
+        // Leading and trailing whitespace is ignored
+        yield [' @tag1', ['tag1'], true];
+        yield [' @tag1 ', ['tag1'], true];
+        yield ['@tag1 ', ['tag1'], true];
     }
 
     /**
@@ -396,98 +432,43 @@ class TagFilterTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{string, expectMatch: bool, expectDeprecation: bool}>
+     * @return iterable<string, array{string, bool}>
      */
     public static function providerWhitespaceDeprecated(): iterable
     {
         yield 'deprecation if filter has spaces in tag name' => [
             '@tag with space',
-            'expectMatch' => true,
-            'expectDeprecation' => true,
+            true,
         ];
 
         yield 'deprecation if negated filter has spaces in tag name' => [
             '~@tag with space',
-            'expectMatch' => false,
-            'expectDeprecation' => true,
-        ];
-
-        yield 'ignore leading whitespace' => [
-            ' @tag1',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'ignore trailing whitespace' => [
-            '@tag1 ',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'no deprecation if filter has no spaces in tag name' => [
-            '@tag1',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
+            false,
         ];
 
         yield 'deprecation with spaces in tag name and around && operator' => [
             '@tag1 && @tag with space',
-            'expectMatch' => true,
-            'expectDeprecation' => true,
+            true,
         ];
 
         yield 'deprecation with spaces in tag name and around , operator' => [
             '@any-tag, @tag with space',
-            'expectMatch' => true,
-            'expectDeprecation' => true,
-        ];
-
-        yield 'no deprecation with spaces only around && operator' => [
-            '@tag1 && @tag2',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'no deprecation with spaces only after , operator' => [
-            '@any-tag, @tag2',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'no deprecation with spaces only around , operator' => [
-            '@any-tag , @tag2',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'no deprecation with spaces only around complex operators' => [
-            '@tag1, @tag2 && ~@tag3',
-            'expectMatch' => true,
-            'expectDeprecation' => false,
-        ];
-
-        yield 'allows all whitespace around operators' => [
-            // Very much an edge case, but the legacy implementation would have allowed this as it always just used
-            // `trim`. And arguably someone *could* have a config file with an indented multiline filter expression.
-            "\t@tag1,\n\t@tag2  &&  ~@tag3\n",
-            'expectMatch' => true,
-            'expectDeprecation' => false,
+            true,
         ];
 
         yield 'deprecation on whitespace after ~ operator (and the negated tag is ignored)' => [
             // Edge case - we don't expect people to have whitespace after a `~` and historically that would not
             // have been trimmed so the filter would have matched even if a feature / scenario had the negated tag.
             '~ @tag1',
-            'expectMatch' => true,
-            'expectDeprecation' => true,
+            true,
         ];
     }
 
     #[DataProvider('providerWhitespaceDeprecated')]
-    public function testFilterWithWhitespaceIsDeprecated(string $filterString, bool $expectMatch, bool $expectDeprecation): void
+    public function testFilterWithWhitespaceIsDeprecated(string $filterString, bool $expectMatch): void
     {
-        $tagFilter = $this->assertWhetherTriggersDeprecation(
-            $expectDeprecation ? 'Tags with whitespace' : false,
+        $tagFilter = $this->assertTriggersDeprecation(
+            'Tags with whitespace',
             fn () => new TagFilter($filterString)
         );
 
@@ -546,11 +527,11 @@ class TagFilterTest extends TestCase
      * @template T
      *
      * @param Closure():T $callable
-     * @param non-empty-string|false $expectDeprecation
+     * @param non-empty-string $expectDeprecation
      *
      * @return T
      */
-    private function assertWhetherTriggersDeprecation(string|false $expectDeprecation, Closure $callable): mixed
+    private function assertTriggersDeprecation(string $expectDeprecation, Closure $callable): mixed
     {
         $deprecationCaptured = false;
 
@@ -571,12 +552,8 @@ class TagFilterTest extends TestCase
             restore_error_handler();
         }
 
-        if ($expectDeprecation === false) {
-            $this->assertFalse($deprecationCaptured, 'Expected no deprecation to be emitted');
-        } else {
-            $this->assertIsString($deprecationCaptured, 'Expected deprecation to be emitted');
-            $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
-        }
+        $this->assertIsString($deprecationCaptured, 'Expected deprecation to be emitted');
+        $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
 
         return $result;
     }
