@@ -3323,45 +3323,103 @@
   "tr": {
     "and": [
       "* ",
-      "Ve "
+      "Ve ",
+      "Hem de ",
+      "Bir de ",
+      "Ayrıca ",
+      "İlaveten ",
+      "Buna ek olarak "
     ],
     "background": [
-      "Geçmiş"
+      "Geçmiş",
+      "Arka Plan",
+      "Ön Koşul",
+      "Önkoşul",
+      "Önceki Durum",
+      "Giriş",
+      "Mukaddime",
+      "Mevcut Durum"
     ],
     "but": [
       "* ",
       "Fakat ",
-      "Ama "
+      "Ama ",
+      "Ancak ",
+      "Yalnız ",
+      "Lakin ",
+      "Meğer ki ",
+      "Buna mukabil ",
+      "Aksi halde "
     ],
     "examples": [
-      "Örnekler"
+      "Örnekler",
+      "Değerler"
     ],
     "feature": [
-      "Özellik"
+      "Özellik",
+      "İş Gereksinimi",
+      "Gereksinim",
+      "İşlev",
+      "Kullanıcı Hikayesi",
+      "Yetenek",
+      "Teknik Gereksinim"
     ],
     "given": [
       "* ",
-      "Diyelim ki "
+      "Mevcut ",
+      "Önceden ",
+      "Geçmişte ",
+      "Daha önce ",
+      "Halihazırda ",
+      "Zaten ",
+      "Sistemde ",
+      "Diyelim ki ",
+      "Varsayalım ki ",
+      "Farz edelim ki ",
+      "Kabul edelim ki ",
+      "Başlangıçta ",
+      "Varsayılan olarak ",
+      "Biliniyor ki "
     ],
     "name": "Turkish",
     "native": "Türkçe",
     "rule": [
-      "Kural"
+      "Kural",
+      "İş Kuralı",
+      "Kaide",
+      "Hüküm",
+      "Madde"
     ],
     "scenario": [
       "Örnek",
-      "Senaryo"
+      "Senaryo",
+      "Durum",
+      "Vaka"
     ],
     "scenarioOutline": [
-      "Senaryo taslağı"
+      "Senaryo taslağı",
+      "Senaryo şablonu"
     ],
     "then": [
       "* ",
-      "O zaman "
+      "Beklenen ",
+      "O zaman ",
+      "Sonuç olarak ",
+      "Böylece ",
+      "Bunun üzerine ",
+      "Bu durumda ",
+      "O takdirde ",
+      "Şu halde ",
+      "Netice itibariyle ",
+      "Buna binaen "
     ],
     "when": [
       "* ",
-      "Eğer ki "
+      "Eğer ",
+      "Eğer ki ",
+      "Ne zaman ",
+      "Ne zaman ki ",
+      "Şayet "
     ]
   },
   "tt": {
