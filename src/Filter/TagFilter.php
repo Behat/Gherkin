@@ -29,16 +29,11 @@ class TagFilter extends ComplexFilter
     public function __construct(string $filterString)
     {
         $filterString = trim($filterString);
-        $fixedFilterString = $this->fixLegacyFilterStringWithoutPrefixes($filterString);
-        // @todo trigger a deprecation here $filterString !== $fixedFilterString
-        $this->filterString = $fixedFilterString;
-
-        if (preg_match('/\s/u', $this->filterString)) {
-            trigger_error(
-                'Tags with whitespace are deprecated and may be removed in a future version',
-                E_USER_DEPRECATED
-            );
-        }
+        $this->filterString = $this->fixLegacyFilterStringWithoutPrefixes($filterString);
+        // @todo: Now that we are parsing the filter in the constructor, it would be more efficient to store the parsed
+        //        filter rather than re-parsing it on every call to isTagsMatchCondition(). However, we can't safely
+        //        do that till the next major, because `filterString` is protected and we can't guarantee that a child
+        //        class doesn't modify it during execution.
     }
 
     /**
@@ -54,21 +49,35 @@ class TagFilter extends ComplexFilter
             return '';
         }
 
+        $hadTagWithWhitespace = false;
+
         $allParts = [];
         foreach (explode('&&', $filterString) as $andTags) {
-            $allParts[] = implode(
-                ',',
-                array_map(
-                    fn (string $tag): string => match (true) {
-                        // Valid - tag filter contains the `@` prefix
-                        str_starts_with($tag, '@'),
-                        str_starts_with($tag, '~@') => $tag,
-                        // Invalid / legacy cases - insert the missing `@` prefix in the right place
-                        str_starts_with($tag, '~') => '~@' . substr($tag, 1),
-                        default => '@' . $tag,
-                    },
-                    explode(',', $andTags),
-                ),
+            $orParts = [];
+            foreach (explode(',', $andTags) as $tag) {
+                $tag = trim($tag);
+                $fixedTag = match (true) {
+                    // Valid - tag filter contains the `@` prefix
+                    str_starts_with($tag, '@'),
+                    str_starts_with($tag, '~@') => $tag,
+                    // Invalid / legacy cases - insert the missing `@` prefix in the right place
+                    str_starts_with($tag, '~') => '~@' . substr($tag, 1),
+                    default => '@' . $tag,
+                };
+
+                // @todo trigger a deprecation if any @ were added
+
+                $hadTagWithWhitespace = $hadTagWithWhitespace || str_contains($fixedTag, ' ');
+                $orParts[] = $fixedTag;
+            }
+
+            $allParts[] = implode(',', $orParts);
+        }
+
+        if ($hadTagWithWhitespace) {
+            trigger_error(
+                'Tags with whitespace are deprecated and may be removed in a future version',
+                E_USER_DEPRECATED
             );
         }
 
