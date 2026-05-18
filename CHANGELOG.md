@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.17.0] - 2026-05-18
+
+### Changed
+
+* Emit deprecation if filter string does not contain @ prefixes by @acoulton in https://github.com/Behat/Gherkin/pull/417
+
+### Added
+
+* Add a `getFullText()` method to a StepNode - returns the keyword & text as it appears in the feature file 
+  by @acoulton in https://github.com/Behat/Gherkin/pull/421
+
+### Fixed
+
+* Wrap NoSuchLanguageException in a parser exception by @stof in https://github.com/Behat/Gherkin/pull/419
+* Ignore whitespace around operators in tag filter strings by @acoulton in https://github.com/Behat/Gherkin/pull/416
+
+### Internal
+
+* Update cucumber/gherkin parity tests and translations to v39.1.0 by @behat-gherkin-updater[bot] 
+  in https://github.com/Behat/Gherkin/pull/409, https://github.com/Behat/Gherkin/pull/411,
+  and https://github.com/Behat/Gherkin/pull/420
+* refactor: Only parse tag filter expression once by @acoulton in https://github.com/Behat/Gherkin/pull/418
+* Fix Phpstan errors in current master build by @acoulton in https://github.com/Behat/Gherkin/pull/413
+* Bump github actions versions by @dependabot[bot] in https://github.com/Behat/Gherkin/pull/412, 
+  https://github.com/Behat/Gherkin/pull/414 and https://github.com/Behat/Gherkin/pull/415
+
 # [4.16.1] - 2025-12-08
 
 ### Fixed
@@ -596,6 +622,7 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.17.0]: https://github.com/Behat/Gherkin/compare/v4.16.1...v4.17.0
 [4.16.1]: https://github.com/Behat/Gherkin/compare/v4.16.0...v4.16.1
 [4.16.0]: https://github.com/Behat/Gherkin/compare/v4.15.0...v4.16.0
 [4.15.0]: https://github.com/Behat/Gherkin/compare/v4.14.0...v4.15.0
