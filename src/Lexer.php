@@ -34,7 +34,7 @@ use function assert;
  * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
  * @phpstan-type TNullValueToken array{type: TTokenType, value: null, line: int, deferred: bool}
  * @phpstan-type TTitleToken array{type: TTitleKeyword, value: null|non-empty-string, line: int, deferred: bool, keyword: string, indent: int}
- * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string}
+ * @phpstan-type TStepToken array{type: 'Step', value: string, line: int, deferred: bool, keyword_type: string, text: string, fullText: string}
  * @phpstan-type TTagToken array{type: 'Tag', value: null, line: int, deferred: bool, tags: list<string>}
  * @phpstan-type TTableRowToken array{type: 'TableRow', value: null, line: int, deferred: bool, columns: list<string>}
  * @phpstan-type TDocStringSeparator '"""'|'```'
@@ -671,6 +671,7 @@ class Lexer
         $token = $this->takeToken('Step', $nodeKeyword);
         $token['keyword_type'] = $this->getStepKeywordType($matchedKeyword);
         $token['text'] = $text;
+        $token['fullText'] = $matchedKeyword . $text;
 
         $this->consumeLine();
         $this->allowMultilineArguments = true;

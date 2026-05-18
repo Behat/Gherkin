@@ -44,7 +44,7 @@ class TranslationTest extends TestCase
                 continue;
             }
 
-            $steps[] = new StepNode(trim($keyword), $text, [], $line++, $keywordType);
+            $steps[] = new StepNode(trim($keyword), $text, [], $line++, $keywordType, $keyword . $text);
         }
 
         return $steps;

@@ -27,6 +27,7 @@ Behat\Gherkin\Node\FeatureNode:
                     -
                         Behat\Gherkin\Node\StepNode:
                             keywordType: Given
+                            fullText: 'Given a <color> ball with:'
                             keyword: Given
                             text: 'a <color> ball with:'
                             arguments:

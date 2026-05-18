@@ -491,7 +491,7 @@ class Parser implements ParserInterface
             }
         }
 
-        return new StepNode($token['value'], trim($token['text']), $arguments, $token['line'], $token['keyword_type']);
+        return new StepNode($token['value'], trim($token['text']), $arguments, $token['line'], $token['keyword_type'], $token['fullText']);
     }
 
     /**
@@ -754,7 +754,8 @@ class Parser implements ParserInterface
             $node->getText(),
             $node->getArguments(),
             $node->getLine(),
-            $keywordType
+            $keywordType,
+            $node->getFullText(),
         );
     }
 

@@ -112,4 +112,44 @@ class ExampleNodeTest extends TestCase
         $this->assertInstanceOf(TableNode::class, $args[0]);
         $this->assertEquals('| page | homepage |', $args[0]->getTableAsString());
     }
+
+    public function testCreateExampleStepsInLanguageWithoutSpaceAfterKeyword(): void
+    {
+        // Proves that the fullText is correctly copied to the new steps, with the parameters replaced.
+        $steps = [
+            new StepNode('前提', '<番号> を入力', [], 8, 'Given', '前提<番号> を入力'),
+        ];
+        $table = new ExampleTableNode(
+            [
+                ['番号'],
+                ['30'],
+                ['50'],
+            ],
+            '例',
+        );
+        $outline = new OutlineNode(null, [], $steps, $table, '', 1);
+        $examples = $outline->getExamples();
+
+        $this->assertEquals(
+            [
+                'text' => '30 を入力',
+                'fullText' => '前提30 を入力',
+            ],
+            [
+                'text' => $examples[0]->getSteps()[0]->getText(),
+                'fullText' => $examples[0]->getSteps()[0]->getFullText(),
+            ],
+        );
+
+        $this->assertEquals(
+            [
+                'text' => '50 を入力',
+                'fullText' => '前提50 を入力',
+            ],
+            [
+                'text' => $examples[1]->getSteps()[0]->getText(),
+                'fullText' => $examples[1]->getSteps()[0]->getFullText(),
+            ],
+        );
+    }
 }

@@ -201,7 +201,8 @@ class NDJsonAstParser
                 $item['text'],
                 $this->getStepArguments($item),
                 $item['location']['line'],
-                trim($item['keyword'])
+                trim($item['keyword']),
+                $item['keyword'] . $item['text'],
             ),
             $items
         );

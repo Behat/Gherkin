@@ -229,7 +229,7 @@ class ArrayLoader extends AbstractLoader
             }
         }
 
-        return new StepNode($hash['type'], $hash['text'], $arguments, $hash['line'], $hash['keyword_type']);
+        return new StepNode($hash['type'], $hash['text'], $arguments, $hash['line'], $hash['keyword_type'], $hash['full_text'] ?? null);
     }
 
     /**
