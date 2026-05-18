@@ -527,6 +527,24 @@ class TagFilterTest extends TestCase
         $this->assertSame($expect, $tagFilter->isFeatureMatch($feature));
     }
 
+    public function testItFiltersAsExpectedIfChildClassModifiesFilterString(): void
+    {
+        $filter = new class('@wip') extends TagFilter {
+            public function setFilterString(string $filterString): void
+            {
+                $this->filterString = $filterString;
+            }
+        };
+
+        $feature = new FeatureNode(null, null, ['@wip'], null, [], '', '', null, 1);
+
+        $this->assertTrue($filter->isFeatureMatch($feature), 'Matches initially');
+
+        $filter->setFilterString('@wip&&@slow');
+
+        $this->assertFalse($filter->isFeatureMatch($feature), 'Matches after filter is modified');
+    }
+
     /**
      * @template T
      *
