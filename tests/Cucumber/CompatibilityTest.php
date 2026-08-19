@@ -61,6 +61,13 @@ class CompatibilityTest extends TestCase
             'incomplete_background_2.feature' => 'Background descriptions not supported',
             'examples_keyword_in_background_description.feature' => 'Background descriptions not supported',
             'extra_blank_lines_everywhere.feature' => 'Background / Examples descriptions not supported',
+            'addition.feature' => 'Trailing whitespace in description lines is trimmed',
+            'hashes_in_quotes.feature' => 'Trailing whitespace in description lines is trimmed',
+            'multiline_name.feature' => 'Multiline titles are folded into the title instead of the description',
+            'multiline_name_with_newlines.feature' => 'Multiline titles are folded into the title instead of the description',
+            'issue_13.feature' => 'Multiline titles are folded into the title instead of the description',
+            'background_title.feature' => 'Multiline titles are folded into the title instead of the description',
+            'complex_descriptions.feature' => 'Multiline titles are folded into the title instead of the description',
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',

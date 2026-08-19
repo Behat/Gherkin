@@ -29,12 +29,12 @@ class YamlFileLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports(__FILE__));
         $this->assertFalse($this->loader->supports('string'));
         $this->assertFalse($this->loader->supports(__DIR__ . '/file.yml'));
-        $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/etalons/addition.yml'));
+        $this->assertTrue($this->loader->supports(__DIR__ . '/Fixtures/etalons/addition.yml'));
     }
 
     public function testLoadAddition(): void
     {
-        $basePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures';
+        $basePath = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures';
         $this->loader->setBasePath($basePath);
         $features = $this->loader->load('etalons/addition.yml');
 

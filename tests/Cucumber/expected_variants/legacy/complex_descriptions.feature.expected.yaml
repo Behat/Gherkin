@@ -1,0 +1,39 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Complex descriptions'
+    description: |-
+        Some description with
+        | table |   row|
+
+          and
+
+        """
+        """
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    Some
+                     | complex |  description     |
+
+                    """
+                    hell yeah
+                    """
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given one two three'
+                            keyword: Given
+                            text: 'one two three'
+                            arguments: []
+                            line: 22
+                keyword: Scenario
+                line: 16
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/complex_descriptions.feature
+    line: 7
