@@ -491,6 +491,14 @@ class Parser implements ParserInterface
             }
         }
 
+        if (count($arguments) > 1) {
+            // cucumber/gherkin >= 42.0.0 allows a step to have both a DataTable and a DocString,
+            // but we don't support this syntax. We would first need to ensure that runners can
+            // cope with a step having more than one argument - although it is typed as an array,
+            // it has always been a single-element array.
+            throw new ParserException('Multiple step arguments not supported');
+        }
+
         return new StepNode($token['value'], trim($token['text']), $arguments, $token['line'], $token['keyword_type'], $token['fullText']);
     }
 

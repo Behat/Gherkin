@@ -63,6 +63,7 @@ class CompatibilityTest extends TestCase
             'incomplete_background_2.feature' => 'Background descriptions not supported',
             'examples_keyword_in_background_description.feature' => 'Background descriptions not supported',
             'extra_blank_lines_everywhere.feature' => 'Background / Examples descriptions not supported',
+            'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',
@@ -70,6 +71,7 @@ class CompatibilityTest extends TestCase
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
+            'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
     ];
 
