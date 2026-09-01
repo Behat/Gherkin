@@ -30,6 +30,28 @@ class ParserResultDumper
             $values = $this->recursiveDump($result);
         }
 
+        return $this->dumpValues($values);
+    }
+
+    /**
+     * Re-dumps an already recorded expectation with the YAML component currently installed.
+     *
+     * The quoting style of the Symfony YAML dumper differs between the supported major versions:
+     * 5.4 writes a string holding a "#" as 'Some ''#quoted'' string', later versions as
+     * "Some '#quoted' string". Both parse to the same value, so normalising the recorded file
+     * before comparing keeps the assertion about the parser result rather than about the dumper.
+     */
+    public function normalize(string $recordedExpectation): string
+    {
+        // The placeholder is substituted after dumping and is not valid inline YAML, so the real
+        // path has to go back in before the recorded file can be parsed again.
+        $restored = str_replace('{BASEDIR}', $this->baseDir, $recordedExpectation);
+
+        return $this->dumpValues(Yaml::parse($restored));
+    }
+
+    private function dumpValues(mixed $values): string
+    {
         $result = Yaml::dump(
             $values,
             inline: 999,

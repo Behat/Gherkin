@@ -1,0 +1,47 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'Feature with titled background'
+    description: ~
+    tags: []
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: |-
+                Some Background
+                title with
+                 couple
+                  of
+                   | continuous  |
+                 """
+                 strings
+            steps:
+                -
+                    Behat\Gherkin\Node\StepNode:
+                        keywordType: Given
+                        fullText: 'Given a passing step'
+                        keyword: Given
+                        text: 'a passing step'
+                        arguments: []
+                        line: 10
+            keyword: Background
+            line: 3
+            description: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: ~
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given a failing step'
+                            keyword: Given
+                            text: 'a failing step'
+                            arguments: []
+                            line: 13
+                keyword: Scenario
+                line: 12
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/background_title.feature
+    line: 1

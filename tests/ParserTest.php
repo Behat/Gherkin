@@ -12,11 +12,9 @@ namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
 use Behat\Gherkin\Exception\ParserException;
-use Behat\Gherkin\Filesystem;
 use Behat\Gherkin\Keywords\ArrayKeywords;
 use Behat\Gherkin\Keywords\KeywordsInterface;
 use Behat\Gherkin\Lexer;
-use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Parser;
@@ -27,26 +25,6 @@ use RuntimeException;
 
 final class ParserTest extends TestCase
 {
-    /**
-     * @return iterable<string, array{fixtureName: string}>
-     */
-    public static function parserTestDataProvider(): iterable
-    {
-        foreach (Filesystem::findFilesRecursively(__DIR__ . '/Fixtures/etalons', '*.yml') as $file) {
-            $testname = basename($file, '.yml');
-            yield $testname => ['fixtureName' => $testname];
-        }
-    }
-
-    #[DataProvider('parserTestDataProvider')]
-    public function testParser(string $fixtureName): void
-    {
-        $etalon = $this->parseEtalon($fixtureName . '.yml');
-        $fixture = $this->parseFixture($fixtureName . '.feature');
-
-        $this->assertEquals($etalon, $fixture);
-    }
-
     public function testParserResetsTagsBetweenFeatures(): void
     {
         $parser = $this->createGherkinParser();
@@ -261,33 +239,5 @@ final class ParserTest extends TestCase
                 'but' => 'しかし<',
             ],
         ]);
-    }
-
-    private function createYamlParser(): YamlFileLoader
-    {
-        return new YamlFileLoader();
-    }
-
-    private function parseFixture(string $fixture): ?FeatureNode
-    {
-        return $this->createGherkinParser()->parseFile(__DIR__ . "/Fixtures/features/$fixture");
-    }
-
-    private function parseEtalon(string $etalon): FeatureNode
-    {
-        $features = $this->createYamlParser()->load(__DIR__ . '/Fixtures/etalons/' . $etalon);
-        $feature = $features[0];
-
-        return new FeatureNode(
-            $feature->getTitle(),
-            $feature->getDescription(),
-            $feature->getTags(),
-            $feature->getBackground(),
-            $feature->getScenarios(),
-            $feature->getKeyword(),
-            $feature->getLanguage(),
-            __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
-            $feature->getLine()
-        );
     }
 }

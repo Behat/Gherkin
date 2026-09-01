@@ -1,0 +1,73 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: 'test pystring'
+    description: 'second line'
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    testing py string in scenario
+                    second line
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given the pystring is'
+                            keyword: Given
+                            text: 'the pystring is'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'Test store name'
+                                            - 'Denmark, Kolding'
+                                            - '6000'
+                                        line: 8
+                            line: 7
+                keyword: Scenario
+                line: 4
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 0
+                            table:
+                                24:
+                                    - ''
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    testing py string in scenario outline
+                    second line
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given the pystring is'
+                            keyword: Given
+                            text: 'the pystring is'
+                            arguments:
+                                -
+                                    Behat\Gherkin\Node\PyStringNode:
+                                        strings:
+                                            - 'Test store name'
+                                            - 'Denmark, Kolding'
+                                            - '6000'
+                                        line: 18
+                            line: 17
+                keyword: 'Scenario Outline'
+                line: 14
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/issue_13.feature
+    line: 1
