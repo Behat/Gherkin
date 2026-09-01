@@ -202,7 +202,8 @@ class CompatibilityTest extends TestCase
 
         $expectationFile = $this->getExpectedVariantFilename($mode, $file);
         try {
-            $this->assertStringEqualsFile($expectationFile, $dumpedResult);
+            $this->assertFileExists($expectationFile);
+            $this->assertSame($dumper->normalize(Filesystem::readFile($expectationFile)), $dumpedResult);
         } catch (ExpectationFailedException $e) {
             if (getenv('RE_RECORD_EXPECTATIONS')) {
                 Filesystem::writeFile($expectationFile, $dumpedResult);
