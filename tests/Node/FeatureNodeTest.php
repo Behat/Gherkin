@@ -12,6 +12,7 @@ namespace Tests\Behat\Gherkin\Node;
 
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
@@ -141,27 +142,12 @@ class FeatureNodeTest extends TestCase
                             StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
                             StubNode::step(keyword: 'And', text: 'some other precondition'),
                         ]),
-                        StubNode::scenario(
-                            title: 'Scenario with steps',
-                            tags: ['slow'],
-                            steps: [
-                                StubNode::step('When', 'I do something'),
-                            ],
-                            keyword: 'Story',
-                            line: 14,
-                            description: 'This scenario has steps',
-                        ),
-                        StubNode::outline(
-                            title: 'Outline with steps',
-                            tags: ['fast'],
-                            steps: [
-                                StubNode::step('When', 'They do something'),
-                            ],
-                            tables: [StubNode::exampleTable(table: [['one']])],
-                            keyword: 'Scenario',
-                            line: 15,
-                            description: 'Some outline with info',
-                        ),
+                        StubNode::scenario(steps: [
+                            StubNode::step('When', 'I do something'),
+                        ]),
+                        StubNode::outline(steps: [
+                            StubNode::step('When', 'They do something'),
+                        ]),
                         StubNode::scenario(
                             title: 'Scenario with no steps',
                             steps: [],
@@ -170,31 +156,16 @@ class FeatureNodeTest extends TestCase
                 ],
             ),
             [
-                StubNode::scenario(
-                    title: 'Scenario with steps',
-                    tags: ['slow'],
-                    steps: [
-                        StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
-                        StubNode::step(keyword: 'And', text: 'some other precondition'),
-                        StubNode::step('When', 'I do something'),
-                    ],
-                    keyword: 'Story',
-                    line: 14,
-                    description: 'This scenario has steps',
-                ),
-                StubNode::outline(
-                    title: 'Outline with steps',
-                    tags: ['fast'],
-                    steps: [
-                        StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
-                        StubNode::step(keyword: 'And', text: 'some other precondition'),
-                        StubNode::step('When', 'They do something'),
-                    ],
-                    tables: [StubNode::exampleTable(table: [['one']])],
-                    keyword: 'Scenario',
-                    line: 15,
-                    description: 'Some outline with info',
-                ),
+                StubNode::scenario(steps: [
+                    StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
+                    StubNode::step(keyword: 'And', text: 'some other precondition'),
+                    StubNode::step('When', 'I do something'),
+                ]),
+                StubNode::outline(steps: [
+                    StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
+                    StubNode::step(keyword: 'And', text: 'some other precondition'),
+                    StubNode::step('When', 'They do something'),
+                ]),
                 StubNode::scenario(
                     title: 'Scenario with no steps',
                     steps: [
@@ -220,6 +191,61 @@ class FeatureNodeTest extends TestCase
         $this->assertEquals($expect, $feature->getScenarios());
     }
 
+    public function testGetScenariosClonesAllPropertiesWhenHoistingRuleChildren(): void
+    {
+        $step1 = StubNode::step(keyword: 'Given', text: 'some pre-existing state');
+        $step2 = StubNode::step('When', 'I do something');
+        $step3 = StubNode::step('When', 'They do something');
+        $table1 = StubNode::exampleTable(table: [['one']]);
+
+        $feature = StubNode::feature(
+            scenarios: [
+                StubNode::rule(children: [
+                    StubNode::background(steps: [$step1]),
+                    // Using explicit constructors rather than the Stub method so that these are reviewed if we
+                    // change the constructor signature, to ensure all properties are represented in this test.
+                    new ScenarioNode(
+                        title: 'Scenario with steps',
+                        tags: ['slow'],
+                        steps: [$step2],
+                        keyword: 'Story',
+                        line: 15,
+                        description: 'This scenario has steps',
+                    ),
+                    new OutlineNode(
+                        title: 'Outline with steps',
+                        tags: ['fast'],
+                        steps: [$step3],
+                        tables: [$table1],
+                        keyword: 'Scenario',
+                        line: 15,
+                        description: 'Some outline with info',
+                    ),
+                ]),
+            ],
+        );
+
+        $this->assertEquals([
+            new ScenarioNode(
+                title: 'Scenario with steps',
+                tags: ['slow'],
+                steps: [$step1, $step2],
+                keyword: 'Story',
+                line: 15,
+                description: 'This scenario has steps',
+            ),
+            new OutlineNode(
+                title: 'Outline with steps',
+                tags: ['fast'],
+                steps: [$step1, $step3],
+                tables: [$table1],
+                keyword: 'Scenario',
+                line: 15,
+                description: 'Some outline with info',
+            ),
+        ], $feature->getScenarios());
+    }
+
     public function testGetScenariosThrowsOnAttemptToMergeRuleWithCustomScenarioClass(): void
     {
         $feature = StubNode::feature(
@@ -229,14 +255,14 @@ class FeatureNodeTest extends TestCase
                         StubNode::background(
                             steps: [
                                 StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
-                            ]
+                            ],
                         ),
                         // Per our phpdoc, it is valid for a Rule to take any ScenarioInterface - a user could
                         // theoretically extend the Parser to build custom objects instead of ScenarioNode.
                         $this->getMockBuilder(ScenarioInterface::class)->getMock(),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $this->expectException(UnexpectedValueException::class);
@@ -264,17 +290,17 @@ class FeatureNodeTest extends TestCase
                         StubNode::background(
                             steps: [
                                 StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
-                            ]
+                            ],
                         ),
                         StubNode::scenario(
                             steps: [
                                 StubNode::step(keyword: 'When', text: 'some action is performed'),
-                            ]
+                            ],
                         ),
                         StubNode::outline(steps: []),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $scenarios1 = $feature->getScenarios();
