@@ -18,11 +18,13 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
 use RuntimeException;
+use UnexpectedValueException;
 
 /**
  * Loads a feature from cucumber's messages JSON format.
@@ -88,17 +90,46 @@ class NDJsonAstParser
 
         $featureJson = $json['gherkinDocument']['feature'];
 
+        [$background, $children] = $this->splitBackgroundAndChildren($this->getChildren($featureJson['children'], allowRule: true));
+
         return new FeatureNode(
             $featureJson['name'],
             $featureJson['description'],
             $this->getTags($featureJson),
-            $this->getBackground($featureJson),
-            $this->getScenarios($featureJson),
+            $background,
+            $children,
             $featureJson['keyword'],
             $featureJson['language'],
             preg_replace('/(?<=\\.feature).*$/', '', $filePath),
-            $featureJson['location']['line']
+            $featureJson['location']['line'],
         );
+    }
+
+    /**
+     * @param list<BackgroundNode|ScenarioInterface|RuleNode> $children
+     *
+     * @return array{?BackgroundNode, list<ScenarioInterface|RuleNode>}
+     */
+    private function splitBackgroundAndChildren(array $children): array
+    {
+        if ($children === []) {
+            return [null, []];
+        }
+
+        if ($children[0] instanceof BackgroundNode) {
+            $background = $children[0];
+            $children = array_slice($children, 1);
+        } else {
+            $background = null;
+        }
+
+        foreach ($children as $child) {
+            if (!$child instanceof ScenarioInterface && !$child instanceof RuleNode) {
+                throw new UnexpectedValueException('Invalid child node type found in feature children');
+            }
+        }
+
+        return [$background, $children];
     }
 
     /**
@@ -116,75 +147,106 @@ class NDJsonAstParser
                 true => preg_replace('/^@/', '', $tag['name']) ?? $tag['name'],
                 false => $tag['name'],
             },
-            $json['tags']
+            $json['tags'],
         );
     }
 
     /**
-     * @phpstan-param TFeature $json
+     * @phpstan-param list<TRuleChild|TFeatureChild> $featureOrRuleChildren
      *
-     * @return list<ScenarioInterface>
+     * @phpstan-return ($allowRule is true ? list<BackgroundNode|RuleNode|ScenarioInterface> : list<BackgroundNode|ScenarioInterface>)
      */
-    private function getScenarios(array $json): array
+    private function getChildren(array $featureOrRuleChildren, bool $allowRule): array
     {
-        return array_values(
-            array_map(
-                function ($child) {
-                    $tables = $this->getTables($child['scenario']['examples']);
+        $children = array_values(array_map(
+            function ($child) use ($allowRule) {
+                if (count($child) > 1) {
+                    throw new UnexpectedValueException('Unexpected child type ' . json_encode(array_keys($child)));
+                }
 
-                    if ($tables) {
-                        return new OutlineNode(
-                            $child['scenario']['name'],
-                            $this->getTags($child['scenario']),
-                            $this->getSteps($child['scenario']['steps']),
-                            $tables,
-                            $child['scenario']['keyword'],
-                            $child['scenario']['location']['line'],
-                            $child['scenario']['description']
-                        );
-                    }
+                if (isset($child['scenario'])) {
+                    return $this->getScenario($child['scenario']);
+                }
 
-                    return new ScenarioNode(
-                        $child['scenario']['name'],
-                        $this->getTags($child['scenario']),
-                        $this->getSteps($child['scenario']['steps']),
-                        $child['scenario']['keyword'],
-                        $child['scenario']['location']['line'],
-                        $child['scenario']['description']
-                    );
-                },
-                array_filter(
-                    $json['children'],
-                    static function ($child) {
-                        return isset($child['scenario']);
-                    }
-                )
-            )
-        );
-    }
+                if (isset($child['background'])) {
+                    return $this->getBackground($child['background']);
+                }
 
-    /**
-     * @phpstan-param TFeature $json
-     */
-    private function getBackground(array $json): ?BackgroundNode
-    {
-        $backgrounds = array_filter(
-            $json['children'],
-            static fn ($child) => isset($child['background']),
-        );
+                if (isset($child['rule']) && $allowRule) {
+                    return $this->getRule($child['rule']);
+                }
 
-        if (count($backgrounds) !== 1) {
-            return null;
+                throw new UnexpectedValueException('Unexpected child type ' . json_encode(array_keys($child)));
+            },
+            $featureOrRuleChildren,
+        ));
+
+        foreach (array_slice($children, 1) as $child) {
+            if ($child instanceof BackgroundNode) {
+                throw new UnexpectedValueException('Unexpected background node after first child');
+            }
         }
 
-        $background = array_shift($backgrounds);
+        return $children;
+    }
 
+    /**
+     * @phpstan-param TRule $rule
+     */
+    private function getRule(array $rule): RuleNode
+    {
+        $children = $this->getChildren($rule['children'], allowRule: false);
+
+        return new RuleNode(
+            $rule['name'],
+            $rule['description'],
+            $this->getTags($rule),
+            $children,
+            $rule['keyword'],
+            $rule['location']['line'],
+        );
+    }
+
+    /**
+     * @phpstan-param TScenario $scenario
+     */
+    private function getScenario(array $scenario): ScenarioNode|OutlineNode
+    {
+        $tables = $this->getTables($scenario['examples']);
+
+        if ($tables) {
+            return new OutlineNode(
+                $scenario['name'],
+                $this->getTags($scenario),
+                $this->getSteps($scenario['steps']),
+                $tables,
+                $scenario['keyword'],
+                $scenario['location']['line'],
+                $scenario['description'],
+            );
+        }
+
+        return new ScenarioNode(
+            $scenario['name'],
+            $this->getTags($scenario),
+            $this->getSteps($scenario['steps']),
+            $scenario['keyword'],
+            $scenario['location']['line'],
+            $scenario['description'],
+        );
+    }
+
+    /**
+     * @phpstan-param TBackground $background
+     */
+    private function getBackground(array $background): BackgroundNode
+    {
         return new BackgroundNode(
-            $background['background']['name'],
-            $this->getSteps($background['background']['steps']),
-            $background['background']['keyword'],
-            $background['background']['location']['line'],
-            $background['background']['description'],
+            $background['name'],
+            $this->getSteps($background['steps']),
+            $background['keyword'],
+            $background['location']['line'],
+            $background['description'],
         );
     }
 
@@ -204,7 +266,7 @@ class NDJsonAstParser
                 trim($item['keyword']),
                 $item['keyword'] . $item['text'],
             ),
-            $items
+            $items,
         );
     }
 
@@ -252,7 +314,7 @@ class NDJsonAstParser
                         sprintf(
                             'Table header is required when a table body is provided for the example on line %s.',
                             $tableJson['location']['line'],
-                        )
+                        ),
                     );
                 }
 
@@ -273,7 +335,7 @@ class NDJsonAstParser
                     $tableJson['description'],
                 );
             },
-            $items
+            $items,
         );
     }
 }

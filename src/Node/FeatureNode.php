@@ -27,7 +27,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
 
     /**
      * @param list<string> $tags
-     * @param ScenarioInterface[] $scenarios
+     * @param array<RuleNode|ScenarioInterface> $scenarios
      * @param string|null $file the absolute path to the feature file
      */
     public function __construct(
@@ -129,6 +129,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
      */
     public function getScenarios()
     {
+        // @todo: BC layer for rule scenarios
         return $this->scenarios;
     }
 

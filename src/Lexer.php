@@ -28,7 +28,7 @@ use function assert;
  * @final since 4.15.0
  *
  * @phpstan-type TStepKeyword 'Given'|'When'|'Then'|'And'|'But'
- * @phpstan-type TTitleKeyword 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'
+ * @phpstan-type TTitleKeyword 'Feature'|'Background'|'Scenario'|'Outline'|'Examples'|'Rule'
  * @phpstan-type TTokenType 'Text'|'Comment'|'EOS'|'Newline'|'PyStringOp'|'TableRow'|'Tag'|'Language'|'Step'|TTitleKeyword
  * @phpstan-type TToken TStringValueToken|TNullValueToken|TTitleToken|TStepToken|TTagToken|TTableRowToken
  * @phpstan-type TStringValueToken array{type: TTokenType, value: string, line: int, deferred: bool}
@@ -358,6 +358,7 @@ class Lexer
             ?? $this->scanPyStringContent()
             ?? $this->scanStep()
             ?? $this->scanScenario()
+            ?? $this->scanRule()
             ?? $this->scanBackground()
             ?? $this->scanOutline()
             ?? $this->scanExamples()
@@ -500,6 +501,7 @@ class Lexer
         $keywords = match ($type) {
             'Feature' => $this->currentDialect->getFeatureKeywords(),
             'Background' => $this->currentDialect->getBackgroundKeywords(),
+            'Rule' => $this->currentDialect->getRuleKeywords(),
             'Scenario' => $this->currentDialect->getScenarioKeywords(),
             'Outline' => $this->currentDialect->getScenarioOutlineKeywords(),
             'Examples' => $this->currentDialect->getExamplesKeywords(),
@@ -587,6 +589,28 @@ class Lexer
         $this->allowMultilineArguments = false;
         $this->allowSteps = true;
         $this->allowExamples = true;
+
+        return $token;
+    }
+
+    /**
+     * @phpstan-return TTitleToken|null
+     */
+    protected function scanRule(): ?array
+    {
+        if (!$this->compatibilityMode->supportsRuleKeyword()) {
+            return null;
+        }
+
+        $token = $this->scanTitleLine($this->currentDialect->getRuleKeywords(), 'Rule');
+
+        if ($token === null) {
+            return null;
+        }
+
+        $this->allowMultilineArguments = false;
+        $this->allowSteps = false;
+        $this->allowExamples = false;
 
         return $token;
     }
