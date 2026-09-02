@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Node;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
 
 use function strlen;
 
@@ -125,12 +126,73 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns feature scenarios.
      *
+     * To provide backwards compatibility, this method will hoist any scenarios nested insideRules (losing any
+     * information about the Rule in the process). If the Rule had a Background, then any steps from that will be cloned
+     * and merged into each Scenario.
+     *
      * @return ScenarioInterface[]
+     *
+     * @deprecated use getChildren() for first-class handling of Rule nodes
      */
     public function getScenarios()
     {
-        // @todo: BC layer for rule scenarios
-        return $this->scenarios;
+        $result = [];
+        foreach ($this->scenarios as $child) {
+            if ($child instanceof RuleNode) {
+                array_push($result, ...$this->extractRuleScenarios($child));
+            } else {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return iterable<int, ScenarioInterface>
+     */
+    private function extractRuleScenarios(RuleNode $node): iterable
+    {
+        $backgroundSteps = array_values($node->getBackground()?->getSteps() ?? []);
+
+        return array_filter(array_map(
+            function ($child) use ($backgroundSteps) {
+                if ($child instanceof BackgroundNode) {
+                    // This has already been handled
+                    return null;
+                }
+
+                if ($backgroundSteps === []) {
+                    // There's no background, so nothing to merge or convert - just return the original nodes.
+                    return $child;
+                }
+
+                if (($child::class === ScenarioNode::class) || ($child::class === OutlineNode::class)) {
+                    // We only do the ->withSteps expansion on our own classes, as we don't control the constructor
+                    // signature on any third-party ScenarioInterface classes.
+                    return $child->withSteps([
+                        ...$backgroundSteps,
+                        ...array_values($child->getSteps()),
+                    ]);
+                }
+
+                throw new UnexpectedValueException('Cannot merge rule background and scenario steps for custom ScenarioInterface ' . $child::class);
+            },
+            $node->getChildren())
+        );
+    }
+
+    /**
+     * @return list<BackgroundNode|RuleNode|ScenarioInterface>
+     */
+    public function getChildren(): array
+    {
+        $children = $this->scenarios;
+        if ($this->background) {
+            array_unshift($children, $this->background);
+        }
+
+        return array_values($children);
     }
 
     /**
