@@ -14,6 +14,7 @@ use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
+use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
@@ -239,7 +240,44 @@ class FeatureNodeTest extends TestCase
         );
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Rule children must be instances of ScenarioNode');
+        $this->expectExceptionMessage('Cannot merge rule background and scenario steps for custom ScenarioInterface');
         $feature->getScenarios();
+    }
+
+    /**
+     * Ensures that the objects returned from getScenarios are identical on every call even after unpacking Rules.
+     *
+     * Historically, getScenarios returned a fixed list of the ScenarioInterface objects created with the class.
+     * Although we did not officially document or guarantee that, it's possible that end-user code assumes this will be
+     * true and relies on this to match a ScenarioNode from e.g. a test runner event against a ScenarioNode retrieved
+     * from the Feature.
+     *
+     * For absolute safety, we therefore ensure that any Scenarios / Outlines we create at runtime by unpacking Rules
+     * also share an object identity for the life of the FeatureNode.
+     */
+    public function testGetScenarioHoistedRuleScenariosAreObjectIdentical(): void
+    {
+        $feature = StubNode::feature(
+            scenarios: [
+                StubNode::rule(
+                    children: [
+                        StubNode::background(
+                            steps: [
+                                StubNode::step(keyword: 'Given', text: 'some pre-existing state'),
+                            ]
+                        ),
+                        StubNode::scenario(
+                            steps: [
+                                StubNode::step(keyword: 'When', text: 'some action is performed'),
+                            ]
+                        ),
+                        StubNode::outline(steps: []),
+                    ]
+                ),
+            ]
+        );
+
+        $scenarios1 = $feature->getScenarios();
+        $this->assertSame($scenarios1, $feature->getScenarios());
     }
 }
