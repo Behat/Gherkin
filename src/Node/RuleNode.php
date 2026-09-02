@@ -65,4 +65,18 @@ class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, Tagged
     {
         return $this->tags;
     }
+
+    public function hasBackground(): bool
+    {
+        return ($this->children[0] ?? null) instanceof BackgroundNode;
+    }
+
+    public function getBackground(): ?BackgroundNode
+    {
+        if (($this->children[0] ?? null) instanceof BackgroundNode) {
+            return $this->children[0];
+        }
+
+        return null;
+    }
 }
