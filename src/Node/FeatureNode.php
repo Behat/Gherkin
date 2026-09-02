@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Node;
 
 use InvalidArgumentException;
 use UnexpectedValueException;
+use WeakMap;
 
 use function strlen;
 
@@ -136,10 +137,19 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
      */
     public function getScenarios()
     {
+        // It is safe for this cache to be static, because the result is always the same for a given RuleNode,
+        // and the WeakMap will automatically clean up any references to RuleNodes that are no longer in use.
+        // Making it static and private to this method also eliminates any potential issues with serialising
+        // FeatureNode e.g. for caching or tests.
+        static $ruleScenariosCache;
+
         $result = [];
         foreach ($this->scenarios as $child) {
             if ($child instanceof RuleNode) {
-                array_push($result, ...$this->extractRuleScenarios($child));
+                $ruleScenariosCache ??= new WeakMap();
+                /** @var WeakMap<RuleNode, array<int, ScenarioInterface>> $ruleScenariosCache */
+                $ruleScenariosCache[$child] ??= $this->extractRuleScenarios($child);
+                array_push($result, ...$ruleScenariosCache[$child]);
             } else {
                 $result[] = $child;
             }
@@ -149,9 +159,9 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     }
 
     /**
-     * @return iterable<int, ScenarioInterface>
+     * @return array<int, ScenarioInterface>
      */
-    private function extractRuleScenarios(RuleNode $node): iterable
+    private function extractRuleScenarios(RuleNode $node): array
     {
         $backgroundSteps = array_values($node->getBackground()?->getSteps() ?? []);
 
