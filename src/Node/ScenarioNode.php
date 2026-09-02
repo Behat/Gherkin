@@ -36,6 +36,23 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface, Describ
     }
 
     /**
+     * @param list<StepNode> $steps
+     *
+     * @internal
+     */
+    final public function withSteps(array $steps): self
+    {
+        return new self(
+            title: $this->title,
+            tags: $this->tags,
+            steps: $steps,
+            keyword: $this->keyword,
+            line: $this->line,
+            description: $this->description
+        );
+    }
+
+    /**
      * Returns node type string.
      *
      * @return string

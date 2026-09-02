@@ -48,6 +48,24 @@ class OutlineNode implements ScenarioInterface, DescribableNodeInterface
     }
 
     /**
+     * @param list<StepNode> $steps
+     *
+     * @internal
+     */
+    final public function withSteps(array $steps): self
+    {
+        return new self(
+            title: $this->title,
+            tags: $this->tags,
+            steps: $steps,
+            tables: $this->tables,
+            keyword: $this->keyword,
+            line: $this->line,
+            description: $this->description,
+        );
+    }
+
+    /**
      * Returns node type string.
      *
      * @return string
@@ -209,7 +227,7 @@ class OutlineNode implements ScenarioInterface, DescribableNodeInterface
                     $row,
                     $exampleTable->getRowLine($rowNum + 1),
                     $this->getTitle(),
-                    $rowNum + 1
+                    $rowNum + 1,
                 );
             }
         }
