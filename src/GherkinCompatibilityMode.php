@@ -121,4 +121,15 @@ enum GherkinCompatibilityMode: string
             default => true,
         };
     }
+
+    /**
+     * @internal
+     */
+    public function supportsRuleKeyword(): bool
+    {
+        return match ($this) {
+            self::LEGACY => false,
+            default => true,
+        };
+    }
 }
