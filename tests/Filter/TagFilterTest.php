@@ -11,15 +11,20 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\TagFilter;
+use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\NodeInterface;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Closure;
 use ErrorException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Tests\Behat\Gherkin\Node\StubNode;
+use UnexpectedValueException;
 
 class TagFilterTest extends TestCase
 {
@@ -375,6 +380,43 @@ class TagFilterTest extends TestCase
         $this->assertEquals([$exampleTableNode3], $scenarioInterfaces[1]->getExampleTables());
     }
 
+    public function testFilterFeatureKeepsMatchingEmptyOutline(): void
+    {
+        // Note the existing / historic behaviour:
+        // - if an Outline had examples, but none matched the filter, the whole Outline is removed
+        // - if an Outline had no examples, but itself matches the filter, the empty Outline is kept
+        $feature = StubNode::feature(scenarios: [
+            StubNode::outline(
+                title: 'WIP outline',
+                tags: [],
+                tables: [],
+            ),
+            StubNode::outline(
+                title: 'Outline with examples',
+                tags: [],
+                tables: [
+                    StubNode::exampleTable(
+                        tags: ['@bar'],
+                        name: 'Example table'
+                    ),
+                ]
+            ),
+        ]);
+
+        $filter = new TagFilter('~@bar');
+        $filtered = $filter->filterFeature($feature);
+        $this->assertSame(
+            <<<'EOS'
+            Outline: WIP outline
+            
+            EOS,
+            $this->summariseNodes($filtered->getChildren()),
+            'Filtered feature has only the empty outline'
+        );
+
+        $this->assertTrue($filtered->hasScenarios(), 'Feature reports it has scenarios');
+    }
+
     /**
      * @phpstan-return list<array{string, list<string>, bool}>
      */
@@ -578,5 +620,35 @@ class TagFilterTest extends TestCase
         $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
 
         return $result;
+    }
+
+    /**
+     * @param array<NodeInterface> $nodes
+     */
+    private function summariseNodes(array $nodes, int $indent = 0): string
+    {
+        $pad = $indent === 0
+            ? ''
+            : str_repeat(' ', $indent * 2) . '- ';
+
+        $result = [];
+        foreach ($nodes as $node) {
+            $result[] = sprintf('%s%s: %s', $pad, $node->getNodeType(), match (true) {
+                $node instanceof OutlineNode,
+                $node instanceof BackgroundNode,
+                $node instanceof RuleNode => $node->getTitle(),
+                $node instanceof ExampleTableNode ,
+                $node instanceof ScenarioNode => $node->getName(),
+                default => throw new UnexpectedValueException('Cannot summarise ' . $node::class),
+            });
+
+            if ($node instanceof OutlineNode) {
+                $result[] = $this->summariseNodes($node->getExampleTables(), $indent + 1);
+            } elseif ($node instanceof RuleNode) {
+                $result[] = $this->summariseNodes($node->getChildren(), $indent + 1);
+            }
+        }
+
+        return implode("\n", $result);
     }
 }
