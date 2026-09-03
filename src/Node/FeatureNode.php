@@ -248,7 +248,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns a copy of this feature, but with a different set of scenarios.
      *
-     * @param array<array-key, ScenarioInterface> $scenarios
+     * @param array<array-key, ScenarioInterface|RuleNode> $scenarios
      */
     public function withScenarios(array $scenarios): self
     {

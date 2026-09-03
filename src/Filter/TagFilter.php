@@ -10,8 +10,10 @@
 
 namespace Behat\Gherkin\Filter;
 
+use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -131,28 +133,72 @@ class TagFilter extends ComplexFilter
      */
     public function filterFeature(FeatureNode $feature)
     {
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($feature, $scenario)) {
+        $filteredChildren = [];
+        foreach ($feature->getChildren() as $child) {
+            if ($child instanceof BackgroundNode) {
+                // @todo: it's slightly awkward that `->getChildren()` includes BackgroundNode, but `->withScenarios`
+                //        doesn't accept that.
                 continue;
             }
 
-            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $exampleTables = [];
-
-                foreach ($scenario->getExampleTables() as $exampleTable) {
-                    if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $exampleTable->getTags()))) {
-                        $exampleTables[] = $exampleTable;
-                    }
-                }
-
-                $scenario = $scenario->withTables($exampleTables);
-            }
-
-            $scenarios[] = $scenario;
+            $filteredChildren[] = $child instanceof RuleNode
+                ? $this->filterRule($child, $feature)
+                : $this->filterScenario($child, $feature, null);
         }
 
-        return $feature->withScenarios($scenarios);
+        return $feature->withScenarios(array_values(array_filter($filteredChildren)));
+    }
+
+    private function filterRule(RuleNode $rule, FeatureNode $feature): RuleNode|false
+    {
+        $filteredChildren = array_values(array_filter(array_map(
+            // @todo: Again another place where having Background in the getChildren() is a bit annoying
+            fn ($scenario) => $scenario instanceof ScenarioInterface ? $this->filterScenario($scenario, $feature, $rule) : false,
+            $rule->getChildren()
+        )));
+
+        if ($filteredChildren === []) {
+            // No scenarios matched the filter, so drop the whole Rule (including any redundant Background).
+            return false;
+        }
+
+        if ($rule->hasBackground()) {
+            // If at least one scenario matched the filter, we need to add the Background (if any) back into the Rule
+            array_unshift($filteredChildren, $rule->getBackground());
+        }
+
+        return $rule->withChildren($filteredChildren);
+    }
+
+    private function filterScenario(ScenarioInterface $scenario, FeatureNode $feature, ?RuleNode $rule): ScenarioInterface|false
+    {
+        $tags = array_merge(...array_filter([$feature->getTags(), $rule?->getTags(), $scenario->getTags()]));
+
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            // For OutlineNode with Examples, the filter strips out any Examples that don't match.
+            // If there are no Examples left, the whole Scenario is dropped.
+            // NB this only runs if there were Examples to begin with. If there were no Examples, but the OutlineNode
+            // itself matches, then the (empty) OutlineNode is kept. This is possibly unexpected, but has always been
+            // the behaviour.
+            $filteredExamples = [];
+            foreach ($scenario->getExampleTables() as $exampleTable) {
+                if ($this->isTagsMatchCondition([...$tags, ...$exampleTable->getTags()])) {
+                    $filteredExamples[] = $exampleTable;
+                }
+            }
+
+            if ($filteredExamples === []) {
+                return false;
+            }
+
+            return $scenario->withTables($filteredExamples);
+        }
+
+        if ($this->isTagsMatchCondition($tags)) {
+            return $scenario;
+        }
+
+        return false;
     }
 
     /**
@@ -177,17 +223,23 @@ class TagFilter extends ComplexFilter
      */
     public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
     {
-        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-            foreach ($scenario->getExampleTables() as $example) {
-                if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $example->getTags()))) {
-                    return true;
+        return $this->filterScenario($scenario, $feature, $this->findScenarioRule($feature, $scenario)) !== false;
+    }
+
+    private function findScenarioRule(FeatureNode $feature, ScenarioInterface $scenario): ?RuleNode
+    {
+        // @todo: PERFORMANCE HIT / DUPLICATION OF EFFORT - IS THERE A BETTER WAY TO DO THIS? OR AT LEAST TO CACHE IT?
+        foreach ($feature->getChildren() as $child) {
+            if ($child instanceof RuleNode) {
+                foreach ($child->getChildren() as $ruleChild) {
+                    if ($ruleChild::class === $scenario::class && $scenario->getLine() === $ruleChild->getLine()) {
+                        return $child;
+                    }
                 }
             }
-
-            return false;
         }
 
-        return $this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags()));
+        return null;
     }
 
     /**
