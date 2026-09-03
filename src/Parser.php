@@ -23,6 +23,7 @@ use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\StepNode;
@@ -52,7 +53,7 @@ use LogicException;
  * @phpstan-import-type TTableRowToken from Lexer
  * @phpstan-import-type TTitleKeyword from Lexer
  *
- * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|string
+ * @phpstan-type TParsedExpressionResult FeatureNode|BackgroundNode|ScenarioNode|OutlineNode|ExampleTableNode|TableNode|PyStringNode|StepNode|RuleNode|string
  */
 class Parser implements ParserInterface
 {
@@ -220,6 +221,7 @@ class Parser implements ParserInterface
             'Feature' => $this->parseFeature(),
             'Background' => $this->parseBackground(),
             'Scenario' => $this->parseScenario(),
+            'Rule' => $this->parseRule(),
             'Outline' => $this->parseOutline(),
             'Examples' => $this->parseExamples(),
             'TableRow' => $this->parseTable(),
@@ -269,7 +271,7 @@ class Parser implements ParserInterface
                 continue;
             }
 
-            if ($node instanceof ScenarioInterface) {
+            if ($node instanceof RuleNode || $node instanceof ScenarioInterface) {
                 $scenarios[] = $node;
                 continue;
             }
@@ -293,6 +295,57 @@ class Parser implements ParserInterface
             $keyword,
             $language,
             $file,
+            $line
+        );
+    }
+
+    private function parseRule(): RuleNode
+    {
+        $token = $this->expectTokenType('Rule');
+
+        ['title' => $title, 'description' => $description] = $this->parseTitleAndDescription($token);
+        $tags = $this->popTags();
+        $keyword = $token['keyword'];
+        $line = $token['line'];
+        $children = [];
+
+        // The only thing that ends a Rule is another Rule, or the end of the file.
+        // Note that any tags before the next Rule will be consumed before control returns to our loop.
+        while (!in_array($this->predictTokenType(), ['Rule', 'EOS'])) {
+            $node = $this->parseExpression();
+
+            if ($node === "\n") {
+                continue;
+            }
+
+            $isBackgroundAllowed = ($children === []);
+
+            if ($isBackgroundAllowed && $node instanceof BackgroundNode) {
+                $children[] = $node;
+                continue;
+            }
+
+            if ($node instanceof ScenarioInterface) {
+                $children[] = $node;
+                continue;
+            }
+
+            throw new UnexpectedParserNodeException(
+                match ($isBackgroundAllowed) {
+                    true => 'Background, Scenario or Outline',
+                    false => 'Scenario or Outline',
+                },
+                $node,
+                $this->file,
+            );
+        }
+
+        return new RuleNode(
+            $title,
+            $description,
+            $tags,
+            $children,
+            $keyword,
             $line
         );
     }
@@ -453,7 +506,7 @@ class Parser implements ParserInterface
                     continue;
                 }
 
-                if (in_array($nextType, ['Feature', 'Examples', 'Scenario', 'Outline'], true)) {
+                if (in_array($nextType, ['Feature', 'Examples', 'Scenario', 'Outline', 'Rule'], true)) {
                     // These are the only taggable node types
                     return $nextType;
                 }

@@ -1,3 +1,0 @@
-Behat\Gherkin\Exception\UnexpectedParserNodeException:
-    message: 'Expected Step, but got text: "  Rule: A" in file: {BASEDIR}/vendor/cucumber/gherkin-monorepo/testdata/good/rule.feature'
-    code: 0

@@ -11,15 +11,20 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\TagFilter;
+use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\NodeInterface;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Closure;
 use ErrorException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Tests\Behat\Gherkin\Node\StubNode;
+use UnexpectedValueException;
 
 class TagFilterTest extends TestCase
 {
@@ -375,6 +380,43 @@ class TagFilterTest extends TestCase
         $this->assertEquals([$exampleTableNode3], $scenarioInterfaces[1]->getExampleTables());
     }
 
+    public function testFilterFeatureKeepsMatchingEmptyOutline(): void
+    {
+        // Note the existing / historic behaviour:
+        // - if an Outline had examples, but none matched the filter, the whole Outline is removed
+        // - if an Outline had no examples, but itself matches the filter, the empty Outline is kept
+        $feature = StubNode::feature(scenarios: [
+            StubNode::outline(
+                title: 'WIP outline',
+                tags: [],
+                tables: [],
+            ),
+            StubNode::outline(
+                title: 'Outline with examples',
+                tags: [],
+                tables: [
+                    StubNode::exampleTable(
+                        tags: ['@bar'],
+                        name: 'Example table'
+                    ),
+                ]
+            ),
+        ]);
+
+        $filter = new TagFilter('~@bar');
+        $filtered = $filter->filterFeature($feature);
+        $this->assertSame(
+            <<<'EOS'
+            Outline: WIP outline
+            
+            EOS,
+            $this->summariseNodes($filtered->getChildren()),
+            'Filtered feature has only the empty outline'
+        );
+
+        $this->assertTrue($filtered->hasScenarios(), 'Feature reports it has scenarios');
+    }
+
     /**
      * @phpstan-return list<array{string, list<string>, bool}>
      */
@@ -546,6 +588,159 @@ class TagFilterTest extends TestCase
     }
 
     /**
+     * @phpstan-return iterable<string, list{string, string, array<string, bool>}>
+     */
+    public static function providerRuleTags(): iterable
+    {
+        yield 'empty with no match' => [
+            '@anything',
+            '',
+            ['Slow admin scenario' => false, 'Fast user scenario' => false, 'Slow user scenario' => false],
+        ];
+
+        yield 'matches by tags on child scenarios' => [
+            '@slow',
+            <<<'EOS'
+            Rule: Admin rule
+              - Background: Admin background
+              - Scenario: Slow admin scenario
+            Rule: Users rule
+              - Scenario: Slow user scenario
+            EOS,
+            ['Slow admin scenario' => true, 'Fast user scenario' => false, 'Slow user scenario' => true],
+        ];
+
+        yield 'drops rules with no matched scenarios' => [
+            '@fast',
+            <<<'EOS'
+            Rule: Users rule
+              - Outline: Fast user scenario
+                - ExampleTable: Normal examples
+                - ExampleTable: Compliance examples
+            EOS,
+            ['Slow admin scenario' => false, 'Fast user scenario' => true, 'Slow user scenario' => false],
+        ];
+
+        yield 'matches on rule and scenario tags' => [
+            '@users && @slow',
+            <<<'EOS'
+            Rule: Users rule
+              - Scenario: Slow user scenario
+            EOS,
+            ['Slow admin scenario' => false, 'Fast user scenario' => false, 'Slow user scenario' => true],
+        ];
+
+        yield 'matches on rule and scenario tags (excluded by rule tag)' => [
+            '~@users',
+            <<<'EOS'
+            Rule: Admin rule
+              - Background: Admin background
+              - Scenario: Slow admin scenario
+            EOS,
+            ['Slow admin scenario' => true, 'Fast user scenario' => false, 'Slow user scenario' => false],
+        ];
+
+        yield 'includes all examples matching rule tags' => [
+            '@users',
+            <<<'EOS'
+            Rule: Users rule
+              - Outline: Fast user scenario
+                - ExampleTable: Normal examples
+                - ExampleTable: Compliance examples
+              - Scenario: Slow user scenario
+            EOS,
+            ['Slow admin scenario' => false, 'Fast user scenario' => true, 'Slow user scenario' => true],
+        ];
+
+        yield 'filters examples tables using combined rule and table tags' => [
+            '@users && @compliance',
+            <<<'EOS'
+            Rule: Users rule
+              - Outline: Fast user scenario
+                - ExampleTable: Compliance examples
+            EOS,
+            ['Slow admin scenario' => false, 'Fast user scenario' => true, 'Slow user scenario' => false],
+        ];
+
+        yield 'filters on tagged rule children' => [
+            '@smoketest',
+            <<<'EOS'
+            Rule: Admin rule
+              - Background: Admin background
+              - Scenario: Slow admin scenario
+            Rule: Users rule
+              - Outline: Fast user scenario
+                - ExampleTable: Normal examples
+            EOS,
+            ['Slow admin scenario' => true, 'Fast user scenario' => true, 'Slow user scenario' => false],
+        ];
+    }
+
+    /**
+     * @param array<string, bool> $expectScenarioMatch
+     */
+    #[DataProvider('providerRuleTags')]
+    public function testItMatchesIncludingRuleTags(string $filter, string $expectFilterFeature, array $expectScenarioMatch): void
+    {
+        $feature = StubNode::feature(
+            tags: ['@wip'],
+            scenarios: [
+                StubNode::rule(
+                    title: 'Admin rule',
+                    tags: ['@admins'],
+                    children: [
+                        StubNode::background(
+                            title: 'Admin background',
+                        ),
+                        $scenario1 = StubNode::scenario(
+                            title: 'Slow admin scenario',
+                            tags: ['@slow', '@smoketest'],
+                            line: 5,
+                        ),
+                    ],
+                ),
+                StubNode::rule(
+                    title: 'Users rule',
+                    tags: ['@users'],
+                    children: [
+                        $scenario2 = StubNode::outline(
+                            title: 'Fast user scenario',
+                            tags: ['@fast'],
+                            tables: [
+                                StubNode::exampleTable(
+                                    tags: ['@smoketest'],
+                                    name: 'Normal examples',
+                                ),
+                                StubNode::exampleTable(
+                                    tags: ['@compliance'],
+                                    name: 'Compliance examples',
+                                ),
+                            ],
+                            line: 10,
+                        ),
+                        $scenario3 = StubNode::scenario(
+                            title: 'Slow user scenario',
+                            tags: ['@slow'],
+                            line: 13,
+                        ),
+                    ],
+                ),
+            ],
+        );
+
+        $tagFilter = new TagFilter($filter);
+
+        $filtered = $tagFilter->filterFeature($feature);
+        $this->assertSame($expectFilterFeature, $this->summariseNodes($filtered->getChildren()));
+
+        $this->assertSame($expectScenarioMatch, [
+            $scenario1->getName() => $tagFilter->isScenarioMatch($feature, $scenario1),
+            $scenario2->getTitle() => $tagFilter->isScenarioMatch($feature, $scenario2),
+            $scenario3->getName() => $tagFilter->isScenarioMatch($feature, $scenario3),
+        ]);
+    }
+
+    /**
      * @template T
      *
      * @param Closure():T $callable
@@ -578,5 +773,35 @@ class TagFilterTest extends TestCase
         $this->assertStringStartsWith($expectDeprecation, $deprecationCaptured, 'Expected correct deprecation message');
 
         return $result;
+    }
+
+    /**
+     * @param array<NodeInterface> $nodes
+     */
+    private function summariseNodes(array $nodes, int $indent = 0): string
+    {
+        $pad = $indent === 0
+            ? ''
+            : str_repeat(' ', $indent * 2) . '- ';
+
+        $result = [];
+        foreach ($nodes as $node) {
+            $result[] = sprintf('%s%s: %s', $pad, $node->getNodeType(), match (true) {
+                $node instanceof OutlineNode,
+                $node instanceof BackgroundNode,
+                $node instanceof RuleNode => $node->getTitle(),
+                $node instanceof ExampleTableNode ,
+                $node instanceof ScenarioNode => $node->getName(),
+                default => throw new UnexpectedValueException('Cannot summarise ' . $node::class),
+            });
+
+            if ($node instanceof OutlineNode) {
+                $result[] = $this->summariseNodes($node->getExampleTables(), $indent + 1);
+            } elseif ($node instanceof RuleNode) {
+                $result[] = $this->summariseNodes($node->getChildren(), $indent + 1);
+            }
+        }
+
+        return implode("\n", $result);
     }
 }

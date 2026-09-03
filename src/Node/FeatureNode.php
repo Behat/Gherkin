@@ -11,6 +11,8 @@
 namespace Behat\Gherkin\Node;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
+use WeakMap;
 
 use function strlen;
 
@@ -27,7 +29,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
 
     /**
      * @param list<string> $tags
-     * @param ScenarioInterface[] $scenarios
+     * @param array<RuleNode|ScenarioInterface> $scenarios
      * @param string|null $file the absolute path to the feature file
      */
     public function __construct(
@@ -125,11 +127,82 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns feature scenarios.
      *
+     * To provide backwards compatibility, this method will hoist any scenarios nested insideRules (losing any
+     * information about the Rule in the process). If the Rule had a Background, then any steps from that will be cloned
+     * and merged into each Scenario.
+     *
      * @return ScenarioInterface[]
+     *
+     * @deprecated use getChildren() for first-class handling of Rule nodes
      */
     public function getScenarios()
     {
-        return $this->scenarios;
+        // It is safe for this cache to be static, because the result is always the same for a given RuleNode,
+        // and the WeakMap will automatically clean up any references to RuleNodes that are no longer in use.
+        // Making it static and private to this method also eliminates any potential issues with serialising
+        // FeatureNode e.g. for caching or tests.
+        static $ruleScenariosCache;
+
+        $result = [];
+        foreach ($this->scenarios as $child) {
+            if ($child instanceof RuleNode) {
+                $ruleScenariosCache ??= new WeakMap();
+                /** @var WeakMap<RuleNode, array<int, ScenarioInterface>> $ruleScenariosCache */
+                $ruleScenariosCache[$child] ??= $this->extractRuleScenarios($child);
+                array_push($result, ...$ruleScenariosCache[$child]);
+            } else {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<int, ScenarioInterface>
+     */
+    private function extractRuleScenarios(RuleNode $node): array
+    {
+        $backgroundSteps = array_values($node->getBackground()?->getSteps() ?? []);
+
+        return array_filter(array_map(
+            function ($child) use ($backgroundSteps) {
+                if ($child instanceof BackgroundNode) {
+                    // This has already been handled
+                    return null;
+                }
+
+                if ($backgroundSteps === []) {
+                    // There's no background, so nothing to merge or convert - just return the original nodes.
+                    return $child;
+                }
+
+                if (($child::class === ScenarioNode::class) || ($child::class === OutlineNode::class)) {
+                    // We only do the ->withSteps expansion on our own classes, as we don't control the constructor
+                    // signature on any third-party ScenarioInterface classes.
+                    return $child->withSteps([
+                        ...$backgroundSteps,
+                        ...array_values($child->getSteps()),
+                    ]);
+                }
+
+                throw new UnexpectedValueException('Cannot merge rule background and scenario steps for custom ScenarioInterface ' . $child::class);
+            },
+            $node->getChildren())
+        );
+    }
+
+    /**
+     * @return list<BackgroundNode|RuleNode|ScenarioInterface>
+     */
+    public function getChildren(): array
+    {
+        $children = $this->scenarios;
+        if ($this->background) {
+            array_unshift($children, $this->background);
+        }
+
+        return array_values($children);
     }
 
     /**
@@ -175,7 +248,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns a copy of this feature, but with a different set of scenarios.
      *
-     * @param array<array-key, ScenarioInterface> $scenarios
+     * @param array<array-key, ScenarioInterface|RuleNode> $scenarios
      */
     public function withScenarios(array $scenarios): self
     {
