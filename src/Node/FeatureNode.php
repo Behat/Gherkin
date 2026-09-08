@@ -167,29 +167,21 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * @return array<int, ScenarioInterface>
      */
-    private function extractRuleScenarios(RuleNode $node): array
+    private function extractRuleScenarios(RuleNode $rule): array
     {
-        $backgroundSteps = array_values($node->getBackground()?->getSteps() ?? []);
-
-        return array_filter(array_map(
-            function ($child) use ($backgroundSteps) {
-                if ($backgroundSteps === []) {
-                    // There's no background, so nothing to merge or convert - just return the original nodes.
-                    return $child;
-                }
-
+        return array_map(
+            function ($child) use ($rule) {
                 if (($child::class === ScenarioNode::class) || ($child::class === OutlineNode::class)) {
-                    // We only do the ->withSteps expansion on our own classes, as we don't control the constructor
-                    // signature on any third-party ScenarioInterface classes.
-                    return $child->withSteps([
-                        ...$backgroundSteps,
-                        ...array_values($child->getSteps()),
-                    ]);
+                    // We can only extract our own classes, as we don't control the constructor signature on any
+                    // third-party ScenarioInterface classes.
+                    return $child->extractFromRule($rule);
                 }
 
-                throw new UnexpectedValueException('Cannot merge rule background and scenario steps for custom ScenarioInterface ' . $child::class);
+                throw new UnexpectedValueException(
+                    sprintf('Cannot extract custom ScenarioInterface from Rule (got %s)', $child::class)
+                );
             },
-            $node->getExecutableChildren())
+            $rule->getExecutableChildren()
         );
     }
 
