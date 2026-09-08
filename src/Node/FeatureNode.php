@@ -28,6 +28,19 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     use TaggedNodeTrait;
 
     /**
+     * Caches any fake scenarios extracted from `RuleNode` for `::getScenarios`.
+     *
+     * It is safe for this cache to be static, because the result is always the same for a given RuleNode,
+     * and the WeakMap will automatically clean up any references to RuleNodes that are no longer in use.
+     * Making it static eliminates any potential issues with serialising FeatureNode e.g. for caching or tests.
+     *
+     * Do not interact with this property other than through the ::getScenarios method.
+     *
+     * @var WeakMap<RuleNode, array<int, ScenarioInterface>>
+     */
+    private static WeakMap $ruleScenariosCache;
+
+    /**
      * @param list<string> $tags
      * @param array<RuleNode|ScenarioInterface> $scenarios
      * @param string|null $file the absolute path to the feature file
@@ -137,19 +150,12 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
      */
     public function getScenarios()
     {
-        // It is safe for this cache to be static, because the result is always the same for a given RuleNode,
-        // and the WeakMap will automatically clean up any references to RuleNodes that are no longer in use.
-        // Making it static and private to this method also eliminates any potential issues with serialising
-        // FeatureNode e.g. for caching or tests.
-        static $ruleScenariosCache;
-
         $result = [];
         foreach ($this->scenarios as $child) {
             if ($child instanceof RuleNode) {
-                $ruleScenariosCache ??= new WeakMap();
-                /** @var WeakMap<RuleNode, array<int, ScenarioInterface>> $ruleScenariosCache */
-                $ruleScenariosCache[$child] ??= $this->extractRuleScenarios($child);
-                array_push($result, ...$ruleScenariosCache[$child]);
+                static::$ruleScenariosCache ??= new WeakMap();
+                static::$ruleScenariosCache[$child] ??= $this->extractRuleScenarios($child);
+                array_push($result, ...static::$ruleScenariosCache[$child]);
             } else {
                 $result[] = $child;
             }
