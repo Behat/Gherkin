@@ -29,8 +29,6 @@ class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, Tagged
     }
 
     /**
-     * @internal
-     *
      * @param list<BackgroundNode|ScenarioInterface> $children
      */
     final public function withChildren(array $children): self
