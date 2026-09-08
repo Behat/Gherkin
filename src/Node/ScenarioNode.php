@@ -36,16 +36,17 @@ class ScenarioNode implements ScenarioInterface, NamedScenarioInterface, Describ
     }
 
     /**
-     * @param list<StepNode> $steps
-     *
      * @internal
      */
-    final public function withSteps(array $steps): self
+    final public function extractFromRule(RuleNode $rule): self
     {
         return new self(
             title: $this->title,
-            tags: $this->tags,
-            steps: $steps,
+            tags: array_values(array_unique([...$rule->getTags(), ...$this->tags])),
+            steps: [
+                ...($rule->getBackground()?->getSteps() ?? []),
+                ...$this->steps,
+            ],
             keyword: $this->keyword,
             line: $this->line,
             description: $this->description

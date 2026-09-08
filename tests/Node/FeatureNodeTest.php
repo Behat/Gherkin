@@ -181,6 +181,37 @@ class FeatureNodeTest extends TestCase
                 ),
             ],
         ];
+
+        yield 'merges rule tags into hoisted scenarios' => [
+            // External code (e.g. Behat tagged hooks) may toggle logic based on the union of feature & scenario tags.
+            // Logically, the union should also include Rule tags, but the legacy caller cannot see these.
+            // Therefore we merge them into the hoisted scenario.
+            StubNode::feature(
+                // Note the feature tag is *not* merged into the scenario - legacy callers already know about these.
+                tags: ['@feature-tag'],
+                scenarios: [
+                    StubNode::rule(
+                        tags: ['@rule-tag', '@othertag'],
+                        children: [
+                            StubNode::scenario(keyword: 'Scenario', title: 'Untagged scenario'),
+                            StubNode::outline(keyword: 'Outline', title: 'Tagged scenario', tags: ['@othertag', '@scenario-tag']),
+                        ]
+                    ),
+                ]
+            ),
+            [
+                StubNode::scenario(
+                    title: 'Untagged scenario',
+                    tags: ['@rule-tag', '@othertag'],
+                    keyword: 'Scenario'
+                ),
+                StubNode::outline(
+                    title: 'Tagged scenario',
+                    tags: ['@rule-tag', '@othertag', '@scenario-tag'],
+                    keyword: 'Outline'
+                ),
+            ],
+        ];
     }
 
     /**
@@ -252,7 +283,7 @@ class FeatureNodeTest extends TestCase
         ], $feature->getScenarios());
     }
 
-    public function testGetScenariosThrowsOnAttemptToMergeRuleWithCustomScenarioClass(): void
+    public function testGetScenariosThrowsOnAttemptToExtractRuleWithCustomScenarioClass(): void
     {
         $feature = StubNode::feature(
             scenarios: [
@@ -265,14 +296,16 @@ class FeatureNodeTest extends TestCase
                         ),
                         // Per our phpdoc, it is valid for a Rule to take any ScenarioInterface - a user could
                         // theoretically extend the Parser to build custom objects instead of ScenarioNode.
-                        $this->getMockBuilder(ScenarioInterface::class)->getMock(),
+                        // Even if they extend our ScenarioNode, they're not safe - the extension class could
+                        // have a different constructor signature.
+                        $this->getMockBuilder(ScenarioNode::class)->disableOriginalConstructor()->getMock(),
                     ],
                 ),
             ],
         );
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Cannot merge rule background and scenario steps for custom ScenarioInterface');
+        $this->expectExceptionMessage('Cannot extract custom ScenarioInterface from Rule');
         $feature->getScenarios();
     }
 
