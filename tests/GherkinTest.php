@@ -10,6 +10,7 @@
 
 namespace Tests\Behat\Gherkin;
 
+use Behat\Gherkin\Filter\FeatureFilterInterface;
 use Behat\Gherkin\Filter\FilterInterface;
 use Behat\Gherkin\Filter\NameFilter;
 use Behat\Gherkin\Filter\TagFilter;
@@ -17,6 +18,7 @@ use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -75,6 +77,98 @@ class GherkinTest extends TestCase
         $scenarios = $features[0]->getScenarios();
         $this->assertCount(1, $scenarios);
         $this->assertSame($scenario, $scenarios[0]);
+    }
+
+    /**
+     * Multiple filters narrow the same feature one after the other, so the scenarios that
+     * survive are the ones every filter keeps.
+     *
+     * @param list<FeatureFilterInterface> $injectedFilters
+     * @param list<FeatureFilterInterface> $passedFilters
+     * @param list<string|null>|null $expectedScenarioTitles null when the feature is dropped
+     */
+    #[DataProvider('multipleFilterCases')]
+    public function testMultipleFiltersAreCombinedWithAnd(
+        array $injectedFilters,
+        array $passedFilters,
+        ?array $expectedScenarioTitles,
+    ): void {
+        $gherkin = new Gherkin();
+        $gherkin->addLoader($this->getFeatureLoader());
+
+        foreach ($injectedFilters as $filter) {
+            $gherkin->addFilter($filter);
+        }
+
+        $features = $gherkin->load('some/feature/resource', $passedFilters);
+
+        if ($expectedScenarioTitles === null) {
+            $this->assertSame([], $features);
+
+            return;
+        }
+
+        $this->assertCount(1, $features);
+        $this->assertSame(
+            $expectedScenarioTitles,
+            array_map(static fn (ScenarioInterface $scenario) => $scenario->getTitle(), $features[0]->getScenarios()),
+        );
+    }
+
+    /**
+     * @return iterable<string, array{list<FeatureFilterInterface>, list<FeatureFilterInterface>, list<string|null>|null}>
+     */
+    public static function multipleFilterCases(): iterable
+    {
+        yield 'a single tag filter' => [
+            [new TagFilter('@smoke')],
+            [],
+            ['Login works', 'Logout works'],
+        ];
+
+        yield 'a single name filter' => [
+            [new NameFilter('Login')],
+            [],
+            ['Login works', 'Login fails'],
+        ];
+
+        yield 'two filters keep the intersection' => [
+            [new TagFilter('@smoke'), new NameFilter('Login')],
+            [],
+            ['Login works'],
+        ];
+
+        yield 'the order of the filters does not matter' => [
+            [new NameFilter('Login'), new TagFilter('@smoke')],
+            [],
+            ['Login works'],
+        ];
+
+        yield 'filters passed to load() are merged with the injected ones' => [
+            [new TagFilter('@smoke')],
+            [new NameFilter('Login')],
+            ['Login works'],
+        ];
+
+        yield 'a filter matching nothing drops the feature' => [
+            [new TagFilter('@smoke'), new TagFilter('@missing')],
+            [],
+            null,
+        ];
+
+        // a filter matching the feature itself keeps every scenario of that feature
+        yield 'a filter matching the feature keeps it whole' => [
+            [new TagFilter('@feature-tag')],
+            [],
+            ['Login works', 'Logout works', 'Login fails'],
+        ];
+
+        // but that only excuses the filter that matches, not the ones after it
+        yield 'a later filter still drops a feature matched by an earlier one' => [
+            [new TagFilter('@feature-tag'), new NameFilter('Nothing matches this')],
+            [],
+            null,
+        ];
     }
 
     public function testNotFoundLoader(): void
@@ -235,6 +329,34 @@ class GherkinTest extends TestCase
             'expectedResource' => 'example4.feature',
             'expectedFeatures' => [$feature1, $feature2, $feature3, $feature4],
         ];
+    }
+
+    /**
+     * @return LoaderInterface<*>
+     */
+    private function getFeatureLoader(): LoaderInterface
+    {
+        $feature = new FeatureNode('Account', null, ['feature-tag'], null, [
+            new ScenarioNode('Login works', ['smoke'], [], 'Scenario', 3),
+            new ScenarioNode('Logout works', ['smoke', 'slow'], [], 'Scenario', 6),
+            new ScenarioNode('Login fails', ['slow'], [], 'Scenario', 9),
+        ], 'Feature', 'en', __FILE__, 1);
+
+        return new class($feature) implements LoaderInterface {
+            public function __construct(private FeatureNode $feature)
+            {
+            }
+
+            public function supports($resource): bool
+            {
+                return true;
+            }
+
+            public function load($resource): array
+            {
+                return [$this->feature];
+            }
+        };
     }
 
     protected function getLoaderMock(): MockObject&GherkinFileLoader
