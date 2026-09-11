@@ -28,6 +28,23 @@ class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, Tagged
     ) {
     }
 
+    /**
+     * @internal
+     *
+     * @param list<BackgroundNode|ScenarioInterface> $children
+     */
+    final public function withChildren(array $children): self
+    {
+        return new self(
+            title: $this->title,
+            description: $this->description,
+            tags: $this->tags,
+            children: $children,
+            keyword: $this->keyword,
+            line: $this->line,
+        );
+    }
+
     public function getNodeType(): string
     {
         return 'Rule';
@@ -66,6 +83,9 @@ class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, Tagged
         return $this->tags;
     }
 
+    /**
+     * @phpstan-assert-if-true BackgroundNode $this->getBackground()
+     */
     public function hasBackground(): bool
     {
         return ($this->children[0] ?? null) instanceof BackgroundNode;
