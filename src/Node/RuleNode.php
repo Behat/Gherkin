@@ -78,6 +78,17 @@ class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, Tagged
         return $this->children;
     }
 
+    /**
+     * @return list<ScenarioInterface>
+     */
+    public function getExecutableChildren(): array
+    {
+        return array_values(array_filter(
+            $this->children,
+            fn ($c) => $c instanceof ScenarioInterface,
+        ));
+    }
+
     public function getTags(): array
     {
         return $this->tags;
