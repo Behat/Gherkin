@@ -71,9 +71,11 @@ class LineRangeFilter implements FilterInterface
         }
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-            foreach ($scenario->getExampleTable()->getLines() as $line) {
-                if ($this->filterMinLine <= $line && $this->filterMaxLine >= $line) {
-                    return true;
+            foreach ($scenario->getExampleTables() as $table) {
+                foreach ($table->getLines() as $line) {
+                    if ($this->filterMinLine <= $line && $this->filterMaxLine >= $line) {
+                        return true;
+                    }
                 }
             }
         }

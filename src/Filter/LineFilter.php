@@ -64,8 +64,15 @@ class LineFilter implements FilterInterface
         }
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-            return $this->filterLine === $scenario->getLine()
-                || in_array($this->filterLine, $scenario->getExampleTable()->getLines());
+            if ($this->filterLine === $scenario->getLine()) {
+                return true;
+            }
+
+            foreach ($scenario->getExampleTables() as $table) {
+                if (in_array($this->filterLine, $table->getLines())) {
+                    return true;
+                }
+            }
         }
 
         return false;
