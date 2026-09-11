@@ -37,12 +37,22 @@ class PathsFilterTest extends FilterTestCase
                     Examples:
                       | something |
                       | have      | 
-                      | have not  | 
+                      | have not  |
+                  
+                  Rule: Rule 1
+                    Background:
+                      Given rule background
+                    
+                    Scenario: Scenario 2
+                      When something happens
                 GHERKIN,
                 expectScenarioMatches: [
                     // Note, isScenarioMatch is always false for a PathsFilter
                     'Scenario 1' => false,
                     'Outline 1' => false,
+                    'Rule 1' => [
+                        'Scenario 2' => false,
+                    ],
                 ],
             ),
             __FILE__,
@@ -59,9 +69,19 @@ class PathsFilterTest extends FilterTestCase
                   
                 #  Scenario: Scenario 1
                 #    Given anything
+                #                  
+                #  Rule: Rule 1
+                #    Background:
+                #      Given rule background
+                #    
+                #    Scenario: Scenario 2
+                #      When something happens
                 GHERKIN,
                 expectScenarioMatches: [
                     'Scenario 1' => false,
+                    'Rule 1' => [
+                        'Scenario 2' => false,
+                    ],
                 ],
             ),
             __FILE__,
