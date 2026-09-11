@@ -28,11 +28,12 @@ class FeatureNodeTest extends TestCase
     /**
      * @phpstan-return iterable<string, list{FeatureNode, list<TFeatureChild>}>
      */
-    public static function providerSupportedChildren(): iterable
+    public static function providerExecutableChildren(): iterable
     {
         $background = StubNode::background(title: 'Background');
         $scenario1 = StubNode::scenario(title: 'Scenario 1');
         $rule1 = StubNode::rule(title: 'Rule');
+        $outline1 = StubNode::outline(title: 'Outline');
 
         yield 'no children' => [
             StubNode::feature(background: null, scenarios: []),
@@ -41,17 +42,22 @@ class FeatureNodeTest extends TestCase
 
         yield 'background only' => [
             StubNode::feature(background: $background, scenarios: []),
-            [$background],
+            [],
+        ];
+
+        yield 'scenarios only' => [
+            StubNode::feature(background: null, scenarios: [$scenario1, $outline1]),
+            [$scenario1, $outline1],
         ];
 
         yield 'background and scenarios' => [
             StubNode::feature(background: $background, scenarios: [$scenario1]),
-            [$background, $scenario1],
+            [$scenario1],
         ];
 
         yield 'background and scenarios and rules' => [
             StubNode::feature(background: $background, scenarios: [$scenario1, $rule1]),
-            [$background, $scenario1, $rule1],
+            [$scenario1, $rule1],
         ];
 
         yield 'rules with no background' => [
@@ -63,10 +69,10 @@ class FeatureNodeTest extends TestCase
     /**
      * @phpstan-param list<TFeatureChild> $expect
      */
-    #[DataProvider('providerSupportedChildren')]
-    public function testGetChildrenReturnsChildrenOfAllTypes(FeatureNode $feature, array $expect): void
+    #[DataProvider('providerExecutableChildren')]
+    public function testGetExecutableChildrenReturnsRulesScenariosAndOutlines(FeatureNode $feature, array $expect): void
     {
-        $this->assertSame($expect, $feature->getChildren());
+        $this->assertSame($expect, $feature->getExecutableChildren());
     }
 
     /**

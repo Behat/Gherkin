@@ -133,7 +133,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
      *
      * @return ScenarioInterface[]
      *
-     * @deprecated use getChildren() for first-class handling of Rule nodes
+     * @deprecated use getExecutableChildren() for first-class handling of Rule nodes
      */
     public function getScenarios()
     {
@@ -167,11 +167,6 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
 
         return array_filter(array_map(
             function ($child) use ($backgroundSteps) {
-                if ($child instanceof BackgroundNode) {
-                    // This has already been handled
-                    return null;
-                }
-
                 if ($backgroundSteps === []) {
                     // There's no background, so nothing to merge or convert - just return the original nodes.
                     return $child;
@@ -188,21 +183,16 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
 
                 throw new UnexpectedValueException('Cannot merge rule background and scenario steps for custom ScenarioInterface ' . $child::class);
             },
-            $node->getChildren())
+            $node->getExecutableChildren())
         );
     }
 
     /**
-     * @return list<BackgroundNode|RuleNode|ScenarioInterface>
+     * @return list<RuleNode|ScenarioInterface>
      */
-    public function getChildren(): array
+    public function getExecutableChildren(): array
     {
-        $children = $this->scenarios;
-        if ($this->background) {
-            array_unshift($children, $this->background);
-        }
-
-        return array_values($children);
+        return array_values($this->scenarios);
     }
 
     /**
