@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -77,9 +78,18 @@ class LineFilter extends SimpleFilter
         return false;
     }
 
-    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
+    private function isRuleOrScenarioMatch(?RuleNode $rule, ScenarioInterface $scenario): bool
     {
-        if (!$this->isScenarioMatch($scenario)) {
+        if ($this->filterLine === $rule?->getLine()) {
+            return true;
+        }
+
+        return $this->isScenarioMatch($scenario);
+    }
+
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
+    {
+        if (!$this->isRuleOrScenarioMatch($rule, $scenario)) {
             return false;
         }
 
