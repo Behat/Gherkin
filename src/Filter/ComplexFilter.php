@@ -11,6 +11,7 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -26,7 +27,7 @@ abstract class ComplexFilter extends AbstractFeatureFilter implements ComplexFil
         parent::__construct(skipFilteringChildrenIfFeatureMatches: $skipFilteringChildrenIfFeatureMatches);
     }
 
-    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
     {
         return $this->isScenarioMatch($feature, $scenario) ? $scenario : false;
     }

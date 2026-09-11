@@ -11,8 +11,8 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
-use LogicException;
 use RuntimeException;
 
 /**
@@ -74,12 +74,13 @@ abstract class AbstractFeatureFilter implements FeatureFilterInterface
         $originalChildren = [];
         $filteredChildren = [];
 
-        foreach ($feature->getScenarios() as $scenario) {
-            $originalChildren[] = $scenario;
+        foreach ($feature->getExecutableChildren() as $scenarioOrRule) {
+            $originalChildren[] = $scenarioOrRule;
 
             $filteredChild = match (true) {
-                $scenario instanceof ScenarioInterface => $this->filterScenario($feature, $scenario),
-                default => throw new LogicException('Unexpected child type ' . $scenario::class),
+                $scenarioOrRule instanceof ScenarioInterface => $this->filterScenario($feature, null, $scenarioOrRule),
+                $scenarioOrRule instanceof RuleNode => $this->filterRule($feature, $scenarioOrRule),
+                default => throw new \LogicException('Unexpected child type ' . $scenarioOrRule::class),
             };
 
             if ($filteredChild !== false) {
@@ -90,5 +91,24 @@ abstract class AbstractFeatureFilter implements FeatureFilterInterface
         return $originalChildren === $filteredChildren ? $feature : $feature->withScenarios($filteredChildren);
     }
 
-    abstract protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false;
+    abstract protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false;
+
+    protected function filterRule(FeatureNode $feature, RuleNode $rule): RuleNode|false
+    {
+        $filteredChildren = array_values(array_filter(array_map(
+            fn (ScenarioInterface $scenario) => $this->filterScenario($feature, $rule, $scenario),
+            $rule->getExecutableChildren(),
+        )));
+
+        if ($filteredChildren === []) {
+            // Drop the rule, no scenarios match
+            return false;
+        }
+
+        if ($rule->hasBackground()) {
+            array_unshift($filteredChildren, $rule->getBackground());
+        }
+
+        return $rule->withChildren($filteredChildren);
+    }
 }

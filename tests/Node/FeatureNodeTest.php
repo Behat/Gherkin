@@ -93,15 +93,12 @@ class FeatureNodeTest extends TestCase
             [],
         ];
 
-        $scenario1 = StubNode::scenario(title: 'Scenario 1');
-        $outline1 = StubNode::outline(title: 'Outline 1');
-
         yield 'original scenarios and outlines when no rules' => [
             StubNode::feature(
                 background: StubNode::background(),
-                scenarios: [$scenario1, $outline1],
+                scenarios: [StubNode::scenario(title: 'Scenario 1'), StubNode::outline(title: 'Outline 1')],
             ),
-            [$scenario1, $outline1],
+            [StubNode::scenario(title: 'Scenario 1'), StubNode::outline(title: 'Outline 1')],
         ];
 
         yield 'empty when only empty rules' => [
@@ -116,25 +113,33 @@ class FeatureNodeTest extends TestCase
             StubNode::feature(
                 background: null,
                 scenarios: [
-                    StubNode::rule(children: [$scenario1, $outline1]),
+                    StubNode::rule(children: [StubNode::scenario(title: 'Scenario 1'),
+                        StubNode::outline(title: 'Outline 1'),
+                    ]),
                 ],
             ),
-            [$scenario1, $outline1],
+            [StubNode::scenario(title: 'Scenario 1'), StubNode::outline(title: 'Outline 1')],
         ];
-
-        $scenario2 = StubNode::scenario(title: 'Scenario 2');
-        $scenario3 = StubNode::scenario(title: 'Scenario 3');
 
         yield 'un-nests in order with mix of scenarios and rules' => [
             StubNode::feature(
                 background: null,
                 scenarios: [
-                    $scenario2,
-                    StubNode::rule(children: [$scenario1, $outline1]),
-                    StubNode::rule(children: [$scenario3]),
+                    StubNode::scenario(title: 'Scenario 2'),
+                    StubNode::rule(children: [
+                        StubNode::scenario(title: 'Scenario 1'),
+                        StubNode::outline(title: 'Outline 1'),
+                    ]),
+                    StubNode::rule(children: [
+                        StubNode::scenario(title: 'Scenario 3')]),
                 ],
             ),
-            [$scenario2, $scenario1, $outline1, $scenario3],
+            [
+                StubNode::scenario(title: 'Scenario 2'),
+                StubNode::scenario(title: 'Scenario 1'),
+                StubNode::outline(title: 'Outline 1'),
+                StubNode::scenario(title: 'Scenario 3'),
+            ],
         ];
 
         yield 'merges rule background steps into each scenario' => [

@@ -25,6 +25,7 @@ class TagFilterTest extends FilterTestCase
     {
         yield from self::filterFeatureTaggedScenarios();
         yield from self::providerFilterFeatureTaggedExamples();
+        yield from self::providerFilterFeatureRules();
     }
 
     /**
@@ -624,6 +625,237 @@ class TagFilterTest extends FilterTestCase
                 stripLineNumbers: true,
             ),
             '@etag2, @etag1',
+        ];
+    }
+
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string}>
+     */
+    private static function providerFilterFeatureRules(): iterable
+    {
+        yield 'can match Feature tag without losing Rule structure' => [
+            FeatureFilterTestFixture::expectingNoFiltering(
+                <<<'GHERKIN'
+                @feature-tag
+                Feature: Some work in progress
+
+                  @rule-tag
+                  Rule: Rule 1
+                    
+                     Background:
+                       Given rule background
+                       
+                     @web
+                     Scenario: Scenario 1
+                       Given anything
+                       
+                     @browser
+                     Scenario Outline: Scenario 2
+                       Given <something>
+                    
+                       @example-tag
+                       Examples: First set of examples
+                        | something | 
+                        | here      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => true,
+                        'Scenario 2' => true,
+                    ],
+                ],
+            ),
+            '@feature-tag',
+        ];
+
+        yield 'drops Rules that do not contain any matched scenarios' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                @feature-tag
+                Feature: Some work in progress
+                  Background:
+                    Given feature background
+
+                  Rule: Rule 1
+                    
+                     Background:
+                       Given rule background
+                       
+                     @web
+                     Scenario: Scenario 1
+                       Given anything
+
+                  # Rule: Rule 2
+                  #   
+                  #    Background:
+                  #      Given rule background
+                  #      
+                  #    @cli
+                  #    Scenario: Scenario 2
+                  #      Given anything
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => true,
+                    ],
+                    'Rule 2' => [
+                        'Scenario 2' => false,
+                    ],
+                ],
+            ),
+            '@web',
+        ];
+
+        yield 'considers Rule tags when matching Scenarios within the Rule' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                @feature-tag
+                Feature: Some work in progress
+                  Background:
+                    Given feature background
+
+                  @web
+                  Rule: Rule 1
+                    
+                     Background:
+                       Given rule background
+                       
+                     @fast
+                     Scenario: Scenario 1
+                       Given anything
+                       
+                #     @slow  
+                #     Scenario: Scenario 2
+                #       Given anything
+                #
+                #  @cli                        
+                #  Rule: Rule 2
+                #     Background:
+                #       Given rule background
+                #       
+                #     @fast
+                #     Scenario: Scenario 3
+                #       Given anything
+                #       
+                #     @slow  
+                #     Scenario: Scenario 4
+                #       Given anything
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        // NOTE: deprecated `isScenarioMatch` does NOT match against Rule tags, even though
+                        // they are included for `filterFeature`.
+                        // This is because it is complex to conclusively find the Rule parent of a ScenarioInterface.
+                        'Scenario 1' => false,
+                        'Scenario 2' => false,
+                    ],
+                    'Rule 2' => [
+                        'Scenario 3' => false,
+                        'Scenario 4' => false,
+                    ],
+                ],
+            ),
+            '@web && ~@slow',
+        ];
+
+        yield 'considers Rule tags when matching Examples within the Rule' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                @feature-tag
+                Feature: Some work in progress
+                  Background:
+                    Given feature background
+
+                  @web
+                  Rule: Rule 1
+                    
+                     Background:
+                       Given rule background
+                       
+                     @fast
+                     Scenario: Scenario 1
+                       Given <something>
+                       
+                #       @etag1
+                #       Examples: First set of examples
+                #         | something |
+                #         | a         |
+                       
+                      @etag2   
+                      Examples: Second set of examples
+                         | something |
+                         | a         |
+
+                #  @cli
+                #  Rule: Rule 2
+                #    
+                #     Background:
+                #       Given rule background
+                #       
+                #     @fast
+                #     Scenario: Scenario 2
+                #       Given <something>
+                #       
+                #       @etag1
+                #       Examples: First set of examples
+                #         | something |
+                #         | a         |
+                #       
+                #      @etag2   
+                #      Examples: Second set of examples   
+                #         | something |
+                #         | a         |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        // NOTE: deprecated `isScenarioMatch` does NOT match against Rule tags, even though
+                        // they are included for `filterFeature`.
+                        // This is because it is complex to conclusively find the Rule parent of a ScenarioInterface.
+                        'Scenario 1' => false,
+                    ],
+                    'Rule 2' => [
+                        'Scenario 2' => false,
+                    ],
+                ],
+            ),
+            '@web && @etag2',
+        ];
+
+        yield 'drops Rule when no Scenarios have matching Examples within it' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                @feature-tag
+                Feature: Some work in progress
+                  Background:
+                    Given feature background
+
+                # @web
+                # Rule: Rule 1
+                #   
+                #    Background:
+                #      Given rule background
+                #      
+                #    @fast
+                #    Scenario: Scenario 1
+                #      Given <something>
+                #      
+                #     @etag1
+                #     Examples: First set of examples
+                #       | something |
+                #       | a         |
+                #     
+                #     @etag2   
+                #     Examples: Second set of examples
+                #        | something |
+                #        | a         |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => false,
+                    ],
+                ],
+            ),
+            '@etag2 && ~@fast',
         ];
     }
 
