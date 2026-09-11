@@ -296,6 +296,37 @@ class LineFilterTest extends FilterTestCase
             ),
             7,
         ];
+
+        yield 'matches example tables with different structures' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                7 :
+                8 : #   @etag1
+                9 : #   Examples:
+                10: #     | action | outcome  |
+                11: #     | act#1  | whatever |
+                12: #     | act#2  | anything |
+                13:
+                14:    @etag2
+                15:    Examples:
+                16:      | action | result |
+                17:      | act#3  | ?      |
+                18: #    | act#4  | works  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            17,
+        ];
     }
 
     #[DataProvider('providerFilterFeature')]
