@@ -851,7 +851,7 @@ class LineRangeFilterTest extends FilterTestCase
 
         $this->assertTrue($filtered->hasScenarios(), 'Feature still has scenarios');
 
-        $filteredScenarios = $filtered->getScenarios();
+        $filteredScenarios = $filtered->getExecutableChildren();
         $this->assertCount(1, $filteredScenarios, 'Only a single scenario matches');
 
         $filteredOutline = $filteredScenarios[0];

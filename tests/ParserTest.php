@@ -90,7 +90,7 @@ final class ParserTest extends TestCase
         );
 
         $this->assertInstanceOf(FeatureNode::class, $feature);
-        $this->assertCount(1, $feature->getScenarios());
+        $this->assertCount(1, $feature->getExecutableChildren());
     }
 
     public function testParserIgnoresInvalidLanguageInLegacyModeWithDialectProvider(): void
@@ -107,7 +107,7 @@ final class ParserTest extends TestCase
         );
 
         $this->assertInstanceOf(FeatureNode::class, $feature);
-        $this->assertCount(1, $feature->getScenarios());
+        $this->assertCount(1, $feature->getExecutableChildren());
     }
 
     public function testSingleCharacterStepSupport(): void
@@ -121,7 +121,7 @@ final class ParserTest extends TestCase
         );
 
         $this->assertInstanceOf(FeatureNode::class, $feature);
-        $scenarios = $feature->getScenarios();
+        $scenarios = $feature->getExecutableChildren();
         $scenario = array_shift($scenarios);
 
         $this->assertInstanceOf(ScenarioNode::class, $scenario);

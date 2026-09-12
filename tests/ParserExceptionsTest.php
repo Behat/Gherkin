@@ -115,7 +115,7 @@ class ParserExceptionsTest extends TestCase
         $feature = $this->gherkin->parse($feature);
         $this->assertInstanceOf(FeatureNode::class, $feature);
 
-        $this->assertCount(2, $scenarios = $feature->getScenarios());
+        $this->assertCount(2, $scenarios = $feature->getExecutableChildren());
         $firstTitle = <<<'TEXT'
         remove X to cause bug
         Step is red form is not valid
