@@ -115,16 +115,19 @@ class ArrayLoaderTest extends TestCase
         $this->assertCount(3, $scenarios);
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertSame('First scenario', $scenarios[0]->getTitle());
         $this->assertSame([], $scenarios[0]->getTags());
         $this->assertSame(2, $scenarios[0]->getLine());
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[1]);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertNull($scenarios[1]->getTitle());
         $this->assertSame(['second', 'scenario', 'tags'], $scenarios[1]->getTags());
         $this->assertSame(1, $scenarios[1]->getLine());
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[2]);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertNull($scenarios[2]->getTitle());
         $this->assertSame(['third', 'scenario'], $scenarios[2]->getTags());
         $this->assertSame(3, $scenarios[2]->getLine());
@@ -268,11 +271,13 @@ class ArrayLoaderTest extends TestCase
         $this->assertTrue($background?->hasSteps());
         $this->assertCount(2, $background->getSteps());
         $steps = $background->getSteps();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('bg step 1', $steps[0]->getText());
         $this->assertEquals(3, $steps[0]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[1]->getType());
         $this->assertEquals('Blimey!', $steps[1]->getKeyword());
         $this->assertEquals('When', $steps[1]->getKeywordType());
@@ -285,11 +290,13 @@ class ArrayLoaderTest extends TestCase
         $this->assertTrue($scenario->hasSteps());
         $this->assertCount(2, $scenario->getSteps());
         $steps = $scenario->getSteps();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('sc step 1', $steps[0]->getText());
         $this->assertEquals(0, $steps[0]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[1]->getType());
         $this->assertEquals('Blimey!', $steps[1]->getKeyword());
         $this->assertEquals('When', $steps[1]->getKeywordType());
@@ -300,11 +307,13 @@ class ArrayLoaderTest extends TestCase
         $this->assertTrue($outline->hasSteps());
         $this->assertCount(2, $outline->getSteps());
         $steps = $outline->getSteps();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('out step 1', $steps[0]->getText());
         $this->assertEquals(0, $steps[0]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[1]->getType());
         $this->assertEquals('Blimey!', $steps[1]->getKeyword());
         $this->assertEquals('When', $steps[1]->getKeywordType());
@@ -365,6 +374,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertCount(3, $steps);
 
         $arguments = $steps[0]->getArguments();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
@@ -373,6 +383,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals([['key' => 1, 'val' => 2], ['key' => 3, 'val' => 4]], $arguments[0]->getHash());
 
         $arguments = $steps[1]->getArguments();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[1]->getType());
         $this->assertEquals('Blimey!', $steps[1]->getKeyword());
         $this->assertEquals('When', $steps[1]->getKeywordType());
@@ -381,6 +392,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals('    some text', (string) $arguments[0]);
 
         $arguments = $steps[2]->getArguments();
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Let go and haul', $steps[2]->getType());
         $this->assertEquals('Let go and haul', $steps[2]->getKeyword());
         $this->assertEquals('Then', $steps[2]->getKeywordType());

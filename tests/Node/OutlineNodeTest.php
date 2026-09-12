@@ -172,6 +172,7 @@ class OutlineNodeTest extends TestCase
                 static function (ExampleNode $node) {
                     return [
                         'getName' => $node->getName(),
+                        /* @phpstan-ignore method.deprecated (testing for BC) */
                         'getTitle' => $node->getTitle(),
                         'getOutlineTitle' => $node->getOutlineTitle(),
                         'getExampleText' => $node->getExampleText(),
