@@ -110,7 +110,7 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(1, $features);
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
 
         $this->assertCount(3, $scenarios);
 
@@ -153,7 +153,7 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(1, $features);
 
-        $outlines = $features[0]->getScenarios();
+        $outlines = $features[0]->getExecutableChildren();
 
         $this->assertCount(2, $outlines);
 
@@ -196,7 +196,7 @@ class ArrayLoaderTest extends TestCase
 
         $this->assertCount(1, $features);
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
         $scenario = $scenarios[0];
 
         $this->assertInstanceOf(OutlineNode::class, $scenario);
@@ -279,9 +279,10 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals('bg step 2', $steps[1]->getText());
         $this->assertEquals(1, $steps[1]->getLine());
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
 
         $scenario = $scenarios[0];
+        $this->assertInstanceOf(ScenarioNode::class, $scenario);
         $this->assertTrue($scenario->hasSteps());
         $this->assertCount(2, $scenario->getSteps());
         $steps = $scenario->getSteps();
@@ -297,6 +298,7 @@ class ArrayLoaderTest extends TestCase
         $this->assertEquals(1, $steps[1]->getLine());
 
         $outline = $scenarios[1];
+        $this->assertInstanceOf(OutlineNode::class, $outline);
         $this->assertTrue($outline->hasSteps());
         $this->assertCount(2, $outline->getSteps());
         $steps = $outline->getSteps();
