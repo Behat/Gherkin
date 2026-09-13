@@ -54,6 +54,8 @@ class LineFilter implements FilterInterface
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return bool
+     *
+     * @deprecated see FilterInterface for further information
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {

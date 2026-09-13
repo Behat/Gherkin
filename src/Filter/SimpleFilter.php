@@ -16,6 +16,8 @@ use Behat\Gherkin\Node\FeatureNode;
  * Abstract filter class.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @deprecated see FilterInterface for further information
  */
 abstract class SimpleFilter implements FilterInterface
 {

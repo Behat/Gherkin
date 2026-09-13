@@ -51,6 +51,9 @@ class RoleFilter extends SimpleFilter
         return (bool) preg_match($this->pattern, $feature->getDescription() ?? '');
     }
 
+    /**
+     * @deprecated see FilterInterface for further information
+     */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
         // This filter does not apply to scenarios.

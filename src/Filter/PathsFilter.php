@@ -63,6 +63,9 @@ class PathsFilter extends SimpleFilter
         return false;
     }
 
+    /**
+     * @deprecated see FilterInterface for further information
+     */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
         // This filter does not apply to scenarios.

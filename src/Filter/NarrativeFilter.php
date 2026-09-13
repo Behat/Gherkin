@@ -30,6 +30,9 @@ class NarrativeFilter extends SimpleFilter
         return (bool) preg_match($this->regex, $feature->getDescription() ?? '');
     }
 
+    /**
+     * @deprecated see FilterInterface for further information
+     */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
         // This filter does not apply to scenarios.
