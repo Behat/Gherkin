@@ -11,58 +11,65 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Dialect\CucumberDialectProvider;
+use Behat\Gherkin\Filter\ComplexFilterInterface;
+use Behat\Gherkin\Filter\FeatureFilterInterface;
+use Behat\Gherkin\Filter\FilterInterface;
+use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use UnexpectedValueException;
 
 abstract class FilterTestCase extends TestCase
 {
-    protected function getParser(): Parser
+    protected function getParser(GherkinCompatibilityMode $mode): Parser
     {
         return new Parser(
             new Lexer(
-                new CucumberDialectProvider()
-            )
+                new CucumberDialectProvider(),
+            ),
+            $mode,
         );
     }
 
-    protected function getGherkinFeature(): string
+    final protected function parseFeature(string $feature, ?string $featureFilePath = null): FeatureNode
     {
-        return <<<'GHERKIN'
-        Feature: Long feature with outline
-          Scenario: Scenario#1
-            Given initial step
-            When action occurs
-            Then outcomes should be visible
-
-          Scenario: Scenario#2
-            Given initial step
-            And another initial step
-            When action occurs
-            Then outcomes should be visible
-
-          Scenario Outline: Scenario#3
-            When <action> occurs
-            Then <outcome> should be visible
-
-            @etag1
-            Examples:
-              | action | outcome |
-              | act#1  | out#1   |
-              | act#2  | out#2   |
-
-            @etag2
-            Examples:
-              | action | outcome |
-              | act#3  | out#3   |
-
-        GHERKIN;
+        return $this->getParser(GherkinCompatibilityMode::GHERKIN_32)->parse($feature, $featureFilePath)
+            ?? throw new \InvalidArgumentException('Could not parse predefined test feature');
     }
 
-    protected function getParsedFeature(): FeatureNode
+    final protected function assertFiltersFeatureAsExpected(FeatureFilterTestFixture $testcase, FeatureFilterInterface $filter, ?string $featureFilePath = null): void
     {
-        return $this->getParser()->parse($this->getGherkinFeature())
-            ?? throw new \LogicException('Could not parse predefined feature in getGherkinFeature()');
+        $originalFeature = $this->parseFeature($testcase->originalFeature, $featureFilePath);
+
+        // First, assert that `isScenarioMatch` matches all scenarios within the feature as expected.
+        // This also ensures that the original feature has been parsed to the expected list of scenarios (e.g. that
+        // anything that was commented in the expected feature has been properly uncommented).
+        $actualScenarioMatches = [];
+        foreach ($originalFeature->getScenarios() as $scenario) {
+            $title = $scenario->getTitle() ?? '';
+
+            if (isset($actualScenarioMatches[$title])) {
+                throw new UnexpectedValueException('Duplicate scenario title in test data: ' . $title);
+            }
+
+            $actualScenarioMatches[$scenario->getTitle() ?? ''] = match (true) {
+                $filter instanceof FilterInterface => $filter->isScenarioMatch($scenario),
+                $filter instanceof ComplexFilterInterface => $filter->isScenarioMatch($originalFeature, $scenario),
+                default => throw new RuntimeException('Unknown filter type'),
+            };
+        }
+        $this->assertSame($testcase->expectScenarioMatches, $actualScenarioMatches);
+
+        // Then, assert that the result of filtering the feature is identical to parsing an equivalent feature
+        $filteredFeature = $filter->filterFeature($originalFeature);
+
+        $this->assertEquals(
+            $this->parseFeature($testcase->expectedEquivalentFeature, $featureFilePath),
+            $filteredFeature,
+            'Filtered feature should match the expected equivalent feature'
+        );
     }
 }

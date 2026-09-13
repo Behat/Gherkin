@@ -12,10 +12,76 @@ namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\PathsFilter;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class PathsFilterTest extends FilterTestCase
 {
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string, list<string>}>
+     */
+    public static function providerFilterFeature(): iterable
+    {
+        yield 'matches whole feature if it is in an existing file in the search paths' => [
+            FeatureFilterTestFixture::expectingNoFiltering(
+                <<<'GHERKIN'
+                Feature: Literally any feature
+                  In order to do things with Behat
+                  As a developer
+                  I need to have feature files
+                  
+                  Scenario: Scenario 1             
+                    
+                  Scenario Outline: Outline 1
+                    Given I <something>
+                    
+                    Examples:
+                      | something |
+                      | have      | 
+                      | have not  | 
+                GHERKIN,
+                expectScenarioMatches: [
+                    // Note, isScenarioMatch is always false for a PathsFilter
+                    'Scenario 1' => false,
+                    'Outline 1' => false,
+                ],
+            ),
+            __FILE__,
+            [__DIR__],
+        ];
+
+        yield 'filters to empty feature if the file is not in the search path' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Literally any feature
+                  In order to do things with Behat
+                  As a developer
+                  I need to have feature files
+                  
+                #  Scenario: Scenario 1
+                #    Given anything
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario 1' => false,
+                ],
+            ),
+            __FILE__,
+            ['/some/other/path'],
+        ];
+    }
+
+    /**
+     * @param list<string> $filterPaths
+     */
+    #[DataProvider('providerFilterFeature')]
+    public function testFilterFeature(FeatureFilterTestFixture $testcase, ?string $path, array $filterPaths): void
+    {
+        $this->assertFiltersFeatureAsExpected(
+            $testcase,
+            new PathsFilter($filterPaths),
+            featureFilePath: $path,
+        );
+    }
+
     public function testIsFeatureMatchFilter(): void
     {
         $feature = new FeatureNode(null, null, [], null, [], '', '', __FILE__, 1);
@@ -66,15 +132,6 @@ class PathsFilterTest extends FilterTestCase
 
         $filter = new PathsFilter([$fixtures . 'full']);
         $this->assertFalse($filter->isFeatureMatch($feature));
-    }
-
-    public function testIsScenarioMatchFilter(): void
-    {
-        $scenario = new ScenarioNode(null, [], [], '', 1);
-
-        $filter = new PathsFilter([__DIR__]);
-
-        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 
     public function testMissingFileShouldBeSkipped(): void

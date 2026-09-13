@@ -17,25 +17,333 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-class NameFilterTest extends TestCase
+class NameFilterTest extends FilterTestCase
 {
-    public function testFilterFeature(): void
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string}>
+     */
+    public static function providerFilterFeature(): iterable
     {
-        $feature = new FeatureNode('feature1', null, [], null, [], '', '', null, 1);
-        $filter = new NameFilter('feature1');
-        $this->assertSame($feature, $filter->filterFeature($feature));
-
-        $scenarios = [
-            new ScenarioNode('scenario1', [], [], '', 2),
-            $matchedScenario = new ScenarioNode('scenario2', [], [], '', 4),
+        yield 'matches feature title' => [
+            FeatureFilterTestFixture::expectingNoFiltering(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                  Scenario: Open a new tab
+                    The session will still be available
+                    
+                    When I do something
+                    Then things should happen
+                    
+                  Scenario Outline: Open a new window
+                    The session will not be available
+                    
+                    When I do <something>
+                    Then things should happen
+                    
+                    Examples:
+                      | something |
+                      | click     |
+                      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    'Open a new tab' => false,
+                    'Open a new window' => false,
+                ],
+            ),
+            'browser',
         ];
-        $feature = new FeatureNode('feature1', null, [], null, $scenarios, '', '', null, 1);
-        $filter = new NameFilter('scenario2');
-        $filteredFeature = $filter->filterFeature($feature);
 
-        $this->assertSame([$matchedScenario], $filteredFeature->getScenarios());
+        yield 'feature title does not match' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                #  Scenario: Open a new tab
+                #    The session will still be available
+                #    
+                #    When I do something
+                #    Then things should happen
+                #    
+                #  Scenario Outline: Open a new window
+                #    The session will not be available
+                #    
+                #    When I do <something>
+                #    Then things should happen
+                #    
+                #    Examples:
+                #      | something |
+                #      | click     |
+                #      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    'Open a new tab' => false,
+                    'Open a new window' => false,
+                ],
+            ),
+            'calculator',
+        ];
+
+        yield 'matches feature title by regex' => [
+            FeatureFilterTestFixture::expectingNoFiltering(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                  Scenario: Open a new tab
+                    The session will still be available
+                    
+                    When I do something
+                    Then things should happen
+                    
+                  Scenario Outline: Open a new window
+                    The session will not be available
+                    
+                    When I do <something>
+                    Then things should happen
+                    
+                    Examples:
+                      | something |
+                      | click     |
+                      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    'Open a new tab' => false,
+                    'Open a new window' => false,
+                ],
+            ),
+            '/^Some browser [f]/',
+        ];
+
+        yield 'does not match feature title by regex' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                #  Scenario: Open a new tab
+                #    The session will still be available
+                #    
+                #    When I do something
+                #    Then things should happen
+                #    
+                #  Scenario Outline: Open a new window
+                #    The session will not be available
+                #    
+                #    When I do <something>
+                #    Then things should happen
+                #    
+                #    Examples:
+                #      | something |
+                #      | click     |
+                #      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    'Open a new tab' => false,
+                    'Open a new window' => false,
+                ],
+            ),
+            '/^In my browser [f]/',
+        ];
+
+        yield 'ignores feature description' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                #  Scenario: Open a new tab
+                #    The session will still be available
+                #    
+                #    When I do something
+                #    Then things should happen
+                #    
+                #  Scenario Outline: Open a new window
+                #    The session will not be available
+                #    
+                #    When I do <something>
+                #    Then things should happen
+                #    
+                #    Examples:
+                #      | something |
+                #      | click     |
+                #      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    'Open a new tab' => false,
+                    'Open a new window' => false,
+                ],
+            ),
+            'things happening in the browser',
+        ];
+
+        yield 'matches scenario title' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                  Scenario: Open a new tab
+                    The session will still be available
+                    
+                    When I do something
+                    Then things should happen
+                    
+                #  Scenario Outline: Open a new window
+                #    The session will not be available
+                #    
+                #    When I do <something>
+                #    Then things should happen
+                #    
+                #    Examples:
+                #      | something |
+                #      | click     |
+                #      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Open a new tab' => true,
+                    'Open a new window' => false,
+                ],
+            ),
+            'new tab',
+        ];
+
+        yield 'matches scenario description' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                  Scenario: Open a new tab
+                    The session will still be available
+                    
+                    When I do something
+                    Then things should happen
+                    
+                #  Scenario Outline: Open a new window
+                #    The session will not be available
+                #    
+                #    When I do <something>
+                #    Then things should happen
+                #    
+                #    Examples:
+                #      | something |
+                #      | click     |
+                #      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Open a new tab' => true,
+                    'Open a new window' => false,
+                ],
+            ),
+            'session will still be',
+        ];
+
+        yield 'matches outline title' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                #  Scenario: Open a new tab
+                #    The session will still be available
+                #    
+                #    When I do something
+                #    Then things should happen
+                    
+                  Scenario Outline: Open a new window
+                    The session will not be available
+                    
+                    When I do <something>
+                    Then things should happen
+                    
+                    Examples:
+                      | something |
+                      | click     |
+                      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Open a new tab' => false,
+                    'Open a new window' => true,
+                ],
+            ),
+            'new window',
+        ];
+
+        yield 'matches outline description' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Some browser feature
+                  That describes things happening in the browser
+                  
+                #  Scenario: Open a new tab
+                #    The session will still be available
+                #    
+                #    When I do something
+                #    Then things should happen
+                    
+                  Scenario Outline: Open a new window
+                    The session will not be available
+                    
+                    When I do <something>
+                    Then things should happen
+                    
+                    Examples:
+                      | something |
+                      | click     |
+                      | type      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Open a new tab' => false,
+                    'Open a new window' => true,
+                ],
+            ),
+            'session will not be',
+        ];
+
+        yield 'does not match untitled scenario' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+                 
+                #  Scenario:
+                #    When I do things            
+                GHERKIN,
+                expectScenarioMatches: [
+                    '' => false,
+                ],
+            ),
+            'anything',
+        ];
+
+        yield 'matches scenario with title only' => [
+            FeatureFilterTestFixture::expectingNoFiltering(
+                <<<'GHERKIN'
+                Feature: Something
+                 
+                  Scenario: Prove a requirement
+                    When I do things            
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Prove a requirement' => true,
+                ],
+            ),
+            'requirement',
+        ];
+    }
+
+    #[DataProvider('providerFilterFeature')]
+    public function testFilterFeature(FeatureFilterTestFixture $testcase, string $filterString): void
+    {
+        $this->assertFiltersFeatureAsExpected($testcase, new NameFilter($filterString));
     }
 
     public function testIsFeatureMatchFilter(): void
@@ -148,14 +456,6 @@ class NameFilterTest extends TestCase
         $filter = new NameFilter('/^start/m');
         $scenario = new ScenarioNode($scenario['title'], [], [], '', 2, $scenario['description']);
         $this->assertSame($expectMatch, $filter->isScenarioMatch($scenario));
-    }
-
-    public function testUntitledScenarioDoesNotMatch(): void
-    {
-        $scenario = new ScenarioNode(null, [], [], '', 1);
-        $filter = new NameFilter('');
-
-        $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 
     /**
