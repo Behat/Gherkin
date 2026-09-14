@@ -50,9 +50,9 @@ class DirectoryLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports('non-existent path:2'));
 
         $this->assertFalse($this->loader->supports(__DIR__ . ':d'));
-        $this->assertFalse($this->loader->supports(__DIR__ . '/../Fixtures/features/pystring.feature'));
+        $this->assertFalse($this->loader->supports(__DIR__ . '/Fixtures/features/pystring.feature'));
         $this->assertTrue($this->loader->supports(__DIR__));
-        $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/features'));
+        $this->assertTrue($this->loader->supports(__DIR__ . '/Fixtures/features'));
     }
 
     public function testUndefinedFileLoad(): void
