@@ -18,6 +18,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters scenarios by feature/scenario name.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class NameFilter extends SimpleFilter
 {
