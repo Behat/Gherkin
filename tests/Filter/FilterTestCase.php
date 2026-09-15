@@ -56,6 +56,7 @@ abstract class FilterTestCase extends TestCase
             }
 
             $actualScenarioMatches[$scenario->getTitle() ?? ''] = match (true) {
+                /* @phpstan-ignore method.deprecatedInterface (testing for BC) */
                 $filter instanceof FilterInterface => $filter->isScenarioMatch($scenario),
                 $filter instanceof ComplexFilterInterface => $filter->isScenarioMatch($originalFeature, $scenario),
                 default => throw new RuntimeException('Unknown filter type'),

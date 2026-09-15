@@ -11,7 +11,6 @@
 namespace Tests\Behat\Gherkin;
 
 use Behat\Gherkin\Filter\FeatureFilterInterface;
-use Behat\Gherkin\Filter\FilterInterface;
 use Behat\Gherkin\Filter\NameFilter;
 use Behat\Gherkin\Filter\TagFilter;
 use Behat\Gherkin\Gherkin;
@@ -366,9 +365,9 @@ class GherkinTest extends TestCase
             ->getMock();
     }
 
-    protected function getCustomFilterMock(): MockObject&FilterInterface
+    protected function getCustomFilterMock(): MockObject&FeatureFilterInterface
     {
-        return $this->getMockBuilder(FilterInterface::class)
+        return $this->getMockBuilder(FeatureFilterInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
