@@ -19,7 +19,7 @@ use Behat\Gherkin\Node\ScenarioInterface;
  *
  * @author Fabian Kiss <headrevision@gmail.com>
  */
-class LineRangeFilter implements FilterInterface
+class LineRangeFilter extends SimpleFilter
 {
     /**
      * @var int
@@ -40,6 +40,9 @@ class LineRangeFilter implements FilterInterface
     {
         $this->filterMinLine = (int) $filterMinLine;
         $this->filterMaxLine = $filterMaxLine === '*' ? PHP_INT_MAX : (int) $filterMaxLine;
+
+        // Always filter the individual children, don't check the feature itself
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: false);
     }
 
     /**
@@ -82,48 +85,38 @@ class LineRangeFilter implements FilterInterface
         return false;
     }
 
-    /**
-     * Filters feature according to the filter.
-     *
-     * @return FeatureNode
-     */
-    public function filterFeature(FeatureNode $feature)
+    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
     {
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($scenario)) {
-                continue;
-            }
+        if (!$this->isScenarioMatch($scenario)) {
+            return false;
+        }
 
-            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                // first accumulate examples and then create scenario
-                $exampleTableNodes = [];
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            // first accumulate examples and then create scenario
+            $exampleTableNodes = [];
 
-                foreach ($scenario->getExampleTables() as $exampleTable) {
-                    $table = $exampleTable->getTable();
-                    $lines = array_keys($table);
+            foreach ($scenario->getExampleTables() as $exampleTable) {
+                $table = $exampleTable->getTable();
+                $lines = array_keys($table);
 
-                    $filteredTable = [$lines[0] => $table[$lines[0]]];
-                    unset($table[$lines[0]]);
+                $filteredTable = [$lines[0] => $table[$lines[0]]];
+                unset($table[$lines[0]]);
 
-                    foreach ($table as $line => $row) {
-                        if ($this->isInLineRange($line)) {
-                            $filteredTable[$line] = $row;
-                        }
-                    }
-
-                    if (count($filteredTable) > 1) {
-                        $exampleTableNodes[] = $exampleTable->withTable($filteredTable);
+                foreach ($table as $line => $row) {
+                    if ($this->isInLineRange($line)) {
+                        $filteredTable[$line] = $row;
                     }
                 }
 
-                $scenario = $scenario->withTables($exampleTableNodes);
+                if (count($filteredTable) > 1) {
+                    $exampleTableNodes[] = $exampleTable->withTable($filteredTable);
+                }
             }
 
-            $scenarios[] = $scenario;
+            return $scenario->withTables($exampleTableNodes);
         }
 
-        return $feature->withScenarios($scenarios);
+        return $scenario;
     }
 
     private function isInLineRange(int $line): bool
