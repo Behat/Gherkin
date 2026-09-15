@@ -23,6 +23,8 @@ class NarrativeFilter extends SimpleFilter
     public function __construct(
         private readonly string $regex,
     ) {
+        // If the feature name matches, we include it unchanged without any filtering of children
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: true);
     }
 
     public function isFeatureMatch(FeatureNode $feature)
