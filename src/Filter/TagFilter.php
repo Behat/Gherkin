@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -28,6 +29,8 @@ class TagFilter extends ComplexFilter
 
     private TagFilterMatcher $filterMatcher;
 
+    private ?RuleNode $currentlyFilteringRule = null;
+
     public function __construct(string $filterString)
     {
         $this->filterMatcher = new TagFilterMatcher($filterString);
@@ -41,37 +44,38 @@ class TagFilter extends ComplexFilter
         // This can all be removed in the next major if we make `filterString` private and/or readonly and remove the
         // normalisation of deprecated syntax.
         $this->filterString = $this->filterMatcher->getNormalisedFilterString();
+
+        // Always filter the individual children, don't check the feature itself
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: false);
     }
 
-    /**
-     * Filters feature according to the filter.
-     *
-     * @return FeatureNode
-     */
-    public function filterFeature(FeatureNode $feature)
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
     {
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($feature, $scenario)) {
-                continue;
-            }
-
-            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $exampleTables = [];
-
-                foreach ($scenario->getExampleTables() as $exampleTable) {
-                    if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $exampleTable->getTags()))) {
-                        $exampleTables[] = $exampleTable;
-                    }
-                }
-
-                $scenario = $scenario->withTables($exampleTables);
-            }
-
-            $scenarios[] = $scenario;
+        $this->currentlyFilteringRule = $rule;
+        try {
+            $isScenarioMatch = $this->isScenarioMatch($feature, $scenario);
+        } finally {
+            $this->currentlyFilteringRule = null;
         }
 
-        return $feature->withScenarios($scenarios);
+        if (!$isScenarioMatch) {
+            return false;
+        }
+
+        $tags = [...$feature->getTags(), ...$scenario->getTags(), ...($rule?->getTags() ?? [])];
+
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            $exampleTables = [];
+            foreach ($scenario->getExampleTables() as $exampleTable) {
+                if ($this->isTagsMatchCondition([...$tags, ...$exampleTable->getTags()])) {
+                    $exampleTables[] = $exampleTable;
+                }
+            }
+
+            return $scenario->withTables($exampleTables);
+        }
+
+        return $scenario;
     }
 
     /**
@@ -96,9 +100,19 @@ class TagFilter extends ComplexFilter
      */
     public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
     {
+        // Note, this will only consider Rule tags when filtering features using our implementation of `filterFeature`.
+        // It will not consider Rule tags if:
+        // - this method is called from outside our main `filterFeature` loop (e.g. to check a tagged hook in Behat)
+        // - an end-user has extended `TagFilter` and overridden this method instead of customising `filterFeature`
+        //
+        // For the same reason, we can't refactor this method / filterFeature to avoid iterating the tables twice -
+        // because that would break end-user assumptions about the relationship between these two methods if they
+        // have extended either method.
+        $tags = [...$feature->getTags(), ...$scenario->getTags(), ...($this->currentlyFilteringRule?->getTags() ?? [])];
+
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
             foreach ($scenario->getExampleTables() as $example) {
-                if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $example->getTags()))) {
+                if ($this->isTagsMatchCondition([...$tags, ...$example->getTags()])) {
                     return true;
                 }
             }
@@ -106,7 +120,7 @@ class TagFilter extends ComplexFilter
             return false;
         }
 
-        return $this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags()));
+        return $this->isTagsMatchCondition($tags);
     }
 
     /**

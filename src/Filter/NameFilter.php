@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\DescribableNodeInterface;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -29,6 +30,9 @@ class NameFilter extends SimpleFilter
     public function __construct(string $filterString)
     {
         $this->filterString = trim($filterString);
+
+        // If the feature name matches, we include it unchanged without any filtering of children
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: true);
     }
 
     /**
@@ -40,15 +44,19 @@ class NameFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        if ($feature->getTitle() === null) {
-            return false;
+        return $this->doesFilterMatchText($feature->getTitle());
+    }
+
+    protected function filterRule(FeatureNode $feature, RuleNode $rule): RuleNode|false
+    {
+        // If the rule title matches, then all scenarios in the rule are included when filtering (and we never call
+        // isScenarioMatch). This is consistent with legacy behaviour where `isScenarioMatch` only matches on the
+        // scenario title, and the match on the feature title is handled by an early return in `filterFeature`.
+        if ($this->doesFilterMatchText($rule->getTitle())) {
+            return $rule;
         }
 
-        if ($this->filterString[0] === '/') {
-            return (bool) preg_match($this->filterString, $feature->getTitle());
-        }
-
-        return str_contains($feature->getTitle(), $this->filterString);
+        return parent::filterRule($feature, $rule);
     }
 
     /**
@@ -75,6 +83,15 @@ class NameFilter extends SimpleFilter
         }
 
         $textToMatch = implode("\n", $textParts);
+
+        return $this->doesFilterMatchText($textToMatch);
+    }
+
+    private function doesFilterMatchText(?string $textToMatch): bool
+    {
+        if ($textToMatch === null) {
+            return false;
+        }
 
         if ($this->filterString[0] === '/' && preg_match($this->filterString, $textToMatch)) {
             return true;

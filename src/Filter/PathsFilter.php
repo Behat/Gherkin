@@ -44,6 +44,9 @@ class PathsFilter extends SimpleFilter
             $this->filterPaths[] = rtrim($realpath, DIRECTORY_SEPARATOR)
                 . (is_dir($realpath) ? DIRECTORY_SEPARATOR : '');
         }
+
+        // If the feature name matches, we include it unchanged without any filtering of children
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: true);
     }
 
     public function isFeatureMatch(FeatureNode $feature)

@@ -17,11 +17,15 @@ use Behat\Gherkin\Filter\FilterInterface;
 use Behat\Gherkin\GherkinCompatibilityMode;
 use Behat\Gherkin\Lexer;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Parser;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use UnexpectedValueException;
 
+/**
+ * @phpstan-import-type TExpectedScenarioMatches from FeatureFilterTestFixture
+ */
 abstract class FilterTestCase extends TestCase
 {
     protected function getParser(GherkinCompatibilityMode $mode): Parser
@@ -47,20 +51,7 @@ abstract class FilterTestCase extends TestCase
         // First, assert that `isScenarioMatch` matches all scenarios within the feature as expected.
         // This also ensures that the original feature has been parsed to the expected list of scenarios (e.g. that
         // anything that was commented in the expected feature has been properly uncommented).
-        $actualScenarioMatches = [];
-        foreach ($originalFeature->getScenarios() as $scenario) {
-            $title = $scenario->getTitle() ?? '';
-
-            if (isset($actualScenarioMatches[$title])) {
-                throw new UnexpectedValueException('Duplicate scenario title in test data: ' . $title);
-            }
-
-            $actualScenarioMatches[$scenario->getTitle() ?? ''] = match (true) {
-                $filter instanceof FilterInterface => $filter->isScenarioMatch($scenario),
-                $filter instanceof ComplexFilterInterface => $filter->isScenarioMatch($originalFeature, $scenario),
-                default => throw new RuntimeException('Unknown filter type'),
-            };
-        }
+        $actualScenarioMatches = $this->captureIsScenarioMatch($filter, $originalFeature);
         $this->assertSame($testcase->expectScenarioMatches, $actualScenarioMatches);
 
         // Then, assert that the result of filtering the feature is identical to parsing an equivalent feature
@@ -71,5 +62,31 @@ abstract class FilterTestCase extends TestCase
             $filteredFeature,
             'Filtered feature should match the expected equivalent feature'
         );
+    }
+
+    /**
+     * @phpstan-return ($rule is null ? TExpectedScenarioMatches : array<string, bool>)
+     */
+    private function captureIsScenarioMatch(FeatureFilterInterface $filter, FeatureNode $feature, ?RuleNode $rule = null): array
+    {
+        $actualMatches = [];
+        $children = $rule ? $rule->getExecutableChildren() : $feature->getExecutableChildren();
+
+        foreach ($children as $scenarioOrRule) {
+            $title = $scenarioOrRule->getTitle() ?? '';
+
+            if (isset($actualMatches[$title])) {
+                throw new UnexpectedValueException('Duplicate scenario title in test data: ' . $title);
+            }
+
+            $actualMatches[$title] = match (true) {
+                $scenarioOrRule instanceof RuleNode => $this->captureIsScenarioMatch($filter, $feature, $scenarioOrRule),
+                $filter instanceof FilterInterface => $filter->isScenarioMatch($scenarioOrRule),
+                $filter instanceof ComplexFilterInterface => $filter->isScenarioMatch($feature, $scenarioOrRule),
+                default => throw new RuntimeException('Unknown filter type'),
+            };
+        }
+
+        return $actualMatches;
     }
 }

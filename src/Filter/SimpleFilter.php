@@ -11,6 +11,8 @@
 namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
  * Abstract filter class.
@@ -19,24 +21,10 @@ use Behat\Gherkin\Node\FeatureNode;
  *
  * @deprecated see FilterInterface for further information
  */
-abstract class SimpleFilter implements FilterInterface
+abstract class SimpleFilter extends AbstractFeatureFilter implements FilterInterface
 {
-    /**
-     * Filters feature according to the filter.
-     *
-     * @return FeatureNode
-     */
-    public function filterFeature(FeatureNode $feature)
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
     {
-        if ($this->isFeatureMatch($feature)) {
-            return $feature;
-        }
-
-        return $feature->withScenarios(
-            array_filter(
-                $feature->getScenarios(),
-                $this->isScenarioMatch(...)
-            )
-        );
+        return $this->isScenarioMatch($scenario) ? $scenario : false;
     }
 }

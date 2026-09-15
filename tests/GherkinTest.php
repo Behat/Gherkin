@@ -74,7 +74,7 @@ class GherkinTest extends TestCase
         $features = $gherkin->load($resource, [$customFilter1, $customFilter2]);
         $this->assertCount(1, $features);
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
         $this->assertCount(1, $scenarios);
         $this->assertSame($scenario, $scenarios[0]);
     }

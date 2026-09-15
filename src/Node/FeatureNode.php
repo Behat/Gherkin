@@ -11,6 +11,8 @@
 namespace Behat\Gherkin\Node;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
+use WeakMap;
 
 use function strlen;
 
@@ -26,8 +28,21 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     use TaggedNodeTrait;
 
     /**
+     * Caches any fake scenarios extracted from `RuleNode` for `::getScenarios`.
+     *
+     * It is safe for this cache to be static, because the result is always the same for a given RuleNode,
+     * and the WeakMap will automatically clean up any references to RuleNodes that are no longer in use.
+     * Making it static eliminates any potential issues with serialising FeatureNode e.g. for caching or tests.
+     *
+     * Do not interact with this property other than through the ::getScenarios method.
+     *
+     * @var WeakMap<RuleNode, array<int, ScenarioInterface>>
+     */
+    private static WeakMap $ruleScenariosCache;
+
+    /**
      * @param list<string> $tags
-     * @param ScenarioInterface[] $scenarios
+     * @param array<RuleNode|ScenarioInterface> $scenarios
      * @param string|null $file the absolute path to the feature file
      */
     public function __construct(
@@ -125,11 +140,57 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns feature scenarios.
      *
+     * To provide backwards compatibility, this method will hoist any scenarios nested insideRules (losing any
+     * information about the Rule in the process). If the Rule had a Background, then any steps from that will be cloned
+     * and merged into each Scenario.
+     *
      * @return ScenarioInterface[]
+     *
+     * @deprecated use getExecutableChildren() for first-class handling of Rule nodes
      */
     public function getScenarios()
     {
-        return $this->scenarios;
+        $result = [];
+        foreach ($this->scenarios as $child) {
+            if ($child instanceof RuleNode) {
+                static::$ruleScenariosCache ??= new WeakMap();
+                static::$ruleScenariosCache[$child] ??= $this->extractRuleScenarios($child);
+                array_push($result, ...static::$ruleScenariosCache[$child]);
+            } else {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<int, ScenarioInterface>
+     */
+    private function extractRuleScenarios(RuleNode $rule): array
+    {
+        return array_map(
+            function ($child) use ($rule) {
+                if (($child::class === ScenarioNode::class) || ($child::class === OutlineNode::class)) {
+                    // We can only extract our own classes, as we don't control the constructor signature on any
+                    // third-party ScenarioInterface classes.
+                    return $child->extractFromRule($rule);
+                }
+
+                throw new UnexpectedValueException(
+                    sprintf('Cannot extract custom ScenarioInterface from Rule (got %s)', $child::class)
+                );
+            },
+            $rule->getExecutableChildren()
+        );
+    }
+
+    /**
+     * @return list<RuleNode|ScenarioInterface>
+     */
+    public function getExecutableChildren(): array
+    {
+        return array_values($this->scenarios);
     }
 
     /**
@@ -175,7 +236,7 @@ class FeatureNode implements KeywordNodeInterface, TaggedNodeInterface, Describa
     /**
      * Returns a copy of this feature, but with a different set of scenarios.
      *
-     * @param array<array-key, ScenarioInterface> $scenarios
+     * @param array<array-key, ScenarioInterface|RuleNode> $scenarios
      */
     public function withScenarios(array $scenarios): self
     {

@@ -25,6 +25,16 @@ class NameFilterTest extends FilterTestCase
      */
     public static function providerFilterFeature(): iterable
     {
+        yield from self::providerFilterFeatureOnFeatureTitle();
+        yield from self::providerFilterFeatureOnScenarioTitleAndDescription();
+        yield from self::providerFilterFeatureOnRuleTitle();
+    }
+
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string}>
+     */
+    private static function providerFilterFeatureOnFeatureTitle(): iterable
+    {
         yield 'matches feature title' => [
             FeatureFilterTestFixture::expectingNoFiltering(
                 <<<'GHERKIN'
@@ -47,11 +57,21 @@ class NameFilterTest extends FilterTestCase
                       | something |
                       | click     |
                       | type      |
+
+                  Rule: Some rule
+                    Background:
+                      Given rule background
+
+                    Scenario: Scenario inside rule
+                      Given something  
                 GHERKIN,
                 expectScenarioMatches: [
-                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    // NOTE: isScenarioMatch does NOT consider the feature or rule text
                     'Open a new tab' => false,
                     'Open a new window' => false,
+                    'Some rule' => [
+                        'Scenario inside rule' => false,
+                    ],
                 ],
             ),
             'browser',
@@ -79,11 +99,21 @@ class NameFilterTest extends FilterTestCase
                 #      | something |
                 #      | click     |
                 #      | type      |
+                #
+                #  Rule: Some rule
+                #    Background:
+                #      Given rule background
+                #
+                #    Scenario: Scenario inside rule
+                #      Given something  
                 GHERKIN,
                 expectScenarioMatches: [
-                    // NOTE: isScenarioMatch does NOT consider the feature text
+                    // NOTE: isScenarioMatch does NOT consider the feature or rule text
                     'Open a new tab' => false,
                     'Open a new window' => false,
+                    'Some rule' => [
+                        'Scenario inside rule' => false,
+                    ],
                 ],
             ),
             'calculator',
@@ -184,7 +214,13 @@ class NameFilterTest extends FilterTestCase
             ),
             'things happening in the browser',
         ];
+    }
 
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string}>
+     */
+    private static function providerFilterFeatureOnScenarioTitleAndDescription(): iterable
+    {
         yield 'matches scenario title' => [
             FeatureFilterTestFixture::fromCommentedExpectation(
                 <<<'GHERKIN'
@@ -337,6 +373,235 @@ class NameFilterTest extends FilterTestCase
                 ],
             ),
             'requirement',
+        ];
+
+        yield 'matches on scenario title inside Rule' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+
+                   Rule: Rule 1
+                     Background:
+                       Given rule background
+                 
+                     Scenario: Browser things in rule 1
+                       Given something
+                 
+                #    Scenario: CLI things in rule 1
+                #      Given something
+                       
+                   Rule: Rule 2
+                     Background:
+                       Given rule background
+                 
+                     Scenario: Browser things in rule 2
+                       Given something
+                 
+                #     Scenario: CLI things in rule 2
+                #       Given something
+                GHERKIN,
+                [
+                    'Rule 1' => [
+                        'Browser things in rule 1' => true,
+                        'CLI things in rule 1' => false,
+                    ],
+                    'Rule 2' => [
+                        'Browser things in rule 2' => true,
+                        'CLI things in rule 2' => false,
+                    ],
+                ]
+            ),
+            '/^browser/i',
+        ];
+
+        yield 'drops Rules that contain no matching scenarios' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+
+                #   Rule: Rule 1
+                #     Background:
+                #       Given rule background
+                # 
+                #     Scenario: App things in rule 1
+                #       Given something
+                # 
+                #    Scenario: CLI things in rule 1
+                #      Given something
+                       
+                   Rule: Rule 2
+                     Background:
+                       Given rule background
+                 
+                     Scenario: Browser things in rule 2
+                       Given something
+                 
+                #     Scenario: CLI things in rule 2
+                #       Given something
+                GHERKIN,
+                [
+                    'Rule 1' => [
+                        'App things in rule 1' => false,
+                        'CLI things in rule 1' => false,
+                    ],
+                    'Rule 2' => [
+                        'Browser things in rule 2' => true,
+                        'CLI things in rule 2' => false,
+                    ],
+                ]
+            ),
+            '/^browser/i',
+        ];
+    }
+
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, string}>
+     */
+    private static function providerFilterFeatureOnRuleTitle(): iterable
+    {
+        yield 'does not match untitled rule' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+                 
+                #  Rule:  
+                #    Scenario: Whatever
+                #      When I do things            
+                GHERKIN,
+                expectScenarioMatches: [
+                    '' => [
+                        'Whatever' => false,
+                    ],
+                ],
+            ),
+            'anything',
+        ];
+
+        yield 'matches all scenarios inside Rule with title that contains name string' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+
+                   Rule: The first rule
+                     Background:
+                       Given rule background
+                 
+                     Scenario: Browser things in rule 1
+                       Given something
+                 
+                     Scenario: CLI things in rule 1
+                       Given something
+                       
+                #  Rule: The second rule
+                #    Background:
+                #      Given rule background
+                #
+                #    Scenario: Browser things in rule 2
+                #      Given something
+                #
+                #     Scenario: CLI things in rule 2
+                #       Given something
+                GHERKIN,
+                [
+                    'The first rule' => [
+                        // NOTE: These scenarios are *included* by `filterFeature` but do *not* pass `isScenarioMatch`
+                        // This is consistent with legacy behaviour where `isScenarioMatch` only considers the scenario
+                        // text, even though `filterFeature` also matches on the feature title.
+                        'Browser things in rule 1' => false,
+                        'CLI things in rule 1' => false,
+                    ],
+                    'The second rule' => [
+                        'Browser things in rule 2' => false,
+                        'CLI things in rule 2' => false,
+                    ],
+                ]
+            ),
+            'first',
+        ];
+
+        yield 'matches all scenarios inside Rule with title that matches name regex' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+
+                #   Rule: The first rule
+                #     Background:
+                #       Given rule background
+                # 
+                #     Scenario: Browser things in rule 1
+                #       Given something
+                # 
+                #     Scenario: CLI things in rule 1
+                #       Given something
+                       
+                  Rule: The second rule
+                    Background:
+                      Given rule background
+                
+                    Scenario: Browser things in rule 2
+                      Given something
+                
+                     Scenario: CLI things in rule 2
+                       Given something
+                GHERKIN,
+                [
+                    'The first rule' => [
+                        'Browser things in rule 1' => false,
+                        'CLI things in rule 1' => false,
+                    ],
+                    'The second rule' => [
+                        // NOTE: These scenarios are *included* by `filterFeature` but do *not* pass `isScenarioMatch`
+                        // This is consistent with legacy behaviour where `isScenarioMatch` only considers the scenario
+                        // text, even though `filterFeature` also matches on the feature title.
+                        'Browser things in rule 2' => false,
+                        'CLI things in rule 2' => false,
+                    ],
+                ]
+            ),
+            '/^The Second/i',
+        ];
+
+        yield 'does NOT match on Rule description' => [
+            // There's a choice on how to handle this:
+            // - Feature only matches on the title
+            // - Scenario matches on title and description - but only for BC, because the description used to be parsed
+            //   into a multiline title.
+            // IMO it is more predictable / consistent with the meaning of `name` to match on the title only.
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: Something
+
+                   Rule: When the account has money
+                     This one matches because the key word is in the title
+                
+                     Background:
+                       Given rule background
+                 
+                     Scenario: Withdraw cash in rule 1
+                       Given something
+                       
+                #  Rule: When they are rich
+                #    They have money, but we only said that in the description
+                #    
+                #    Background:
+                #      Given rule background
+                #
+                #     Scenario: Withdraw cash in rule 2
+                #       Given something
+                GHERKIN,
+                [
+                    'When the account has money' => [
+                        // NOTE: This scenario is *included* by `filterFeature` but do *not* pass `isScenarioMatch`
+                        // This is consistent with legacy behaviour where `isScenarioMatch` only considers the scenario
+                        // text, even though `filterFeature` also matches on the feature title.
+                        'Withdraw cash in rule 1' => false,
+                    ],
+                    'When they are rich' => [
+                        'Withdraw cash in rule 2' => false,
+                    ],
+                ]
+            ),
+            'money',
         ];
     }
 
