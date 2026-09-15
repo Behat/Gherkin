@@ -203,10 +203,13 @@ class ArrayLoaderTest extends TestCase
         $scenario = $scenarios[0];
 
         $this->assertInstanceOf(OutlineNode::class, $scenario);
+        $this->assertCount(1, $scenario->getExampleTables());
+        $table = $scenario->getExampleTables()[0];
         $this->assertEquals(
             [['user' => 'ever', 'pass' => 'sdsd'], ['user' => 'anto', 'pass' => 'fdfd']],
-            $scenario->getExampleTable()->getHash()
+            $table->getHash(),
         );
+        $this->assertEquals([11, 12, 13], $table->getLines());
     }
 
     public function testLoadBackground(): void
