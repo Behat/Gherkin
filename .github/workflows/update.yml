@@ -91,7 +91,7 @@ jobs:
         id: app-token
         if: steps.cucumber.outputs.cucumber_updated == 'yes'
         with:
-          app-id: ${{ vars.GHERKIN_UPDATER_APP_ID }}
+          client-id: ${{ vars.GHERKIN_UPDATER_APP_CLIENT_ID }}
           private-key: ${{ secrets.GHERKIN_UPDATER_APP_KEY }}
 
       - run: .github/commit-and-push-gherkin-update.sh
