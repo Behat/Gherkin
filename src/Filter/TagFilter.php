@@ -41,37 +41,31 @@ class TagFilter extends ComplexFilter
         // This can all be removed in the next major if we make `filterString` private and/or readonly and remove the
         // normalisation of deprecated syntax.
         $this->filterString = $this->filterMatcher->getNormalisedFilterString();
+
+        // Always filter the individual children, don't check the feature itself
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: false);
     }
 
-    /**
-     * Filters feature according to the filter.
-     *
-     * @return FeatureNode
-     */
-    public function filterFeature(FeatureNode $feature)
+    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
     {
-        $scenarios = [];
-        foreach ($feature->getScenarios() as $scenario) {
-            if (!$this->isScenarioMatch($feature, $scenario)) {
-                continue;
-            }
-
-            if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
-                $exampleTables = [];
-
-                foreach ($scenario->getExampleTables() as $exampleTable) {
-                    if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $exampleTable->getTags()))) {
-                        $exampleTables[] = $exampleTable;
-                    }
-                }
-
-                $scenario = $scenario->withTables($exampleTables);
-            }
-
-            $scenarios[] = $scenario;
+        if (!$this->isScenarioMatch($feature, $scenario)) {
+            return false;
         }
 
-        return $feature->withScenarios($scenarios);
+        $tags = [...$feature->getTags(), ...$scenario->getTags()];
+
+        if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
+            $exampleTables = [];
+            foreach ($scenario->getExampleTables() as $exampleTable) {
+                if ($this->isTagsMatchCondition([...$tags, ...$exampleTable->getTags()])) {
+                    $exampleTables[] = $exampleTable;
+                }
+            }
+
+            return $scenario->withTables($exampleTables);
+        }
+
+        return $scenario;
     }
 
     /**
@@ -96,9 +90,14 @@ class TagFilter extends ComplexFilter
      */
     public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
     {
+        // Note, we can't refactor this method / filterFeature to avoid iterating the tables twice because that
+        // would break end-user assumptions about the relationship between these two methods if they have extended
+        // either method.
+        $tags = [...$feature->getTags(), ...$scenario->getTags()];
+
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
             foreach ($scenario->getExampleTables() as $example) {
-                if ($this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags(), $example->getTags()))) {
+                if ($this->isTagsMatchCondition([...$tags, ...$example->getTags()])) {
                     return true;
                 }
             }
@@ -106,7 +105,7 @@ class TagFilter extends ComplexFilter
             return false;
         }
 
-        return $this->isTagsMatchCondition(array_merge($feature->getTags(), $scenario->getTags()));
+        return $this->isTagsMatchCondition($tags);
     }
 
     /**
