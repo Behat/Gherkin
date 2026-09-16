@@ -225,12 +225,13 @@ class FeatureNodeTest extends TestCase
     #[DataProvider('providerRulesBackwardsCompatibility')]
     public function testGetScenariosExpandsRulesToScenariosForBackwardsCompatibility(FeatureNode $feature, array $expect): void
     {
+        /* @phpstan-ignore method.deprecated (Testing for BC) */
         $scenarios = $feature->getScenarios();
         foreach ($scenarios as $scenario) {
             $this->assertInstanceOf(ScenarioInterface::class, $scenario);
         }
 
-        $this->assertEquals($expect, $feature->getScenarios());
+        $this->assertEquals($expect, $scenarios);
     }
 
     public function testGetScenariosClonesAllPropertiesWhenHoistingRuleChildren(): void
@@ -267,25 +268,29 @@ class FeatureNodeTest extends TestCase
             ],
         );
 
-        $this->assertEquals([
-            new ScenarioNode(
-                title: 'Scenario with steps',
-                tags: ['slow'],
-                steps: [$step1, $step2],
-                keyword: 'Story',
-                line: 15,
-                description: 'This scenario has steps',
-            ),
-            new OutlineNode(
-                title: 'Outline with steps',
-                tags: ['fast'],
-                steps: [$step1, $step3],
-                tables: [$table1],
-                keyword: 'Scenario',
-                line: 15,
-                description: 'Some outline with info',
-            ),
-        ], $feature->getScenarios());
+        $this->assertEquals(
+            [
+                new ScenarioNode(
+                    title: 'Scenario with steps',
+                    tags: ['slow'],
+                    steps: [$step1, $step2],
+                    keyword: 'Story',
+                    line: 15,
+                    description: 'This scenario has steps',
+                ),
+                new OutlineNode(
+                    title: 'Outline with steps',
+                    tags: ['fast'],
+                    steps: [$step1, $step3],
+                    tables: [$table1],
+                    keyword: 'Scenario',
+                    line: 15,
+                    description: 'Some outline with info',
+                ),
+            ],
+            /* @phpstan-ignore method.deprecated (Testing for BC) */
+            $feature->getScenarios(),
+        );
     }
 
     public function testGetScenariosThrowsOnAttemptToExtractRuleWithCustomScenarioClass(): void
@@ -311,6 +316,7 @@ class FeatureNodeTest extends TestCase
 
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Cannot extract custom ScenarioInterface from Rule');
+        /* @phpstan-ignore method.deprecated (Testing for BC) */
         $feature->getScenarios();
     }
 
@@ -347,7 +353,9 @@ class FeatureNodeTest extends TestCase
             ],
         );
 
+        /* @phpstan-ignore method.deprecated (Testing for BC) */
         $scenarios1 = $feature->getScenarios();
+        /* @phpstan-ignore method.deprecated (Testing for BC) */
         $this->assertSame($scenarios1, $feature->getScenarios());
     }
 }
