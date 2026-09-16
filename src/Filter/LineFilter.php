@@ -18,6 +18,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters scenarios by definition line number.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.implementsDeprecatedInterface (Needs to keep the existing interface for BC)
  */
 class LineFilter implements FilterInterface
 {
@@ -83,6 +85,7 @@ class LineFilter implements FilterInterface
     {
         $scenarios = [];
         foreach ($feature->getScenarios() as $scenario) {
+            /* @phpstan-ignore method.deprecated (Needs to keep the existing control flow for BC with classes that extend this) */
             if (!$this->isScenarioMatch($scenario)) {
                 continue;
             }

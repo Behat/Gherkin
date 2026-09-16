@@ -397,21 +397,27 @@ class NameFilterTest extends FilterTestCase
         $filter = new NameFilter('scenario1');
 
         $scenario = new ScenarioNode('UNKNOWN', [], [], '', 2);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertFalse($filter->isScenarioMatch($scenario));
 
         $scenario = new ScenarioNode('scenario1', [], [], '', 2);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
         $scenario = new ScenarioNode('scenario1 title', [], [], '', 2);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
         $scenario = new ScenarioNode('some scenario title', [], [], '', 2);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertFalse($filter->isScenarioMatch($scenario));
 
         $filter = new NameFilter('/sce.ario/');
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
         $filter = new NameFilter('/scen.rio/');
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertTrue($filter->isScenarioMatch($scenario));
     }
 
@@ -455,6 +461,7 @@ class NameFilterTest extends FilterTestCase
         // So for BC, the filter considers title *and* description when matching by name.
         $filter = new NameFilter('/^start/m');
         $scenario = new ScenarioNode($scenario['title'], [], [], '', 2, $scenario['description']);
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertSame($expectMatch, $filter->isScenarioMatch($scenario));
     }
 
@@ -475,9 +482,11 @@ class NameFilterTest extends FilterTestCase
     public function testScenarioFilterMatchesAllScenarioInterface(ScenarioInterface $scenario): void
     {
         $filter = new NameFilter('match');
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertTrue($filter->isScenarioMatch($scenario));
 
         $filter = new NameFilter('no match');
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertFalse($filter->isScenarioMatch($scenario));
     }
 }

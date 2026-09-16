@@ -228,6 +228,7 @@ class Parser implements ParserInterface
             'Text' => $this->parseText(),
             'Newline' => $this->parseNewline(),
             'Tag' => $this->parseTags(),
+            /* @phpstan-ignore method.deprecated (this is retained for BC with older lexer & parser extensions) */
             'Language' => $this->parseLanguage(),
             'EOS' => '',
             default => throw new ParserException(sprintf('Unknown token type: %s', $type)),
