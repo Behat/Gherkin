@@ -283,7 +283,7 @@ final class ParserTest extends TestCase
             $feature->getDescription(),
             $feature->getTags(),
             $feature->getBackground(),
-            $feature->getScenarios(),
+            $feature->getExecutableChildren(),
             $feature->getKeyword(),
             $feature->getLanguage(),
             __DIR__ . '/Fixtures/features/' . basename($etalon, '.yml') . '.feature',
