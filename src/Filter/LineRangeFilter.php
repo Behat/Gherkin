@@ -19,7 +19,7 @@ use Behat\Gherkin\Node\ScenarioInterface;
  *
  * @author Fabian Kiss <headrevision@gmail.com>
  *
- * @phpstan-ignore class.implementsDeprecatedInterface (Needs to keep the existing interface for BC)
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class LineRangeFilter extends SimpleFilter
 {

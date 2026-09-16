@@ -107,9 +107,12 @@ class SimpleFilterTest extends FilterTestCase
 
     /**
      * @phpstan-param TFilterMatcherFuncs $matchers
+     *
+     * @phpstan-ignore return.deprecatedClass (Testing for BC)
      */
     private function createSimpleFilter(array $matchers): SimpleFilter
     {
+        /* @phpstan-ignore class.extendsDeprecatedClass (Testing for BC) */
         return new class($matchers['feature'], $matchers['scenario']) extends SimpleFilter {
             /**
              * @param Closure(FeatureNode): bool $featureMatcher
