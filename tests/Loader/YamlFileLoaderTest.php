@@ -50,7 +50,7 @@ class YamlFileLoaderTest extends TestCase
         EOS;
         $this->assertEquals($expectedDescription, $features[0]->getDescription());
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
 
         $this->assertCount(2, $scenarios);
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);

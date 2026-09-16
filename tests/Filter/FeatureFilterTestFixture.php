@@ -25,7 +25,7 @@ namespace Tests\Behat\Gherkin\Filter;
  * properties they have. It also ensures that filters do not unexpectedly modify the structure or content of nodes
  * during filtering.
  *
- * @phpstan-type TExpectedScenarioMatches array<string, bool>
+ * @phpstan-type TExpectedScenarioMatches array<string, bool|array<string, bool>>
  */
 final class FeatureFilterTestFixture
 {

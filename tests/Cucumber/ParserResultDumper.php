@@ -72,6 +72,9 @@ class ParserResultDumper
         $reflection = new ReflectionClass($value);
         do {
             foreach ($reflection->getProperties() as $property) {
+                if ($property->isStatic()) {
+                    continue;
+                }
                 $values[$property->getName()] = match ($property->isInitialized($value)) {
                     true => $this->recursiveDump($property->getValue($value)),
                     false => '**NOT INITIALIZED**',
