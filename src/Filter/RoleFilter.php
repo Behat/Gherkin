@@ -17,6 +17,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters features by their actors role.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class RoleFilter extends SimpleFilter
 {

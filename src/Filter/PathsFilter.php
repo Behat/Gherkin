@@ -19,6 +19,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters features by their paths.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class PathsFilter extends SimpleFilter
 {

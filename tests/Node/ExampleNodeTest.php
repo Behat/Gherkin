@@ -39,14 +39,17 @@ class ExampleNodeTest extends TestCase
 
         $this->assertCount(4, $steps = $examples[0]->getSteps());
 
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('I am everzet', $steps[0]->getText());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Aye!', $steps[1]->getType());
         $this->assertEquals('Aye!', $steps[1]->getKeyword());
         $this->assertEquals('And', $steps[1]->getKeywordType());
         $this->assertEquals('my email is ever.zet@gmail.com', $steps[1]->getText());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[2]->getType());
         $this->assertEquals('Blimey!', $steps[2]->getKeyword());
         $this->assertEquals('When', $steps[2]->getKeywordType());
@@ -54,14 +57,17 @@ class ExampleNodeTest extends TestCase
 
         $this->assertCount(4, $steps = $examples[1]->getSteps());
 
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Gangway!', $steps[0]->getType());
         $this->assertEquals('Gangway!', $steps[0]->getKeyword());
         $this->assertEquals('Given', $steps[0]->getKeywordType());
         $this->assertEquals('I am example', $steps[0]->getText());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Aye!', $steps[1]->getType());
         $this->assertEquals('Aye!', $steps[1]->getKeyword());
         $this->assertEquals('And', $steps[1]->getKeywordType());
         $this->assertEquals('my email is example@example.com', $steps[1]->getText());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Blimey!', $steps[2]->getType());
         $this->assertEquals('Blimey!', $steps[2]->getKeyword());
         $this->assertEquals('When', $steps[2]->getKeywordType());
