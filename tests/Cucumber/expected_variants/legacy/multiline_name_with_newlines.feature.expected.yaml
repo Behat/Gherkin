@@ -1,0 +1,151 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: multiline
+    description: |-
+
+        Feature description
+
+        With etc.
+    tags: []
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: ~
+            steps:
+                -
+                    Behat\Gherkin\Node\StepNode:
+                        keywordType: Given
+                        fullText: 'Given passing without a table'
+                        keyword: Given
+                        text: 'passing without a table'
+                        arguments: []
+                        line: 11
+            keyword: Background
+            line: 8
+            description: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+
+                    I'm a multiline name
+                    which goes on and on and on for three lines
+                    yawn
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given passing without a table'
+                            keyword: Given
+                            text: 'passing without a table'
+                            arguments: []
+                            line: 19
+                keyword: Scenario
+                line: 13
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 7
+                            table:
+                                34:
+                                    - state
+                                35:
+                                    - passing
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    I'm a multiline name
+
+                                    which goes on and on and on for three lines
+
+                    yawn
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given <state> without a table'
+                            keyword: Given
+                            text: '<state> without a table'
+                            arguments: []
+                            line: 28
+                keyword: 'Scenario Outline'
+                line: 21
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 7
+                            table:
+                                45:
+                                    - state
+                                46:
+                                    - passing
+                examples: '**NOT INITIALIZED**'
+                title: name
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given <state> without a table'
+                            keyword: Given
+                            text: '<state> without a table'
+                            arguments: []
+                            line: 40
+                keyword: 'Scenario Outline'
+                line: 37
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 7
+                            table:
+                                60:
+                                    - state
+                                61:
+                                    - passing
+                examples: '**NOT INITIALIZED**'
+                title: |-
+
+
+                    I'm a multiline name
+                    which goes on and on and on for three lines
+                    yawn
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given <state> without a table'
+                            keyword: Given
+                            text: '<state> without a table'
+                            arguments: []
+                            line: 55
+                keyword: 'Scenario Outline'
+                line: 48
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/multiline_name_with_newlines.feature
+    line: 1
