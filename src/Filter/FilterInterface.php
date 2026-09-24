@@ -16,6 +16,10 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filter interface.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @deprecated see either:
+ *   * FeatureFilterInterface for finding all matching Scenarios within a Feature
+ *   * ComplexFilterInterface to expose a method for checking if a single Scenario matches a filter
  */
 interface FilterInterface extends FeatureFilterInterface
 {
@@ -25,6 +29,8 @@ interface FilterInterface extends FeatureFilterInterface
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return bool
+     *
+     * @deprecated see the interface PHPDoc for more details
      */
     public function isScenarioMatch(ScenarioInterface $scenario);
 }

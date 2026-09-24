@@ -27,7 +27,7 @@ class GherkinFileLoaderTest extends TestCase
         $parser = new Parser(new Lexer(new CucumberDialectProvider()));
         $this->loader = new GherkinFileLoader($parser);
 
-        $this->featuresPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
+        $this->featuresPath = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'features';
     }
 
     public function testSupports(): void
@@ -38,7 +38,7 @@ class GherkinFileLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports(__DIR__));
         $this->assertFalse($this->loader->supports(__DIR__ . ':d'));
         $this->assertFalse($this->loader->supports(__FILE__));
-        $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/features/pystring.feature'));
+        $this->assertTrue($this->loader->supports(__DIR__ . '/Fixtures/features/pystring.feature'));
     }
 
     public function testLoad(): void

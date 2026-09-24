@@ -17,6 +17,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters features by their actors role.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class RoleFilter extends SimpleFilter
 {
@@ -44,6 +46,9 @@ class RoleFilter extends SimpleFilter
                 ]
             )
         );
+
+        // If the feature name matches, we include it unchanged without any filtering of children
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: true);
     }
 
     public function isFeatureMatch(FeatureNode $feature)
@@ -51,6 +56,9 @@ class RoleFilter extends SimpleFilter
         return (bool) preg_match($this->pattern, $feature->getDescription() ?? '');
     }
 
+    /**
+     * @deprecated see FilterInterface for further information
+     */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
         // This filter does not apply to scenarios.

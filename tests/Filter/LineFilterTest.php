@@ -11,10 +11,8 @@
 namespace Tests\Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Filter\LineFilter;
-use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
-use Behat\Gherkin\Node\OutlineNode;
-use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LineFilterTest extends FilterTestCase
 {
@@ -32,88 +30,308 @@ class LineFilterTest extends FilterTestCase
         $this->assertFalse($filter->isFeatureMatch($feature));
     }
 
-    public function testIsScenarioMatchFilter(): void
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, int}>
+     */
+    public static function providerFilterFeature(): iterable
     {
-        $scenario = new ScenarioNode(null, [], [], '', 2);
-
-        $filter = new LineFilter(2);
-        $this->assertTrue($filter->isScenarioMatch($scenario));
-
-        $filter = new LineFilter(1);
-        $this->assertFalse($filter->isScenarioMatch($scenario));
-
-        $filter = new LineFilter(5);
-        $this->assertFalse($filter->isScenarioMatch($scenario));
-
-        $outline = new OutlineNode(null, [], [], new ExampleTableNode([], ''), '', 20);
-
-        $filter = new LineFilter(5);
-        $this->assertFalse($filter->isScenarioMatch($outline));
-
-        $filter = new LineFilter(20);
-        $this->assertTrue($filter->isScenarioMatch($outline));
+        yield from self::providerFilterFeatureScenarios();
+        yield from self::providerFilterFeatureOutlineExamples();
     }
 
-    public function testFilterFeatureScenario(): void
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, int}>
+     */
+    private static function providerFilterFeatureScenarios(): iterable
     {
-        $filter = new LineFilter(2);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#1', $scenarios[0]->getTitle());
+        yield 'simple feature, exact scenario line number' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Two scenarios                 
+                2 :   Scenario: Scenario#1                 
+                3 :     Given initial step                 
+                4 :     When action occurs                 
+                5 :     Then outcomes should be visible    
+                6 :                                        
+                7 : #   Scenario: Scenario#2                 
+                8 : #     Given initial step                 
+                9 : #     And another initial step           
+                10: #     When action occurs                 
+                11: #    Then outcomes should be visible     
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => true,
+                    'Scenario#2' => false,
+                ],
+                stripLineNumbers: true,
+            ),
+            2,
+        ];
 
-        $filter = new LineFilter(7);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#2', $scenarios[0]->getTitle());
+        yield 'simple feature, other matching line number' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Two scenarios                 
+                2 : #  Scenario: Scenario#1                 
+                3 : #    Given initial step                 
+                4 : #    When action occurs                 
+                5 : #    Then outcomes should be visible    
+                6 :                                        
+                7 :    Scenario: Scenario#2                 
+                8 :     Given initial step                 
+                9 :     And another initial step           
+                10:     When action occurs                 
+                11:     Then outcomes should be visible     
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            7,
+        ];
 
-        $filter = new LineFilter(5);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(0, $scenarios = $feature->getScenarios());
+        yield 'simple feature, within a scenario (matches nothing)' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Two scenarios                 
+                2 : #  Scenario: Scenario#1                 
+                3 : #    Given initial step                 
+                4 : #    When action occurs                 
+                5 : #    Then outcomes should be visible    
+                6 : #                                       
+                7 : #   Scenario: Scenario#2                 
+                8 : #    Given initial step                 
+                9 : #    And another initial step           
+                10: #    When action occurs                 
+                11: #    Then outcomes should be visible     
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => false,
+                ],
+                stripLineNumbers: true,
+            ),
+            5,
+        ];
     }
 
-    public function testFilterFeatureOutline(): void
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, int}>
+     */
+    private static function providerFilterFeatureOutlineExamples(): iterable
     {
-        $filter = new LineFilter(13);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
-        $this->assertCount(4, $scenarios[0]->getExampleTable()->getRows());
+        yield 'feature with outline, matches line of the Outline' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                8 :
+                9 :     @etag1
+                10:     Examples:
+                11:       | action |
+                12:       | act#1  |
+                13:       | act#2  |
+                14:
+                15:    @etag2
+                16:    Examples:
+                17:      | action |
+                18:      | act#3  |
+                19:      | act#4  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            5,
+        ];
 
-        $filter = new LineFilter(20);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
-        $exampleTableNodes = $scenarios[0]->getExampleTables();
-        $this->assertCount(1, $exampleTableNodes);
-        $this->assertCount(2, $exampleTableNodes[0]->getRows());
-        $this->assertSame([
-            ['action', 'outcome'],
-            ['act#1', 'out#1'],
-        ], $exampleTableNodes[0]->getRows());
-        $this->assertEquals(['etag1'], $exampleTableNodes[0]->getTags());
+        yield 'feature with outline, matches a step in the Outline (matches nothing)' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 : #  Scenario Outline: Scenario#2
+                6 : #    When <action> occurs
+                7 : #
+                8 : #    @etag1
+                9 : #    Examples:
+                10: #      | action |
+                11: #      | act#1  |
+                12: #      | act#2  |
+                13: #
+                14: #   @etag2
+                15: #   Examples:
+                16: #     | action |
+                17: #     | act#3  |
+                18: #     | act#4  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => false,
+                ],
+                stripLineNumbers: true,
+            ),
+            6,
+        ];
 
-        $filter = new LineFilter(26);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
-        $exampleTableNodes = $scenarios[0]->getExampleTables();
-        $this->assertCount(1, $exampleTableNodes);
-        $this->assertCount(2, $exampleTableNodes[0]->getRows());
-        $this->assertSame([
-            ['action', 'outcome'],
-            ['act#3', 'out#3'],
-        ], $exampleTableNodes[0]->getRows());
-        $this->assertEquals(['etag2'], $exampleTableNodes[0]->getTags());
+        yield 'feature with outline, matches one line in Example table' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                7 :
+                8 :     @etag1
+                9 :     Examples:
+                10:       | action |
+                11: #     | act#1  |
+                12:       | act#2  |
+                13:
+                14: #  @etag2
+                15: #  Examples:
+                16: #    | action |
+                17: #    | act#3  |
+                18: #    | act#4  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            12,
+        ];
 
-        $filter = new LineFilter(19);
-        $feature = $filter->filterFeature($this->getParsedFeature());
-        $this->assertCount(1, $scenarios = $feature->getScenarios());
-        $this->assertSame('Scenario#3', $scenarios[0]->getTitle());
-        $this->assertInstanceOf(OutlineNode::class, $scenarios[0]);
-        $this->assertCount(1, $scenarios[0]->getExampleTable()->getRows());
-        $this->assertSame([['action', 'outcome']], $scenarios[0]->getExampleTable()->getRows());
+        yield 'feature with outline, matches different line in Example table' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                7 :
+                8 : #   @etag1
+                9 : #   Examples:
+                10: #     | action |
+                11: #     | act#1  |
+                12: #     | act#2  |
+                13:
+                14:    @etag2
+                15:    Examples:
+                16:      | action |
+                17:      | act#3  |
+                18: #    | act#4  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            17,
+        ];
+
+        yield 'feature with outline, matches one Example table header (parses as empty table, matches Scenario)' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                7 :
+                8 :    @etag1
+                9 :    Examples:
+                10:       | action | 
+                11: #     | act#1  |
+                12: #
+                13: #   Examples:
+                14: #     | action |
+                15: #     | act#3  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            10,
+        ];
+
+        yield 'feature with outline, Examples: line matches nothing' => [
+            // This is current behaviour, but it is slightly unexpected (and inconsistent with the behaviour of matching
+            // either the Outline, or the header of the table)
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1: Feature: Some feature
+                2: 
+                3: #  Scenario Outline: Some scenario
+                4: #    When <action> occurs
+                5: #
+                6: #   @etag1
+                7: #   Examples:
+                8: #     | action | outcome |
+                9: #     | act#1  | out#1   |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Some scenario' => false,
+                ],
+                stripLineNumbers: true,
+            ),
+            7,
+        ];
+
+        yield 'matches example tables with different structures' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : Feature: Long feature with outline
+                2 : #  Scenario: Scenario#1
+                3 : #   Given initial step
+                4 :
+                5 :   Scenario Outline: Scenario#2
+                6 :     When <action> occurs
+                7 :
+                8 : #   @etag1
+                9 : #   Examples:
+                10: #     | action | outcome  |
+                11: #     | act#1  | whatever |
+                12: #     | act#2  | anything |
+                13:
+                14:    @etag2
+                15:    Examples:
+                16:      | action | result |
+                17:      | act#3  | ?      |
+                18: #    | act#4  | works  |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Scenario#1' => false,
+                    'Scenario#2' => true,
+                ],
+                stripLineNumbers: true,
+            ),
+            17,
+        ];
+    }
+
+    #[DataProvider('providerFilterFeature')]
+    public function testFilterFeature(FeatureFilterTestFixture $testcase, int $filterLine): void
+    {
+        $this->assertFiltersFeatureAsExpected($testcase, new LineFilter($filterLine));
     }
 }

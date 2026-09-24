@@ -55,6 +55,8 @@ class Gherkin
     /**
      * Adds filter to manager.
      *
+     * Filters accumulate and are combined with a logical AND, see load().
+     *
      * @param FeatureFilterInterface $filter Feature filter
      *
      * @return void
@@ -96,8 +98,17 @@ class Gherkin
     /**
      * Loads & filters resource with added loaders.
      *
+     * Filters are combined with a logical AND: each one narrows the result of the previous,
+     * so only the scenarios that every filter keeps are returned. The order they are applied
+     * in does not change the outcome.
+     *
+     * A feature is dropped as soon as one filter leaves it without scenarios, unless that
+     * same filter matches the feature itself, in which case the feature is kept whole. That
+     * only excuses the filter that matches: a later filter finding nothing still drops it.
+     *
      * @param mixed $resource Resource to load
-     * @param array<array-key, FeatureFilterInterface> $filters Additional filters
+     * @param array<array-key, FeatureFilterInterface> $filters Additional filters, applied
+     *                                                          after the ones added with addFilter()
      *
      * @return list<FeatureNode>
      */

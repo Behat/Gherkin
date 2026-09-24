@@ -18,6 +18,8 @@ use Behat\Gherkin\Node\ScenarioInterface;
  * Filters scenarios by feature/scenario name.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass (Needs to keep the existing interface for BC)
  */
 class NameFilter extends SimpleFilter
 {
@@ -29,6 +31,9 @@ class NameFilter extends SimpleFilter
     public function __construct(string $filterString)
     {
         $this->filterString = trim($filterString);
+
+        // If the feature name matches, we include it unchanged without any filtering of children
+        parent::__construct(skipFilteringChildrenIfFeatureMatches: true);
     }
 
     /**
@@ -40,15 +45,7 @@ class NameFilter extends SimpleFilter
      */
     public function isFeatureMatch(FeatureNode $feature)
     {
-        if ($feature->getTitle() === null) {
-            return false;
-        }
-
-        if ($this->filterString[0] === '/') {
-            return (bool) preg_match($this->filterString, $feature->getTitle());
-        }
-
-        return str_contains($feature->getTitle(), $this->filterString);
+        return $this->doesFilterMatchText($feature->getTitle());
     }
 
     /**
@@ -57,6 +54,8 @@ class NameFilter extends SimpleFilter
      * @param ScenarioInterface $scenario Scenario or Outline node instance
      *
      * @return bool
+     *
+     * @deprecated see FilterInterface for further information
      */
     public function isScenarioMatch(ScenarioInterface $scenario)
     {
@@ -73,6 +72,15 @@ class NameFilter extends SimpleFilter
         }
 
         $textToMatch = implode("\n", $textParts);
+
+        return $this->doesFilterMatchText($textToMatch);
+    }
+
+    private function doesFilterMatchText(?string $textToMatch): bool
+    {
+        if ($textToMatch === null) {
+            return false;
+        }
 
         if ($this->filterString[0] === '/' && preg_match($this->filterString, $textToMatch)) {
             return true;

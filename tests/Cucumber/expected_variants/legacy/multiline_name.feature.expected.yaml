@@ -1,0 +1,108 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: multiline
+    description: ~
+    tags: []
+    background:
+        Behat\Gherkin\Node\BackgroundNode:
+            title: ~
+            steps:
+                -
+                    Behat\Gherkin\Node\StepNode:
+                        keywordType: Given
+                        fullText: 'Given passing without a table'
+                        keyword: Given
+                        text: 'passing without a table'
+                        arguments: []
+                        line: 4
+            keyword: Background
+            line: 3
+            description: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: |-
+                    I'm a multiline name
+                            which goes on and on and on for three lines
+                            yawn
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given passing without a table'
+                            keyword: Given
+                            text: 'passing without a table'
+                            arguments: []
+                            line: 9
+                keyword: Scenario
+                line: 6
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 7
+                            table:
+                                16:
+                                    - state
+                                17:
+                                    - passing
+                examples: '**NOT INITIALIZED**'
+                title: |-
+                    I'm a multiline name
+                    which goes on and on and on for three lines
+                                    yawn
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given <state> without a table'
+                            keyword: Given
+                            text: '<state> without a table'
+                            arguments: []
+                            line: 14
+                keyword: 'Scenario Outline'
+                line: 11
+                description: ~
+        -
+            Behat\Gherkin\Node\OutlineNode:
+                tables:
+                    -
+                        Behat\Gherkin\Node\ExampleTableNode:
+                            keyword: Examples
+                            tags: []
+                            name: ~
+                            description: ~
+                            maxLineLength:
+                                - 7
+                            table:
+                                22:
+                                    - state
+                                23:
+                                    - passing
+                examples: '**NOT INITIALIZED**'
+                title: name
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given <state> without a table'
+                            keyword: Given
+                            text: '<state> without a table'
+                            arguments: []
+                            line: 20
+                keyword: 'Scenario Outline'
+                line: 19
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/multiline_name.feature
+    line: 1

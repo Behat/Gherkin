@@ -26,7 +26,8 @@
         "phpstan/phpstan": "^2",
         "phpstan/extension-installer": "^1",
         "phpstan/phpstan-phpunit": "^2",
-        "mikey179/vfsstream": "^1.6"
+        "mikey179/vfsstream": "^1.6",
+        "phpstan/phpstan-deprecation-rules": "^2.0"
     },
 
     "suggest": {

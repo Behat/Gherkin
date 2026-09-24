@@ -13,49 +13,82 @@ namespace Tests\Behat\Gherkin\Filter;
 use Behat\Gherkin\Filter\ComplexFilter;
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\ScenarioInterface;
-use Behat\Gherkin\Node\ScenarioNode;
 use Closure;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 
 class ComplexFilterTest extends FilterTestCase
 {
     public function testFilterFeatureShouldReturnSameInstanceWhenNotFiltering(): void
     {
-        $scenarios = [new ScenarioNode('A scenario', [], [], '', 1)];
-        $originalFeature = new FeatureNode('A feature', null, [], null, $scenarios, '', '', null, 1);
+        $originalFeature = $this->parseFeature(
+            <<<'GHERKIN'
+            Feature: A feature
+              
+              Scenario: A scenario 
+            GHERKIN
+        );
+
         $nonFilteringFilter = $this->createComplexFilter(static fn () => true);
 
-        $filteredFeature = $nonFilteringFilter->filterFeature($originalFeature);
-
-        $this->assertSame($originalFeature, $filteredFeature);
+        $this->assertSame($originalFeature, $nonFilteringFilter->filterFeature($originalFeature));
     }
 
-    public function testFilterFeatureShouldReturnDifferentInstanceWhenFilteringOutAllScenarios(): void
+    /**
+     * @phpstan-return iterable<string, array{FeatureFilterTestFixture, Closure(FeatureNode, ScenarioInterface): bool}>
+     */
+    public static function providerFilterFeatureWhenFiltering(): iterable
     {
-        $scenarios = [new ScenarioNode('A scenario', [], [], '', 1)];
-        $originalFeature = new FeatureNode('A feature', null, [], null, $scenarios, '', '', null, 1);
-        $nonFilteringFilter = $this->createComplexFilter(static fn () => false);
+        yield 'filters out all scenarios' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: A feature
+                  
+                #  Scenario: Scenario 1
+                #    Given something
+                #  
+                #  Scenario: Scenario 2
+                #    Given something  
 
-        $filteredFeature = $nonFilteringFilter->filterFeature($originalFeature);
-
-        $this->assertNotSame($originalFeature, $filteredFeature);
-        $this->assertFalse($filteredFeature->hasScenarios());
-    }
-
-    public function testFilterFeatureShouldReturnDifferentInstanceWhenFilteringScenarios(): void
-    {
-        $scenarios = [
-            $scenario1 = new ScenarioNode('Scenario#1', [], [], '', 1),
-            $scenario2 = new ScenarioNode('Scenario#2', [], [], '', 2),
-            $scenario3 = new ScenarioNode('Scenario#3', [], [], '', 3),
+                GHERKIN, [
+                    'Scenario 1' => false,
+                    'Scenario 2' => false,
+                ]
+            ),
+            static fn () => false,
         ];
-        $originalFeature = new FeatureNode('Feature#1', null, [], null, $scenarios, '', '', null, 1);
-        $nonFilteringFilter = $this->createComplexFilter(static fn ($feature, $scenario) => $scenario !== $scenario2);
 
-        $filteredFeature = $nonFilteringFilter->filterFeature($originalFeature);
+        yield 'partially filters scenarios' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: A feature
+                  With a description
 
-        $this->assertNotSame($originalFeature, $filteredFeature);
-        $this->assertSame([$scenario1, $scenario3], $filteredFeature->getScenarios());
+                #  Scenario: Scenario 1
+                #    Given something
+
+                   Scenario: Scenario 2
+                     Given something  
+                  
+                #  Scenario: Scenario 3
+                #    Given other
+                GHERKIN, [
+                    'Scenario 1' => false,
+                    'Scenario 2' => true,
+                    'Scenario 3' => false,
+                ]
+            ),
+            static fn (FeatureNode $f, ScenarioInterface $s): bool => $s->getTitle() === 'Scenario 2',
+        ];
+    }
+
+    /**
+     * @phpstan-param Closure(FeatureNode, ScenarioInterface): bool $filterFunc
+     */
+    #[DataProvider('providerFilterFeatureWhenFiltering')]
+    public function testFilterFeatureShouldReturnDifferentInstanceWhenFilteringOutAllScenarios(FeatureFilterTestFixture $testCase, callable $filterFunc): void
+    {
+        $this->assertFiltersFeatureAsExpected($testCase, $this->createComplexFilter($filterFunc));
     }
 
     /**

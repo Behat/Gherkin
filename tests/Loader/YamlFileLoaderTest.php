@@ -29,12 +29,12 @@ class YamlFileLoaderTest extends TestCase
         $this->assertFalse($this->loader->supports(__FILE__));
         $this->assertFalse($this->loader->supports('string'));
         $this->assertFalse($this->loader->supports(__DIR__ . '/file.yml'));
-        $this->assertTrue($this->loader->supports(__DIR__ . '/../Fixtures/etalons/addition.yml'));
+        $this->assertTrue($this->loader->supports(__DIR__ . '/Fixtures/etalons/addition.yml'));
     }
 
     public function testLoadAddition(): void
     {
-        $basePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures';
+        $basePath = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures';
         $this->loader->setBasePath($basePath);
         $features = $this->loader->load('etalons/addition.yml');
 
@@ -55,10 +55,12 @@ class YamlFileLoaderTest extends TestCase
         $this->assertCount(2, $scenarios);
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[0]);
         $this->assertEquals(7, $scenarios[0]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Add two numbers', $scenarios[0]->getTitle());
         $steps = $scenarios[0]->getSteps();
         $this->assertCount(4, $steps);
         $this->assertEquals(9, $steps[1]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('And', $steps[1]->getType());
         $this->assertEquals('And', $steps[1]->getKeyword());
         $this->assertEquals('Given', $steps[1]->getKeywordType());
@@ -66,10 +68,12 @@ class YamlFileLoaderTest extends TestCase
 
         $this->assertInstanceOf(ScenarioNode::class, $scenarios[1]);
         $this->assertEquals(13, $scenarios[1]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('Div two numbers', $scenarios[1]->getTitle());
         $steps = $scenarios[1]->getSteps();
         $this->assertCount(4, $steps);
         $this->assertEquals(16, $steps[2]->getLine());
+        /* @phpstan-ignore method.deprecated (testing for BC) */
         $this->assertEquals('When', $steps[2]->getType());
         $this->assertEquals('When', $steps[2]->getKeyword());
         $this->assertEquals('When', $steps[2]->getKeywordType());
