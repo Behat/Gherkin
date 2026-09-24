@@ -95,14 +95,20 @@ abstract class AbstractFeatureFilter implements FeatureFilterInterface
 
     protected function filterRule(FeatureNode $feature, RuleNode $rule): RuleNode|false
     {
+        $originalChildren = $rule->getExecutableChildren();
         $filteredChildren = array_values(array_filter(array_map(
             fn (ScenarioInterface $scenario) => $this->filterScenario($feature, $rule, $scenario),
-            $rule->getExecutableChildren(),
+            $originalChildren,
         )));
 
         if ($filteredChildren === []) {
             // Drop the rule, no scenarios match
             return false;
+        }
+
+        if ($originalChildren === $filteredChildren) {
+            // Everything matched, return unmodified rule
+            return $rule;
         }
 
         if ($rule->hasBackground()) {

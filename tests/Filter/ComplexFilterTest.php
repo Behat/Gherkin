@@ -25,13 +25,23 @@ class ComplexFilterTest extends FilterTestCase
             <<<'GHERKIN'
             Feature: A feature
               
-              Scenario: A scenario 
-            GHERKIN
+              Scenario: A scenario
+              
+              Rule: A rule
+                Scenario: Another scenario
+            GHERKIN,
         );
+        $originalFeatureChildren = $originalFeature->getExecutableChildren();
 
         $nonFilteringFilter = $this->createComplexFilter(static fn () => true);
 
-        $this->assertSame($originalFeature, $nonFilteringFilter->filterFeature($originalFeature));
+        $filteredFeature = $nonFilteringFilter->filterFeature($originalFeature);
+        $this->assertSame($originalFeature, $filteredFeature, 'Should be same FeatureNode');
+        $this->assertSame(
+            $originalFeatureChildren,
+            $filteredFeature->getExecutableChildren(),
+            'Should not have modified children',
+        );
     }
 
     /**
