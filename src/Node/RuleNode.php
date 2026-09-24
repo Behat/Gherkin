@@ -10,7 +10,7 @@
 
 namespace Behat\Gherkin\Node;
 
-class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, TaggedNodeInterface
+final class RuleNode implements KeywordNodeInterface, DescribableNodeInterface, TaggedNodeInterface
 {
     use TaggedNodeTrait;
 
