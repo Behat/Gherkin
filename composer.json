@@ -23,7 +23,7 @@
         "phpunit/phpunit": "^10.5",
         "cucumber/gherkin-monorepo": "dev-gherkin-v40.0.0",
         "friendsofphp/php-cs-fixer": "^3.77",
-        "phpstan/phpstan": "^2",
+        "phpstan/phpstan": "2.2.14",
         "phpstan/extension-installer": "^1",
         "phpstan/phpstan-phpunit": "^2",
         "mikey179/vfsstream": "^1.6",
