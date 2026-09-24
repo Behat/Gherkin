@@ -1,0 +1,93 @@
+Behat\Gherkin\Node\FeatureNode:
+    title: "Some '#quoted' string"
+    description: |-
+        In order to avoid silly mistakes
+        As a "#math" idiot
+        I want to be told the sum of two numbers
+    tags: []
+    background: ~
+    scenarios:
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'Add two numbers'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given I have entered 11 into the calculator'
+                            keyword: Given
+                            text: 'I have entered 11 into the calculator'
+                            arguments: []
+                            line: 8
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'And I have entered 12 into the calculator'
+                            keyword: And
+                            text: 'I have entered 12 into the calculator'
+                            arguments: []
+                            line: 9
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: When
+                            fullText: 'When I press "#add"'
+                            keyword: When
+                            text: 'I press "#add"'
+                            arguments: []
+                            line: 10
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Then
+                            fullText: 'Then the result should be 23 on the screen'
+                            keyword: Then
+                            text: 'the result should be 23 on the screen'
+                            arguments: []
+                            line: 11
+                keyword: Scenario
+                line: 7
+                description: ~
+        -
+            Behat\Gherkin\Node\ScenarioNode:
+                title: 'Div "#two" numbers # as'
+                tags: []
+                steps:
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'Given I have entered 10 into the calculator'
+                            keyword: Given
+                            text: 'I have entered 10 into the calculator'
+                            arguments: []
+                            line: 14
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Given
+                            fullText: 'And I have entered # 2 into the calculator'
+                            keyword: And
+                            text: 'I have entered # 2 into the calculator'
+                            arguments: []
+                            line: 15
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: When
+                            fullText: 'When I press div'
+                            keyword: When
+                            text: 'I press div'
+                            arguments: []
+                            line: 16
+                    -
+                        Behat\Gherkin\Node\StepNode:
+                            keywordType: Then
+                            fullText: 'Then the result should be 5 on the screen'
+                            keyword: Then
+                            text: 'the result should be 5 on the screen'
+                            arguments: []
+                            line: 17
+                keyword: Scenario
+                line: 13
+                description: ~
+    keyword: Feature
+    language: en
+    file: {BASEDIR}/tests/Cucumber/extra_testdata/good/hashes_in_quotes.feature
+    line: 2
