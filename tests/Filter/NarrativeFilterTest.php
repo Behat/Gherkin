@@ -40,11 +40,21 @@ class NarrativeFilterTest extends FilterTestCase
                       | precondition | language |
                       | have         | french   |
                       | have not     | english  |
+
+                  Rule: Rule 1
+                    Background:
+                      Given rule background
+                    
+                    Scenario: Scenario 2
+                      When something happens
                 GHERKIN,
                 expectScenarioMatches: [
                     // Note, isScenarioMatch is always false for a RoleFilter
                     'Pick a language' => false,
                     'Remember preferences' => false,
+                    'Rule 1' => [
+                        'Scenario 2' => false,
+                    ],
                 ],
             ),
             '/as (?:a|an) french user/i',
@@ -69,10 +79,20 @@ class NarrativeFilterTest extends FilterTestCase
                 #      | precondition | language |
                 #      | have         | french   |
                 #      | have not     | english  |
+                #
+                #  Rule: Rule 1
+                #    Background:
+                #      Given rule background
+                #    
+                #    Scenario: Scenario 2
+                #      When something happens
                 GHERKIN,
                 expectScenarioMatches: [
                     'Pick a language' => false,
                     'Remember preferences' => false,
+                    'Rule 1' => [
+                        'Scenario 2' => false,
+                    ],
                 ],
             ),
             '/As (?:a|an) English user/',

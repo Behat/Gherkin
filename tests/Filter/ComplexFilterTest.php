@@ -25,13 +25,23 @@ class ComplexFilterTest extends FilterTestCase
             <<<'GHERKIN'
             Feature: A feature
               
-              Scenario: A scenario 
-            GHERKIN
+              Scenario: A scenario
+              
+              Rule: A rule
+                Scenario: Another scenario
+            GHERKIN,
         );
+        $originalFeatureChildren = $originalFeature->getExecutableChildren();
 
         $nonFilteringFilter = $this->createComplexFilter(static fn () => true);
 
-        $this->assertSame($originalFeature, $nonFilteringFilter->filterFeature($originalFeature));
+        $filteredFeature = $nonFilteringFilter->filterFeature($originalFeature);
+        $this->assertSame($originalFeature, $filteredFeature, 'Should be same FeatureNode');
+        $this->assertSame(
+            $originalFeatureChildren,
+            $filteredFeature->getExecutableChildren(),
+            'Should not have modified children',
+        );
     }
 
     /**
@@ -77,6 +87,50 @@ class ComplexFilterTest extends FilterTestCase
                     'Scenario 2' => true,
                     'Scenario 3' => false,
                 ]
+            ),
+            static fn (FeatureNode $f, ScenarioInterface $s): bool => $s->getTitle() === 'Scenario 2',
+        ];
+
+        yield 'keeps Rule structure when filtering' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                Feature: A feature
+                    With a description
+                  
+                  Background:
+                    Given global background
+                    
+                #  Scenario: Top-level Scenario
+                    
+                  Rule: Rule 1
+                  
+                    Background:
+                      Given rule background
+                  
+                #   Scenario: Scenario 1
+                #     Given something
+                    
+                    Scenario: Scenario 2
+                      Given something else
+                    
+                #  Rule: Rule 2
+                #
+                #    Background:
+                #      Given other rule background
+                #    
+                #    Scenario: Scenario 3
+                #      Given whatever
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Top-level Scenario' => false,
+                    'Rule 1' => [
+                        'Scenario 1' => false,
+                        'Scenario 2' => true,
+                    ],
+                    'Rule 2' => [
+                        'Scenario 3' => false,
+                    ],
+                ],
             ),
             static fn (FeatureNode $f, ScenarioInterface $s): bool => $s->getTitle() === 'Scenario 2',
         ];

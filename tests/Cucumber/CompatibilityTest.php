@@ -73,11 +73,6 @@ class CompatibilityTest extends TestCase
             'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
         'gherkin-32' => [
-            'complex_background.feature' => 'Rule keyword not supported',
-            'rule.feature' => 'Rule keyword not supported',
-            'rule_with_tag.feature' => 'Rule keyword not supported',
-            'tags.feature' => 'Rule keyword not supported',
-            'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
             'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
     ];

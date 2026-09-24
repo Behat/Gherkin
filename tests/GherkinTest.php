@@ -17,6 +17,7 @@ use Behat\Gherkin\Gherkin;
 use Behat\Gherkin\Loader\GherkinFileLoader;
 use Behat\Gherkin\Loader\LoaderInterface;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\ScenarioNode;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -73,7 +74,7 @@ class GherkinTest extends TestCase
         $features = $gherkin->load($resource, [$customFilter1, $customFilter2]);
         $this->assertCount(1, $features);
 
-        $scenarios = $features[0]->getScenarios();
+        $scenarios = $features[0]->getExecutableChildren();
         $this->assertCount(1, $scenarios);
         $this->assertSame($scenario, $scenarios[0]);
     }
@@ -110,7 +111,7 @@ class GherkinTest extends TestCase
         $this->assertCount(1, $features);
         $this->assertSame(
             $expectedScenarioTitles,
-            array_map(static fn (ScenarioInterface $scenario) => $scenario->getTitle(), $features[0]->getScenarios()),
+            array_map(static fn (RuleNode|ScenarioInterface $scenario) => $scenario->getTitle(), $features[0]->getExecutableChildren()),
         );
     }
 

@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -87,7 +88,7 @@ class LineRangeFilter extends SimpleFilter
         return false;
     }
 
-    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
     {
         /* @phpstan-ignore method.deprecated (Needs to keep the existing control flow for BC with classes that extend this) */
         if (!$this->isScenarioMatch($scenario)) {

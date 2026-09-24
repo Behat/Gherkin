@@ -12,6 +12,7 @@ namespace Behat\Gherkin\Filter;
 
 use Behat\Gherkin\Node\FeatureNode;
 use Behat\Gherkin\Node\OutlineNode;
+use Behat\Gherkin\Node\RuleNode;
 use Behat\Gherkin\Node\ScenarioInterface;
 
 /**
@@ -27,6 +28,8 @@ class TagFilter extends ComplexFilter
     protected $filterString;
 
     private TagFilterMatcher $filterMatcher;
+
+    private ?RuleNode $currentlyFilteringRule = null;
 
     public function __construct(string $filterString)
     {
@@ -46,13 +49,20 @@ class TagFilter extends ComplexFilter
         parent::__construct(skipFilteringChildrenIfFeatureMatches: false);
     }
 
-    protected function filterScenario(FeatureNode $feature, ScenarioInterface $scenario): ScenarioInterface|false
+    protected function filterScenario(FeatureNode $feature, ?RuleNode $rule, ScenarioInterface $scenario): ScenarioInterface|false
     {
-        if (!$this->isScenarioMatch($feature, $scenario)) {
+        $this->currentlyFilteringRule = $rule;
+        try {
+            $isScenarioMatch = $this->isScenarioMatch($feature, $scenario);
+        } finally {
+            $this->currentlyFilteringRule = null;
+        }
+
+        if (!$isScenarioMatch) {
             return false;
         }
 
-        $tags = [...$feature->getTags(), ...$scenario->getTags()];
+        $tags = [...$feature->getTags(), ...$scenario->getTags(), ...($rule?->getTags() ?? [])];
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
             $exampleTables = [];
@@ -90,10 +100,15 @@ class TagFilter extends ComplexFilter
      */
     public function isScenarioMatch(FeatureNode $feature, ScenarioInterface $scenario)
     {
-        // Note, we can't refactor this method / filterFeature to avoid iterating the tables twice because that
-        // would break end-user assumptions about the relationship between these two methods if they have extended
-        // either method.
-        $tags = [...$feature->getTags(), ...$scenario->getTags()];
+        // Note, this will only consider Rule tags when filtering features using our implementation of `filterFeature`.
+        // It will not consider Rule tags if:
+        // - this method is called from outside our main `filterFeature` loop (e.g. to check a tagged hook in Behat)
+        // - an end-user has extended `TagFilter` and overridden this method instead of customising `filterFeature`
+        //
+        // For the same reason, we can't refactor this method / filterFeature to avoid iterating the tables twice -
+        // because that would break end-user assumptions about the relationship between these two methods if they
+        // have extended either method.
+        $tags = [...$feature->getTags(), ...$scenario->getTags(), ...($this->currentlyFilteringRule?->getTags() ?? [])];
 
         if ($scenario instanceof OutlineNode && $scenario->hasExamples()) {
             foreach ($scenario->getExampleTables() as $example) {

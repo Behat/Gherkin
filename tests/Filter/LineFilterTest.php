@@ -37,6 +37,7 @@ class LineFilterTest extends FilterTestCase
     {
         yield from self::providerFilterFeatureScenarios();
         yield from self::providerFilterFeatureOutlineExamples();
+        yield from self::providerFilterFeatureRuleExamples();
     }
 
     /**
@@ -326,6 +327,173 @@ class LineFilterTest extends FilterTestCase
                 stripLineNumbers: true,
             ),
             17,
+        ];
+    }
+
+    /**
+     * @phpstan-return iterable<string,array{FeatureFilterTestFixture, int}>
+     */
+    private static function providerFilterFeatureRuleExamples(): iterable
+    {
+        yield 'can match on Scenario line without losing Rule structure' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : @feature-tag
+                2 : Feature: Some work in progress
+                3 : 
+                4 :   @rule-tag
+                5 :   Rule: Rule 1
+                6 :     
+                7 :      Background:
+                8 :        Given rule background
+                9 :        
+                10:      @web
+                11:      Scenario: Scenario 1
+                12:        Given anything
+                13:        
+                14: #     @browser
+                15: #     Scenario Outline: Scenario 2
+                16: #       Given <something>
+                17: #    
+                18: #       @example-tag
+                19: #       Examples: First set of examples
+                20: #        | something | 
+                21: #        | here      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => true,
+                        'Scenario 2' => false,
+                    ],
+                ],
+                stripLineNumbers: true,
+            ),
+            11,
+        ];
+
+        yield 'can match on Examples table row without losing Rule structure' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : @feature-tag
+                2 : Feature: Some work in progress
+                3 : 
+                4 :   @rule-tag
+                5 :   Rule: Rule 1
+                6 :     
+                7 :      Background:
+                8 :        Given rule background
+                9 :        
+                10: #     @web
+                11: #     Scenario: Scenario 1
+                12: #       Given anything
+                13:        
+                14:      @browser
+                15:      Scenario Outline: Scenario 2
+                16:        Given <something>
+                17:     
+                18:        @example-tag
+                19:        Examples: First set of examples
+                20:         | something | 
+                21:         | here      |
+                22: #       | another   |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => false,
+                        'Scenario 2' => true,
+                    ],
+                ],
+                stripLineNumbers: true,
+            ),
+            21,
+        ];
+
+        yield 'Drops empty rules if no matched line' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : @feature-tag
+                2 : Feature: Some work in progress
+                3 : 
+                4 : #  @rule-tag
+                5 : #  Rule: Rule 1
+                6 : #    
+                7 : #     Background:
+                8 : #       Given rule background
+                9 : #       
+                10: #     @web
+                11: #     Scenario: Scenario 1
+                12: #       Given anything
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => false,
+                    ],
+                ],
+                stripLineNumbers: true,
+            ),
+            9,
+        ];
+
+        yield 'Matches all Scenarios in a Rule given the Rule line' => [
+            FeatureFilterTestFixture::fromCommentedExpectation(
+                <<<'GHERKIN'
+                1 : @feature-tag
+                2 : Feature: Some work in progress
+                3 : 
+                4 : #  @rule-tag
+                5 : #  Rule: Rule 1
+                6 : #    
+                7 : #     Background:
+                8 : #       Given rule background
+                9 : #       
+                10: #     @web
+                11: #     Scenario: Scenario 1
+                12: #       Given anything
+                13: #       
+                14: #     @browser
+                15: #     Scenario Outline: Scenario 2
+                16: #       Given <something>
+                17: #    
+                18: #       @example-tag
+                19: #       Examples: First set of examples
+                20: #        | something | 
+                21: #        | here      |
+                22: 
+                23:   @rule-tag
+                24:   Rule: Rule 2
+                25:
+                26:     Background:
+                27:       Given rule background
+                28:    
+                29:     Scenario: Scenario 3
+                30:       Given whatever
+                31:
+                32:     @browser
+                33:     Scenario Outline: Scenario 4
+                34:        Given <something>
+                35:     
+                36:        @example-tag
+                37:        Examples: First set of examples
+                38:         | something | 
+                39:         | here      |
+                GHERKIN,
+                expectScenarioMatches: [
+                    'Rule 1' => [
+                        'Scenario 1' => false,
+                        'Scenario 2' => false,
+                    ],
+                    'Rule 2' => [
+                        // NOTE: deprecated `isScenarioMatch` does NOT match against the Rule's line number, even though
+                        // this is considered for `filterFeature`.
+                        // This is similar to the inconsistency in `NameFilter` where the `filterFeature` considers
+                        // text in parent nodes, but `isScenarioMatch` only considers the Scenario itself.
+                        'Scenario 3' => false,
+                        'Scenario 4' => false,
+                    ],
+                ],
+                stripLineNumbers: true,
+            ),
+            24,
         ];
     }
 
