@@ -47,12 +47,14 @@ class CompatibilityTest extends TestCase
         'legacy' => [
             'complex_background.feature' => 'Rule keyword not supported',
             'docstrings.feature' => 'Escaped delimiters in docstrings are not unescaped',
+            'docstrings.crlf.feature' => 'Escaped delimiters in docstrings are not unescaped',
             'datatables_with_new_lines.feature' => 'Escaped newlines in table cells are not unescaped',
             'escaped_pipes.feature' => 'Escaped newlines in table cells are not unescaped',
             'rule.feature' => 'Rule keyword not supported',
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
             'descriptions.feature' => 'Examples table descriptions not supported',
+            'descriptions.crlf.feature' => 'Scenario descriptions not supported',
             'descriptions_with_comments.feature' => 'Examples table descriptions not supported',
             'feature_keyword_in_scenario_description.feature' => 'Scenario descriptions not supported',
             'padded_example.feature' => 'Table padding is not trimmed as aggressively',
@@ -68,6 +70,7 @@ class CompatibilityTest extends TestCase
             'issue_13.feature' => 'Multiline titles are folded into the title instead of the description',
             'background_title.feature' => 'Multiline titles are folded into the title instead of the description',
             'complex_descriptions.feature' => 'Multiline titles are folded into the title instead of the description',
+            'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
         'gherkin-32' => [
             'complex_background.feature' => 'Rule keyword not supported',
@@ -75,6 +78,7 @@ class CompatibilityTest extends TestCase
             'rule_with_tag.feature' => 'Rule keyword not supported',
             'tags.feature' => 'Rule keyword not supported',
             'rule_without_name_and_description.feature' => 'Rule is wrongly parsed as Description',
+            'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
     ];
 
