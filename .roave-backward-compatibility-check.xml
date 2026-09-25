@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<roave-bc-check
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://github.com/Roave/BackwardCompatibilityCheck/raw/refs/heads/8.18.x/Resources/schema.xsd">
+    <baseline>
+        <!-- Our CompatiblityMode enum is documented as non-exhaustive, adding cases is not a BC break -->
+        <ignored-regex>#ADDED: Case Behat\\Gherkin\\GherkinCompatibilityMode::.+ was added#</ignored-regex>
+    </baseline>
+</roave-bc-check>

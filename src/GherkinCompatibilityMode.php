@@ -10,6 +10,15 @@
 
 namespace Behat\Gherkin;
 
+/**
+ * Configures parser behaviour relative to official cucumber/gherkin parser versions.
+ *
+ * This enum is **non-exhaustive**. We may add case values for new parser modes in future
+ * minor releases.
+ *
+ * Modes will only be removed in a major release - but they may be deprecated (and emit
+ * runtime deprecations) in minor releases.
+ */
 enum GherkinCompatibilityMode: string
 {
     case LEGACY = 'legacy';
