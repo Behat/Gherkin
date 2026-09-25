@@ -18,6 +18,7 @@ use Behat\Gherkin\Exception\NoSuchLanguageException;
 use Behat\Gherkin\Exception\ParserException;
 use Behat\Gherkin\Exception\UnexpectedParserNodeException;
 use Behat\Gherkin\Exception\UnexpectedTaggedNodeException;
+use Behat\Gherkin\Node\ArgumentInterface;
 use Behat\Gherkin\Node\BackgroundNode;
 use Behat\Gherkin\Node\ExampleTableNode;
 use Behat\Gherkin\Node\FeatureNode;
@@ -545,15 +546,42 @@ class Parser implements ParserInterface
             }
         }
 
-        if (count($arguments) > 1) {
-            // cucumber/gherkin >= 42.0.0 allows a step to have both a DataTable and a DocString,
-            // but we don't support this syntax. We would first need to ensure that runners can
-            // cope with a step having more than one argument - although it is typed as an array,
-            // it has always been a single-element array.
-            throw new ParserException('Multiple step arguments not supported');
-        }
+        $this->validateStepArguments($arguments);
 
         return new StepNode($token['value'], trim($token['text']), $arguments, $token['line'], $token['keyword_type'], $token['fullText']);
+    }
+
+    /**
+     * @param list<ArgumentInterface> $arguments
+     */
+    private function validateStepArguments(array $arguments): void
+    {
+        if (count($arguments) <= 1) {
+            return;
+        }
+
+        if (!$this->compatibilityMode->supportsMultipleStepArguments()) {
+            throw new UnexpectedParserNodeException(
+                'only one Step argument',
+                // The unexpected argument is the second one
+                $arguments[1],
+                $this->file
+            );
+        }
+
+        // cucumber/gherkin >= 42.0.0 allows a step to have both a DataTable and a DocString,
+        // but it cannot have more than one of a given type.
+        $types = [];
+        foreach ($arguments as $arg) {
+            if (in_array($arg::class, $types, true)) {
+                throw new UnexpectedParserNodeException(
+                    'only one Step argument of any given type',
+                    $arg,
+                    $this->file
+                );
+            }
+            $types[] = $arg::class;
+        }
     }
 
     /**

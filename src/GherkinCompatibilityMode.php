@@ -21,6 +21,8 @@ enum GherkinCompatibilityMode: string
      */
     case GHERKIN_32 = 'gherkin-32';
 
+    case GHERKIN_42 = 'gherkin-42';
+
     /**
      * @internal
      */
@@ -129,6 +131,18 @@ enum GherkinCompatibilityMode: string
     {
         return match ($this) {
             self::LEGACY => false,
+            default => true,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function supportsMultipleStepArguments(): bool
+    {
+        return match ($this) {
+            self::LEGACY,
+            self::GHERKIN_32 => false,
             default => true,
         };
     }

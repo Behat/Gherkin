@@ -10,7 +10,6 @@
 
 namespace Tests\Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Gherkin\Node\TableNode;
@@ -18,15 +17,13 @@ use PHPUnit\Framework\TestCase;
 
 class StepNodeTest extends TestCase
 {
-    public function testThatStepCanHaveOnlyOneArgument(): void
+    public function testThatStepCanHaveMultipleArguments(): void
     {
-        $this->expectExceptionObject(
-            new NodeException('Steps could have only one argument, but `Gangway! I am on the page:` have 2.')
-        );
-
-        new StepNode('Gangway!', 'I am on the page:', [
+        $step = new StepNode('Gangway!', 'I am on the page:', [
             new PyStringNode(['one', 'two'], 11),
             new TableNode([['one', 'two']]),
         ], 10, 'Given');
+
+        $this->assertCount(2, $step->getArguments());
     }
 }
