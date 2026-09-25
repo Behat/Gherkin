@@ -18,18 +18,28 @@ namespace Behat\Gherkin;
  *
  * Modes will only be removed in a major release - but they may be deprecated (and emit
  * runtime deprecations) in minor releases.
+ *
+ * @see https://docs.behat.org/en/latest/user_guide/gherkin/parser_mode.html
  */
 enum GherkinCompatibilityMode: string
 {
+    /**
+     * Match the behaviour of as older versions of this library.
+     * Some newer Gherkin syntax is not supported, and some is parsed differently
+     * to official cucumber/gherkin parsers.
+     * Not recommended for new projects - but this is the default in Behat 3.x.
+     */
     case LEGACY = 'legacy';
 
     /**
-     * Note: The gherkin-32 parsing mode is not yet complete, and further behaviour changes are expected.
-     *
-     * @see https://github.com/Behat/Gherkin/issues?q=is%3Aissue%20state%3Aopen%20label%3Acucumber-parity
+     * Match the behaviour of cucumber/gherkin parsers version >= 32.0 < 42.0.
      */
     case GHERKIN_32 = 'gherkin-32';
 
+    /**
+     * Match the behaviour of cucumber/gherkin parsers version >= 42.0
+     * This is the default mode in Behat 4.0.
+     */
     case GHERKIN_42 = 'gherkin-42';
 
     /**
