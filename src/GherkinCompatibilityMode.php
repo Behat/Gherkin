@@ -38,7 +38,7 @@ enum GherkinCompatibilityMode: string
 
     /**
      * Match the behaviour of cucumber/gherkin parsers version >= 42.0
-     * This is the default mode in Behat 4.0.
+     * This is the default mode in Behat 4.x.
      */
     case GHERKIN_42 = 'gherkin-42';
 
