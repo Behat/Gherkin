@@ -10,6 +10,15 @@
 
 namespace Behat\Gherkin;
 
+/**
+ * Configures parser behaviour relative to official cucumber/gherkin parser versions.
+ *
+ * This enum is **non-exhaustive**. We may add case values for new parser modes in future
+ * minor releases.
+ *
+ * Modes will only be removed in a major release - but they may be deprecated (and emit
+ * runtime deprecations) in minor releases.
+ */
 enum GherkinCompatibilityMode: string
 {
     case LEGACY = 'legacy';
@@ -20,6 +29,8 @@ enum GherkinCompatibilityMode: string
      * @see https://github.com/Behat/Gherkin/issues?q=is%3Aissue%20state%3Aopen%20label%3Acucumber-parity
      */
     case GHERKIN_32 = 'gherkin-32';
+
+    case GHERKIN_42 = 'gherkin-42';
 
     /**
      * @internal
@@ -129,6 +140,18 @@ enum GherkinCompatibilityMode: string
     {
         return match ($this) {
             self::LEGACY => false,
+            default => true,
+        };
+    }
+
+    /**
+     * @internal
+     */
+    public function supportsMultipleStepArguments(): bool
+    {
+        return match ($this) {
+            self::LEGACY,
+            self::GHERKIN_32 => false,
             default => true,
         };
     }

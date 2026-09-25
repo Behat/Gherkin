@@ -10,8 +10,6 @@
 
 namespace Behat\Gherkin\Node;
 
-use Behat\Gherkin\Exception\NodeException;
-
 /**
  * Represents Gherkin Step.
  *
@@ -36,18 +34,6 @@ class StepNode implements NodeInterface
         ?string $keywordType = null,
         ?string $fullText = null,
     ) {
-        if (count($arguments) > 1) {
-            // Note: This is kept for backwards compatibility with code that creates StepNode directly.
-            // Our own parser now throws a ParserException instead of attempting to create a StepNode with
-            // multiple arguments.
-            throw new NodeException(sprintf(
-                'Steps could have only one argument, but `%s %s` have %d.',
-                $keyword,
-                $text,
-                count($arguments)
-            ));
-        }
-
         $this->keywordType = $keywordType ?: 'Given';
         $this->fullText = $fullText ?? $keyword . ' ' . $text;
     }

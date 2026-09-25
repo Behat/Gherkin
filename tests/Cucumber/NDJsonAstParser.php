@@ -294,6 +294,15 @@ class NDJsonAstParser
             $args[] = new TableNode($table);
         }
 
+        // Because cucumber's args are keyed by type (docString / dataTable), $args may not
+        // be in the same order as the feature file nodes. However, since we represent the
+        // args as an ordered list, it's more logical that our Parser passes them in feature
+        // file sequence - not least for e.g. for pretty formatter to render the correct output.
+        usort(
+            $args,
+            static fn (TableNode|PyStringNode $a, TableNode|PyStringNode $b) => $a->getLine() <=> $b->getLine()
+        );
+
         return $args;
     }
 

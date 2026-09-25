@@ -75,6 +75,8 @@ class CompatibilityTest extends TestCase
         'gherkin-32' => [
             'step_with_datatable_and_docstring.feature' => 'Multiple step arguments not supported',
         ],
+        'gherkin-42' => [
+        ],
     ];
 
     /**
@@ -86,6 +88,8 @@ class CompatibilityTest extends TestCase
         ],
         'gherkin-32' => [
         ],
+        'gherkin-42' => [
+        ],
     ];
 
     /**
@@ -96,6 +100,8 @@ class CompatibilityTest extends TestCase
             'whitespace_in_tags.feature' => '/Whitespace in tags is deprecated/',
         ],
         'gherkin-32' => [
+        ],
+        'gherkin-42' => [
         ],
     ];
 
