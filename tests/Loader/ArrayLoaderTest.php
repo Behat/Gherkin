@@ -15,8 +15,10 @@ use Behat\Gherkin\Node\OutlineNode;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\ScenarioNode;
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
 
+#[IgnoreDeprecations]
 class ArrayLoaderTest extends TestCase
 {
     private ArrayLoader $loader;
@@ -24,6 +26,32 @@ class ArrayLoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->loader = new ArrayLoader();
+    }
+
+    public function testIsDeprecated(): void
+    {
+        $deprecations = [];
+        set_error_handler(
+            static function (int $errNo, string $errStr) use (&$deprecations): bool {
+                $deprecations[] = $errStr;
+
+                return true;
+            },
+            E_USER_DEPRECATED,
+        );
+
+        try {
+            new ArrayLoader();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame(
+            [
+                'Behat\Gherkin\Loader\ArrayLoader is deprecated and will be removed in 5.0',
+            ],
+            $deprecations,
+        );
     }
 
     public function testSupports(): void
