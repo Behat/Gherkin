@@ -153,7 +153,8 @@ class TableNode implements Stringable, ArgumentInterface, IteratorAggregate
         $hash = [];
 
         foreach ($this->getRows() as $row) {
-            $hash[array_shift($row)] = count($row) === 1 ? $row[0] : $row;
+            // Note, unusual behaviour if the row is empty - but this matches legacy behaviour
+            $hash[array_shift($row) ?? ''] = count($row) === 1 ? $row[0] : $row;
         }
 
         return $hash;
