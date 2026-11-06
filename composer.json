@@ -22,11 +22,12 @@
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/gherkin-monorepo": "dev-gherkin-v42.0.1",
+        "cweagans/composer-patches": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.77",
         "phpstan/phpstan": "2.2.14",
         "phpstan/extension-installer": "^1",
         "phpstan/phpstan-phpunit": "^2",
-        "mikey179/vfsstream": "^1.6",
+        "mikey179/vfsstream": "1.6.12",
         "phpstan/phpstan-deprecation-rules": "^2.0"
     },
 
@@ -88,7 +89,8 @@
     "config": {
         "process-timeout": 0,
         "allow-plugins": {
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "cweagans/composer-patches": true
         }
     }
 }
