@@ -76,11 +76,7 @@
     "scripts": {
         "cs": "php-cs-fixer check --diff --ansi --show-progress=dots --verbose",
         "cs-fix": "php-cs-fixer fix --diff --ansi --show-progress=dots",
-        "phpstan": [
-            "phpstan analyze --ansi --no-progress --memory-limit=-1",
-            "phpstan analyze bin/update_cucumber --ansi --no-progress --memory-limit=-1",
-            "phpstan analyze bin/update_i18n --ansi --no-progress --memory-limit=-1"
-        ],
+        "phpstan": "phpstan analyze --ansi --no-progress --memory-limit=-1",
         "test": [
             "phpunit --colors=always"
         ]
