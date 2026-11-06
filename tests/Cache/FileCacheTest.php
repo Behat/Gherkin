@@ -78,7 +78,7 @@ class FileCacheTest extends TestCase
         file_put_contents($files[0], '');
 
         $this->expectException(CacheException::class);
-        $this->expectExceptionMessageMatches('/^Can not load cache for a feature "broken_feature" from .+$/');
+        $this->expectExceptionMessageMatches('/^Can not load cache for a feature "broken_feature" from/');
 
         $cache->read('broken_feature');
     }

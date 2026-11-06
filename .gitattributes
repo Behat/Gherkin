@@ -10,3 +10,5 @@
 /.git-blame-ignore-revs     export-ignore
 /phpstan.dist.neon          export-ignore
 /.roave-backward-compatibility-check.xml export-ignore
+/patches.json               export-ignore
+/patches                    export-ignore

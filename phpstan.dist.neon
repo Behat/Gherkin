@@ -2,5 +2,6 @@ parameters:
     treatPhpDocTypesAsCertain: false
     level: 10
     paths:
+        - bin
         - src
         - tests

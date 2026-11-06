@@ -1,0 +1,7 @@
+{
+  "patches": {
+    "mikey179/vfsstream": {
+      "Replace deprecated in 8.6 spl_object_hash with spl_object_id https://github.com/bovigo/vfsStream/pull/301": "patches/vfsstream-fix-spl-object-hash.txt"
+    }
+  }
+}

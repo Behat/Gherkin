@@ -14,7 +14,7 @@
     ],
 
     "require": {
-        "php": ">=8.1 <8.6",
+        "php": ">=8.1 <8.7",
         "composer-runtime-api": "^2.2"
     },
 
@@ -22,11 +22,12 @@
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
         "cucumber/gherkin-monorepo": "dev-gherkin-v42.0.1",
+        "cweagans/composer-patches": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.77",
         "phpstan/phpstan": "2.2.14",
         "phpstan/extension-installer": "^1",
         "phpstan/phpstan-phpunit": "^2",
-        "mikey179/vfsstream": "^1.6",
+        "mikey179/vfsstream": "1.6.12",
         "phpstan/phpstan-deprecation-rules": "^2.0"
     },
 
@@ -73,24 +74,19 @@
     ],
 
     "scripts": {
-        "lint": [
-            "phpstan analyze --ansi --no-progress --memory-limit=-1",
-            "phpstan analyze bin/update_cucumber --ansi --no-progress --memory-limit=-1",
-            "phpstan analyze bin/update_i18n --ansi --no-progress --memory-limit=-1",
-            "php-cs-fixer check --diff --ansi --show-progress=dots --verbose"
-        ],
+        "cs": "php-cs-fixer check --diff --ansi --show-progress=dots --verbose",
+        "cs-fix": "php-cs-fixer fix --diff --ansi --show-progress=dots",
+        "phpstan": "phpstan analyze --ansi --no-progress --memory-limit=-1",
         "test": [
             "phpunit --colors=always"
-        ],
-        "fix": [
-            "php-cs-fixer fix --diff --ansi --show-progress=dots"
         ]
     },
 
     "config": {
         "process-timeout": 0,
         "allow-plugins": {
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "cweagans/composer-patches": true
         }
     }
 }

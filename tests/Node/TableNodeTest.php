@@ -145,6 +145,13 @@ class TableNodeTest extends TestCase
         ], $table->getRowsHash());
     }
 
+    public function testEmptyRowsHashTable(): void
+    {
+        // Edge case, but this is the historic behavior of the method.
+        $table = new TableNode([[]]);
+        $this->assertSame(['' => []], $table->getRowsHash());
+    }
+
     public function testGetRows(): void
     {
         $table = new TableNode([
