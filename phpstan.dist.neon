@@ -5,3 +5,12 @@ parameters:
         - bin
         - src
         - tests
+    ignoreErrors:
+        # these tests cover the deprecated loaders themselves, until they are removed in 5.0
+        -
+            identifiers:
+                - new.deprecatedClass
+                - method.deprecatedClass
+            paths:
+                - tests/Loader/ArrayLoaderTest.php
+                - tests/Loader/YamlFileLoaderTest.php
