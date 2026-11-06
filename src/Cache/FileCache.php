@@ -98,13 +98,32 @@ class FileCache implements CacheInterface
     {
         $cachePath = $this->getCachePathFor($path);
         try {
-            $feature = unserialize(Filesystem::readFile($cachePath), ['allowed_classes' => true]);
+            $cacheContent = Filesystem::readFile($cachePath);
         } catch (FilesystemException $ex) {
             throw new CacheException("Can not load cache: {$ex->getMessage()}", previous: $ex);
         }
 
+        try {
+            set_error_handler(
+                static fn (int $severity, string $message) => throw new CacheException(
+                    sprintf('Can not load cache for a feature "%s" from "%s" (%s)', $path, $cachePath, $message),
+                    code: $severity,
+                ),
+            );
+            $feature = unserialize($cacheContent, ['allowed_classes' => true]);
+        } finally {
+            restore_error_handler();
+        }
+
         if (!$feature instanceof FeatureNode) {
-            throw new CacheException(sprintf('Can not load cache for a feature "%s" from "%s".', $path, $cachePath));
+            throw new CacheException(
+                sprintf(
+                    'Can not load cache for a feature "%s" from "%s" (expected FeatureNode, got %s)',
+                    $path,
+                    $cachePath,
+                    get_debug_type($feature),
+                ),
+            );
         }
 
         return $feature;
