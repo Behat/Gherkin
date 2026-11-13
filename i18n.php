@@ -404,7 +404,7 @@ return array (
     'given' => 'All git out|Fixin\' to',
     'name' => 'Texas',
     'native' => 'Texas',
-    'rule' => 'Rule ',
+    'rule' => 'Rule',
     'scenario' => 'All hat and no cattle',
     'scenario_outline' => 'Busy as a hound in flea season|Serious as a snake bite',
     'then' => 'There’s no tree but bears some fruit',
