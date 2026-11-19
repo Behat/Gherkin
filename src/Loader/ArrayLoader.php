@@ -37,9 +37,19 @@ use Behat\Gherkin\Node\TableNode;
  * @phpstan-type TArrayResource array{feature: TFeatureHash}|array{features: array<int, TFeatureHash>}
  *
  * @phpstan-extends AbstractLoader<TArrayResource>
+ *
+ * @deprecated This loader is deprecated and will be removed in 5.0
  */
 class ArrayLoader extends AbstractLoader
 {
+    public function __construct()
+    {
+        trigger_error(
+            sprintf('%s is deprecated and will be removed in 5.0', self::class),
+            E_USER_DEPRECATED,
+        );
+    }
+
     public function supports(mixed $resource)
     {
         return is_array($resource) && (isset($resource['features']) || isset($resource['feature']));

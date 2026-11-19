@@ -21,6 +21,8 @@ use Symfony\Component\Yaml\Yaml;
  * @extends AbstractFileLoader<string>
  *
  * @phpstan-import-type TArrayResource from ArrayLoader
+ *
+ * @deprecated This loader is deprecated and will be removed in 5.0
  */
 class YamlFileLoader extends AbstractFileLoader
 {
@@ -30,6 +32,10 @@ class YamlFileLoader extends AbstractFileLoader
     public function __construct(
         private readonly LoaderInterface $loader = new ArrayLoader(),
     ) {
+        trigger_error(
+            sprintf('%s is deprecated and will be removed in 5.0', self::class),
+            E_USER_DEPRECATED,
+        );
     }
 
     public function supports(mixed $resource)

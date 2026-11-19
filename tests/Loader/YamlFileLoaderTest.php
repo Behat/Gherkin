@@ -12,8 +12,10 @@ namespace Tests\Behat\Gherkin\Loader;
 
 use Behat\Gherkin\Loader\YamlFileLoader;
 use Behat\Gherkin\Node\ScenarioNode;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
 
+#[IgnoreDeprecations]
 class YamlFileLoaderTest extends TestCase
 {
     private YamlFileLoader $loader;
@@ -21,6 +23,33 @@ class YamlFileLoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->loader = new YamlFileLoader();
+    }
+
+    public function testIsDeprecated(): void
+    {
+        $deprecations = [];
+        set_error_handler(
+            static function (int $errNo, string $errStr) use (&$deprecations): bool {
+                $deprecations[] = $errStr;
+
+                return true;
+            },
+            E_USER_DEPRECATED,
+        );
+
+        try {
+            new YamlFileLoader();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame(
+            [
+                'Behat\Gherkin\Loader\ArrayLoader is deprecated and will be removed in 5.0',
+                'Behat\Gherkin\Loader\YamlFileLoader is deprecated and will be removed in 5.0',
+            ],
+            $deprecations,
+        );
     }
 
     public function testSupports(): void
