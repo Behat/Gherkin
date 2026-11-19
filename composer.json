@@ -21,7 +21,7 @@
     "require-dev": {
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0",
         "phpunit/phpunit": "^10.5",
-        "cucumber/gherkin-monorepo": "dev-gherkin-v42.0.1",
+        "cucumber/gherkin-monorepo": "dev-gherkin-v43.0.0",
         "cweagans/composer-patches": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.77",
         "phpstan/phpstan": "2.2.14",
@@ -58,16 +58,16 @@
             "type": "package",
             "package": {
                 "name": "cucumber/gherkin-monorepo",
-                "version": "dev-gherkin-v42.0.1",
+                "version": "dev-gherkin-v43.0.0",
                 "source": {
                     "type": "git",
                     "url": "https://github.com/cucumber/gherkin.git",
-                    "reference": "33693f4b5a76bb86dee61d0b287d6f2c700813e4"
+                    "reference": "3d70e2bb4e0f16a568ee539a5ce0b03fb247a777"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/cucumber/gherkin/zipball/33693f4b5a76bb86dee61d0b287d6f2c700813e4",
-                    "reference": "33693f4b5a76bb86dee61d0b287d6f2c700813e4"
+                    "url": "https://api.github.com/repos/cucumber/gherkin/zipball/3d70e2bb4e0f16a568ee539a5ce0b03fb247a777",
+                    "reference": "3d70e2bb4e0f16a568ee539a5ce0b03fb247a777"
                 }
             }
         }
