@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This project follows the [Behat release and version support policies]
 (https://docs.behat.org/en/latest/releases.html).
 
+# [4.19.0] - 2026-11-19
+
+## Changed
+
+* Deprecate YamlFileLoader and ArrayLoader by @Amoifr in [#443](https://github.com/Behat/Gherkin/pull/443)
+
+## Added
+
+* Support PHP 8.6 by @acoulton in [#444](https://github.com/Behat/Gherkin/pull/444)
+
+## Internal
+
+* Update cucumber/gherkin parity tests and translations to v43.0.0 by @behat-gherkin-updater[bot]
+  in [#445](https://github.com/Behat/Gherkin/pull/445)
+
 # [4.18.0] - 2026-09-25
 
 ## Changed
@@ -666,6 +681,7 @@ This project follows the [Behat release and version support policies]
 - 47 brand new translations (see i18n)
 - Full test suite for everything from AST nodes to translations
 
+[4.19.0]: https://github.com/Behat/Gherkin/compare/v4.18.0...v4.19.0
 [4.18.0]: https://github.com/Behat/Gherkin/compare/v4.17.0...v4.18.0
 [4.17.0]: https://github.com/Behat/Gherkin/compare/v4.16.1...v4.17.0
 [4.16.1]: https://github.com/Behat/Gherkin/compare/v4.16.0...v4.16.1
